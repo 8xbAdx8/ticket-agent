@@ -123,6 +123,39 @@ class V2DefectTests(unittest.TestCase):
             self.assertEqual(conn.execute("SELECT status FROM orders").fetchall(), [("paid",)])
             self.assertEqual(conn.execute("SELECT COUNT(*) FROM orders").fetchone()[0], 1)
 
+    def test_def05_payment_deadline_routes_to_policy_with_p11(self):
+        for message in ("锁座后必须在多久内完成支付", "锁座后多久必须完成支付？", "锁座的有效期是多久"):
+            result = self.chat(message)
+            self.assertEqual(result["tool_sequence"], ["search_policy"])
+            self.assertIn("P11", result["reply"])
+            self.assertIn("15 分钟", result["reply"])
+
+    def test_def05_explicit_pay_my_order_remains_an_operation(self):
+        self.chat("订明天上海到杭州的高铁")
+        result = self.chat("支付我刚才的订单。")
+        self.assertEqual(result["tool_sequence"], ["pay_order"])
+        self.assertIn("支付成功", result["reply"])
+        self.assertEqual(self.chat("支付我的订单")["tool_sequence"], ["pay_order"])
+
+    def test_def05_policy_with_existing_order_never_writes(self):
+        self.chat("订明天上海到杭州的高铁")
+        for message in ("未支付订单会自动取消吗", "取消订单要多少手续费", "怎么支付我的订单？", "订票后多久必须支付？"):
+            result = self.chat(message)
+            self.assertEqual(result["tool_sequence"], ["search_policy"])
+            self.assertRegex(result["reply"], r"P\d+")
+        self.assertIn("P12", self.chat("未支付订单会自动取消吗")["reply"])
+        for message in ("不要支付", "别取消订单", "支付相关事项"):
+            self.assertNotIn("pay_order", self.chat(message)["tool_sequence"])
+            self.assertNotIn("cancel_order", self.chat(message)["tool_sequence"])
+        with closing(sqlite3.connect(config.DB_PATH)) as conn:
+            self.assertEqual(conn.execute("SELECT status FROM orders").fetchall(), [("pending",)])
+
+    def test_def05_purchase_without_payment_and_compound_purchase_payment(self):
+        unpaid = self.chat("订明天上海到杭州的高铁，但不要支付")
+        self.assertEqual(unpaid["tool_sequence"], ["query_tickets","lock_seat","create_order"])
+        paid = self.chat("订后天北京到成都的机票并支付", sid="flight")
+        self.assertEqual(paid["tool_sequence"], ["query_tickets","lock_seat","create_order","pay_order"])
+
 
 if __name__ == "__main__":
     unittest.main()

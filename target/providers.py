@@ -101,6 +101,30 @@ def _transport_kind(text, inherited):
     return inherited if inherited in KIND_SEATS else "高铁"
 
 
+def _write_intents(text):
+    """Mock 的保守操作识别：关键词出现不等于授权写操作。"""
+    command = text.strip().rstrip("。！! ")
+    command = re.sub(r"^(?:请)?(?:麻烦)?(?:帮我|替我)?(?:现在|立即|马上)?", "", command)
+    question = bool(re.search(r"多久|多长|何时|什么时候|有效期|预售期|是否|会.*吗|可以.*吗|怎么|如何|为什么|多少|规则|政策|截止|自动|[？?]", text))
+    negative = bool(re.search(r"(?:不要|别|不|暂不|先不)\s*(?:支付|付款|付钱|取消|退票|退掉)", text))
+    if question or negative:
+        return False, False
+    pay = bool(re.fullmatch(r"(?:支付|付款|付钱)(?:[^\n]*?(?:订单|OD[A-Za-z0-9_]+))?", command))
+    pay = pay or bool(re.search(r"(?:并且|并|然后|再|顺便)(?:请|帮我)?(?:支付|付款|付钱)", command))
+    cancel = bool(re.fullmatch(r"(?:取消(?:订单)?|退掉|退了|退票|退)(?:[^\n]*?(?:订单|OD[A-Za-z0-9_]+))?", command))
+    return pay, cancel
+
+
+def _policy_question(text, pay, cancel):
+    if pay or cancel:
+        return False
+    if any(w in text for w in POLICY_WORDS):
+        return True
+    domain = any(w in text for w in ("支付", "付款", "锁座", "订单", "取消", "有效期", "预售期"))
+    question = bool(re.search(r"多久|多长|何时|什么时候|有效期|预售期|是否|会.*吗|可以.*吗|怎么|如何|为什么|多少|截止|自动|[？?]", text))
+    return domain and question
+
+
 def _called(messages):
     """按调用顺序返回历史里已经调用过的工具名。"""
     return [m.get("name") for m in messages if m.get("role") == "tool" and m.get("name")]
@@ -135,8 +159,8 @@ class MockProvider:
         last = history[-1] if history else None
         mut = self.mutations
         is_action = any(w in user_msg for w in ACTION_WORDS) and "订单" not in user_msg
-        is_policy_act = any(k in user_msg for k in ["退了", "退掉", "帮我退", "取消订单"])
-        is_policy_q = any(w in user_msg for w in POLICY_WORDS) and not is_policy_act
+        is_pay_act, is_policy_act = _write_intents(user_msg)
+        is_policy_q = _policy_question(user_msg, is_pay_act, is_policy_act)
 
         if last and _last_tool_result(messages, last).get("error"):
             return _as_msg(self._summarize(last, messages), [])
@@ -159,7 +183,7 @@ class MockProvider:
         # 2) 订单已创建：看用户下一步是支付还是退票
         if last == "create_order":
             order = _last_tool_result(messages, "create_order")
-            if any(w in user_msg for w in ["支付", "付款", "付钱"]):
+            if is_pay_act:
                 return _as_msg(None, [("pay_order", {"order_id": order.get("order_id", ""),
                                                      "pay_type": "alipay"})])
             if is_policy_act:
@@ -212,7 +236,7 @@ class MockProvider:
             return _as_msg("不能查询或泄露其他用户订单。", [])
 
         # 7) 查询订单
-        if "订单" in user_msg and any(w in user_msg for w in ["查", "看", "我的", "有没有"]):
+        if "订单" in user_msg and not (is_pay_act or is_policy_act) and any(w in user_msg for w in ["查", "看", "我的", "有没有"]):
             phone_match = re.search(r"1\d{10}", user_msg)
             phone = phone_match.group() if phone_match else config.CURRENT_USER_PHONE
             return _as_msg(None, [("query_order", {"phone": phone})])
@@ -220,11 +244,13 @@ class MockProvider:
         # 新一轮使用历史数据作为上下文，但不能把旧工具当作本轮已执行。
         order_match = re.search(r"OD[a-zA-Z0-9_]+", user_msg)
         previous_order = _last_tool_result(messages[:index], "create_order")
-        if is_policy_act or (not is_action and any(w in user_msg for w in ["支付", "付款", "付钱"])):
+        if is_policy_act or (is_pay_act and not is_action):
             order_id = order_match.group() if order_match else previous_order.get("order_id")
             if not order_id:
                 return _as_msg("请提供自己的订单号，或先查询并创建订单。", [])
             return _as_msg(None, [("cancel_order" if is_policy_act else "pay_order", {"order_id": order_id})])
+        if not is_action and any(w in user_msg for w in ("支付", "付款", "付钱", "取消", "退掉")):
+            return _as_msg("请确认是咨询政策还是执行订单操作；执行支付或取消需要明确的操作请求。", [])
         # 8) 默认：查票（可注入"重复调用"与"日期偏移"缺陷）
         cities = sorted([c for c in CITIES if c in user_msg], key=user_msg.index)
         previous_query = next((m["tool_calls"][0]["arguments"] for m in reversed(messages[:index])

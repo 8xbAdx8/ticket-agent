@@ -68,3 +68,15 @@ DEF-03 提交：`5a57f16b7568c0467b4328c61c9c19f722141d1a`。
 - 实际命令 `python scripts/run_v2_selftests.py --log docs/evidence/v2/def04_unit.txt`，累计 9 个 V2 自测通过，返回字段仍与原契约相同。
 - B/C 影响：可通过既有 result_preview 中短结果的 duplicate_pay 与回复观察；不得将本轮模拟扣款描述成真实支付验证。B 需重跑 F13 及正常支付/退款用例。
 - 待处理 DEF-05、全回归/真实模式准备；SHA 后续登记。
+
+DEF-04 提交：`1ed67d53ef6626ff217a7f74b2cce93e523632cb`。
+
+## 2026-10-13 DEF-05 政策咨询与写操作分离
+
+- 原始现象：T25“锁座后必须在多久内完成支付”未调用工具；V1 Trace 在 `v1_reproduction/DEF-05/`。B 的 Word 总结也指出同类问题。
+- 修改 `target/providers.py`：`_policy_question` 检查支付/锁座/订单领域与多久、有效期、自动等咨询特征；`_write_intents` 仅把明确命令/复合购付作为操作，疑问与否定不能触发支付/取消。支付命令优先于“我的订单”的查询快捷分支；已有订单上下文也不能把政策问法转成写操作。
+- 新增四个 A 自测：P11/15 分钟问法、有订单的政策咨询/P12、明确支付本人订单、禁止支付与复合订票支付。检查订单仍 pending、没有错误 pay/cancel。
+- 初次 `def05_unit.txt` 中复合购付被单独支付分支提前截获；保留失败日志，修正为先执行购买链路、create_order 后再按明确支付意图支付，不修改断言。
+- 复验命令 `python scripts/run_v2_selftests.py --log docs/evidence/v2/def05_unit_retry.txt`；累计 13 个 V2 自测通过，契约 helper 通过。
+- B/C 影响：T25 走 search_policy/P11；“支付我刚才的订单”仍走 pay_order；模糊写请求会澄清。B 需额外验证 T10–T16/X07 与自然问法，不能把 Mock 规则等同真实模型语义能力。
+- 真实模型无 Key，下一阶段提供对应 Prompt 与分离证据的验证入口；正式 B 100 用例尚未运行。本缺陷提交 SHA 后续登记。
