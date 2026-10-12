@@ -1,5 +1,5 @@
 [
-  {"id": "DEMO-01", "session_id": "b1", "input": "帮我查下周三北京到上海的高铁"},
+  {"id": "DEMO-01", "session_id": "b1", "input": "帮我查后天北京到上海的高铁"},
   {"id": "DEMO-02", "session_id": "b1", "input": "我要买一张"},
   {"id": "DEMO-03", "session_id": "b1", "input": "支付"},
   {"id": "DEMO-04", "session_id": "b2", "input": "开车前两天退票扣多少手续费"},

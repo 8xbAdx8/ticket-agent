@@ -5,15 +5,22 @@
 """
 import json
 import sys
+import os
+import uuid
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+# 默认每次演示隔离数据，避免重建团队库或污染正式 Trace。
+DEMO_DIR = Path(__file__).resolve().parent / "artifacts" / "runtime" / ("demo-" + uuid.uuid4().hex[:8])
+os.environ.setdefault("AGENT_DB_PATH", str(DEMO_DIR / "tickets.db"))
+os.environ.setdefault("AGENT_TRACE_DIR", str(DEMO_DIR / "traces"))
+import config
 from data.seed import build_db
 from target.agent import Agent
 from target import providers
 
 CASES = [
-    ("S1", "帮我查下周三北京到上海的高铁"),
+    ("S1", "帮我查后天北京到上海的高铁"),
     ("S1", "我要买一张"),
     ("S1", "支付"),
     ("S2", "开车前两天退票扣多少手续费"),
@@ -24,9 +31,10 @@ CASES = [
 
 def main():
     print("=" * 70)
-    print("抢票智能体 · 零依赖演示（mock 模式，全部为自建虚构数据）")
+    print(f"抢票智能体 · 演示（{config.PROVIDER} 模式，全部为自建虚构数据）")
     print("=" * 70)
-    build_db()
+    if not config.DB_PATH.exists():
+        build_db()
     agent = Agent()
     for sid, msg in CASES:
         r = agent.chat(sid, msg)
@@ -35,6 +43,9 @@ def main():
         print(f"      回复：{r['reply']}")
         print(f"      结束原因：{r['finish_reason']}　耗时：{r['total_latency_ms']}ms")
 
+    if config.PROVIDER != "mock":
+        print("真实模型模式不运行 Mock 变异。")
+        return
     print("\n" + "=" * 70)
     print("变异测试演示：注入 date_offset=1（日期解析偏移一天）")
     providers.set_mutation("date_offset", 1)
@@ -48,7 +59,7 @@ def main():
     print(f"工具序列：{r['tool_sequence']}")
     print(f"结束原因：{r['finish_reason']}  <- 期望为 max_steps_exceeded，供成员 B 的 R6 规则捕获")
     providers.clear_mutations()
-    print("\n演示结束。trace 已写入 traces/traces.jsonl")
+    print("\n演示结束。Trace 已追加至 AGENT_TRACE_DIR 下（默认 artifacts/runtime/demo-*）。")
 
 
 if __name__ == "__main__":

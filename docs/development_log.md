@@ -57,3 +57,15 @@
 - B/C 影响：顶层/调用字段完全不变；模型失败也可能 stop，因此 stop 不等于业务成功；全局变异仅限串行 Python 测试，Web 独立字典。
 - 待完成：入口与 Web 验证、交接文档；真实模型/向量联网实测仍缺条件。
 - SHA：提交后登记于后续条目。
+
+Agent 模块提交：`03b63c8ea5ab082b66a11f3762b2e76b733feed1`。
+
+## 2026-10-12 CLI、示例与可复现证据入口
+
+- 修改 `cli.py`、`run_demo.py`、`cases/demo.json`；新增 `scripts/handoff_example.py`、`scripts/smoke.py`。
+- 演示默认创建独立运行目录，不覆盖业务库或历史 Trace；CLI trace 按配置读取并跳过损坏末行；界面标记真实 provider。
+- 六例首条由“下周三”改为“后天”：2026-10-12 的下周三为 10-21，超出 7 天数据，不能伪造有票；原“下周三”仍可查，正常返回空。示例变更不涉及团队契约。
+- 实际命令 `.venv/Scripts/python.exe scripts/smoke.py` 执行 run_demo、once、batch、标准输入驱动 chat、trace、Python 交接示例；均 exit_code=0。实际日志保存在 `docs/evidence/`（后续 Web 验证提交一并提交）。
+- 输出 32 条 Mock trace，Python 示例用 label 显式区分正常与 6 种人为注入（label 在包装证据中，不改 Trace 契约）。
+- B/C 影响：复制环境变量可隔离运行；示例可以直接复用；这不是 B 的正式方案和评分。
+- 待完成：正式交接报告及人工屏幕验收；源代码 SHA 在后续记录登记。

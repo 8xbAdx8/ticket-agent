@@ -14,6 +14,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from target.agent import Agent
+import config
 
 
 def print_result(r, show_trace=True):
@@ -31,7 +32,7 @@ def print_result(r, show_trace=True):
 def cmd_chat(args):
     agent = Agent()
     sid = "cli"
-    print("出行服务智能助手（mock 模式，输入 q 退出）")
+    print(f"出行服务智能助手（{config.PROVIDER} 模式，虚构票务，输入 q 退出）")
     while True:
         try:
             msg = input("\n你> ").strip()
@@ -60,12 +61,18 @@ def cmd_batch(args):
 
 
 def cmd_trace(args):
-    p = Path(__file__).resolve().parent / "traces" / "traces.jsonl"
+    p = config.TRACE_DIR / "traces.jsonl"
     if not p.exists():
         print("还没有 trace 记录，先跑一次对话。")
         return
-    lines = p.read_text(encoding="utf-8").strip().split("\n")
-    print(json.dumps(json.loads(lines[-1]), ensure_ascii=False, indent=2))
+    lines = [line for line in p.read_text(encoding="utf-8").splitlines() if line.strip()]
+    for line in reversed(lines):
+        try:
+            print(json.dumps(json.loads(line), ensure_ascii=False, indent=2))
+            return
+        except json.JSONDecodeError:
+            continue
+    print("没有完整 JSON 记录，请检查 trace 文件。")
 
 
 def main():
