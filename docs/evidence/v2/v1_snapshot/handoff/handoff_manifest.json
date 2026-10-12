@@ -1,0 +1,37 @@
+{
+  "generated_date": "2026-10-12",
+  "verified_source_revision": "e719956d7c82bd6392c25916d3c193be7e4b452e",
+  "branch": "feat/a-ticket-handoff",
+  "delivery_tag": "handoff-a-20261012",
+  "provider": "mock",
+  "real_model_tested": false,
+  "reports": {
+    "A_开发完成报告.md": "5914f06d593c298994de7bc1a73770d7b4dcfb8fb8590e9397d2979237652762",
+    "B_测试对接手册.md": "75b092f6a51ccb986b258cb23fdf903ea5d2d4111eeee527fbd7d4257aae6ac9",
+    "C_验收与演示交接手册.md": "4d8afe0519b02a5403f481d3de9114c24d320913f780fddac6c9401293b41b96",
+    "A_最终交付清单.md": "59e56ff9f917808b72cb876ca04b771af6c24efd94fa5e419604cd97803e7e05"
+  },
+  "verification_sha256": "dedf7a98c2247d29da219409bc2634ad43ba3732172707c46073ac4afad2ec29",
+  "source_hash_check": "passed",
+  "contract_unchanged": true,
+  "unit_test_count": 12,
+  "python_example_count": 13,
+  "tool_names": [
+    "query_tickets",
+    "monitor_seat",
+    "lock_seat",
+    "create_order",
+    "pay_order",
+    "cancel_order",
+    "query_order",
+    "search_policy"
+  ],
+  "mutation_names": [
+    "date_offset",
+    "skip_lock",
+    "repeat_call",
+    "infinite_loop",
+    "route_error",
+    "no_citation"
+  ]
+}

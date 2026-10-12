@@ -1,0 +1,476 @@
+{
+  "label": "v1-before-fixes",
+  "scope": "A implementation reproduction, not B official rerun",
+  "provider": "mock",
+  "frozen_business_date": "2026-10-13",
+  "observations": [
+    {
+      "defect": "DEF-01",
+      "b_case_id": "F03",
+      "inputs": [
+        "帮我查明天北京到成都的高铁",
+        "那机票呢"
+      ],
+      "a_observed_target_satisfied": false,
+      "results": [
+        {
+          "session_id": "DEF-01",
+          "provider": "mock",
+          "model": "glm-4-flash",
+          "user_msg": "帮我查明天北京到成都的高铁",
+          "steps": [
+            {
+              "step": 1,
+              "calls": [
+                {
+                  "tool": "query_tickets",
+                  "args": {
+                    "from_city": "北京",
+                    "to_city": "成都",
+                    "date": "2026-10-14",
+                    "kind": "高铁",
+                    "seat_type": "二等座"
+                  },
+                  "ok": true,
+                  "latency_ms": 1,
+                  "result_preview": "{\"trains\": [], \"count\": 0}"
+                }
+              ]
+            }
+          ],
+          "tool_sequence": [
+            "query_tickets"
+          ],
+          "reply": "抱歉， 没有查到符合条件的车次。",
+          "finish_reason": "stop",
+          "tokens": {
+            "prompt": 0,
+            "completion": 0
+          },
+          "total_latency_ms": 3
+        },
+        {
+          "session_id": "DEF-01",
+          "provider": "mock",
+          "model": "glm-4-flash",
+          "user_msg": "那机票呢",
+          "steps": [
+            {
+              "step": 1,
+              "calls": [
+                {
+                  "tool": "query_tickets",
+                  "args": {
+                    "from_city": "北京",
+                    "to_city": "成都",
+                    "date": "2026-10-14",
+                    "kind": "机票",
+                    "seat_type": "二等座"
+                  },
+                  "ok": true,
+                  "latency_ms": 1,
+                  "result_preview": "{\"trains\": [], \"count\": 0}"
+                }
+              ]
+            }
+          ],
+          "tool_sequence": [
+            "query_tickets"
+          ],
+          "reply": "抱歉， 没有查到符合条件的车次。",
+          "finish_reason": "stop",
+          "tokens": {
+            "prompt": 0,
+            "completion": 0
+          },
+          "total_latency_ms": 1
+        }
+      ],
+      "trace_path": "DEF-01/traces.jsonl"
+    },
+    {
+      "defect": "DEF-02",
+      "b_case_id": "M11",
+      "inputs": [
+        "帮我查明天上海到杭州的高铁",
+        "那机票呢",
+        "还是高铁吧"
+      ],
+      "a_observed_target_satisfied": false,
+      "results": [
+        {
+          "session_id": "DEF-02",
+          "provider": "mock",
+          "model": "glm-4-flash",
+          "user_msg": "帮我查明天上海到杭州的高铁",
+          "steps": [
+            {
+              "step": 1,
+              "calls": [
+                {
+                  "tool": "query_tickets",
+                  "args": {
+                    "from_city": "上海",
+                    "to_city": "杭州",
+                    "date": "2026-10-14",
+                    "kind": "高铁",
+                    "seat_type": "二等座"
+                  },
+                  "ok": true,
+                  "latency_ms": 1,
+                  "result_preview": "{\"trains\": [{\"kind\": \"高铁\", \"train_no\": \"G7303\", \"from_city\": \"上海\", \"to_city\": \"杭州\", \"date\": \"2026-10-14\", \"depart\": \"12:34\", \"arrive\": \"13:34\", \"seat_type\": \"二等座\", \"price\": 73.0, \"seats_left\": 51}, {\"..."
+                }
+              ]
+            }
+          ],
+          "tool_sequence": [
+            "query_tickets"
+          ],
+          "reply": "为您查到以下车次：G7303 上海→杭州 12:34 开，二等座 ¥73.0，余票 51；G7302 上海→杭州 09:17 开，二等座 ¥73.0，余票 47；G7301 上海→杭州 06:00 开，二等座 ¥73.0，余票 35。",
+          "finish_reason": "stop",
+          "tokens": {
+            "prompt": 0,
+            "completion": 0
+          },
+          "total_latency_ms": 2
+        },
+        {
+          "session_id": "DEF-02",
+          "provider": "mock",
+          "model": "glm-4-flash",
+          "user_msg": "那机票呢",
+          "steps": [
+            {
+              "step": 1,
+              "calls": [
+                {
+                  "tool": "query_tickets",
+                  "args": {
+                    "from_city": "上海",
+                    "to_city": "杭州",
+                    "date": "2026-10-14",
+                    "kind": "机票",
+                    "seat_type": "二等座"
+                  },
+                  "ok": true,
+                  "latency_ms": 0,
+                  "result_preview": "{\"trains\": [], \"count\": 0}"
+                }
+              ]
+            }
+          ],
+          "tool_sequence": [
+            "query_tickets"
+          ],
+          "reply": "抱歉， 没有查到符合条件的车次。",
+          "finish_reason": "stop",
+          "tokens": {
+            "prompt": 0,
+            "completion": 0
+          },
+          "total_latency_ms": 0
+        },
+        {
+          "session_id": "DEF-02",
+          "provider": "mock",
+          "model": "glm-4-flash",
+          "user_msg": "还是高铁吧",
+          "steps": [
+            {
+              "step": 1,
+              "calls": [
+                {
+                  "tool": "query_tickets",
+                  "args": {
+                    "from_city": "上海",
+                    "to_city": "杭州",
+                    "date": "2026-10-14",
+                    "kind": "机票",
+                    "seat_type": "二等座"
+                  },
+                  "ok": true,
+                  "latency_ms": 0,
+                  "result_preview": "{\"trains\": [], \"count\": 0}"
+                }
+              ]
+            }
+          ],
+          "tool_sequence": [
+            "query_tickets"
+          ],
+          "reply": "抱歉， 没有查到符合条件的车次。",
+          "finish_reason": "stop",
+          "tokens": {
+            "prompt": 0,
+            "completion": 0
+          },
+          "total_latency_ms": 0
+        }
+      ],
+      "trace_path": "DEF-02/traces.jsonl"
+    },
+    {
+      "defect": "DEF-03",
+      "b_case_id": "F14",
+      "inputs": [
+        "帮我查明天北京到上海的高铁二等座"
+      ],
+      "a_observed_target_satisfied": false,
+      "results": [
+        {
+          "session_id": "DEF-03",
+          "provider": "mock",
+          "model": "glm-4-flash",
+          "user_msg": "帮我查明天北京到上海的高铁二等座",
+          "steps": [
+            {
+              "step": 1,
+              "calls": [
+                {
+                  "tool": "query_tickets",
+                  "args": {
+                    "from_city": "北京",
+                    "to_city": "上海",
+                    "date": "2026-10-14",
+                    "kind": "高铁",
+                    "seat_type": "二等座"
+                  },
+                  "ok": true,
+                  "latency_ms": 2,
+                  "result_preview": "{\"trains\": [{\"kind\": \"高铁\", \"train_no\": \"G101\", \"from_city\": \"北京\", \"to_city\": \"上海\", \"date\": \"2026-10-14\", \"depart\": \"06:00\", \"arrive\": \"11:00\", \"seat_type\": \"二等座\", \"price\": 553.0, \"seats_left\": 0}, {\"k..."
+                }
+              ]
+            }
+          ],
+          "tool_sequence": [
+            "query_tickets"
+          ],
+          "reply": "为您查到以下车次：G101 北京→上海 06:00 开，二等座 ¥553.0，余票 0；G102 北京→上海 09:17 开，二等座 ¥553.0，余票 0；G103 北京→上海 12:34 开，二等座 ¥553.0，余票 0。",
+          "finish_reason": "stop",
+          "tokens": {
+            "prompt": 0,
+            "completion": 0
+          },
+          "total_latency_ms": 2
+        }
+      ],
+      "trace_path": "DEF-03/traces.jsonl"
+    },
+    {
+      "defect": "DEF-04",
+      "b_case_id": "F13",
+      "inputs": [
+        "帮我查明天上海到杭州的高铁",
+        "我要买一张",
+        "支付",
+        "支付"
+      ],
+      "a_observed_target_satisfied": false,
+      "results": [
+        {
+          "session_id": "DEF-04",
+          "provider": "mock",
+          "model": "glm-4-flash",
+          "user_msg": "帮我查明天上海到杭州的高铁",
+          "steps": [
+            {
+              "step": 1,
+              "calls": [
+                {
+                  "tool": "query_tickets",
+                  "args": {
+                    "from_city": "上海",
+                    "to_city": "杭州",
+                    "date": "2026-10-14",
+                    "kind": "高铁",
+                    "seat_type": "二等座"
+                  },
+                  "ok": true,
+                  "latency_ms": 1,
+                  "result_preview": "{\"trains\": [{\"kind\": \"高铁\", \"train_no\": \"G7303\", \"from_city\": \"上海\", \"to_city\": \"杭州\", \"date\": \"2026-10-14\", \"depart\": \"12:34\", \"arrive\": \"13:34\", \"seat_type\": \"二等座\", \"price\": 73.0, \"seats_left\": 51}, {\"..."
+                }
+              ]
+            }
+          ],
+          "tool_sequence": [
+            "query_tickets"
+          ],
+          "reply": "为您查到以下车次：G7303 上海→杭州 12:34 开，二等座 ¥73.0，余票 51；G7302 上海→杭州 09:17 开，二等座 ¥73.0，余票 47；G7301 上海→杭州 06:00 开，二等座 ¥73.0，余票 35。",
+          "finish_reason": "stop",
+          "tokens": {
+            "prompt": 0,
+            "completion": 0
+          },
+          "total_latency_ms": 1
+        },
+        {
+          "session_id": "DEF-04",
+          "provider": "mock",
+          "model": "glm-4-flash",
+          "user_msg": "我要买一张",
+          "steps": [
+            {
+              "step": 1,
+              "calls": [
+                {
+                  "tool": "query_tickets",
+                  "args": {
+                    "from_city": "上海",
+                    "to_city": "杭州",
+                    "date": "2026-10-14",
+                    "kind": "高铁",
+                    "seat_type": "二等座"
+                  },
+                  "ok": true,
+                  "latency_ms": 0,
+                  "result_preview": "{\"trains\": [{\"kind\": \"高铁\", \"train_no\": \"G7303\", \"from_city\": \"上海\", \"to_city\": \"杭州\", \"date\": \"2026-10-14\", \"depart\": \"12:34\", \"arrive\": \"13:34\", \"seat_type\": \"二等座\", \"price\": 73.0, \"seats_left\": 51}, {\"..."
+                }
+              ]
+            },
+            {
+              "step": 2,
+              "calls": [
+                {
+                  "tool": "lock_seat",
+                  "args": {
+                    "train_no": "G7303",
+                    "date": "2026-10-14",
+                    "seat_type": "二等座",
+                    "passengers": [
+                      "张三"
+                    ]
+                  },
+                  "ok": true,
+                  "latency_ms": 3,
+                  "result_preview": "{\"lock_id\": \"LK09ebfe45\", \"train_no\": \"G7303\", \"date\": \"2026-10-14\", \"seat_type\": \"二等座\", \"passengers\": [\"张三\"], \"unit_price\": 73.0, \"count\": 1, \"expire_at\": \"2026-10-13T10:15:00\", \"ttl_seconds\": 900}"
+                }
+              ]
+            },
+            {
+              "step": 3,
+              "calls": [
+                {
+                  "tool": "create_order",
+                  "args": {
+                    "lock_id": "LK09ebfe45",
+                    "passenger_ids": [
+                      "张三"
+                    ],
+                    "contact": "13800000001"
+                  },
+                  "ok": true,
+                  "latency_ms": 2,
+                  "result_preview": "{\"order_id\": \"OD6ae4dc9f39\", \"phone\": \"13800000001\", \"train_no\": \"G7303\", \"date\": \"2026-10-14\", \"seat_type\": \"二等座\", \"passengers\": \"[\\\"张三\\\"]\", \"amount\": 73.0, \"status\": \"pending\", \"created_at\": \"2026-1..."
+                }
+              ]
+            }
+          ],
+          "tool_sequence": [
+            "query_tickets",
+            "lock_seat",
+            "create_order"
+          ],
+          "reply": "订单已创建：OD6ae4dc9f39，金额 ¥73.0，车次 G7303 2026-10-14，请在锁座有效期内完成支付。",
+          "finish_reason": "stop",
+          "tokens": {
+            "prompt": 0,
+            "completion": 0
+          },
+          "total_latency_ms": 7
+        },
+        {
+          "session_id": "DEF-04",
+          "provider": "mock",
+          "model": "glm-4-flash",
+          "user_msg": "支付",
+          "steps": [
+            {
+              "step": 1,
+              "calls": [
+                {
+                  "tool": "pay_order",
+                  "args": {
+                    "order_id": "OD6ae4dc9f39"
+                  },
+                  "ok": true,
+                  "latency_ms": 2,
+                  "result_preview": "{\"order_id\": \"OD6ae4dc9f39\", \"status\": \"paid\", \"pay_type\": \"alipay\", \"amount\": 73.0, \"duplicate_pay\": false}"
+                }
+              ]
+            }
+          ],
+          "tool_sequence": [
+            "pay_order"
+          ],
+          "reply": "支付成功，订单 OD6ae4dc9f39 已完成，祝您旅途愉快。",
+          "finish_reason": "stop",
+          "tokens": {
+            "prompt": 0,
+            "completion": 0
+          },
+          "total_latency_ms": 2
+        },
+        {
+          "session_id": "DEF-04",
+          "provider": "mock",
+          "model": "glm-4-flash",
+          "user_msg": "支付",
+          "steps": [
+            {
+              "step": 1,
+              "calls": [
+                {
+                  "tool": "pay_order",
+                  "args": {
+                    "order_id": "OD6ae4dc9f39"
+                  },
+                  "ok": true,
+                  "latency_ms": 1,
+                  "result_preview": "{\"order_id\": \"OD6ae4dc9f39\", \"status\": \"paid\", \"duplicate_pay\": true}"
+                }
+              ]
+            }
+          ],
+          "tool_sequence": [
+            "pay_order"
+          ],
+          "reply": "支付成功，订单 OD6ae4dc9f39 已完成，祝您旅途愉快。",
+          "finish_reason": "stop",
+          "tokens": {
+            "prompt": 0,
+            "completion": 0
+          },
+          "total_latency_ms": 1
+        }
+      ],
+      "trace_path": "DEF-04/traces.jsonl"
+    },
+    {
+      "defect": "DEF-05",
+      "b_case_id": "T25",
+      "inputs": [
+        "锁座后必须在多久内完成支付"
+      ],
+      "a_observed_target_satisfied": false,
+      "results": [
+        {
+          "session_id": "DEF-05",
+          "provider": "mock",
+          "model": "glm-4-flash",
+          "user_msg": "锁座后必须在多久内完成支付",
+          "steps": [],
+          "tool_sequence": [],
+          "reply": "请提供自己的订单号，或先查询并创建订单。",
+          "finish_reason": "stop",
+          "tokens": {
+            "prompt": 0,
+            "completion": 0
+          },
+          "total_latency_ms": 0
+        }
+      ],
+      "trace_path": "DEF-05/traces.jsonl"
+    }
+  ],
+  "providers_sha256": "4b47351c2e77758067cf2e5b286c3e8dc0ee557b3d88a9ab57f8bc3626a1089b"
+}

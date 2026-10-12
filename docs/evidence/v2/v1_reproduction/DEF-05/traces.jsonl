@@ -1,0 +1,1 @@
+{"session_id": "DEF-05", "provider": "mock", "model": "glm-4-flash", "user_msg": "锁座后必须在多久内完成支付", "steps": [], "tool_sequence": [], "reply": "请提供自己的订单号，或先查询并创建订单。", "finish_reason": "stop", "tokens": {"prompt": 0, "completion": 0}, "total_latency_ms": 0}
