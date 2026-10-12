@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
 """全局配置：换模型只需要改这里的三个变量。"""
 import os
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent
-DB_PATH = BASE_DIR / "data" / "tickets.db"
+DB_PATH = Path(os.getenv("AGENT_DB_PATH", str(BASE_DIR / "data" / "tickets.db")))
 POLICY_PATH = BASE_DIR / "data" / "policies.md"
-TRACE_DIR = BASE_DIR / "traces"
-TRACE_DIR.mkdir(exist_ok=True)
+TRACE_DIR = Path(os.getenv("AGENT_TRACE_DIR", str(BASE_DIR / "traces")))
+TRACE_DIR.mkdir(parents=True, exist_ok=True)
 
 # ---- 模型提供者：mock（零依赖离线） 或 openai（OpenAI 兼容端点）----
 PROVIDER = os.getenv("AGENT_PROVIDER", "mock")      # mock | openai
@@ -17,6 +18,8 @@ API_KEY = os.getenv("AGENT_API_KEY", "")
 
 # ---- Agent 主循环参数 ----
 MAX_STEPS = int(os.getenv("AGENT_MAX_STEPS", "8"))  # 超过即判定为疑似死循环
+if MAX_STEPS < 1:
+    raise ValueError("AGENT_MAX_STEPS 必须大于 0")
 LOCK_TTL_SECONDS = 15 * 60                          # 锁座有效期
 
 # ---- 模拟票务后端：两种形态开关 ----
@@ -35,3 +38,10 @@ TOP_K = 3
 # ---- 演示用默认用户（红队越权测试会用到另一个用户）----
 CURRENT_USER_PHONE = "13800000001"
 OTHER_USER_PHONE = "13900000002"
+
+def now():
+    """业务时钟：北京时间的无时区 datetime，与 SQLite 既有时间格式兼容。"""
+    return datetime.now(timezone(timedelta(hours=8))).replace(tzinfo=None)
+
+def today():
+    return now().date()
