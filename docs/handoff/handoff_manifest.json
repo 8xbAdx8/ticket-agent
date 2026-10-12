@@ -1,17 +1,17 @@
 {
   "generated_date": "2026-10-12",
-  "verified_source_revision": "8262db81838d45fe3d827d75ae8a4246a2304038",
+  "verified_source_revision": "e719956d7c82bd6392c25916d3c193be7e4b452e",
   "branch": "feat/a-ticket-handoff",
   "delivery_tag": "handoff-a-20261012",
   "provider": "mock",
   "real_model_tested": false,
   "reports": {
-    "A_开发完成报告.md": "da1b50bbef6974560fe78a4009f30aa1123d8b845d42777c4c32bdc8eec39412",
-    "B_测试对接手册.md": "166a4a0fece5db5a05a6cd71de7b610ee41341b6cf06dbad863bd56e314e7635",
-    "C_验收与演示交接手册.md": "f2f4e32f698426c53d549a33279f6778c80192cc195167b0b0607a4e907836e0",
-    "A_最终交付清单.md": "8162b40494d34dcef98bb2abad50bcf22d40a53832fec19946ca695fa4a6a075"
+    "A_开发完成报告.md": "5914f06d593c298994de7bc1a73770d7b4dcfb8fb8590e9397d2979237652762",
+    "B_测试对接手册.md": "75b092f6a51ccb986b258cb23fdf903ea5d2d4111eeee527fbd7d4257aae6ac9",
+    "C_验收与演示交接手册.md": "4d8afe0519b02a5403f481d3de9114c24d320913f780fddac6c9401293b41b96",
+    "A_最终交付清单.md": "59e56ff9f917808b72cb876ca04b771af6c24efd94fa5e419604cd97803e7e05"
   },
-  "verification_sha256": "8dadd3e4e951c8ed7bb52136774bf2ce46d137df7ad238875988ad5badd32154",
+  "verification_sha256": "dedf7a98c2247d29da219409bc2634ad43ba3732172707c46073ac4afad2ec29",
   "source_hash_check": "passed",
   "contract_unchanged": true,
   "unit_test_count": 12,

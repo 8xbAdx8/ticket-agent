@@ -1,8 +1,8 @@
 # 成员 A 最终交付清单
 
-报告日期：2026-10-12（Asia/Shanghai）。运行证据时间：2026-10-12T18:09:12.588958+08:00。
+报告日期：2026-10-12（Asia/Shanghai）。运行证据时间：2026-10-12T20:11:38.809590+08:00。
 
-核验实现版本：`8262db81838d45fe3d827d75ae8a4246a2304038`；分支 `feat/a-ticket-handoff`。报告最后文档提交可用 `git rev-parse handoff-a-20261012` 取得（Git 提交不能把自身 SHA 写进自身内容；最终 SHA 另在交付回复中给出）。
+核验实现版本：`e719956d7c82bd6392c25916d3c193be7e4b452e`；分支 `feat/a-ticket-handoff`。报告最后文档提交可用 `git rev-parse handoff-a-20261012` 取得（Git 提交不能把自身 SHA 写进自身内容；最终 SHA 另在交付回复中给出）。
 
 数据来源：当前源码、`docs/contract.md`、Git 提交、`docs/evidence/verification.json` 及对应实际日志。所有运行结果均为 Mock 或本地模拟响应，未联网测试真实模型。
 
@@ -102,7 +102,7 @@
 ## 8. Git 与报告
 
 - [x] 独立功能分支 `feat/a-ticket-handoff`；无 remote 推送、无 main 合并。
-- [x] 核验实现最后提交 SHA：`8262db81838d45fe3d827d75ae8a4246a2304038`。
+- [x] 核验实现最后提交 SHA：`e719956d7c82bd6392c25916d3c193be7e4b452e`。
 - [x] 分阶段提交与持续开发记录，未伪造原不存在的历史。
 - [x] 四份手册生成后对源码/Schema/证据哈希核验，额外清单 `docs/handoff/handoff_manifest.json`。
 - [x] 最终文档提交通过交付标签 `handoff-a-20261012` 精确定位；完整 SHA 在最终交付回复给出。此文件不能自引用其自身提交 SHA；交付后用 `git rev-parse handoff-a-20261012` 和 `git status --short` 核对，标签在生成/审核完成后创建。
@@ -115,6 +115,7 @@
 | `03b63c8ea5ab082b66a11f3762b2e76b733feed1` | fix(agent): preserve multi-turn context and verify six mock mutations |
 | `78ea322a8f8addc75ef6c22c5d855d726dea11bb` | feat(cli): isolate demos and capture reproducible handoff evidence |
 | `8262db81838d45fe3d827d75ae8a4246a2304038` | feat(web): expose all mock controls and verify entrypoint workflows |
+| `e719956d7c82bd6392c25916d3c193be7e4b452e` | docs(handoff): deliver source-backed A B C reports and final checklist |
 
 ## 9. 交付给 B/C 的材料
 

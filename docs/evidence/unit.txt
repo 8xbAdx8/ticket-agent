@@ -18,12 +18,12 @@ test_pending_cancel_and_expiration (test_core.CoreTests.test_pending_cancel_and_
 test_schema_fault_and_waitlist (test_core.CoreTests.test_schema_fault_and_waitlist) ... ok
 test_ids_usage_and_malformed_json (test_provider.ProviderTests.test_ids_usage_and_malformed_json) ... ok
 test_missing_key (test_provider.ProviderTests.test_missing_key) ... ok
-test_all_controls_and_restore (test_web.WebTests.test_all_controls_and_restore) ... 2026-10-12 18:09:06.924 WARNING streamlit.runtime.scriptrunner_utils.script_run_context: Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+test_all_controls_and_restore (test_web.WebTests.test_all_controls_and_restore) ... 2026-10-12 20:11:32.918 WARNING streamlit.runtime.scriptrunner_utils.script_run_context: Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
 ok
-test_conversation_and_replay (test_web.WebTests.test_conversation_and_replay) ... 2026-10-12 18:09:07.990 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+test_conversation_and_replay (test_web.WebTests.test_conversation_and_replay) ... 2026-10-12 20:11:36.199 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
 ok
 
 ----------------------------------------------------------------------
-Ran 12 tests in 2.400s
+Ran 12 tests in 4.862s
 
 OK

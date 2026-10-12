@@ -10,11 +10,11 @@
         {
           "tool": "pay_order",
           "args": {
-            "order_id": "ODfa0378c134"
+            "order_id": "ODf80d07c772"
           },
           "ok": true,
           "latency_ms": 3,
-          "result_preview": "{\"order_id\": \"ODfa0378c134\", \"status\": \"paid\", \"pay_type\": \"alipay\", \"amount\": 73.0, \"duplicate_pay\": false}"
+          "result_preview": "{\"order_id\": \"ODf80d07c772\", \"status\": \"paid\", \"pay_type\": \"alipay\", \"amount\": 73.0, \"duplicate_pay\": false}"
         }
       ]
     }
@@ -22,7 +22,7 @@
   "tool_sequence": [
     "pay_order"
   ],
-  "reply": "支付成功，订单 ODfa0378c134 已完成，祝您旅途愉快。",
+  "reply": "支付成功，订单 ODf80d07c772 已完成，祝您旅途愉快。",
   "finish_reason": "stop",
   "tokens": {
     "prompt": 0,

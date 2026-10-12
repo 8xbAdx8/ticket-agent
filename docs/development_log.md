@@ -97,3 +97,13 @@ Web/验证模块提交：`8262db81838d45fe3d827d75ae8a4246a2304038`。
 - 待验证/未完成均如实记录：真实模型联网、向量、优惠/改签/身份完整建模、后台兑现、B 正式测试与 C 人工验收；不提供编造的覆盖率/性能/缺陷数。
 - B/C 影响：可独立按手册跑 Mock 和保存证据，正式职责未被代做；最终判断有条件交接。
 - 本模块最终提交 SHA：通过交付标签 `handoff-a-20261012` 用 `git rev-parse handoff-a-20261012` 精确取得；最终回复会给完整 SHA。避免在一个 Git 提交里自引用它自己的哈希。未 push/merge。
+
+## 2026-10-12 用户要求建立 GitHub 仓库
+
+- 范围：用户明确要求建立项目 GitHub 库；以已登录个人账号 `8xbAdx8` 下的私有 `ticket-agent` 为目标，上传现有功能分支，保持原交付标签。
+- 文件：保留用户再次运行 smoke.py 的 `docs/evidence/` 修改；同步四份报告与 manifest；新增 `docs/github_handoff.md`，`.gitignore` 新增交付包目录排除。
+- 实际检查：`gh auth status` 确认登录；`git remote -v` 为空；`gh repo view 8xbAdx8/ticket-agent` 未找到仓库；当前跟踪文件的常见私钥/令牌模式扫描未发现秘密。
+- 用户提供的最新验证日志：12 个 A 自测 OK，verification.json 中所有运行项 exit_code=0，仍为 Mock，真实模型/向量均未实测。
+- 报告同步验证：运行 `scripts/generate_handoff.py` 与 `--check` 核验当前源码/保护文件哈希、报告内容和 32 条 Trace。提交包含真实新日志，不覆盖或丢弃用户运行结果。
+- B/C 影响：取得私有仓库访问权限后可 clone；须按 README 自建模拟库。邀请队友由用户决定，本次不代发。
+- GitHub 创建/推送将在此提交完成后执行；结果和本阶段 SHA 由最终回复及远端分支确定。此前文档中的“未推送”是原交接阶段历史状态。

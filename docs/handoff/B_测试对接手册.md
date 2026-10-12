@@ -1,8 +1,8 @@
 # 成员 B 测试对接手册
 
-报告日期：2026-10-12（Asia/Shanghai）。运行证据时间：2026-10-12T18:09:12.588958+08:00。
+报告日期：2026-10-12（Asia/Shanghai）。运行证据时间：2026-10-12T20:11:38.809590+08:00。
 
-核验实现版本：`8262db81838d45fe3d827d75ae8a4246a2304038`；分支 `feat/a-ticket-handoff`。报告最后文档提交可用 `git rev-parse handoff-a-20261012` 取得（Git 提交不能把自身 SHA 写进自身内容；最终 SHA 另在交付回复中给出）。
+核验实现版本：`e719956d7c82bd6392c25916d3c193be7e4b452e`；分支 `feat/a-ticket-handoff`。报告最后文档提交可用 `git rev-parse handoff-a-20261012` 取得（Git 提交不能把自身 SHA 写进自身内容；最终 SHA 另在交付回复中给出）。
 
 数据来源：当前源码、`docs/contract.md`、Git 提交、`docs/evidence/verification.json` 及对应实际日志。所有运行结果均为 Mock 或本地模拟响应，未联网测试真实模型。
 
@@ -95,7 +95,7 @@ print(r3["finish_reason"])
             "seat_type": "二等座"
           },
           "ok": true,
-          "latency_ms": 2,
+          "latency_ms": 1,
           "result_preview": "{\"trains\": [{\"kind\": \"高铁\", \"train_no\": \"G7303\", \"from_city\": \"上海\", \"to_city\": \"杭州\", \"date\": \"2026-10-13\", \"depart\": \"12:34\", \"arrive\": \"13:34\", \"seat_type\": \"二等座\", \"price\": 73.0, \"seats_left\": 50}, {\"..."
         }
       ]
@@ -110,7 +110,7 @@ print(r3["finish_reason"])
     "prompt": 0,
     "completion": 0
   },
-  "total_latency_ms": 3
+  "total_latency_ms": 1
 }
 ```
 
@@ -156,7 +156,7 @@ print(r3["finish_reason"])
     "seat_type": "二等座"
   },
   "ok": true,
-  "latency_ms": 2,
+  "latency_ms": 1,
   "result_preview": "{\"trains\": [{\"kind\": \"高铁\", \"train_no\": \"G7303\", \"from_city\": \"上海\", \"to_city\": \"杭州\", \"date\": \"2026-10-13\", \"depart\": \"12:34\", \"arrive\": \"13:34\", \"seat_type\": \"二等座\", \"price\": 73.0, \"seats_left\": 50}, {\"..."
 }
 ```
@@ -327,4 +327,4 @@ $env:AGENT_MODEL="<端点支持的模型名>"
 
 未声称这些未完成项已经通过。无已知阻塞 Mock 冒烟链路的代码 Bug；上述限制仍可能导致未覆盖输入失败，应由 B 的独立测试确认。
 
-交接建议：当前可开始 B 的 Mock 正式测试；真实模型测试需队长协调服务与 Key。B 生成自己的原始证据、测试结论，C 再据此形成报告。最后核对 `git rev-parse HEAD`/交付标签，源码版本 `8262db81838d45fe3d827d75ae8a4246a2304038`，分支 `feat/a-ticket-handoff`。
+交接建议：当前可开始 B 的 Mock 正式测试；真实模型测试需队长协调服务与 Key。B 生成自己的原始证据、测试结论，C 再据此形成报告。最后核对 `git rev-parse HEAD`/交付标签，源码版本 `e719956d7c82bd6392c25916d3c193be7e4b452e`，分支 `feat/a-ticket-handoff`。

@@ -6,5 +6,6 @@ __pycache__/
 *.db-*
 traces/*.jsonl
 artifacts/runtime/
+artifacts/deliverables/
 .pytest_cache/
 *.log

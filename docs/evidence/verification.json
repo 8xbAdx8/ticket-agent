@@ -1,5 +1,5 @@
 {
-  "date": "2026-10-12T18:09:12.588958+08:00",
+  "date": "2026-10-12T20:11:38.809590+08:00",
   "provider": "mock",
   "real_model_tested": false,
   "vector_tested": false,
@@ -97,6 +97,7 @@
     "tests/test_core.py": "507b89c6c438e1ab9767e6c13be9df70883f79117406044efb65454fc47bebd4",
     "tests/test_provider.py": "fa916162f9d20deb5ad6deb272e0d6f0072481de99108e89d6c2e5b6a0994b57",
     "tests/test_web.py": "714a7c5aadaf833e9c342e2ce4c27998b396cb9c023ea4cb7e2b87b17e0d68ec",
+    "scripts/generate_handoff.py": "2d3894f0c43df833f973edeb8f19e28ec642574bbc6ac2314f2d7bf3662f0610",
     "scripts/handoff_example.py": "308856adf3d5c269992dfff857f76d22a294809bca8f5640ea704cdedf54389d",
     "scripts/read_legacy_doc.py": "54e3db2af9099e24a94e1a1609f476c380838db1cfc4ded621c789ec40fa4aea",
     "scripts/smoke.py": "16dd35a7ecadc8997ca742b92fc83dcfdaae1e6b0d9ef41b00c15ae97cbc5b04",

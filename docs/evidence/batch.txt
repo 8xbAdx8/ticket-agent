@@ -5,11 +5,11 @@
 
 == DEMO-02 我要买一张
    tools: ['query_tickets', 'lock_seat', 'create_order']  finish: stop
-   reply: 订单已创建：ODafa18ad49e，金额 ¥553.0，车次 G102 2026-10-14，请在锁座有效期内完成支付。
+   reply: 订单已创建：ODf62cdc4b15，金额 ¥553.0，车次 G102 2026-10-14，请在锁座有效期内完成支付。
 
 == DEMO-03 支付
    tools: ['pay_order']  finish: stop
-   reply: 支付成功，订单 ODafa18ad49e 已完成，祝您旅途愉快。
+   reply: 支付成功，订单 ODf62cdc4b15 已完成，祝您旅途愉快。
 
 == DEMO-04 开车前两天退票扣多少手续费
    tools: ['search_policy']  finish: stop
@@ -17,8 +17,8 @@
 
 == DEMO-05 查一下我的订单
    tools: ['query_order']  finish: stop
-   reply: 您的订单：ODafa18ad49e G102 2026-10-14 ¥553.0 paid；ODce91a50ab3 G701 2026-10-14 ¥862.0 pending；ODdbea07498e G102 2026-10-14 ¥
+   reply: 您的订单：ODf62cdc4b15 G102 2026-10-14 ¥553.0 paid；OD826988b420 G701 2026-10-14 ¥862.0 pending；OD918eadfd50 G102 2026-10-14 ¥
 
 == DEMO-06 帮我抢后天北京到广州的票
    tools: ['query_tickets', 'lock_seat', 'create_order']  finish: stop
-   reply: 订单已创建：ODc771d301e5，金额 ¥862.0，车次 G701 2026-10-14，请在锁座有效期内完成支付。
+   reply: 订单已创建：OD411ed80aeb，金额 ¥862.0，车次 G701 2026-10-14，请在锁座有效期内完成支付。
