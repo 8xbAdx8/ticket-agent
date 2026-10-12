@@ -1,0 +1,9 @@
+{
+  "scope": "A Streamlit AppTest 状态及现有功能验证；不是浏览器动画截图或远端模型测试",
+  "status": "passed",
+  "html_shown_before_chat": true,
+  "status_cleared_after_success_error_limit": true,
+  "real_trace_summary_success_and_failure": true,
+  "history_table_json_and_replay_preserved": true,
+  "processing_stage": "generic only; no fabricated model reasoning"
+}

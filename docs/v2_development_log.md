@@ -115,3 +115,14 @@ DEF-05 提交：`3504fd18a2ff83ee7861b5a5396d52e7a7942c15`。
 - 额外实际执行真实入口的无 Key 保护分支：`validate_real_provider.py --output-dir docs/evidence/v2/real_missing_key_guard --run`，立即返回“没有 AGENT_API_KEY/待验证”，真实调用与 Trace 仍为 0；没有用占位 Key 请求远端。
 - `audit_v2_evidence.py --output docs/evidence/v2/audit_final.json` 再次通过原文件/V1 标签/源码/契约/六变异一致性；git diff --check 通过。后续仅修改交接材料，无新运行核心修改，不重复扩大功能测试。
 - 发布范围仅独立 V2 分支与新的 V2 交付标签；远端原 feat/a-ticket-handoff 在发布前为 30b21da57f432677d8e12cd76e24a8e0895c35f3，不向其推送或合并。最终发布成败以真实 Git 输出和交接回复为准。
+
+## 2026-10-13 Web 请求动画与实际步骤摘要
+
+- 源码提交：`4101f98f1eaab745310093a0b1feada37de2582b`；修改 `web/app.py`，追加独立验证证据 `web_processing_unit.txt` / `web_processing_check.json`。
+- 发送消息时立即在对话栏插入旋转圆圈与“正在处理请求...”；调用结束后在 finally 中清除，覆盖正常、失败、异常和步数上限。CSS 只作用于自身类名，使用主题色，并尊重系统减弱动画设置。
+- 当前 Agent.chat 同步返回最终 Trace，没有阶段回调，因此使用通用状态；不模拟理解需求/查询/锁座等中间进度，也不显示模型思维链。没有为了展示动画而增加生产等待时间；快速 Mock 请求可能一闪而过。
+- 完成后的右侧摘要由 steps[].calls[] 按真实顺序生成工具名称与调用成功/失败，保留重复调用；无调用明确显示“本轮未调用工具”。原表格、JSON、会话历史和离线回放保持。
+- 实际命令：`python scripts/run_v2_selftests.py --log docs/evidence/v2/web_processing_unit.txt --pattern test_web.py`；既有 2 个 Streamlit Web 回归通过，覆盖对话、订单流、回放、6 开关控件、恢复模式和循环上限。
+- 额外在隔离临时库中运行 AppTest 检查（本机临时脚本 artifacts/runtime/check_web_processing.py）：记录 HTML 在 chat 调用前送出；正常购买、工具失败、最大步数、抛异常后均无残留动画；摘要成功/失败与实际返回一致，历史/表格/JSON/回放保留。证据明确为 AppTest，未冒称浏览器动画截图或真实模型验证。
+- 保护检查：25 个原始文件哈希保持；Agent/Trace/contract 未改。V2 原始交付标签 handoff-a-v2-20261013 仍指向 6ef683a50f60970dbd4ded1678a818d026afcbde，本次是其后的前端增强，不改历史 28 自测/32 Trace 证据。
+- B/C 影响：返回接口与工具序列不变；C 可在耗时请求时观察等待提示，并在完成后展示真实工具摘要。运行命令保持 `.venv/Scripts/python.exe -m streamlit run web/app.py`。后续细粒度状态需要真实事件回调，目前未实现。
