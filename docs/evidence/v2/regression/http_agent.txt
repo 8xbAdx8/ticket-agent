@@ -1,0 +1,8 @@
+
+[reply] 支付成功，订单 OD1dd7f6790a 已完成，祝您旅途愉快。
+[tools] ['query_tickets', 'lock_seat', 'create_order', 'pay_order']
+  step1 OK  query_tickets({"from_city": "上海", "to_city": "杭州", "date": "2026-10-14", "kind": "高铁", "seat_type": "二等座"}) 84ms
+  step2 OK  lock_seat({"train_no": "G7303", "date": "2026-10-14", "seat_type": "二等座", "passengers": ["张三"]}) 8ms
+  step3 OK  create_order({"lock_id": "LK519bbcba", "passenger_ids": ["张三"], "contact": "13800000001"}) 4ms
+  step4 OK  pay_order({"order_id": "OD1dd7f6790a", "pay_type": "alipay"}) 5ms
+[finish] stop  107ms

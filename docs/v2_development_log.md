@@ -80,3 +80,21 @@ DEF-04 提交：`1ed67d53ef6626ff217a7f74b2cce93e523632cb`。
 - 复验命令 `python scripts/run_v2_selftests.py --log docs/evidence/v2/def05_unit_retry.txt`；累计 13 个 V2 自测通过，契约 helper 通过。
 - B/C 影响：T25 走 search_policy/P11；“支付我刚才的订单”仍走 pay_order；模糊写请求会澄清。B 需额外验证 T10–T16/X07 与自然问法，不能把 Mock 规则等同真实模型语义能力。
 - 真实模型无 Key，下一阶段提供对应 Prompt 与分离证据的验证入口；正式 B 100 用例尚未运行。本缺陷提交 SHA 后续登记。
+
+DEF-05 提交：`3504fd18a2ff83ee7861b5a5396d52e7a7942c15`。
+
+## 2026-10-13 完整回归、真实接入准备与证据隔离
+
+- `target/agent.py` 只补充 SYSTEM_PROMPT 的六项规则，主循环/返回结构不变；真实模型据此接收交通切换、售罄、重复支付、政策与写操作要求，但模型执行效果仍待联网验证。
+- `tests/test_v2_provider.py` 新增 3 个模拟 SDK 自测：服务器 tool_call_id 与工具结果回传一致、工具 error 回传、MAX_STEPS 截断。这些 SDK 响应由测试桩产生，不是远端模型输出。
+- `scripts/validate_real_provider.py` 新增默认预检及显式 `--run` 的验证入口；8 个隔离场景覆盖用户要求的 7 类验证（结束/上限分开）。记录实际会话、完整工具结果、Trace、配置摘要、耗时与异常；任务是否完成留待按真实回复确认。当前无 Key，仅生成 preflight，不生成真实 Trace。
+- `scripts/smoke.py` 修改为新建目录且拒绝覆盖；默认保存在 `docs/evidence/v2/smoke-<时间>-<随机后缀>`，保留 V1 原始结果。命令、HTTP 8 工具与 Web 检查仍沿用现有实现。
+- 实际运行 `python scripts/run_v2_selftests.py --log docs/evidence/v2/full_unit.txt --pattern 'test*.py'`：28 个 A 自测通过（V1 12 + V2 缺陷 13 + SDK 桩 3）。没有 B 测试层，不运行 judge。
+- 实际运行 `python scripts/smoke.py --output-dir docs/evidence/v2/regression`：10 项命令/服务检查通过、32 条 Mock Trace，原库/Trace/契约哈希相同。unit 包含 Streamlit AppTest 对话、回放、恢复变异；Web health 是本地服务启动检查，不冒称人工录屏验收。
+- 实际运行 `python scripts/reproduce_v2_defects.py --output-dir docs/evidence/v2/v2_reproduction --label v2-after-fixes`：5/5 A 观察目标满足；业务日期冻结与 V1 一致。不能据此宣称 B 正式 100/100。
+- 实际运行 `python scripts/validate_real_provider.py --output-dir docs/evidence/v2/real_preflight`：无 API Key、没有 --run，状态“待验证”、真实 Trace 0 条。
+- `scripts/audit_v2_evidence.py` 检查源码与回归哈希、25 个受保护原始文件、V1 标签、8 个工具 Schema、10 个顶层/5 个 calls 字段与工具序列；`--output docs/evidence/v2/audit_first.json` 全部通过。
+- 六项变异在实际 Mock Trace 中再次确认：日期 +1、跳锁座导致创建失败、两次查询、8 步上限、政策误走查询、政策缺引用均仍可触发。A 的单元测试及审计同时检查恢复后的正常行为。
+- B/C 影响：新增隔离命令和证据；工具及返回字段兼容。B 仍需独立复跑 100 用例并检查五个 xfail，C 可先录制 Mock 演示；真实模型段落必须待有效 Key 实测。
+- 本模块 Git SHA 在下一阶段交接文档登记；源代码详解：Prompt 是发送给模型的行为约束，SDK 自测验证传输协议，最终模型是否遵守约束只能用远端真实响应确认。
+- 新增 `scripts/v2_api_example.py`，实际执行 `--output-dir docs/evidence/v2/api_example`，用原入口 `Agent().chat` 四轮验证订票→政策→支付→重复支付；序列与提示符合预期，完整返回 JSON 和 JSONL 已保存。该示例独立临时库，不会重置用户数据库。

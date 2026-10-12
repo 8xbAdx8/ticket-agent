@@ -1,0 +1,24 @@
+
+== DEMO-01 帮我查后天北京到上海的高铁
+   tools: ['query_tickets']  finish: stop
+   reply: 为您查到以下有余票的班次：G102 北京→上海 09:17 开，二等座 ¥553.0，余票 142；G103 北京→上海 12:34 开，二等座 ¥553.0，余票 20；G101 北京→上海 06:00 开，二等座 ¥553.0，余票 1
+
+== DEMO-02 我要买一张
+   tools: ['query_tickets', 'lock_seat', 'create_order']  finish: stop
+   reply: 订单已创建：OD25d90d5283，金额 ¥553.0，车次 G102 2026-10-15，请在锁座有效期内完成支付。
+
+== DEMO-03 支付
+   tools: ['pay_order']  finish: stop
+   reply: 支付成功，订单 OD25d90d5283 已完成，祝您旅途愉快。
+
+== DEMO-04 开车前两天退票扣多少手续费
+   tools: ['search_policy']  finish: stop
+   reply: 开车前 48 小时以上退票，收取票价 5% 手续费；开车前 24 至 48 小时退票，收取 10%；开车前不足 24 小时退票，收取 20%。已取报销凭证或已改签的车票不退。 开车前 48 小时以上可改签预售期内任意车次；开车前 48 小时
+
+== DEMO-05 查一下我的订单
+   tools: ['query_order']  finish: stop
+   reply: 您的订单：OD25d90d5283 G102 2026-10-15 ¥553.0 paid；OD6c50a7badf G701 2026-10-15 ¥862.0 pending；OD3cbfbb1304 G102 2026-10-15 ¥
+
+== DEMO-06 帮我抢后天北京到广州的票
+   tools: ['query_tickets', 'lock_seat', 'create_order']  finish: stop
+   reply: 订单已创建：ODe2467e06a1，金额 ¥862.0，车次 G701 2026-10-15，请在锁座有效期内完成支付。

@@ -1,0 +1,18 @@
+{
+  "provider": "mock",
+  "model": "glm-4-flash",
+  "endpoint": {
+    "scheme": "https",
+    "host": "open.bigmodel.cn",
+    "path": "/api/paas/v4"
+  },
+  "api_key_present": false,
+  "max_steps": 8,
+  "backend": "isolated fictional mock_core",
+  "vector_rag": false,
+  "real_model_tested": false,
+  "real_trace_count": 0,
+  "status": "待验证",
+  "scope": "A 的接入验证，不是 B 正式测试评分",
+  "reason": "未执行 --run"
+}
