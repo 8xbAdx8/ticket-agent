@@ -98,3 +98,20 @@ DEF-05 提交：`3504fd18a2ff83ee7861b5a5396d52e7a7942c15`。
 - B/C 影响：新增隔离命令和证据；工具及返回字段兼容。B 仍需独立复跑 100 用例并检查五个 xfail，C 可先录制 Mock 演示；真实模型段落必须待有效 Key 实测。
 - 本模块 Git SHA 在下一阶段交接文档登记；源代码详解：Prompt 是发送给模型的行为约束，SDK 自测验证传输协议，最终模型是否遵守约束只能用远端真实响应确认。
 - 新增 `scripts/v2_api_example.py`，实际执行 `--output-dir docs/evidence/v2/api_example`，用原入口 `Agent().chat` 四轮验证订票→政策→支付→重复支付；序列与提示符合预期，完整返回 JSON 和 JSONL 已保存。该示例独立临时库，不会重置用户数据库。
+
+回归/接入准备模块提交：`1804518c9a312ec0d4ab8cb000124e37ee551887`。
+
+## 2026-10-13 V2 团队交接文档
+
+- 新增 `scripts/generate_v2_handoff.py`，读取实际 Git、Schema、HTTP 返回、运行日志、V1/V2 复现、保护审计与真实预检，生成五份新的 V2 手册；不更新 V1 手册或原始 B 资料。
+- 实际生成命令：`python scripts/generate_v2_handoff.py --source-commit 1804518c9a312ec0d4ab8cb000124e37ee551887`；输出 A_V2开发完成报告、B_V2测试对接说明、C_V2验收演示说明、V1_V2缺陷修复对照、A_V2最终交付清单，全部保存到 docs/handoff/。
+- 首次人工核对发现工具返回说明把 lock_seat 的 expire_at 写成 expires_at；修正文档生成器并直接从实际 HTTP 证据补充所有返回字段，生成到新临时目录后仅更新本轮五个 V2 文档。未改源码或测试结果。
+- README 新增 V2 导航和状态，旧交接索引标为 V1 历史；新增 docs/v2_development_summary.md 给队长快速查看。
+- B/C 影响：有明确环境隔离、Python/JSON 示例、五缺陷/六变异复现、xfail 提醒与约 8 分钟 Mock 分镜；没有正式 B 成绩或虚构 C 验收结论。
+- 判定：有条件交接。真实 API、B 正式 V2 回归与 C 人工验收未完成；DEF-03 查询建议口径仍需 B 确认。
+- 最终交接 SHA 以检查后新建的 handoff-a-v2-20261013 标签解析，原 handoff-a-20261012 保持不动；本条记录与五份文档共同进入交接提交，不声称文档可包含自身的最终 SHA。
+- 新增并实际执行 `scripts/check_v2_handoff.py --source-commit 1804518c9a312ec0d4ab8cb000124e37ee551887 --output docs/evidence/v2/handoff_consistency_final.json`：五文档可从证据再生成且内容相同、Python 示例语法有效、内嵌 JSON 与实际 API 示例完全相同、无本机敏感路径；返回 passed。旧草稿一致性记录也保留。
+- PowerShell 原生 Parser 检查文档中 7 个 PowerShell 代码块无语法错误，结果保存在 powershell_examples.json；仅语法检查，不冒称重新部署或调用远端 API。
+- 额外实际执行真实入口的无 Key 保护分支：`validate_real_provider.py --output-dir docs/evidence/v2/real_missing_key_guard --run`，立即返回“没有 AGENT_API_KEY/待验证”，真实调用与 Trace 仍为 0；没有用占位 Key 请求远端。
+- `audit_v2_evidence.py --output docs/evidence/v2/audit_final.json` 再次通过原文件/V1 标签/源码/契约/六变异一致性；git diff --check 通过。后续仅修改交接材料，无新运行核心修改，不重复扩大功能测试。
+- 发布范围仅独立 V2 分支与新的 V2 交付标签；远端原 feat/a-ticket-handoff 在发布前为 30b21da57f432677d8e12cd76e24a8e0895c35f3，不向其推送或合并。最终发布成败以真实 Git 输出和交接回复为准。

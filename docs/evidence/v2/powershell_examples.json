@@ -1,0 +1,35 @@
+{
+  "status": "passed",
+  "blocks": 7,
+  "checks": [
+    {
+      "file": "A_V2开发完成报告.md",
+      "syntax_valid": true
+    },
+    {
+      "file": "B_V2测试对接说明.md",
+      "syntax_valid": true
+    },
+    {
+      "file": "B_V2测试对接说明.md",
+      "syntax_valid": true
+    },
+    {
+      "file": "B_V2测试对接说明.md",
+      "syntax_valid": true
+    },
+    {
+      "file": "C_V2验收演示说明.md",
+      "syntax_valid": true
+    },
+    {
+      "file": "C_V2验收演示说明.md",
+      "syntax_valid": true
+    },
+    {
+      "file": "C_V2验收演示说明.md",
+      "syntax_valid": true
+    }
+  ],
+  "scope": "仅语法检查；不执行部署/API调用"
+}

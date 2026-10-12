@@ -1,0 +1,38 @@
+{
+  "source_commit": "1804518c9a312ec0d4ab8cb000124e37ee551887",
+  "reports": [
+    {
+      "file": "docs/handoff/A_V2开发完成报告.md",
+      "reproducible": true,
+      "python_blocks_syntax_valid": 0,
+      "sha256": "8ab631e532cacb295807a4e5f6e0b232876117efc9bde80a7334f0ed4d9ecce2"
+    },
+    {
+      "file": "docs/handoff/B_V2测试对接说明.md",
+      "reproducible": true,
+      "python_blocks_syntax_valid": 3,
+      "sha256": "c2f695fa2ea38745bc138a92799d717374fe2a0535947f6f347fd2182f241c06"
+    },
+    {
+      "file": "docs/handoff/C_V2验收演示说明.md",
+      "reproducible": true,
+      "python_blocks_syntax_valid": 0,
+      "sha256": "ae51dcc16f5eaaac546511b86cf9d3ce51132db2d6a0d8d675889af809275602"
+    },
+    {
+      "file": "docs/handoff/V1_V2缺陷修复对照.md",
+      "reproducible": true,
+      "python_blocks_syntax_valid": 0,
+      "sha256": "380c73bebabe61d6e210c8c63bf2dc2f31acf8e07fdd5d230a88034757266bee"
+    },
+    {
+      "file": "docs/handoff/A_V2最终交付清单.md",
+      "reproducible": true,
+      "python_blocks_syntax_valid": 0,
+      "sha256": "5d3e47472c1ca45278d340015a2bb5c016d1c3e667c9c475781b3805cde537f4"
+    }
+  ],
+  "actual_json_matches_api_example": true,
+  "sensitive_local_paths_found": false,
+  "scope": "文档一致性检查，不是功能测试或 B 评价"
+}
