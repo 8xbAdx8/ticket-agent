@@ -273,12 +273,21 @@ class MockProvider:
             cite = "" if self.mutations.get("no_citation") else "（依据 " + ", ".join(h["doc_id"] for h in hits[:2]) + "）"
             return f"{body}{cite}"
         if kind == "query_tickets":
-            trains = r.get("trains", [])[:3]
+            trains = r.get("trains", [])
             if not trains:
-                return f"抱歉，{r.get('date','')} 没有查到符合条件的车次。"
+                return "没有符合条件的车次或航班；请确认路线、日期和席别，或换席别查询。空结果不能用于判断库存是否耗尽。"
+            available = [t for t in trains if t.get("seats_left", 0) > 0]
+            sold_out = [t for t in trains if t.get("seats_left", 0) <= 0]
+            if not available:
+                seat = trains[0]["seat_type"]
+                mode = trains[0]["kind"]
+                alternatives = [s for s in KIND_SEATS[mode] if s != seat]
+                suggestion = f"也可查询{'、'.join(alternatives)}的余票；其他席别尚未查询，不能保证有票。" if alternatives else ""
+                return f"查询到符合条件的班次，但{seat}已售罄（余票 0，不可售），可以考虑候补。{suggestion}"
             lines = [f"{t['train_no']} {t['from_city']}→{t['to_city']} {t['depart']} 开，"
-                     f"{t['seat_type']} ¥{t['price']}，余票 {t['seats_left']}" for t in trains]
-            return "为您查到以下车次：" + "；".join(lines) + "。"
+                     f"{t['seat_type']} ¥{t['price']}，余票 {t['seats_left']}" for t in available[:3]]
+            note = f"另有 {len(sold_out)} 个返回班次当前余票 0（不可售）。" if sold_out else ""
+            return "为您查到以下有余票的班次：" + "；".join(lines) + "。" + note
         if kind == "no_seat":
             return "该车次当前无票，我已为您开启余票监控（候补）。" if r.get("task_id") else "该车次当前无票。"
         if kind == "create_order":

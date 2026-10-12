@@ -82,6 +82,27 @@ class V2DefectTests(unittest.TestCase):
         self.assertEqual((args["kind"],args["seat_type"]), ("机票","经济舱"))
         self.assertEqual(self.query_args(self.chat("不要机票，还是高铁"))["kind"], "高铁")
 
+    def test_def03_sold_out_is_explicit_without_extra_tool_calls(self):
+        result = self.chat("帮我查明天北京到上海的高铁二等座")
+        self.assertEqual(result["tool_sequence"], ["query_tickets"])
+        self.assertIn("二等座已售罄", result["reply"])
+        self.assertIn("一等座", result["reply"])
+        self.assertIn("尚未查询", result["reply"])
+        self.assertNotIn("为您查到", result["reply"])
+
+    def test_def03_available_and_no_match_are_distinct(self):
+        self.assertIn("有余票", self.chat("查明天上海到杭州的高铁")["reply"])
+        empty = self.chat("查明天上海到成都的高铁", sid="empty")
+        self.assertIn("没有符合条件", empty["reply"])
+        self.assertNotIn("已售罄", empty["reply"])
+
+    def test_def03_mixed_inventory_marks_unsellable_rows(self):
+        with closing(sqlite3.connect(config.DB_PATH)) as conn, conn:
+            conn.execute("UPDATE inventory SET seats_left=0 WHERE id=(SELECT id FROM inventory WHERE from_city='上海' AND to_city='杭州' AND date='2026-10-14' AND seat_type='二等座' LIMIT 1)")
+        reply = self.chat("查明天上海到杭州的高铁")["reply"]
+        self.assertIn("有余票", reply)
+        self.assertIn("余票 0（不可售）", reply)
+
 
 if __name__ == "__main__":
     unittest.main()
