@@ -1,0 +1,29 @@
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+test_errors_dates_and_sessions (test_agent.AgentTests.test_errors_dates_and_sessions) ... ok
+test_multiturn_and_trace_contract (test_agent.AgentTests.test_multiturn_and_trace_contract) ... ok
+test_six_injected_mutations (test_agent.AgentTests.test_six_injected_mutations) ... ok
+test_waitlist_and_flight (test_agent.AgentTests.test_waitlist_and_flight) ... ok
+test_authorization_and_passenger_match (test_core.CoreTests.test_authorization_and_passenger_match) ... ok
+test_order_idempotency_refund_and_inventory (test_core.CoreTests.test_order_idempotency_refund_and_inventory) ... ok
+test_pending_cancel_and_expiration (test_core.CoreTests.test_pending_cancel_and_expiration) ... ok
+test_schema_fault_and_waitlist (test_core.CoreTests.test_schema_fault_and_waitlist) ... ok
+test_ids_usage_and_malformed_json (test_provider.ProviderTests.test_ids_usage_and_malformed_json) ... ok
+test_missing_key (test_provider.ProviderTests.test_missing_key) ... ok
+test_all_controls_and_restore (test_web.WebTests.test_all_controls_and_restore) ... 2026-10-12 18:09:06.924 WARNING streamlit.runtime.scriptrunner_utils.script_run_context: Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+ok
+test_conversation_and_replay (test_web.WebTests.test_conversation_and_replay) ... 2026-10-12 18:09:07.990 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+ok
+
+----------------------------------------------------------------------
+Ran 12 tests in 2.400s
+
+OK

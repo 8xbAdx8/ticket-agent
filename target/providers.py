@@ -4,7 +4,7 @@
   MockProvider   —— 零依赖离线，按剧本返回 tool_call，第一天就能跑通全链路、录屏、验证测试脚本
   OpenAIProvider —— 真实模型（任何 OpenAI 兼容端点），拿到 key 后改 config 即可切换
 
-成员 A 拿到 key 后需要做的唯一一件事：设置环境变量 AGENT_PROVIDER=openai
+真实模式必须配置 provider、key、base URL 与端点支持的 model；各端点兼容性待实测。
 """
 import json
 import uuid
@@ -183,6 +183,9 @@ class MockProvider:
                     "to_city": "上海", "date": _parse_date(user_msg, mut)})])
             return _as_msg(None, [("search_policy", {"question": user_msg})])
 
+        if any(w in user_msg for w in ["他人", "上一个用户", "别人的"]):
+            return _as_msg("不能查询或泄露其他用户订单。", [])
+
         # 7) 查询订单
         if "订单" in user_msg and any(w in user_msg for w in ["查", "看", "我的", "有没有"]):
             phone_match = re.search(r"1\d{10}", user_msg)
@@ -197,9 +200,6 @@ class MockProvider:
             if not order_id:
                 return _as_msg("请提供自己的订单号，或先查询并创建订单。", [])
             return _as_msg(None, [("cancel_order" if is_policy_act else "pay_order", {"order_id": order_id})])
-        if any(w in user_msg for w in ["他人", "上一个用户", "别人的"]):
-            return _as_msg("不能查询或泄露其他用户订单。", [])
-
         # 8) 默认：查票（可注入"重复调用"与"日期偏移"缺陷）
         cities = sorted([c for c in CITIES if c in user_msg], key=user_msg.index)
         previous_query = next((m["tool_calls"][0]["arguments"] for m in reversed(messages[:index])
@@ -259,7 +259,7 @@ class MockProvider:
 
 
 class OpenAIProvider:
-    """真实模型：任何 OpenAI 兼容端点（智谱 GLM-Flash / DeepSeek / 通义 / 硅基流动）。"""
+    """OpenAI 风格 Chat Completions 适配器；第三方端点兼容性需分别实测。"""
 
     def __init__(self):
         if not config.API_KEY:

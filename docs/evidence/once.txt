@@ -1,0 +1,5 @@
+
+[reply] 为您查到以下车次：G7303 上海→杭州 12:34 开，二等座 ¥73.0，余票 51；G7302 上海→杭州 09:17 开，二等座 ¥73.0，余票 47；G7301 上海→杭州 06:00 开，二等座 ¥73.0，余票 35。
+[tools] ['query_tickets']
+  step1 OK  query_tickets({"from_city": "上海", "to_city": "杭州", "date": "2026-10-13", "kind": "高铁", "seat_type": "二等座"}) 0ms
+[finish] stop  1ms

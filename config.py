@@ -29,7 +29,7 @@ USE_HTTP_MOCK = os.getenv("AGENT_USE_HTTP", "0") == "1"
 MOCK_API_URL = os.getenv("AGENT_MOCK_URL", "http://127.0.0.1:8000")
 
 # ---- RAG ----
-# False: 关键词/BM25 兜底检索（零依赖，离线可用）
+# False: 中文字/英文词重叠打分（零依赖，离线可用；不是 BM25）
 # True : 本地向量检索（需 pip install sentence-transformers faiss-cpu）
 USE_VECTOR_RAG = os.getenv("AGENT_VECTOR_RAG", "0") == "1"
 EMBED_MODEL = "BAAI/bge-small-zh"

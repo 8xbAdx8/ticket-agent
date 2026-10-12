@@ -2,7 +2,7 @@
 """被测智能体主循环。
 
 对外只有一个入口：
-    Agent().chat(session_id, message) -> {"reply": ..., "trace": {...}, ...}
+    Agent().chat(session_id, message) -> 契约 JSON（顶层字段，不含嵌套 trace）
 成员 B 的断言、成员 C 的看板都只依赖这个返回值（接口契约见 docs/contract.md）。
 """
 import json

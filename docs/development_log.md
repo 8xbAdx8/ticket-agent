@@ -69,3 +69,18 @@ Agent 模块提交：`03b63c8ea5ab082b66a11f3762b2e76b733feed1`。
 - 输出 32 条 Mock trace，Python 示例用 label 显式区分正常与 6 种人为注入（label 在包装证据中，不改 Trace 契约）。
 - B/C 影响：复制环境变量可隔离运行；示例可以直接复用；这不是 B 的正式方案和评分。
 - 待完成：正式交接报告及人工屏幕验收；源代码 SHA 在后续记录登记。
+
+CLI 模块提交：`78ea322a8f8addc75ef6c22c5d855d726dea11bb`。
+
+## 2026-10-12 Web 与全入口验证
+
+- 修改 `web/app.py`，新增 `tests/test_web.py`、`requirements-lock.txt`、`docs/evidence/*`；顺带澄清 `config.py`/`target/agent.py` 注释及 `target/providers.py` 他人订单拒绝分支（不改契约）。
+- Web 每个浏览器独立 sid/Agent/变异字典，6 checkbox + 一键恢复，错误状态提示、完整 JSON、历史记录选择回放。适配已安装 Streamlit 的 width 参数。
+- 实际命令 `.venv/Scripts/python.exe scripts/smoke.py`：12 个成员 A 自测通过，10 条运行/服务检查通过，32 条 Mock trace 保存。
+- Web 首次测试路径错误（AppTest 相对调用文件解析）；改绝对项目内路径后通过。AppTest 实际发送购票、支付、退票、RAG、死循环，检查所有开关及恢复、JSON 回放；本地 Streamlit 服务 `/_stcore/health` 返回 ok。
+- 真正启动 uvicorn，本地 HTTP 调用全部 8 工具均成功；`AGENT_USE_HTTP=1` 的 Agent 查/锁/下单/支付链路通过。
+- 版本：Python 3.12.14；依赖实际版本见 `docs/evidence/verification.json` 与完整冻结文件，不冒充原计划版本。
+- 契约/历史 Trace/原数据库 SHA256 与首次检查一致。Web 和 HTTP 临时服务验证后已终止。
+- B/C 影响：Web 控件只影响对应浏览器会话；多个客户端仍共享固定模拟身份和配置数据库，不能作为生产权限系统。
+- 限制：无真实模型 Key、无向量模型验证、未由人对浏览器画面/录屏验收；这些必须保持待验证。
+- SHA：此模块提交后登记。
