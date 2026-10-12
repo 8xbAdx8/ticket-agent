@@ -85,6 +85,22 @@ def _seat_for_kind(kind, explicit, inherited):
     return inherited if inherited in allowed else allowed[0]
 
 
+def _transport_kind(text, inherited):
+    """显式选择优先；省略方式则继承；多选/目标不明则返回 None 要求澄清。"""
+    clean, negated = re.subn(r"(?:不要|别|不坐|不选|不查|不考虑)\s*(?:高铁|动车|火车|车票|机票|飞机|航班)", "", text)
+    rail = any(w in clean for w in ("高铁", "动车", "火车", "列车", "车票"))
+    flight = any(w in clean for w in ("机票", "飞机", "航班"))
+    if rail and flight:
+        return None
+    if rail:
+        return "高铁"
+    if flight:
+        return "机票"
+    if negated or any(w in clean for w in ("换个交通方式", "换一种交通方式", "换种交通方式", "换个方式", "换一种出行方式", "另一种交通方式", "换个吧")):
+        return None
+    return inherited if inherited in KIND_SEATS else "高铁"
+
+
 def _called(messages):
     """按调用顺序返回历史里已经调用过的工具名。"""
     return [m.get("name") for m in messages if m.get("role") == "tool" and m.get("name")]
@@ -215,11 +231,25 @@ class MockProvider:
                                if m.get("tool_calls") and m["tool_calls"][0]["name"] == "query_tickets"), {})
         if len(cities) < 2 and not previous_query:
             return _as_msg("请说明出发地、目的地和日期，例如：帮我查明天上海到杭州的高铁。", [])
-        args = dict(previous_query) if len(cities) < 2 else {"from_city": cities[0], "to_city": cities[1]}
-        has_date = re.search(r"今天|明天|后天|周|星期|\d+天后|\d+月|\d{4}-", user_msg)
+        args = dict(previous_query)
+        if len(cities) > 2:
+            return _as_msg("请确认唯一的出发地和目的地。", [])
+        if len(cities) == 2:
+            args.update(from_city=cities[0], to_city=cities[1])
+        elif len(cities) == 1:
+            city = cities[0]
+            if re.search(r"(?:从|出发地.*|起点.*)" + re.escape(city), user_msg) or city + "出发" in user_msg:
+                args["from_city"] = city
+            elif re.search(r"(?:到|去|目的地.*|终点.*)" + re.escape(city), user_msg):
+                args["to_city"] = city
+            else:
+                return _as_msg(f"请确认{city}是出发地还是目的地。", [])
+        has_date = re.search(r"今天|明天|后天|周|星期|\d+\s*天后|\d+月|\d{4}-", user_msg)
         if has_date or "date" not in args:
             args["date"] = _parse_date(user_msg, mut)
-        kind = "机票" if any(w in user_msg for w in ["机票", "航班", "飞机"]) else args.get("kind", "高铁")
+        kind = _transport_kind(user_msg, args.get("kind"))
+        if kind is None:
+            return _as_msg("请明确选择高铁还是机票，我会保留已知路线和日期。", [])
         args["kind"] = kind
         seat = _seat_for_kind(kind, _extract(user_msg, SEATS), args.get("seat_type"))
         if seat is None:

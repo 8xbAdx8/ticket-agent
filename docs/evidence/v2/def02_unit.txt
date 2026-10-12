@@ -1,0 +1,15 @@
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+test_def01_explicit_seat_and_tool_validation (test_v2_defects.V2DefectTests.test_def01_explicit_seat_and_tool_validation) ... ok
+test_def01_reset_seat_on_flight_switch (test_v2_defects.V2DefectTests.test_def01_reset_seat_on_flight_switch) ... ok
+test_def02_ambiguous_mode_and_city_request_clarification (test_v2_defects.V2DefectTests.test_def02_ambiguous_mode_and_city_request_clarification) ... ok
+test_def02_omission_inherits_mode_seat_date_and_route (test_v2_defects.V2DefectTests.test_def02_omission_inherits_mode_seat_date_and_route) ... ok
+test_def02_switch_back_to_rail (test_v2_defects.V2DefectTests.test_def02_switch_back_to_rail) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.114s
+
+OK

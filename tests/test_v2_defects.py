@@ -56,6 +56,32 @@ class V2DefectTests(unittest.TestCase):
         args = dict(from_city="北京",to_city="成都",date="2026-10-14",kind="机票",seat_type="二等座")
         self.assertFalse(dispatch("query_tickets",args)[1])
 
+    def test_def02_switch_back_to_rail(self):
+        self.chat("帮我查明天上海到杭州的高铁")
+        self.chat("那机票呢")
+        args = self.query_args(self.chat("还是高铁吧"))
+        self.assertEqual((args["kind"],args["seat_type"]), ("高铁","二等座"))
+        self.assertEqual((args["from_city"],args["to_city"],args["date"]), ("上海","杭州","2026-10-14"))
+
+    def test_def02_omission_inherits_mode_seat_date_and_route(self):
+        self.chat("查明天北京到成都的机票公务舱")
+        next_day = self.query_args(self.chat("后天呢"))
+        self.assertEqual((next_day["kind"],next_day["seat_type"],next_day["date"]), ("机票","公务舱","2026-10-15"))
+        route = self.query_args(self.chat("到广州呢"))
+        self.assertEqual((route["from_city"],route["to_city"],route["kind"],route["seat_type"]), ("北京","广州","机票","公务舱"))
+        origin = self.query_args(self.chat("出发地改成上海"))
+        self.assertEqual((origin["from_city"],origin["to_city"],origin["date"]), ("上海","广州","2026-10-15"))
+        new_route = self.query_args(self.chat("查杭州到西安"))
+        self.assertEqual((new_route["kind"],new_route["seat_type"],new_route["date"]), ("机票","公务舱","2026-10-15"))
+
+    def test_def02_ambiguous_mode_and_city_request_clarification(self):
+        self.chat("查明天上海到杭州的高铁")
+        for message in ("换个交通方式", "高铁还是机票呢", "不坐高铁了", "成都呢"):
+            self.assertEqual(self.chat(message)["tool_sequence"], [])
+        args = self.query_args(self.chat("不要高铁，查机票"))
+        self.assertEqual((args["kind"],args["seat_type"]), ("机票","经济舱"))
+        self.assertEqual(self.query_args(self.chat("不要机票，还是高铁"))["kind"], "高铁")
+
 
 if __name__ == "__main__":
     unittest.main()
