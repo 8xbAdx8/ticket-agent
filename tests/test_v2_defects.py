@@ -1,5 +1,6 @@
 """成员 A 的缺陷修复回归：不替代 B 的 100 用例/xfail/正式统计。"""
 import sqlite3
+import json
 import tempfile
 import unittest
 from contextlib import closing
@@ -102,6 +103,25 @@ class V2DefectTests(unittest.TestCase):
         reply = self.chat("查明天上海到杭州的高铁")["reply"]
         self.assertIn("有余票", reply)
         self.assertIn("余票 0（不可售）", reply)
+
+    def test_def04_duplicate_payment_explains_idempotency(self):
+        self.chat("帮我查明天上海到杭州的高铁")
+        self.chat("我要买一张")
+        with closing(sqlite3.connect(config.DB_PATH)) as conn:
+            inventory_before = conn.execute("SELECT SUM(seats_left) FROM inventory").fetchone()[0]
+        first = self.chat("支付")
+        duplicate = self.chat("支付")
+        self.assertIn("支付成功", first["reply"])
+        self.assertIn("订单已支付，本次没有重复扣款", duplicate["reply"])
+        self.assertNotIn("支付成功", duplicate["reply"])
+        self.assertEqual(duplicate["tool_sequence"], ["pay_order"])
+        call = duplicate["steps"][0]["calls"][0]
+        self.assertTrue(call["ok"])
+        self.assertTrue(json.loads(call["result_preview"])["duplicate_pay"])
+        with closing(sqlite3.connect(config.DB_PATH)) as conn:
+            self.assertEqual(conn.execute("SELECT SUM(seats_left) FROM inventory").fetchone()[0], inventory_before)
+            self.assertEqual(conn.execute("SELECT status FROM orders").fetchall(), [("paid",)])
+            self.assertEqual(conn.execute("SELECT COUNT(*) FROM orders").fetchone()[0], 1)
 
 
 if __name__ == "__main__":

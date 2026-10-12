@@ -294,6 +294,8 @@ class MockProvider:
             return (f"订单已创建：{r.get('order_id','')}，金额 ¥{r.get('amount','')}，"
                     f"车次 {r.get('train_no','')} {r.get('date','')}，请在锁座有效期内完成支付。")
         if kind == "pay_order":
+            if r.get("duplicate_pay"):
+                return f"订单已支付，本次没有重复扣款。订单 {r.get('order_id','')}。"
             return f"支付成功，订单 {r.get('order_id','')} 已完成，祝您旅途愉快。"
         if kind == "cancel_order":
             if r.get("status") == "cancelled":

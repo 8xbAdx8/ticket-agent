@@ -1,0 +1,23 @@
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+test_def01_explicit_seat_and_tool_validation (test_v2_defects.V2DefectTests.test_def01_explicit_seat_and_tool_validation) ... ok
+test_def01_reset_seat_on_flight_switch (test_v2_defects.V2DefectTests.test_def01_reset_seat_on_flight_switch) ... ok
+test_def02_ambiguous_mode_and_city_request_clarification (test_v2_defects.V2DefectTests.test_def02_ambiguous_mode_and_city_request_clarification) ... ok
+test_def02_omission_inherits_mode_seat_date_and_route (test_v2_defects.V2DefectTests.test_def02_omission_inherits_mode_seat_date_and_route) ... ok
+test_def02_switch_back_to_rail (test_v2_defects.V2DefectTests.test_def02_switch_back_to_rail) ... ok
+test_def03_available_and_no_match_are_distinct (test_v2_defects.V2DefectTests.test_def03_available_and_no_match_are_distinct) ... ok
+test_def03_mixed_inventory_marks_unsellable_rows (test_v2_defects.V2DefectTests.test_def03_mixed_inventory_marks_unsellable_rows) ... ok
+test_def03_sold_out_is_explicit_without_extra_tool_calls (test_v2_defects.V2DefectTests.test_def03_sold_out_is_explicit_without_extra_tool_calls) ... ok
+test_def04_duplicate_payment_explains_idempotency (test_v2_defects.V2DefectTests.test_def04_duplicate_payment_explains_idempotency) ... ok
+
+----------------------------------------------------------------------
+Ran 9 tests in 0.223s
+
+OK

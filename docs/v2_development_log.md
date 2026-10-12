@@ -56,3 +56,15 @@ DEF-02 提交：`7fe5502a7ed5c6b1a35ef46e486cba02641a1586`。
 - 实际复验 `python scripts/run_v2_selftests.py --log docs/evidence/v2/def03_unit_retry.txt` 累计 8 个 V2 自测通过。
 - B/C 影响：F14 回答现在提供“查询其他席别”的建议，不声称未经工具证实的余量；如果 B 希望主动验证其他席别库存，须再确认额外调用与 R5 规则口径。本轮没有修改 B 的断言。
 - 待处理：DEF-04/05、完整回归、真实模式准备；本缺陷提交 SHA 后续登记。
+
+DEF-03 提交：`5a57f16b7568c0467b4328c61c9c19f722141d1a`。
+
+## 2026-10-13 DEF-04 重复支付的用户提示
+
+- 原始现象：F13 第四轮支付返回 duplicate_pay=true，却仍回复“支付成功”；V1 Trace 在 `v1_reproduction/DEF-04/`。
+- 原因：Provider 汇总没读取已经存在的后端幂等标记。
+- 修改 `target/providers.py` 的 pay_order 汇总，重复支付明确回复“订单已支付，本次没有重复扣款。”；不改后端、不增契约字段、不改支付幂等状态。
+- 新增 A 自测：四轮复现，检查第二次调用仍成功/duplicate_pay=true，明确提示、仅一个订单、paid 状态、库存总量未再次扣减。
+- 实际命令 `python scripts/run_v2_selftests.py --log docs/evidence/v2/def04_unit.txt`，累计 9 个 V2 自测通过，返回字段仍与原契约相同。
+- B/C 影响：可通过既有 result_preview 中短结果的 duplicate_pay 与回复观察；不得将本轮模拟扣款描述成真实支付验证。B 需重跑 F13 及正常支付/退款用例。
+- 待处理 DEF-05、全回归/真实模式准备；SHA 后续登记。
