@@ -202,6 +202,10 @@ def validate(name, args):
         parsed = date.fromisoformat(args["date"])
         if parsed.isoformat() != args["date"]:
             raise ValueError("date 必须为 YYYY-MM-DD")
+    if name == "query_tickets" and args.get("kind") and args.get("seat_type"):
+        allowed = {"高铁": ("二等座", "一等座", "商务座"), "机票": ("经济舱", "公务舱")}
+        if args["seat_type"] not in allowed[args["kind"]]:
+            raise ValueError("seat_type 与 kind 不兼容")
 
 
 for _tool in TOOLS:

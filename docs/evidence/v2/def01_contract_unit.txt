@@ -1,0 +1,9 @@
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+test_def01_explicit_seat_and_tool_validation (test_v2_defects.V2DefectTests.test_def01_explicit_seat_and_tool_validation) ... ok
+test_def01_reset_seat_on_flight_switch (test_v2_defects.V2DefectTests.test_def01_reset_seat_on_flight_switch) ... ok
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.079s
+
+OK

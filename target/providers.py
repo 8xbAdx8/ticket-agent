@@ -19,6 +19,7 @@ import config
 CITIES = ["北京", "上海", "广州", "深圳", "杭州", "南京", "武汉", "成都", "西安", "长沙", "厦门",
           "重庆", "福州", "合肥", "天津", "济南", "郑州", "南昌", "南宁", "贵阳", "昆明"]
 SEATS = ["二等座", "一等座", "商务座", "经济舱", "公务舱"]
+KIND_SEATS = {"高铁": ("二等座", "一等座", "商务座"), "机票": ("经济舱", "公务舱")}
 POLICY_WORDS = ["退票", "改签", "手续费", "儿童票", "行李", "报销", "学生票", "候补", "实名", "规则", "政策", "怎么算"]
 ACTION_WORDS = ["抢", "买", "订", "下单", "购", "来一张", "要一张"]
 
@@ -74,6 +75,14 @@ def _extract(text, words):
         if w in text:
             return w
     return None
+
+
+def _seat_for_kind(kind, explicit, inherited):
+    """显式席别不兼容时澄清；隐式旧席别不兼容时重置默认值。"""
+    allowed = KIND_SEATS[kind]
+    if explicit:
+        return explicit if explicit in allowed else None
+    return inherited if inherited in allowed else allowed[0]
 
 
 def _called(messages):
@@ -212,7 +221,10 @@ class MockProvider:
             args["date"] = _parse_date(user_msg, mut)
         kind = "机票" if any(w in user_msg for w in ["机票", "航班", "飞机"]) else args.get("kind", "高铁")
         args["kind"] = kind
-        args["seat_type"] = _extract(user_msg, SEATS) or args.get("seat_type", "经济舱" if kind == "机票" else "二等座")
+        seat = _seat_for_kind(kind, _extract(user_msg, SEATS), args.get("seat_type"))
+        if seat is None:
+            return _as_msg(f"{kind}可选{'、'.join(KIND_SEATS[kind])}，请确认席别。", [])
+        args["seat_type"] = seat
         calls = [("query_tickets", args)]
         if mut.get("repeat_call"):
             calls.append(("query_tickets", args))
