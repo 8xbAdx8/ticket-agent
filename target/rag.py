@@ -55,7 +55,7 @@ def keyword_search(query, top_k=None):
             scored.append((score, ch))
     scored.sort(key=lambda x: -x[0])
     top_k = top_k or config.TOP_K
-    return [{"doc_id": c["doc_id"], "title": c["title"], "content": c["content"],
+    return [{"doc_id": c["doc_id"], "source": "data/policies.md#" + c["doc_id"], "title": c["title"], "content": c["content"],
              "score": round(s, 4)} for s, c in scored[:top_k]]
 
 
@@ -70,14 +70,17 @@ def vector_search(query, top_k=None):
     index = faiss.IndexFlatIP(emb.shape[1])
     index.add(np.array(emb, dtype="float32"))
     q = model.encode([query], normalize_embeddings=True)
-    top_k = top_k or config.TOP_K
+    top_k = min(top_k or config.TOP_K, len(chunks))
     scores, idx = index.search(np.array(q, dtype="float32"), top_k)
-    return [{"doc_id": chunks[i]["doc_id"], "title": chunks[i]["title"],
+    return [{"doc_id": chunks[i]["doc_id"], "source": "data/policies.md#" + chunks[i]["doc_id"], "title": chunks[i]["title"],
              "content": chunks[i]["content"], "score": float(scores[0][j])}
             for j, i in enumerate(idx[0]) if i >= 0]
 
 
 def search_policy(question):
     """统一入口：返回带 doc_id 的政策片段，回答时必须引用 doc_id。"""
-    hits = vector_search(question) if config.USE_VECTOR_RAG else keyword_search(question)
+    try:
+        hits = vector_search(question) if config.USE_VECTOR_RAG else keyword_search(question)
+    except Exception:
+        hits = keyword_search(question)  # 可选向量依赖不可用时保留离线能力
     return {"question": question, "hits": hits, "count": len(hits)}

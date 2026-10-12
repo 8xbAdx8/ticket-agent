@@ -42,3 +42,18 @@
 - B/C 影响：工具名称与契约字段不变；错误调用 `ok=false`，新库状态含 `cancelled/expired`，按既有字段返回；候补只监控已有无票班次，不执行后台兑现。
 - 待完成：Agent 多轮修复、真实 Provider 错误处理、Web 全开关与入口验证。
 - SHA：此模块提交后登记。
+
+工具模块提交：`144ab3f6c576077154dda08bbf0e866e00491679`。
+
+## 2026-10-12 Agent、Provider、RAG 与 Trace
+
+- 修改：`target/agent.py`、`target/providers.py`、`target/trace.py`、`target/rag.py`；新增 `tests/test_agent.py`、`tests/test_provider.py`。
+- Mock 只把最新 user 之后的工具当本轮执行；之前的查询参数/订单作为上下文；ISO 日期和下周语义按北京时间解析，机票默认经济舱。6 开关均提供实际可触发行为，Web 可用独立 provider 字典隔离。
+- 主循环对格式错误/模型异常返回安全提示；仍只用契约的 stop/max_steps_exceeded。使用 perf_counter 真计时，完成时冻结，返回和落盘一致；tokens 累加模型 usage，Mock 为 0。
+- OpenAI 风格适配器保留服务器 call id，坏 JSON 送 dispatch 返回失败供模型纠正，禁用自动重试，30 秒超时。官方参考：https://developers.openai.com/api/docs/guides/function-calling 。无 API Key，未联网测试真实模型。
+- RAG 返回 doc_id 和项目内 source，可选向量不可用时回退关键词检索；向量实际检索待验证。
+- 命令：`.venv/Scripts/python.exe -m unittest discover -s tests -v`；首次复合“订票并支付”被支付分支抢先处理，修复后 10 个实现自测通过。
+- 验证含多轮/会话隔离、退票库存、候补、机票购付、6 种变异、异常脱敏、契约 JSON 与保存一致、Provider ID/usage 适配。不是 B 的正式覆盖率或测试成绩。
+- B/C 影响：顶层/调用字段完全不变；模型失败也可能 stop，因此 stop 不等于业务成功；全局变异仅限串行 Python 测试，Web 独立字典。
+- 待完成：入口与 Web 验证、交接文档；真实模型/向量联网实测仍缺条件。
+- SHA：提交后登记于后续条目。

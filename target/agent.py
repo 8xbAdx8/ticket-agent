@@ -6,6 +6,7 @@
 成员 B 的断言、成员 C 的看板都只依赖这个返回值（接口契约见 docs/contract.md）。
 """
 import json
+from threading import RLock
 
 import sys
 from pathlib import Path
@@ -33,20 +34,44 @@ class Agent:
         self.provider = provider or get_provider()
         self.system_prompt = system_prompt
         self.sessions = {}
+        self._mutex = RLock()
 
     def _messages(self, session_id):
         if session_id not in self.sessions:
-            self.sessions[session_id] = [{"role": "system", "content": self.system_prompt}]
+            self.sessions[session_id] = [{"role": "system", "content": self.system_prompt +
+                f"\n当前北京时间日期 {config.today().isoformat()}；数据仅为虚构模拟，当前身份为本人。"}]
         return self.sessions[session_id]
 
     def chat(self, session_id, message, save_trace=True):
+        if not isinstance(session_id, str) or not session_id.strip() or not isinstance(message, str) or not message.strip():
+            raise ValueError("session_id 与 message 必须是非空字符串")
+        with self._mutex:
+            return self._chat(session_id, message, save_trace)
+
+    def _chat(self, session_id, message, save_trace):
         messages = self._messages(session_id)
         trace = Trace(session_id, message)
+        trace.provider = getattr(self.provider, "name", config.PROVIDER)
         messages.append({"role": "user", "content": message})
 
         reply = "抱歉，我没能完成这次操作。"
         for step in range(config.MAX_STEPS):
-            msg = self.provider.chat(messages, tools.TOOLS)
+            try:
+                msg = self.provider.chat(messages, tools.TOOLS)
+                if not isinstance(msg, dict) or msg.get("role") != "assistant":
+                    raise ValueError("模型响应格式不正确")
+                calls = msg.get("tool_calls") or []
+                if not isinstance(calls, list) or any(not isinstance(c, dict) or
+                    not all(k in c for k in ("name", "arguments", "id")) for c in calls):
+                    raise ValueError("工具调用格式不正确")
+            except Exception as exc:
+                reply = f"模型调用未完成 ({type(exc).__name__})，请检查配置或重试。"
+                messages.append({"role": "assistant", "content": reply, "tool_calls": []})
+                trace.finish(reply, "stop")
+                break
+            usage = getattr(self.provider, "last_usage", {})
+            for key in trace.tokens:
+                trace.tokens[key] += usage.get(key, 0)
             messages.append(msg)
 
             if not msg.get("tool_calls"):
@@ -65,11 +90,13 @@ class Agent:
                     "content": json.dumps(result, ensure_ascii=False),
                 })
         else:
-            trace.abort(reply, "max_steps_exceeded")                # 命中 R6：疑似死循环
+            reply = "达到最大执行步数，操作尚未完成；请查看工具轨迹。"
+            messages.append({"role": "assistant", "content": reply, "tool_calls": []})
+            trace.abort(reply, "max_steps_exceeded")
 
         out = trace.to_dict()
         if save_trace:
-            trace.save()
+            trace.save(record=out)
         return out
 
     def reset(self, session_id=None):
@@ -81,7 +108,10 @@ class Agent:
 
 def chat(session_id, message):
     """模块级便捷入口，成员 B/C 直接调这个即可。"""
+    global _DEFAULT
+    if _DEFAULT is None:
+        _DEFAULT = Agent()
     return _DEFAULT.chat(session_id, message)
 
 
-_DEFAULT = Agent()
+_DEFAULT = None

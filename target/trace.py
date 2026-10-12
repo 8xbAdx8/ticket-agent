@@ -22,7 +22,8 @@ class Trace:
         self.steps = []
         self.reply = None
         self.finish_reason = None
-        self.started_at = time.time()
+        self.started_at = time.perf_counter()
+        self.total_latency_ms = None
         self.tokens = {"prompt": 0, "completion": 0}
         self.provider = config.PROVIDER
         self.model = config.MODEL_NAME
@@ -45,6 +46,7 @@ class Trace:
     def finish(self, reply, reason="stop"):
         self.reply = reply
         self.finish_reason = reason
+        self.total_latency_ms = int((time.perf_counter() - self.started_at) * 1000)
         return self
 
     def abort(self, reply, reason="max_steps_exceeded"):
@@ -65,13 +67,14 @@ class Trace:
             "reply": self.reply,
             "finish_reason": self.finish_reason,
             "tokens": self.tokens,
-            "total_latency_ms": int((time.time() - self.started_at) * 1000),
+            "total_latency_ms": self.total_latency_ms if self.total_latency_ms is not None else int((time.perf_counter() - self.started_at) * 1000),
         }
 
-    def save(self, path=None):
+    def save(self, path=None, record=None):
         path = Path(path or (config.TRACE_DIR / "traces.jsonl"))
+        path.parent.mkdir(parents=True, exist_ok=True)
         with path.open("a", encoding="utf-8") as f:
-            f.write(json.dumps(self.to_dict(), ensure_ascii=False) + "\n")
+            f.write(json.dumps(record if record is not None else self.to_dict(), ensure_ascii=False) + "\n")
         return path
 
 
