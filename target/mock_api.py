@@ -14,7 +14,7 @@ from fastapi import FastAPI
 from pydantic import BaseModel
 from typing import Any, Dict
 
-from target import mock_core, rag
+from target import mock_core, tools
 
 app = FastAPI(title="模拟出行票务服务（虚构数据）")
 
@@ -30,17 +30,15 @@ def health():
 
 @app.post("/tool/{name}")
 def call_tool(name: str, body: ToolCall):
-    if name == "search_policy":
-        return rag.search_policy(body.args.get("question", ""))
-    fn = getattr(mock_core, name, None)
-    if fn is None:
-        return {"error": f"未知工具 {name}"}
     try:
-        return fn(**body.args)
+        tools.validate(name, body.args)
+        return tools._call_local(name, body.args)
     except Exception as e:
-        return {"error": f"{type(e).__name__}: {e}"}
+        return {"error": str(e) if isinstance(e, ValueError) else f"工具执行失败 ({type(e).__name__})"}
 
 
 @app.get("/inventory")
 def inventory(from_city: str = None, to_city: str = None, date: str = None):
-    return mock_core.query_tickets(from_city, to_city, date)
+    if not all((from_city, to_city, date)):
+        return {"error": "from_city,to_city,date 必填"}
+    return call_tool("query_tickets", ToolCall(args={"from_city": from_city, "to_city": to_city, "date": date}))

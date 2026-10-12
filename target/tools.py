@@ -7,6 +7,7 @@
 import json
 import time
 import urllib.request
+from datetime import date
 
 import sys
 from pathlib import Path
@@ -156,7 +157,7 @@ TOOL_NAMES = [t["function"]["name"] for t in TOOLS]
 def _call_http(name, args):
     req = urllib.request.Request(
         f"{config.MOCK_API_URL}/tool/{name}",
-        data=json.dumps(args).encode("utf-8"),
+        data=json.dumps({"args": args}).encode("utf-8"),
         headers={"Content-Type": "application/json"},
     )
     with urllib.request.urlopen(req, timeout=10) as r:
@@ -172,13 +173,50 @@ def _call_local(name, args):
     return fn(**args)
 
 
+def validate(name, args):
+    """零依赖 schema 校验，HTTP 与本地共用同一入口。"""
+    if name not in TOOL_NAMES:
+        raise ValueError("未知工具")
+    schema = next(t["function"]["parameters"] for t in TOOLS if t["function"]["name"] == name)
+    if not isinstance(args, dict):
+        raise ValueError("参数必须是 JSON object")
+    if set(args) - set(schema["properties"]):
+        raise ValueError("存在未定义参数")
+    for key in schema.get("required", []):
+        if key not in args:
+            raise ValueError(f"缺少必填参数 {key}")
+    for key, value in args.items():
+        prop = schema["properties"][key]
+        kind = prop["type"]
+        if kind == "string" and (not isinstance(value, str) or not value.strip()):
+            raise ValueError(f"{key} 必须是非空字符串")
+        if kind == "integer" and (type(value) is not int or value <= 0 or value > 1440):
+            raise ValueError(f"{key} 必须是 1..1440 的整数")
+        if kind == "array" and (not isinstance(value, list) or not value or
+                                any(not isinstance(x, str) or not x.strip() for x in value) or
+                                len(set(value)) != len(value)):
+            raise ValueError(f"{key} 必须是非空、不重复的字符串数组")
+        if "enum" in prop and value not in prop["enum"]:
+            raise ValueError(f"{key} 不在允许值内")
+    if "date" in args:
+        parsed = date.fromisoformat(args["date"])
+        if parsed.isoformat() != args["date"]:
+            raise ValueError("date 必须为 YYYY-MM-DD")
+
+
+for _tool in TOOLS:
+    _tool["function"]["parameters"]["additionalProperties"] = False
+
+
 def dispatch(name, args):
     """真正执行工具的地方。返回 (result, ok, latency_ms)。"""
-    t0 = time.time()
+    t0 = time.perf_counter()
     try:
+        validate(name, args)
         result = _call_http(name, args) if config.USE_HTTP_MOCK else _call_local(name, args)
         ok = not (isinstance(result, dict) and "error" in result)
-    except Exception as e:                       # 超时、注入故障、参数不合法
-        result = {"error": f"{type(e).__name__}: {e}"}
+    except Exception as e:
+        # 参数错误可以说明；其他异常不回显外部响应、密钥或本机路径。
+        result = {"error": str(e) if isinstance(e, ValueError) else f"工具执行失败 ({type(e).__name__})"}
         ok = False
-    return result, ok, int((time.time() - t0) * 1000)
+    return result, ok, int((time.perf_counter() - t0) * 1000)

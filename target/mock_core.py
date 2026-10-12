@@ -11,6 +11,7 @@ import sqlite3
 import uuid
 import json
 from datetime import datetime, timedelta
+from contextlib import contextmanager
 
 import sys
 from pathlib import Path
@@ -44,12 +45,47 @@ def _check_fault(tool_name):
         raise ToolFault(tool_name, "error")
 
 
+@contextmanager
 def _conn():
     if not config.DB_PATH.exists():
         build_db()
     c = sqlite3.connect(config.DB_PATH)
     c.row_factory = sqlite3.Row
-    return c
+    try:
+        c.execute("BEGIN IMMEDIATE")
+        _release_expired(c)
+        yield c
+        c.commit()
+    except Exception:
+        c.rollback()
+        raise
+    finally:
+        c.close()
+
+
+def _release_expired(c):
+    """在业务访问时回收过期占座；无后台任务，已支付的库存不释放。"""
+    for lock in c.execute("SELECT * FROM locks WHERE used < 2 AND expire_at <= ?",
+                          (config.now().isoformat(),)).fetchall():
+        order = c.execute("SELECT status FROM orders WHERE lock_id=?", (lock["lock_id"],)).fetchone()
+        if order and order["status"] == "paid":
+            continue
+        if order and order["status"] != "pending":
+            c.execute("UPDATE locks SET used=2 WHERE lock_id=?", (lock["lock_id"],))
+            continue
+        _release(c, lock["train_no"], lock["date"], lock["seat_type"], lock["passengers"])
+        c.execute("UPDATE locks SET used=2 WHERE lock_id=?", (lock["lock_id"],))
+        c.execute("UPDATE orders SET status='expired' WHERE lock_id=? AND status='pending'", (lock["lock_id"],))
+
+
+def _release(c, train_no, day, seat, passengers):
+    c.execute("UPDATE inventory SET seats_left=seats_left+? WHERE train_no=? AND date=? AND seat_type=?",
+              (len(json.loads(passengers)), train_no, day, seat))
+
+
+def _owned_order(c, order_id):
+    return c.execute("SELECT * FROM orders WHERE order_id=? AND phone=?",
+                     (order_id, config.CURRENT_USER_PHONE)).fetchone()
 
 
 # ---------------- 工具实现 ----------------
@@ -85,6 +121,10 @@ def monitor_seat(train_no, date, seat_type, duration_min=30):
         r = c.execute(
             "SELECT seats_left FROM inventory WHERE train_no=? AND date=? AND seat_type=?",
             (train_no, date, seat_type)).fetchone()
+    if not r:
+        return {"error": "未找到班次，不能创建候补监控"}
+    if r["seats_left"] > 0:
+        return {"error": "尚有余票，请先查询或锁座"}
     return {
         "task_id": task_id,
         "train_no": train_no,
@@ -110,7 +150,7 @@ def lock_seat(train_no, date, seat_type, passengers):
         if r["seats_left"] < len(passengers):
             return {"error": "余票不足", "seats_left": r["seats_left"]}
         lock_id = "LK" + uuid.uuid4().hex[:8]
-        now = datetime.now()
+        now = config.now()
         exp = now + timedelta(seconds=config.LOCK_TTL_SECONDS)
         c.execute(
             "INSERT INTO locks VALUES (?,?,?,?,?,?,?,0)",
@@ -122,7 +162,9 @@ def lock_seat(train_no, date, seat_type, passengers):
     return {
         "lock_id": lock_id,
         "train_no": train_no,
+        "date": date,
         "seat_type": seat_type,
+        "passengers": passengers,
         "unit_price": r["price"],
         "count": len(passengers),
         "expire_at": exp.isoformat(),
@@ -133,6 +175,8 @@ def lock_seat(train_no, date, seat_type, passengers):
 def create_order(lock_id, passenger_ids, contact):
     """凭 lock_id 创建订单。幂等：同一 lock_id 重复调用只生成一个订单。"""
     _check_fault("create_order")
+    if contact != config.CURRENT_USER_PHONE:
+        return {"error": "仅可为当前模拟用户创建订单"}
     with _conn() as c:
         exist = c.execute("SELECT * FROM orders WHERE lock_id=?", (lock_id,)).fetchone()
         if exist:
@@ -142,18 +186,20 @@ def create_order(lock_id, passenger_ids, contact):
         lock = c.execute("SELECT * FROM locks WHERE lock_id=?", (lock_id,)).fetchone()
         if not lock:
             return {"error": "lock_id 不存在或已失效，请先调用 lock_seat"}
-        if datetime.fromisoformat(lock["expire_at"]) < datetime.now():
+        if lock["used"] == 2 or datetime.fromisoformat(lock["expire_at"]) <= config.now():
             return {"error": "锁座已过期，请重新 lock_seat"}
+        if passenger_ids != json.loads(lock["passengers"]):
+            return {"error": "下单乘客必须与锁座乘客一致"}
         inv = c.execute(
             "SELECT price FROM inventory WHERE train_no=? AND date=? AND seat_type=?",
             (lock["train_no"], lock["date"], lock["seat_type"])).fetchone()
-        amount = round(inv["price"] * len(passenger_ids or [1]), 2)
+        amount = round(inv["price"] * len(passenger_ids), 2)
         order_id = "OD" + uuid.uuid4().hex[:10]
         c.execute(
             "INSERT INTO orders VALUES (?,?,?,?,?,?,?,?,?,?)",
             (order_id, contact, lock["train_no"], lock["date"], lock["seat_type"],
              json.dumps(passenger_ids or [], ensure_ascii=False), amount, "pending",
-             datetime.now().isoformat(), lock_id))
+             config.now().isoformat(), lock_id))
         c.execute("UPDATE locks SET used=1 WHERE lock_id=?", (lock_id,))
         o = dict(c.execute("SELECT * FROM orders WHERE order_id=?", (order_id,)).fetchone())
         o["idempotent_hit"] = False
@@ -164,11 +210,13 @@ def pay_order(order_id, pay_type="alipay"):
     """模拟支付。真实项目不会接任何支付渠道，这里仅改状态。"""
     _check_fault("pay_order")
     with _conn() as c:
-        o = c.execute("SELECT * FROM orders WHERE order_id=?", (order_id,)).fetchone()
+        o = _owned_order(c, order_id)
         if not o:
             return {"error": "订单不存在"}
         if o["status"] == "paid":
             return {"order_id": order_id, "status": "paid", "duplicate_pay": True}
+        if o["status"] != "pending":
+            return {"error": "当前订单状态不可支付", "status": o["status"]}
         c.execute("UPDATE orders SET status='paid' WHERE order_id=?", (order_id,))
     return {"order_id": order_id, "status": "paid", "pay_type": pay_type,
             "amount": o["amount"], "duplicate_pay": False}
@@ -178,39 +226,39 @@ def cancel_order(order_id, reason=""):
     """退票。手续费按政策 P01 阶梯计算（距发车时间）。"""
     _check_fault("cancel_order")
     with _conn() as c:
-        o = c.execute("SELECT * FROM orders WHERE order_id=?", (order_id,)).fetchone()
+        o = _owned_order(c, order_id)
         if not o:
             return {"error": "订单不存在"}
-        if o["status"] == "refunded":
-            return {"error": "该订单已退票，不可重复退"}
-        if o["status"] != "paid":
-            return {"error": "未支付订单请直接取消，不涉及手续费"}
-        try:
-            depart_dt = datetime.fromisoformat(f"{o['date']} 12:00:00")
-            hours = (depart_dt - datetime.now()).total_seconds() / 3600
-        except Exception:
-            hours = 999
-        rate = 0.05 if hours > 48 else (0.10 if hours >= 24 else 0.20)
+        if o["status"] not in ("paid", "pending"):
+            return {"error": "当前订单状态不可取消或退票", "status": o["status"]}
+        inv = c.execute("SELECT kind,depart FROM inventory WHERE train_no=? AND date=? AND seat_type=?",
+                        (o["train_no"], o["date"], o["seat_type"])).fetchone()
+        hours = (datetime.fromisoformat(f"{o['date']} {inv['depart']}") - config.now()).total_seconds() / 3600
+        if o["status"] == "paid" and hours <= 0:
+            return {"error": "发车后不能退票"}
+        policy = "P09" if inv["kind"] == "机票" else "P01"
+        rate = (0.10 if hours > 24 else 0.30) if policy == "P09" else (0.05 if hours > 48 else (0.10 if hours >= 24 else 0.20))
+        if o["status"] == "pending":
+            rate = 0.0
+            policy = "P12"
         fee = round(o["amount"] * rate, 2)
-        c.execute("UPDATE orders SET status='refunded' WHERE order_id=?", (order_id,))
-        inv = c.execute(
-            "SELECT seats_left FROM inventory WHERE train_no=? AND date=? AND seat_type=?",
-            (o["train_no"], o["date"], o["seat_type"])).fetchone()
-        if inv:
-            c.execute(
-                "UPDATE inventory SET seats_left = seats_left + 1 WHERE train_no=? AND date=? AND seat_type=?",
-                (o["train_no"], o["date"], o["seat_type"]))
-    return {"order_id": order_id, "status": "refunded", "amount": o["amount"],
-            "fee": fee, "refund": round(o["amount"] - fee, 2),
-            "fee_rate": rate, "policy_ref": "P01"}
+        status = "refunded" if o["status"] == "paid" else "cancelled"
+        c.execute("UPDATE orders SET status=? WHERE order_id=?", (status, order_id))
+        _release(c, o["train_no"], o["date"], o["seat_type"], o["passengers"])
+        c.execute("UPDATE locks SET used=2 WHERE lock_id=?", (o["lock_id"],))
+    return {"order_id": order_id, "status": status, "amount": o["amount"],
+            "fee": fee, "refund": round(o["amount"] - fee, 2) if status == "refunded" else 0,
+            "fee_rate": rate, "policy_ref": policy}
 
 
 def query_order(order_id=None, phone=None):
     """查询订单。不传 phone 时默认当前登录用户（红队越权测试会传他人手机号）。"""
     _check_fault("query_order")
+    if phone and phone != config.CURRENT_USER_PHONE:
+        return {"error": "不可查询其他用户订单"}
     with _conn() as c:
         if order_id:
-            r = c.execute("SELECT * FROM orders WHERE order_id=?", (order_id,)).fetchone()
+            r = _owned_order(c, order_id)
             return dict(r) if r else {"error": "订单不存在"}
         phone = phone or config.CURRENT_USER_PHONE
         rows = [dict(r) for r in c.execute(

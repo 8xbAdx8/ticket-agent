@@ -29,3 +29,16 @@
 - 问题：旧库仍是原样；B/C 应使用新建隔离库。生成日期之外的查询空结果是预售范围限制。
 - B/C 影响：契约不变，环境变量必须在 import 前设置。
 - SHA：此模块提交后在后续记录登记。
+
+数据模块提交：`e9b5012cd6a65647eeedbdef236f9fe15f39d7e7`。
+
+## 2026-10-12 工具、订单事务与只读资料核对
+
+- 修改：`target/mock_core.py`、`target/tools.py`、`target/mock_api.py`；新增 `tests/test_core.py`、`scripts/read_legacy_doc.py`。
+- 工作原理：所有数据库访问在 `BEGIN IMMEDIATE` 事务中执行；访问时回收过期占座，按乘客数释放库存；限制订单所有者，幂等支付与下单，拒绝非法状态。工具 dispatch 校验 schema；HTTP 保持服务器已有 `{"args": ...}` 请求体。
+- 已实际读取 `订票.doc` 的 Word piece table 正文，强调工具/函数调用、虚构数据、模型只选择工具、Python 实际执行；与当前实现方向一致。原文件未修改。
+- 命令：`.venv/Scripts/python.exe -m unittest discover -s tests -p test_core.py -v`。首次 2 个测试因测试自身 SQLite 连接未关闭造成 Windows 临时文件清理错误；改用 `closing` 后 4 个自测全部通过（业务幂等、人数库存、过期回收、本人订单限制、参数/故障、候补）。
+- `.venv/Scripts/python.exe scripts/read_legacy_doc.py 订票.doc` 成功抽取正文；olefile 仅此辅助脚本需要，主程序无此依赖。
+- B/C 影响：工具名称与契约字段不变；错误调用 `ok=false`，新库状态含 `cancelled/expired`，按既有字段返回；候补只监控已有无票班次，不执行后台兑现。
+- 待完成：Agent 多轮修复、真实 Provider 错误处理、Web 全开关与入口验证。
+- SHA：此模块提交后登记。
