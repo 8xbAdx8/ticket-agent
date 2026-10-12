@@ -19,6 +19,35 @@ import config
 from target.agent import Agent
 from target import providers
 
+PROCESSING_STATUS_HTML = """
+<style>
+.ticket-agent-processing {
+    display: flex; align-items: center; gap: .65rem;
+    padding: .7rem 0; color: var(--text-color, inherit); font-size: .95rem;
+}
+.ticket-agent-processing-icon {
+    display: inline-block; width: 1rem; height: 1rem; flex-shrink: 0;
+    border: 2px solid rgba(127, 127, 127, .25);
+    border-top-color: var(--primary-color, #2563eb); border-radius: 50%;
+    animation: ticket-agent-processing-spin .8s linear infinite;
+}
+@keyframes ticket-agent-processing-spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) {
+    .ticket-agent-processing-icon { animation: none; }
+}
+</style>
+<div class="ticket-agent-processing" role="status" aria-live="polite">
+    <span class="ticket-agent-processing-icon" aria-hidden="true"></span>
+    <span>正在处理请求...</span>
+</div>
+"""
+
+TOOL_LABELS = {
+    "query_tickets": "查询余票", "monitor_seat": "候补监控", "lock_seat": "锁座",
+    "create_order": "创建订单", "pay_order": "支付订单", "cancel_order": "取消/退票",
+    "query_order": "查询订单", "search_policy": "检索政策",
+}
+
 st.set_page_config(page_title="抢票智能体 · 测试控制台", layout="wide")
 st.title("出行服务智能助手 · 执行 trace 控制台")
 st.caption(f"当前模型提供者：{config.PROVIDER} / {config.MODEL_NAME}　|　后端模式："
@@ -77,6 +106,9 @@ with left:
         st.session_state.history = []
 
     if send and user_msg:
+        # chat 当前同步返回整轮 Trace，没有阶段回调；只显示实际的请求等待状态。
+        processing = st.empty()
+        processing.markdown(PROCESSING_STATUS_HTML, unsafe_allow_html=True)
         try:
             r = st.session_state.agent.chat(st.session_state.sid, user_msg)
             st.session_state.history.append(r)
@@ -85,6 +117,8 @@ with left:
                 st.error("操作未完成，请检查右侧工具轨迹并保存完整 JSON。")
         except Exception as exc:
             st.error(f"执行失败 ({type(exc).__name__})；检查目录写权限与配置。")
+        finally:
+            processing.empty()  # 正常、工具失败、步数上限和异常时都结束动画。
 
     for h in reversed(st.session_state.history[-5:]):
         st.markdown(f"- `{h['user_msg']}` → 工具序列 {h['tool_sequence']}（{h['finish_reason']}）")
@@ -100,6 +134,11 @@ with right:
         rows = [{"step": s["step"], "tool": c["tool"], "args": json.dumps(c["args"], ensure_ascii=False),
                  "ok": c["ok"], "latency_ms": c["latency_ms"], "result": c["result_preview"]}
                 for s in r["steps"] for c in s["calls"]]
+        st.markdown("**执行步骤摘要 · 实际工具调用**")
+        st.caption(" → ".join(
+            f"{TOOL_LABELS.get(row['tool'], row['tool'])}（{'成功' if row['ok'] else '失败'}）"
+            for row in rows
+        ) if rows else "本轮未调用工具。")
         if rows:
             st.dataframe(pd.DataFrame(rows), width="stretch", hide_index=True)
         with st.expander("完整 JSON"):
