@@ -1,0 +1,15 @@
+# 最小依赖：mock 模式 + CLI + 离线回放，不需要安装任何包即可运行
+# ------------------------------------------------------------------
+# 真实模型（选装，拿到 key 后装）
+openai>=1.40.0
+# HTTP 外壳（选装，视频演示更像真实系统）
+fastapi>=0.110
+uvicorn>=0.29
+# Web 前端（选装，Streamlit 控制台）
+streamlit>=1.35
+pandas>=2.0
+# 后续测试层（成员 B，暂不需要）
+pytest>=8.0
+# 可选：本地向量检索（RAG 进阶，需下载 bge-small-zh 模型）
+# sentence-transformers>=2.6
+# faiss-cpu>=1.8
