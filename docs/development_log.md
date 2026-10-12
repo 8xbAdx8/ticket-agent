@@ -84,3 +84,16 @@ CLI 模块提交：`78ea322a8f8addc75ef6c22c5d855d726dea11bb`。
 - B/C 影响：Web 控件只影响对应浏览器会话；多个客户端仍共享固定模拟身份和配置数据库，不能作为生产权限系统。
 - 限制：无真实模型 Key、无向量模型验证、未由人对浏览器画面/录屏验收；这些必须保持待验证。
 - SHA：此模块提交后登记。
+
+Web/验证模块提交：`8262db81838d45fe3d827d75ae8a4246a2304038`。
+
+## 2026-10-12 正式文档、教学说明与交付核验
+
+- 新增 `README.md`、`docs/development_summary.md`、`scripts/generate_handoff.py`、`docs/handoff/` 四份报告及来源清单；README 在用户补充说明后仍未出现在实际根目录，故补上快速运行文档，未覆盖已有文件。
+- 报告生成器读取当前源码的工具 schema/AST 行号、线路/政策数量、Git 日志和实测 JSON/日志，拒绝引用哈希已变化的验证代码；明确 10 个顶层字段，保留契约完全不变。
+- 包含 A/B/C 分工、关键代码与教学、真实 API 状态、隔离/恢复、完整 JSON 示例、8 工具参数及返回差异、C 验收取证/截图/视频分镜，以及有真实状态的检查表。
+- 实际命令：`.venv/Scripts/python.exe -W error scripts/generate_handoff.py`、`.venv/Scripts/python.exe scripts/generate_handoff.py --check`；生成 4 份且 source_hash_check/contract_unchanged/report_check 均通过，32 条 Trace 的字段/顺序核验通过。
+- 文档检查修复了生成器 Windows 字符串转义与控制字符校验、URL 被误识别为绝对磁盘路径的校验规则；最终 JSON 示例可解析，报告不含本机绝对路径或 Key。
+- 待验证/未完成均如实记录：真实模型联网、向量、优惠/改签/身份完整建模、后台兑现、B 正式测试与 C 人工验收；不提供编造的覆盖率/性能/缺陷数。
+- B/C 影响：可独立按手册跑 Mock 和保存证据，正式职责未被代做；最终判断有条件交接。
+- 本模块最终提交 SHA：通过交付标签 `handoff-a-20261012` 用 `git rev-parse handoff-a-20261012` 精确取得；最终回复会给完整 SHA。避免在一个 Git 提交里自引用它自己的哈希。未 push/merge。
