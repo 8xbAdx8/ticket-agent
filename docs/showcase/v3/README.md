@@ -1,5 +1,9 @@
 # Ticket Agent V3：界面效果图与功能介绍
 
+**更新：绿色布局已接入实际 Streamlit 前端。** 请使用 [V3 真实前端说明](../../handoff/v3/V3真实前端使用说明.md) 启动，并查看 [最新实际截图](../../evidence/v3_live_ui/delivery_browser/01-query.png)。本目录的 HTML 和原图片仍保持历史属性，没有替换成新的执行结果。
+
+下面记录的是设计材料制作时的旧基线。旧截图/核对脚本假定旧 Web 源码；当前新界面的验证应使用 `scripts/check_v3_live_ui.py` 和 `scripts/capture_v3_live_ui.py --out <新目录>`，避免覆盖本目录历史图片。
+
 材料日期：2026-10-13（Asia/Shanghai）。实际 Agent 源码基线为 `a4d6d62f88f796b39f4f27f239eaa6308d4143b2`；新增材料位于 `codex/ticket-agent-v3-showcase` 分支。
 
 本目录包含两种材料：**效果图**是独立设计稿，读取历史 Mock 数据；**真实截图**由当前 `web/app.py` 在隔离 Mock 环境中实际运行后采集。二者不能混为“已上线的新界面”。真实大模型尚未联网实测。

@@ -4,6 +4,12 @@
 
 保留原 MVP 结构及 `docs/contract.md`。成员 A 开发被测 Agent；B 设计和执行正式测试；C 持续跟进、组织验收与作品报告/录屏。
 
+## V3 真实前端补充（2026-10-13）
+
+绿色工作空间已接入 `web/app.py`：实际对话、余票/订单/政策卡片、执行轨迹、完整工具结果、Trace 下载、历史回放和源码导览。卡片来自本轮工具返回值，不增加工具调用或契约字段。67 项 A 自测通过，实际浏览器 5 轮 LangChain Mock 操作通过；真实大模型仍待联网实测。
+
+使用独立分支 `codex/ticket-agent-v3-live-ui`，见 [真实前端使用说明与启动命令](docs/handoff/v3/V3真实前端使用说明.md)、[实际新界面截图](docs/evidence/v3_live_ui/delivery_browser/01-query.png)、[持续开发记录](docs/v3_live_ui_development_log.md)。原 HTML 设计稿和旧截图仍是历史材料。
+
 ## V3 增量交付（2026-10-13）
 
 独立分支 `feat/a-ticket-langchain-v3`：真正使用 LangChain 1.x `create_agent` 执行模型/工具循环，先验证两工具原型，再接入全部8工具。使用 `InMemorySaver` 隔离会话、middleware记录原契约Trace，并独立核验模拟写操作授权。原V2引擎仍默认可用。

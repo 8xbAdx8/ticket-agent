@@ -1,0 +1,13 @@
+{
+  "status": "passed",
+  "protected_original_files_unchanged": 99,
+  "v1_v2_v3_tags_unchanged": true,
+  "backend_and_contract_unchanged": true,
+  "ui_source_matches_browser_capture": true,
+  "a_unit_tests_passed": 67,
+  "actual_browser_mock_turns": 5,
+  "actual_screenshots": 6,
+  "markdown_links_exist": true,
+  "real_model_tested": false,
+  "formal_b_score_generated": false
+}
