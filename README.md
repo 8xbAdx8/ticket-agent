@@ -4,7 +4,42 @@
 
 保留原 MVP 结构及 `docs/contract.md`。成员 A 开发被测 Agent；B 设计和执行正式测试；C 持续跟进、组织验收与作品报告/录屏。
 
-## V2 当前交付（2026-10-13）
+## V3 增量交付（2026-10-13）
+
+独立分支 `feat/a-ticket-langchain-v3`：真正使用 LangChain 1.x `create_agent` 执行模型/工具循环，先验证两工具原型，再接入全部8工具。使用 `InMemorySaver` 隔离会话、middleware记录原契约Trace，并独立核验模拟写操作授权。原V2引擎仍默认可用。
+
+- [A V3开发报告](docs/handoff/v3/A_V3开发完成报告.md)
+- [B V3测试对接](docs/handoff/v3/B_V3测试对接手册.md)
+- [C V3验收拍摄](docs/handoff/v3/C_V3验收与拍摄说明.md)
+- [V2/V3技术对照](docs/handoff/v3/V2_V3技术对照报告.md)
+- [V3交付清单](docs/handoff/v3/V3最终交付清单.md)
+- [V3持续记录](docs/v3_development_log.md)、[实际框架证据](docs/evidence/v3/final_framework/verification.json)
+
+实际A自测：V3环境56项通过；原V2环境旧28项通过、新框架28项明确跳过。两套环境每套10项入口/服务检查通过；LangChain Mock 11轮API覆盖8工具及CLI/Web通过。真实大模型尚未联网实测；B正式成绩、C人工验收待完成，状态为**有条件交接**。
+
+V3使用独立 `.venv-v3`，保留原 `.venv` 与旧依赖锁文件。已有原环境时：
+
+```powershell
+.\.venv\Scripts\python.exe -m venv .venv-v3
+.\.venv-v3\Scripts\python.exe -m pip install -r requirements-v3-lock.txt
+$env:PYTHONIOENCODING="utf-8"
+$env:AGENT_ENGINE="langchain"
+$env:AGENT_PROVIDER="mock"
+$env:AGENT_LC_TOOLSET="all"
+$env:AGENT_USE_HTTP="0"
+$env:AGENT_VECTOR_RAG="0"
+$runId = Get-Date -Format "yyyyMMdd-HHmmss"
+$env:AGENT_DB_PATH="$PWD\artifacts\runtime\v3-$runId\tickets.db"
+$env:AGENT_TRACE_DIR="$PWD\artifacts\runtime\v3-$runId\langchain_mock"
+.\.venv-v3\Scripts\python.exe data/seed.py
+.\.venv-v3\Scripts\python.exe -m streamlit run web/app.py
+```
+
+首次没有Python环境先运行 `py -3.12 -m venv .venv`；已有环境不重复创建。只读原型改 `AGENT_LC_TOOLSET=read_only`；切回V2改 `AGENT_ENGINE=legacy` 并重启。六种变异仅legacy开放。可运行示例为 `scripts/v3_api_example.py --output-dir 新目录`，框架验证为 `scripts/verify_v3.py --toolset all --output-dir 新目录`；均使用V3解释器，拒绝覆盖既有输出。
+
+Live沿用原4个模型环境变量，新验证入口 `scripts/validate_langchain_live.py` 默认只预检；有效Key且显式--run才远端调用。SDK桩验证不是实测模型成绩。下方V2章节保留作为历史说明，默认入口仍legacy。
+
+## V2 历史交付（2026-10-13）
 
 独立分支 `feat/a-ticket-v2`：已修复交通切换席别、切回高铁、售罄回复、重复支付提示和支付政策路由五项问题。A 实际通过 28 个自测、10 项入口/服务检查、32 条 Mock Trace；六变异仍可触发。B 正式 V2 全量回归与真实模型运行待完成，不能宣称正式 100/100。
 

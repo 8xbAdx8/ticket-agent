@@ -1,0 +1,38 @@
+{
+  "status": "passed",
+  "reports_count": 5,
+  "python_examples": [
+    {
+      "example": 0,
+      "exit_code": 0
+    },
+    {
+      "example": 1,
+      "exit_code": 0
+    },
+    {
+      "example": 2,
+      "exit_code": 0
+    }
+  ],
+  "powershell_blocks_parsed": 11,
+  "json_example_matches_actual": true,
+  "source_matches_final_evidence": true,
+  "protected_files": 99,
+  "protected_unchanged": true,
+  "lock_matches_environment": true,
+  "python_source_syntax_checked": 43,
+  "original_tags": {
+    "handoff-a-20261012": "e719956d7c82bd6392c25916d3c193be7e4b452e",
+    "handoff-a-v2-20261013": "6ef683a50f60970dbd4ded1678a818d026afcbde"
+  },
+  "real_model_tested": false,
+  "report_sha256": {
+    "A_V3开发完成报告.md": "8d9f0bcab25f5220c09a6bd5e0d6efa805fb6c18cd33856808ef3b7512aed688",
+    "B_V3测试对接手册.md": "2ea8d273d01bcc990cf60f95e9cbe7050b9b0f521391ba8f4f5a897143219e29",
+    "C_V3验收与拍摄说明.md": "51d2276dfe336d020b5b29a17afe2855c32005ace0e6f4cba6ff8264fc852379",
+    "V2_V3技术对照报告.md": "d80db9cd2f8d002f28a805c053937e1da2f8b3dc0f24120ff7d8ace8d2510a6a",
+    "V3最终交付清单.md": "a92b188a776e34057ea0438fa779bf2cd585a1ae836b50c70a28257aca5711ac"
+  },
+  "draft_review_correction": "核对后将候补返回名纠正为实际task_id；源码路径表按真实文件名修正"
+}

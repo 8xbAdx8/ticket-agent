@@ -1,0 +1,2 @@
+已生成 2100 条虚构余票记录
+['query_tickets', 'lock_seat', 'create_order']

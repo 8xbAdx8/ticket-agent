@@ -27,9 +27,10 @@ def main():
     baseline = json.loads((ROOT/"docs/evidence/v3/v2_baseline/manifest.json").read_text(encoding="utf-8"))
     with tempfile.TemporaryDirectory() as tmp:
         db, trace = Path(tmp)/"tickets.db",out/"langchain_mock"
-        with patch.object(config,"DB_PATH",db),patch.object(config,"TRACE_DIR",trace), \
-             patch.object(config,"PROVIDER","mock"),patch.object(config,"ENGINE","langchain"), \
-             patch.object(config,"USE_HTTP_MOCK",False),patch.object(config,"LC_TOOLSET",args.toolset):
+        with (patch.object(config,"DB_PATH",db),patch.object(config,"TRACE_DIR",trace),
+              patch.object(config,"PROVIDER","mock"),patch.object(config,"ENGINE","langchain"),
+              patch.object(config,"USE_HTTP_MOCK",False),patch.object(config,"USE_VECTOR_RAG",False),
+              patch.object(config,"MAX_STEPS",8),patch.object(config,"LC_TOOLSET",args.toolset)):
             build_db()
             agent = Agent()
             inputs = ["查明天上海到杭州的高铁","那机票呢","还是高铁吧","后天呢","锁座后多久必须完成支付？"]
@@ -37,10 +38,19 @@ def main():
             for message in inputs:
                 turns.append(agent.chat("v3-demo",message))
                 events.append({"input":message,"events":agent.langchain_engine.last_events})
+            assert [r["tool_sequence"] for r in turns] == [["query_tickets"]]*4+[["search_policy"]]
+            assert "P11" in turns[-1]["reply"]
             if args.toolset == "all":
                 for message in ("订明天上海到杭州的高铁","支付我刚才的订单。","支付","帮我退掉","查我的订单","抢明天北京到上海的票"):
                     turns.append(agent.chat("v3-orders",message))
                     events.append({"input":message,"events":agent.langchain_engine.last_events})
+                assert [r["tool_sequence"] for r in turns[5:]] == [
+                    ["query_tickets","lock_seat","create_order"],["pay_order"],["pay_order"],
+                    ["cancel_order"],["query_order"],["query_tickets","monitor_seat"]]
+                assert "没有重复扣款" in turns[7]["reply"]
+                assert {t for r in turns for t in r["tool_sequence"]}==set(agent.langchain_engine.tool_names)
+            assert all(c["ok"] for r in turns for s in r["steps"] for c in s["calls"])
+            assert all(r["finish_reason"]=="stop" for r in turns)
             (out/"api_results.json").write_text(json.dumps(turns,ensure_ascii=False,indent=2),encoding="utf-8")
             (out/"framework_events.json").write_text(json.dumps(events,ensure_ascii=False,indent=2),encoding="utf-8")
             from streamlit.testing.v1 import AppTest

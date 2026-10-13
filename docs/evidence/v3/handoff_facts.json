@@ -1,0 +1,49 @@
+{
+  "generated_date": "2026-10-13",
+  "branch": "feat/a-ticket-langchain-v3",
+  "verified_source_commit": "595dc0af157e89613597946934f343a76216976b",
+  "reports": [
+    "docs/handoff/v3/A_V3开发完成报告.md",
+    "docs/handoff/v3/B_V3测试对接手册.md",
+    "docs/handoff/v3/C_V3验收与拍摄说明.md",
+    "docs/handoff/v3/V2_V3技术对照报告.md",
+    "docs/handoff/v3/V3最终交付清单.md"
+  ],
+  "unit_tests": 56,
+  "legacy_passed": 28,
+  "legacy_skipped": 28,
+  "api_turns": 11,
+  "tools": [
+    "query_tickets",
+    "monitor_seat",
+    "lock_seat",
+    "create_order",
+    "pay_order",
+    "cancel_order",
+    "query_order",
+    "search_policy"
+  ],
+  "real_model_tested": false,
+  "protected_files": 99,
+  "source_sha256": {
+    "target/agent.py": "80fc42cf2cdd34972f8a7a265b9ef6ae4f4ce42b99eda789f8b68bdd507f3c41",
+    "target/langchain_agent.py": "0c7e82dc024922b71c75353d32f378183010de61790d7bd9e92d4034f2549cc8",
+    "target/langchain_model.py": "a3afbf11c1b304558aaa8c00f0e6145155b86598872b47d218d8efd7901eae5a",
+    "target/mock_api.py": "18f810e942536affbde0095df84c8cdf7dd30149827ab0febcd8620c9ebd39e5",
+    "target/mock_core.py": "5577979796adf29175f42169d3f2a03370d0b1c7b375fd7cf94ac63b58f1c07d",
+    "target/providers.py": "b6ae4fd324d855599b55dbc64545a35c4c8ec72d7964142d57f32e5bdfa65c43",
+    "target/rag.py": "afa75847e568b31dfca42d73bc4e5be3f02e742e22326e431c2eaeff74beb827",
+    "target/tools.py": "c7e2cadfa549a1b9a1a34b4c987d6708e46425c0bed261dc97a1872c1fea72a3",
+    "target/trace.py": "bc6fb916a255cfaed55eb2cd5479506ead84edbdabecb97f494152e8eae8070e",
+    "target/write_authorization.py": "b0dac0740ac0570c055a57a387c63cf0897de14f0a7443f74633fd716965a7ac",
+    "target/__init__.py": "4bf3d2f36aecf165b1673c8883c2a18f743e98f3a398a1d6f4fb4301a377a39c",
+    "web/app.py": "d6faced96b48dc38c3011e272055d284e8dcd8579c82537940745ef8a5f99c4f"
+  },
+  "report_sha256": {
+    "A_V3开发完成报告.md": "076aab2752a5f04168ef9ab543d69107a14e00772b4ac250988cfcae060f8e07",
+    "B_V3测试对接手册.md": "e40739d90d14e477b7b4cbd758a99f7e765bb1c59ae2381818662f5b8d09005a",
+    "C_V3验收与拍摄说明.md": "51d2276dfe336d020b5b29a17afe2855c32005ace0e6f4cba6ff8264fc852379",
+    "V2_V3技术对照报告.md": "d80db9cd2f8d002f28a805c053937e1da2f8b3dc0f24120ff7d8ace8d2510a6a",
+    "V3最终交付清单.md": "a92b188a776e34057ea0438fa779bf2cd585a1ae836b50c70a28257aca5711ac"
+  }
+}

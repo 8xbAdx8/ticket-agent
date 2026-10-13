@@ -27,9 +27,10 @@ def main():
     with tempfile.TemporaryDirectory() as tmp:
         for trial in range(3):
             for engine in ("legacy","langchain"):
-                with patch.object(config,"DB_PATH",Path(tmp)/f"{engine}-{trial}.db"), \
-                     patch.object(config,"TRACE_DIR",out/engine),patch.object(config,"PROVIDER","mock"), \
-                     patch.object(config,"LC_TOOLSET","read_only"),patch.object(config,"USE_HTTP_MOCK",False):
+                with (patch.object(config,"DB_PATH",Path(tmp)/f"{engine}-{trial}.db"),
+                      patch.object(config,"TRACE_DIR",out/engine),patch.object(config,"PROVIDER","mock"),
+                      patch.object(config,"LC_TOOLSET","read_only"),patch.object(config,"USE_HTTP_MOCK",False),
+                      patch.object(config,"USE_VECTOR_RAG",False)):
                     build_db()
                     started = time.perf_counter()
                     agent = Agent(engine=engine)

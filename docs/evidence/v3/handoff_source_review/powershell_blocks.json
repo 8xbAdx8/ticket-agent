@@ -1,0 +1,46 @@
+[
+  {
+    "file": "A_V3开发完成报告.md",
+    "code": "# 在仓库根目录，建议 Python 3.12；已有 .venv 可直接用于创建独立V3环境\n.\\.venv\\Scripts\\python.exe -m venv .venv-v3\n.\\.venv-v3\\Scripts\\python.exe -m pip install -r requirements-v3-lock.txt\n$env:PYTHONIOENCODING=\"utf-8\"\n$env:AGENT_ENGINE=\"langchain\"\n$env:AGENT_PROVIDER=\"mock\"\n$env:AGENT_LC_TOOLSET=\"all\"\n$env:AGENT_USE_HTTP=\"0\"\n$env:AGENT_VECTOR_RAG=\"0\"\n$env:AGENT_MAX_STEPS=\"8\"\n$runId = Get-Date -Format \"yyyyMMdd-HHmmss\"\n$env:AGENT_DB_PATH=\"$PWD\\artifacts\\runtime\\v3-$runId\\tickets.db\"\n$env:AGENT_TRACE_DIR=\"$PWD\\artifacts\\runtime\\v3-$runId\\langchain_mock\"\n.\\.venv-v3\\Scripts\\python.exe data/seed.py\n.\\.venv-v3\\Scripts\\python.exe cli.py once \"查明天上海到杭州的高铁\"\n.\\.venv-v3\\Scripts\\python.exe cli.py chat\n# 输入 q 退出 CLI 后再启动 Web\n.\\.venv-v3\\Scripts\\python.exe -m streamlit run web/app.py\n"
+  },
+  {
+    "file": "A_V3开发完成报告.md",
+    "code": "$env:PYTHONIOENCODING=\"utf-8\"\n$env:AGENT_ENGINE=\"legacy\"\n$env:AGENT_PROVIDER=\"mock\"\n$stamp = Get-Date -Format \"yyyyMMdd-HHmmss\"\n.\\.venv-v3\\Scripts\\python.exe -m unittest discover -s tests -v\n.\\.venv-v3\\Scripts\\python.exe scripts/smoke.py --output-dir \"artifacts/runtime/v3-smoke-$stamp\"\n.\\.venv-v3\\Scripts\\python.exe scripts/verify_v3.py --toolset all --output-dir \"artifacts/runtime/v3-framework-$stamp\"\n.\\.venv-v3\\Scripts\\python.exe scripts/v3_api_example.py --output-dir \"artifacts/runtime/v3-example-$stamp\"\n"
+  },
+  {
+    "file": "B_V3测试对接手册.md",
+    "code": "# 在仓库根目录，建议 Python 3.12；已有 .venv 可直接用于创建独立V3环境\n.\\.venv\\Scripts\\python.exe -m venv .venv-v3\n.\\.venv-v3\\Scripts\\python.exe -m pip install -r requirements-v3-lock.txt\n$env:PYTHONIOENCODING=\"utf-8\"\n$env:AGENT_ENGINE=\"langchain\"\n$env:AGENT_PROVIDER=\"mock\"\n$env:AGENT_LC_TOOLSET=\"all\"\n$env:AGENT_USE_HTTP=\"0\"\n$env:AGENT_VECTOR_RAG=\"0\"\n$env:AGENT_MAX_STEPS=\"8\"\n$runId = Get-Date -Format \"yyyyMMdd-HHmmss\"\n$env:AGENT_DB_PATH=\"$PWD\\artifacts\\runtime\\v3-$runId\\tickets.db\"\n$env:AGENT_TRACE_DIR=\"$PWD\\artifacts\\runtime\\v3-$runId\\langchain_mock\"\n.\\.venv-v3\\Scripts\\python.exe data/seed.py\n.\\.venv-v3\\Scripts\\python.exe cli.py once \"查明天上海到杭州的高铁\"\n.\\.venv-v3\\Scripts\\python.exe cli.py chat\n# 输入 q 退出 CLI 后再启动 Web\n.\\.venv-v3\\Scripts\\python.exe -m streamlit run web/app.py\n"
+  },
+  {
+    "file": "B_V3测试对接手册.md",
+    "code": "$env:PYTHONIOENCODING=\"utf-8\"\n$stamp = Get-Date -Format \"yyyyMMdd-HHmmss\"\n.\\.venv-v3\\Scripts\\python.exe scripts/v3_api_example.py --output-dir \"artifacts/runtime/v3-api-$stamp\"\n"
+  },
+  {
+    "file": "B_V3测试对接手册.md",
+    "code": "$env:PYTHONIOENCODING=\"utf-8\"\n$env:AGENT_ENGINE=\"legacy\"\n$env:AGENT_PROVIDER=\"mock\"\n$stamp = Get-Date -Format \"yyyyMMdd-HHmmss\"\n.\\.venv-v3\\Scripts\\python.exe -m unittest discover -s tests -v\n.\\.venv-v3\\Scripts\\python.exe scripts/smoke.py --output-dir \"artifacts/runtime/v3-smoke-$stamp\"\n.\\.venv-v3\\Scripts\\python.exe scripts/verify_v3.py --toolset all --output-dir \"artifacts/runtime/v3-framework-$stamp\"\n.\\.venv-v3\\Scripts\\python.exe scripts/v3_api_example.py --output-dir \"artifacts/runtime/v3-example-$stamp\"\n"
+  },
+  {
+    "file": "C_V3验收与拍摄说明.md",
+    "code": "# 在仓库根目录，建议 Python 3.12；已有 .venv 可直接用于创建独立V3环境\n.\\.venv\\Scripts\\python.exe -m venv .venv-v3\n.\\.venv-v3\\Scripts\\python.exe -m pip install -r requirements-v3-lock.txt\n$env:PYTHONIOENCODING=\"utf-8\"\n$env:AGENT_ENGINE=\"langchain\"\n$env:AGENT_PROVIDER=\"mock\"\n$env:AGENT_LC_TOOLSET=\"all\"\n$env:AGENT_USE_HTTP=\"0\"\n$env:AGENT_VECTOR_RAG=\"0\"\n$env:AGENT_MAX_STEPS=\"8\"\n$runId = Get-Date -Format \"yyyyMMdd-HHmmss\"\n$env:AGENT_DB_PATH=\"$PWD\\artifacts\\runtime\\v3-$runId\\tickets.db\"\n$env:AGENT_TRACE_DIR=\"$PWD\\artifacts\\runtime\\v3-$runId\\langchain_mock\"\n.\\.venv-v3\\Scripts\\python.exe data/seed.py\n.\\.venv-v3\\Scripts\\python.exe cli.py once \"查明天上海到杭州的高铁\"\n.\\.venv-v3\\Scripts\\python.exe cli.py chat\n# 输入 q 退出 CLI 后再启动 Web\n.\\.venv-v3\\Scripts\\python.exe -m streamlit run web/app.py\n"
+  },
+  {
+    "file": "V3最终交付清单.md",
+    "code": "# 在仓库根目录，建议 Python 3.12；已有 .venv 可直接用于创建独立V3环境\n.\\.venv\\Scripts\\python.exe -m venv .venv-v3\n.\\.venv-v3\\Scripts\\python.exe -m pip install -r requirements-v3-lock.txt\n$env:PYTHONIOENCODING=\"utf-8\"\n$env:AGENT_ENGINE=\"langchain\"\n$env:AGENT_PROVIDER=\"mock\"\n$env:AGENT_LC_TOOLSET=\"all\"\n$env:AGENT_USE_HTTP=\"0\"\n$env:AGENT_VECTOR_RAG=\"0\"\n$env:AGENT_MAX_STEPS=\"8\"\n$runId = Get-Date -Format \"yyyyMMdd-HHmmss\"\n$env:AGENT_DB_PATH=\"$PWD\\artifacts\\runtime\\v3-$runId\\tickets.db\"\n$env:AGENT_TRACE_DIR=\"$PWD\\artifacts\\runtime\\v3-$runId\\langchain_mock\"\n.\\.venv-v3\\Scripts\\python.exe data/seed.py\n.\\.venv-v3\\Scripts\\python.exe cli.py once \"查明天上海到杭州的高铁\"\n.\\.venv-v3\\Scripts\\python.exe cli.py chat\n# 输入 q 退出 CLI 后再启动 Web\n.\\.venv-v3\\Scripts\\python.exe -m streamlit run web/app.py\n"
+  },
+  {
+    "file": "V3最终交付清单.md",
+    "code": "$env:PYTHONIOENCODING=\"utf-8\"\n$env:AGENT_ENGINE=\"legacy\"\n$env:AGENT_PROVIDER=\"mock\"\n$stamp = Get-Date -Format \"yyyyMMdd-HHmmss\"\n.\\.venv-v3\\Scripts\\python.exe -m unittest discover -s tests -v\n.\\.venv-v3\\Scripts\\python.exe scripts/smoke.py --output-dir \"artifacts/runtime/v3-smoke-$stamp\"\n.\\.venv-v3\\Scripts\\python.exe scripts/verify_v3.py --toolset all --output-dir \"artifacts/runtime/v3-framework-$stamp\"\n.\\.venv-v3\\Scripts\\python.exe scripts/v3_api_example.py --output-dir \"artifacts/runtime/v3-example-$stamp\"\n"
+  },
+  {
+    "file": "README.md",
+    "code": ".\\.venv\\Scripts\\python.exe -m venv .venv-v3\n.\\.venv-v3\\Scripts\\python.exe -m pip install -r requirements-v3-lock.txt\n$env:PYTHONIOENCODING=\"utf-8\"\n$env:AGENT_ENGINE=\"langchain\"\n$env:AGENT_PROVIDER=\"mock\"\n$env:AGENT_LC_TOOLSET=\"all\"\n$env:AGENT_USE_HTTP=\"0\"\n$env:AGENT_VECTOR_RAG=\"0\"\n$runId = Get-Date -Format \"yyyyMMdd-HHmmss\"\n$env:AGENT_DB_PATH=\"$PWD\\artifacts\\runtime\\v3-$runId\\tickets.db\"\n$env:AGENT_TRACE_DIR=\"$PWD\\artifacts\\runtime\\v3-$runId\\langchain_mock\"\n.\\.venv-v3\\Scripts\\python.exe data/seed.py\n.\\.venv-v3\\Scripts\\python.exe -m streamlit run web/app.py\n"
+  },
+  {
+    "file": "README.md",
+    "code": "python -m venv .venv\n.\\.venv\\Scripts\\python.exe -m pip install -r requirements-lock.txt\n$env:PYTHONIOENCODING=\"utf-8\"\n$env:AGENT_PROVIDER=\"mock\"\n$env:AGENT_USE_HTTP=\"0\"\n$env:AGENT_VECTOR_RAG=\"0\"\n$env:AGENT_DB_PATH=\"$PWD\\artifacts\\runtime\\manual\\tickets.db\"\n$env:AGENT_TRACE_DIR=\"$PWD\\artifacts\\runtime\\manual\\traces\"\n.\\.venv\\Scripts\\python.exe data/seed.py\n.\\.venv\\Scripts\\python.exe cli.py once \"帮我查明天上海到杭州的高铁\"\n.\\.venv\\Scripts\\python.exe cli.py chat\n.\\.venv\\Scripts\\python.exe cli.py batch cases/demo.json\n.\\.venv\\Scripts\\python.exe -m streamlit run web/app.py\n"
+  },
+  {
+    "file": "README.md",
+    "code": ".\\.venv\\Scripts\\python.exe -m unittest discover -s tests -v\n.\\.venv\\Scripts\\python.exe scripts/smoke.py\n.\\.venv\\Scripts\\python.exe scripts/handoff_example.py\n"
+  }
+]

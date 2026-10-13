@@ -55,3 +55,15 @@
 - B/C 影响：需要区分legacy Mock/LangChain Mock/Live SDK桩/真实模型；stop不等于业务成功。新provider值虽不改变字段，B如果自行枚举provider需审查；最终测试成绩须B提供。
 - 未完成：真实远端Function Calling、跨重启会话持久化、LangChain六变异、正式压力/模型幻觉评估、C人工验收与录屏。只交付准备/可复现A自测。
 - 本阶段源码 SHA 在交接文档登记。
+
+扩展回归/Live准备提交：595dc0af157e89613597946934f343a76216976b。
+
+## 2026-10-13 自动汇编与交接核对
+
+- 新增 scripts/generate_v3_handoff.py：读取Git实际HEAD/标签/提交、真实Schema、实际验证JSON和日志、protected/source SHA256，汇编5份docs/handoff/v3报告，不覆盖旧手册。新增scripts/v3_api_example.py：7轮独立Mock完整调用示例，实际运行artifacts/runtime/v3-handoff-example成功。
+- 新增 scripts/check_v3_handoff.py：核对源码/证据hash、全部锁定依赖、99保护文件和原标签；实际执行B手册3段Python示例、解析包括README的11段PowerShell、原样核对JSON。首次 handoff_review/verification.json 通过；人工对照源码纠正草稿候补返回名为task_id并核对实际路径表。
+- README增加V3入口/状态与5份手册链接，V2说明保留历史；三人分工、Mock/SDK桩/Live、provider和预算/耗时差异、授权限制、B正式回归/xfail、C验收分镜分别写明。
+- 对verify_v3补充实际调用链/成功状态/覆盖8工具的明确断言，并固定离线RAG/模型预算，避免外部环境变量影响复现；compare脚本也固定离线RAG。属于A验证工具，未改B正式规则。
+- 状态有条件交接：真实大模型尚未联网实测；B正式回归和C人工验收待完成。原始CLI证据含真实提示符末尾空格，保留原样，不伪称所有证据diff --check无告警；源码和新报告空白检查通过。
+- 最终文档提交用handoff-a-langchain-v3-20261013新标签解析，不把文档自身SHA写成循环依赖；不移动旧标签，不合并main。最终完整SHA在交付回复提供。
+- 收尾增强验证脚本时一次续行编辑产生SyntaxError（尚未生成新证据目录）；改用括号式context manager并加入全源码AST检查。修复后重新运行framework_assertions_review和handoff_source_review，结果见附件。
