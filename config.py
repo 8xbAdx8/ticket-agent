@@ -16,6 +16,10 @@ MODEL_NAME = os.getenv("AGENT_MODEL", "glm-4-flash")
 BASE_URL = os.getenv("AGENT_BASE_URL", "https://open.bigmodel.cn/api/paas/v4")
 API_KEY = os.getenv("AGENT_API_KEY", "")
 
+# V3 增量引擎；legacy 保留 V2 零框架依赖路径。
+ENGINE = os.getenv("AGENT_ENGINE", "legacy")  # legacy | langchain
+LC_TOOLSET = os.getenv("AGENT_LC_TOOLSET", "read_only")  # read_only | all
+
 # ---- Agent 主循环参数 ----
 MAX_STEPS = int(os.getenv("AGENT_MAX_STEPS", "8"))  # 超过即判定为疑似死循环
 if MAX_STEPS < 1:

@@ -36,11 +36,21 @@ SYSTEM_PROMPT = (
 
 
 class Agent:
-    def __init__(self, provider=None, system_prompt=SYSTEM_PROMPT):
-        self.provider = provider or get_provider()
+    def __init__(self, provider=None, system_prompt=SYSTEM_PROMPT, *, engine=None, model=None, tool_names=None):
+        self.engine = engine or config.ENGINE
+        if self.engine not in ("legacy", "langchain"):
+            raise ValueError("AGENT_ENGINE 只支持 legacy/langchain")
         self.system_prompt = system_prompt
         self.sessions = {}
         self._mutex = RLock()
+        self.langchain_engine = None
+        if self.engine == "langchain":
+            # 延迟导入：原 V2 环境不安装 LangChain 也能继续运行。
+            from target.langchain_agent import LangChainAgent
+            self.langchain_engine = LangChainAgent(system_prompt, provider=provider, model=model, tool_names=tool_names)
+            self.provider = self.langchain_engine.model
+        else:
+            self.provider = provider or get_provider()
 
     def _messages(self, session_id):
         if session_id not in self.sessions:
@@ -52,6 +62,8 @@ class Agent:
         if not isinstance(session_id, str) or not session_id.strip() or not isinstance(message, str) or not message.strip():
             raise ValueError("session_id 与 message 必须是非空字符串")
         with self._mutex:
+            if self.langchain_engine is not None:
+                return self.langchain_engine.chat(session_id, message, save_trace=save_trace)
             return self._chat(session_id, message, save_trace)
 
     def _chat(self, session_id, message, save_trace):
@@ -106,6 +118,10 @@ class Agent:
         return out
 
     def reset(self, session_id=None):
+        if self.langchain_engine is not None:
+            with self._mutex:
+                self.langchain_engine.reset(session_id)
+            return
         if session_id:
             self.sessions.pop(session_id, None)
         else:

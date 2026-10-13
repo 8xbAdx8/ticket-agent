@@ -50,6 +50,9 @@ TOOL_LABELS = {
 
 st.set_page_config(page_title="抢票智能体 · 测试控制台", layout="wide")
 st.title("出行服务智能助手 · 执行 trace 控制台")
+engine_label = "LangChain Mock" if config.ENGINE == "langchain" and config.PROVIDER == "mock" else (
+    "LangChain Live（联网实测状态请查证据）" if config.ENGINE == "langchain" else "legacy V2")
+st.caption(f"执行引擎：{engine_label}　|　工具集：{config.LC_TOOLSET if config.ENGINE == 'langchain' else '原 8 工具'}")
 st.caption(f"当前模型提供者：{config.PROVIDER} / {config.MODEL_NAME}　|　后端模式："
            f"{'HTTP(FastAPI)' if config.USE_HTTP_MOCK else '纯函数(mock_core)'}")
 st.info("全部班次与政策均为虚构模拟。Mock 是离线规则剧本；真实模型表现需独立测试。")
@@ -61,13 +64,15 @@ if "sid" not in st.session_state:
 with st.sidebar:
     st.subheader("Mock 变异开关")
     st.caption("人为注入缺陷，只影响本浏览器会话；恢复后新建会话再验收。")
+    if config.ENGINE == "langchain":
+        st.caption("六变异仅在 legacy 模式开放；LangChain 模式保留真实执行轨迹。")
     if st.button("恢复正常模式"):
         for name in providers.MUTATION_NAMES:
             st.session_state["mutation_" + name] = False
         st.session_state.mutations.clear()
     for name in providers.MUTATION_NAMES:
-        enabled = st.checkbox(name, key="mutation_" + name, disabled=config.PROVIDER != "mock")
-        if enabled and config.PROVIDER == "mock":
+        enabled = st.checkbox(name, key="mutation_" + name, disabled=config.PROVIDER != "mock" or config.ENGINE != "legacy")
+        if enabled and config.PROVIDER == "mock" and config.ENGINE == "legacy":
             st.session_state.mutations[name] = 1 if name == "date_offset" else True
         else:
             st.session_state.mutations.pop(name, None)

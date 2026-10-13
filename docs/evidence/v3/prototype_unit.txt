@@ -1,0 +1,29 @@
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+test_backend_error_returns_to_model_without_secret (test_langchain_agent.LangChainPrototypeTests.test_backend_error_returns_to_model_without_secret) ... ok
+test_distinct_sessions_are_isolated (test_langchain_agent.LangChainPrototypeTests.test_distinct_sessions_are_isolated) ... ok
+test_legacy_and_mutation_behavior_are_retained (test_langchain_agent.LangChainPrototypeTests.test_legacy_and_mutation_behavior_are_retained) ... ok
+test_live_requires_key_before_network (test_langchain_agent.LangChainPrototypeTests.test_live_requires_key_before_network) ... ok
+test_model_budget_and_recovery_are_not_graph_node_count (test_langchain_agent.LangChainPrototypeTests.test_model_budget_and_recovery_are_not_graph_node_count) ... ok
+test_model_exception_is_safe_and_returns_stop (test_langchain_agent.LangChainPrototypeTests.test_model_exception_is_safe_and_returns_stop) ... ok
+test_multiturn_kind_date_and_seat_inheritance (test_langchain_agent.LangChainPrototypeTests.test_multiturn_kind_date_and_seat_inheritance) ... ok
+test_original_schema_and_invalid_arguments (test_langchain_agent.LangChainPrototypeTests.test_original_schema_and_invalid_arguments) ... ok
+test_policy_returns_checkable_source (test_langchain_agent.LangChainPrototypeTests.test_policy_returns_checkable_source) ... ok
+test_reset_removes_framework_thread_state (test_langchain_agent.LangChainPrototypeTests.test_reset_removes_framework_thread_state) ... ok
+test_single_query_runs_framework_and_feedback (test_langchain_agent.LangChainPrototypeTests.test_single_query_runs_framework_and_feedback) ... ok
+test_trace_jsonl_equals_return_value (test_langchain_agent.LangChainPrototypeTests.test_trace_jsonl_equals_return_value) ... ok
+
+----------------------------------------------------------------------
+Ran 12 tests in 0.510s
+
+OK

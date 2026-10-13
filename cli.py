@@ -18,6 +18,7 @@ import config
 
 
 def print_result(r, show_trace=True):
+    print(f"[engine] {config.ENGINE}  [provider] {r['provider']}")
     print(f"\n[reply] {r['reply']}")
     if show_trace:
         print(f"[tools] {r['tool_sequence']}")

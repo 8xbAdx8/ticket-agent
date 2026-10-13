@@ -1,0 +1,5 @@
+实际命令：python scripts/verify_v3.py --output-dir docs/evidence/v3/prototype
+结果：AssertionError；首次 CLI once 返回 exit_code=0，验证脚本错误要求 stdout 包含 langchain_mock。
+原因：原 CLI 只输出回复、工具与结束原因，没有 provider；实际框架 Trace 的 provider 已为 langchain_mock。
+修正：读取实际 CLI JSONL 的 provider 来确认执行引擎。另补充 CLI 引擎/provider 提示供人工辨识。
+本次原 API 结果、框架事件和 CLI Trace 保留在 prototype/，没有覆盖或删除。

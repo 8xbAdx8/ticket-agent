@@ -42,7 +42,7 @@ def main():
             return name  # 不将本机绝对路径写入报告
     runtime = ROOT / "artifacts" / "runtime" / ("verify-" + uuid.uuid4().hex[:8])
     runtime.mkdir(parents=True)
-    env = dict(os.environ, PYTHONIOENCODING="utf-8", AGENT_PROVIDER="mock", AGENT_USE_HTTP="0", AGENT_VECTOR_RAG="0",
+    env = dict(os.environ, PYTHONIOENCODING="utf-8", AGENT_ENGINE="legacy", AGENT_PROVIDER="mock", AGENT_USE_HTTP="0", AGENT_VECTOR_RAG="0",
                AGENT_DB_PATH=str(runtime / "tickets.db"), AGENT_TRACE_DIR=str(runtime / "traces"))
     def sanitize(text):
         for path in (str(ROOT), str(Path.home()), str(Path(sys.base_prefix))):
