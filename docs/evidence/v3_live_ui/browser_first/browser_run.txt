@@ -1,0 +1,2 @@
+page.waitForFunction: Timeout 30000ms exceeded.
+    at main (D:\codexproject\ticket-agent\scripts\capture_v3_live_ui.cjs:32:18)

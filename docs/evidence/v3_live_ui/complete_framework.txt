@@ -1,0 +1,3 @@
+2026-10-13 21:43:06.007 WARNING streamlit.runtime.scriptrunner_utils.script_run_context: Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+已生成 2100 条虚构余票记录
+{"status": "passed", "api_turns": 11, "tools": ["query_tickets", "monitor_seat", "lock_seat", "create_order", "pay_order", "cancel_order", "query_order", "search_policy"], "web_passed": true, "protected": 99}

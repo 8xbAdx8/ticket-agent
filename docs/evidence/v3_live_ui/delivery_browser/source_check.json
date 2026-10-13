@@ -1,0 +1,11 @@
+{
+  "provider": "langchain_mock",
+  "toolset": "all",
+  "model_config": "glm-4-flash",
+  "real_model_tested": false,
+  "source_sha256": {
+    "web/app.py": "f17177d38efdbd7570a38614fc9a41c264c958cd17312836190550234b63af8c",
+    "web/presentation.py": "4d25db5a5de11269d6eb0bfe8c791b9a0b8c1534a382f04ef00ebe4b986b95de",
+    "web/theme.css": "3acd187f1b5b6616f21ec1358a6423c8903cb64f05cabe23fea13ef963cfba45"
+  }
+}

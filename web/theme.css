@@ -1,0 +1,51 @@
+:root { --ta-green:#117d68; --ta-ink:#14313c; --ta-muted:#738991; --ta-line:#e2ebed; }
+[data-testid="stAppViewContainer"] { background:#f5f8f8; }
+[data-testid="stHeader"] { background:transparent; }
+.stMainBlockContainer { max-width:1550px; padding-top:2.6rem; padding-bottom:2rem; }
+[data-testid="stSidebar"] { background:white; border-right:1px solid var(--ta-line); }
+[data-testid="stSidebar"] .stButton > button { width:100%; }
+h1,h2,h3,p { color:var(--ta-ink); }
+h1 { font-size:2rem !important; letter-spacing:-.04em; }
+h3 { font-size:1.15rem !important; }
+.brand { display:flex; align-items:center; gap:12px; margin:8px 0 28px; }
+.brand-icon { display:grid; place-items:center; background:#14313c; color:white; border-radius:12px; width:42px; height:42px; font-style:italic; font-size:24px; font-weight:700; }
+.brand small { display:block; color:var(--ta-muted); font-size:11px; margin-top:3px; }
+.eyebrow { color:var(--ta-green); letter-spacing:2px; font-size:10px; margin-bottom:14px; }
+.mode-card { background:#f5f8f8; border:1px solid var(--ta-line); border-radius:12px; padding:16px; font-size:13px; margin:16px 0; }
+.mode-card small { display:block; color:var(--ta-muted); margin-top:8px; }
+.mode-badge { display:inline-block; background:#eaf6f1; color:var(--ta-green); padding:5px 12px; border-radius:24px; font-size:12px; }
+[data-testid="stVerticalBlockBorderWrapper"] > div { background:white; border-radius:14px; }
+.st-key-conversation_panel, .st-key-trace_panel { background:white; border-color:var(--ta-line) !important; border-radius:14px !important; }
+[data-baseweb="tab-highlight"] { background-color:var(--ta-green) !important; }
+[data-testid="stChatMessage"] { background:transparent; padding:12px 0; }
+[data-testid="stChatMessage"] p { font-size:14px; line-height:1.8; }
+[data-testid="stMetric"] { background:#f5f8fa; border-radius:10px; padding:12px; min-width:0; }
+[data-testid="stMetricLabel"] { font-size:11px; color:var(--ta-muted); }
+[data-testid="stMetricValue"] { font-size:20px; color:var(--ta-ink); }
+.stButton > button { border-radius:8px; border-color:var(--ta-line); }
+.stButton > button[kind="primary"] { background:var(--ta-green); border-color:var(--ta-green); color:white; }
+.stButton > button[kind="primary"] p { color:white; }
+.ticket-card { display:grid; grid-template-columns:1fr 1.25fr .65fr; gap:12px; align-items:center; border:1px solid var(--ta-line); border-radius:10px; padding:15px; margin:9px 0; color:var(--ta-ink); }
+.ticket-card strong { font-size:17px; }
+.muted { color:var(--ta-muted); font-size:11px; margin-top:5px; overflow-wrap:anywhere; }
+.route { text-align:center; font-size:13px; }
+.route span { color:#98b1b5; margin:0 5px; }
+.price { text-align:right; }
+.stock { color:var(--ta-green); font-size:11px; margin-top:5px; }
+.order-card { border:1px solid #dbeae3; border-radius:12px; background:#f7fcf9; padding:20px; margin:12px 0; }
+.order-top { display:flex; justify-content:space-between; margin-bottom:16px; font-size:13px; }
+.order-top span { background:#fff2df; color:#956c38; border-radius:5px; padding:3px 8px; }
+.order-money { display:flex; justify-content:space-between; border-top:1px solid #e1ede6; padding-top:14px; margin-top:16px; color:var(--ta-muted); font-size:12px; }
+.order-money strong { font-size:20px; color:var(--ta-green); }
+.policy-card { border:1px solid var(--ta-line); border-radius:10px; padding:18px; margin:10px 0; }
+.policy-card strong { display:block; margin-top:8px; }
+.policy-card p { white-space:pre-line; font-size:13px; line-height:1.9; margin:10px 0; }
+.tool-row { display:flex; gap:12px; align-items:center; padding:12px 0; border-bottom:1px solid var(--ta-line); color:var(--ta-ink); }
+.tool-number { display:grid; place-items:center; border-radius:50%; background:#eaf6f1; color:var(--ta-green); width:27px; height:27px; font-size:12px; flex-shrink:0; }
+.tool-info { flex:1; min-width:0; font-size:13px; overflow-wrap:anywhere; }
+.tool-time { color:var(--ta-muted); font-size:11px; }
+.ticket-agent-processing { display:flex; align-items:center; gap:12px; padding:28px 18px; background:#f5fbf8; border:1px solid #dfeee6; border-radius:12px; color:var(--ta-green); }
+.ticket-agent-processing-icon { width:20px; height:20px; border:2px solid #dbeae3; border-top-color:var(--ta-green); border-radius:50%; animation:ticket-agent-spin .8s linear infinite; }
+@keyframes ticket-agent-spin { to { transform:rotate(360deg); } }
+@media(prefers-reduced-motion:reduce) { .ticket-agent-processing-icon { animation:none; } }
+@media(max-width:640px) { .stMainBlockContainer { padding:1.5rem 1rem; } h1 { font-size:1.5rem !important; } .ticket-card { padding:12px; gap:7px; grid-template-columns:1fr 1fr .7fr; } .ticket-card strong { font-size:14px; } .route { font-size:11px; } }

@@ -1,0 +1,132 @@
+{
+  "ancestors": [
+    "<div class=\"ticket-card\">\n          <div><strong>G7303</strong><div class=\"muted\">二等座 · 2026-10-14</div></div>\n          <div class=\"route\"><b>12:34 <span>→</span> 13:34</b><div class=\"muted\">上海 → 杭州</div></div>\n          <div class=\"price\"><strong>¥73.0</strong><div class=\"stock\">余票 51 张</div></div></div>",
+    "<div data-testid=\"stMarkdownContainer\" class=\"st-emotion-cache-1y4lfdl epcrwu50\"><div class=\"ticket-card\">\n          <div><strong>G7303</strong><div class=\"muted\">二等座 · 2026-10-14</div></div>\n          <div class=\"route\"><b>12:34 <span>→</span> 13:34</b><div class=\"muted\">上海 → 杭州</div></div>\n          <div class=\"price\"><strong>¥73.0</strong><div class=\"stock\">余票 51 张</div></div></div><div class=\"ticket-card\">\n          <div><strong>G7302</strong><div class=\"muted\">二等座 · 2026-10-14</div></div>\n          <div class=\"route\"><b>09:17 <span>→</span> 10:17</b><div class=\"muted\">上海 → 杭州</div></div>\n",
+    "<div class=\"st-emotion-cache-k2h9z6 e1o1x6gp2\"><div data-testid=\"stMarkdownContainer\" class=\"st-emotion-cache-1y4lfdl epcrwu50\"><div class=\"ticket-card\">\n          <div><strong>G7303</strong><div class=\"muted\">二等座 · 2026-10-14</div></div>\n          <div class=\"route\"><b>12:34 <span>→</span> 13:34</b><div class=\"muted\">上海 → 杭州</div></div>\n          <div class=\"price\"><strong>¥73.0</strong><div class=\"stock\">余票 51 张</div></div></div><div class=\"ticket-card\">\n          <div><strong>G7302</strong><div class=\"muted\">二等座 · 2026-10-14</div></div>\n          <div class=\"route\"><b>09:17 <span>→</span> 1",
+    "<div class=\"stMarkdown\" data-testid=\"stMarkdown\"><div class=\"st-emotion-cache-k2h9z6 e1o1x6gp2\"><div data-testid=\"stMarkdownContainer\" class=\"st-emotion-cache-1y4lfdl epcrwu50\"><div class=\"ticket-card\">\n          <div><strong>G7303</strong><div class=\"muted\">二等座 · 2026-10-14</div></div>\n          <div class=\"route\"><b>12:34 <span>→</span> 13:34</b><div class=\"muted\">上海 → 杭州</div></div>\n          <div class=\"price\"><strong>¥73.0</strong><div class=\"stock\">余票 51 张</div></div></div><div class=\"ticket-card\">\n          <div><strong>G7302</strong><div class=\"muted\">二等座 · 2026-10-14</div></div>\n     ",
+    "<div class=\"stElementContainer element-container st-emotion-cache-3pwa5w e6x7pi1\" data-testid=\"stElementContainer\" data-stale=\"false\" width=\"100%\" height=\"auto\" overflow=\"visible\"><div class=\"stMarkdown\" data-testid=\"stMarkdown\"><div class=\"st-emotion-cache-k2h9z6 e1o1x6gp2\"><div data-testid=\"stMarkdownContainer\" class=\"st-emotion-cache-1y4lfdl epcrwu50\"><div class=\"ticket-card\">\n          <div><strong>G7303</strong><div class=\"muted\">二等座 · 2026-10-14</div></div>\n          <div class=\"route\"><b>12:34 <span>→</span> 13:34</b><div class=\"muted\">上海 → 杭州</div></div>\n          <div class=\"price\"><s",
+    "<div direction=\"column\" overflow=\"visible\" height=\"auto\" class=\"stVerticalBlock st-emotion-cache-q25c8l e6x7pi3\" data-testid=\"stVerticalBlock\" data-test-wrap=\"false\" data-test-scroll-behavior=\"normal\"><div data-testid=\"stLayoutWrapper\" class=\"st-emotion-cache-18kf3ut e6x7pi5\" width=\"100%\" height=\"auto\" overflow=\"visible\"><div class=\"stChatMessage st-emotion-cache-1fee4w7 exttvjz0\" data-testid=\"stChatMessage\"><div class=\"st-emotion-cache-1dgsum0 exttvjz2\">👤</div><div data-testid=\"stChatMessageContent\" aria-label=\"Chat message from user\" class=\"st-emotion-cache-1flajlm exttvjz1\"><div direction="
+  ],
+  "buttons": [
+    {
+      "label": "",
+      "title": null,
+      "text": "keyboard_double_arrow_left"
+    },
+    {
+      "label": "",
+      "title": null,
+      "text": "清空会话"
+    },
+    {
+      "label": "",
+      "title": null,
+      "text": "恢复正常模式"
+    },
+    {
+      "label": "",
+      "title": null,
+      "text": "Deploy"
+    },
+    {
+      "label": "Main menu",
+      "title": null,
+      "text": ""
+    },
+    {
+      "label": "Open",
+      "title": null,
+      "text": ""
+    },
+    {
+      "label": "",
+      "title": null,
+      "text": "发送"
+    },
+    {
+      "label": "Open",
+      "title": null,
+      "text": ""
+    },
+    {
+      "label": "Copy to clipboard",
+      "title": null,
+      "text": ""
+    },
+    {
+      "label": "Show/hide columns",
+      "title": null,
+      "text": ""
+    },
+    {
+      "label": "Download as CSV",
+      "title": null,
+      "text": ""
+    },
+    {
+      "label": "Search",
+      "title": null,
+      "text": ""
+    },
+    {
+      "label": "Fullscreen",
+      "title": null,
+      "text": ""
+    },
+    {
+      "label": "Copy to clipboard",
+      "title": null,
+      "text": ""
+    },
+    {
+      "label": "",
+      "title": null,
+      "text": "下载本轮 Trace"
+    },
+    {
+      "label": "Show/hide columns",
+      "title": null,
+      "text": ""
+    },
+    {
+      "label": "Download as CSV",
+      "title": null,
+      "text": ""
+    },
+    {
+      "label": "Search",
+      "title": null,
+      "text": ""
+    },
+    {
+      "label": "Fullscreen",
+      "title": null,
+      "text": ""
+    },
+    {
+      "label": "Open",
+      "title": null,
+      "text": ""
+    },
+    {
+      "label": "Copy to clipboard",
+      "title": null,
+      "text": ""
+    },
+    {
+      "label": "Copy to clipboard",
+      "title": null,
+      "text": ""
+    },
+    {
+      "label": "Copy to clipboard",
+      "title": null,
+      "text": ""
+    },
+    {
+      "label": "Copy to clipboard",
+      "title": null,
+      "text": ""
+    }
+  ]
+}

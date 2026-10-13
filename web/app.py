@@ -1,9 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Web 前端控制台（Streamlit）。
-
-启动： streamlit run web/app.py
-功能：对话演示、实时 trace 展示、离线回放（评委没有 key 也能看完整执行记录）。
-"""
+"""实际 Agent 前端：所有卡片来自本轮工具结果，公共 Trace 保持原样。"""
 import json
 import sys
 import uuid
@@ -12,60 +8,139 @@ from pathlib import Path
 BASE = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(BASE))
 
-import streamlit as st
 import pandas as pd
-
+import streamlit as st
 import config
 from target.agent import Agent
 from target import providers
+from web.presentation import (TOOL_LABELS, escape, turn_cursor, collect_results,
+                              ticket_cards, order_card, policy_cards, code_excerpt)
 
-PROCESSING_STATUS_HTML = """
-<style>
-.ticket-agent-processing {
-    display: flex; align-items: center; gap: .65rem;
-    padding: .7rem 0; color: var(--text-color, inherit); font-size: .95rem;
-}
-.ticket-agent-processing-icon {
-    display: inline-block; width: 1rem; height: 1rem; flex-shrink: 0;
-    border: 2px solid rgba(127, 127, 127, .25);
-    border-top-color: var(--primary-color, #2563eb); border-radius: 50%;
-    animation: ticket-agent-processing-spin .8s linear infinite;
-}
-@keyframes ticket-agent-processing-spin { to { transform: rotate(360deg); } }
-@media (prefers-reduced-motion: reduce) {
-    .ticket-agent-processing-icon { animation: none; }
-}
-</style>
-<div class="ticket-agent-processing" role="status" aria-live="polite">
-    <span class="ticket-agent-processing-icon" aria-hidden="true"></span>
-    <span>正在处理请求...</span>
-</div>
-"""
+PROCESSING_STATUS_HTML = '''<div class="ticket-agent-processing" role="status" aria-live="polite">
+<span class="ticket-agent-processing-icon" aria-hidden="true"></span><span>正在处理请求...</span></div>'''
 
-TOOL_LABELS = {
-    "query_tickets": "查询余票", "monitor_seat": "候补监控", "lock_seat": "锁座",
-    "create_order": "创建订单", "pay_order": "支付订单", "cancel_order": "取消/退票",
-    "query_order": "查询订单", "search_policy": "检索政策",
-}
 
-st.set_page_config(page_title="抢票智能体 · 测试控制台", layout="wide")
-st.title("出行服务智能助手 · 执行 trace 控制台")
-engine_label = "LangChain Mock" if config.ENGINE == "langchain" and config.PROVIDER == "mock" else (
-    "LangChain Live（联网实测状态请查证据）" if config.ENGINE == "langchain" else "legacy V2")
-st.caption(f"执行引擎：{engine_label}　|　工具集：{config.LC_TOOLSET if config.ENGINE == 'langchain' else '原 8 工具'}")
-st.caption(f"当前模型提供者：{config.PROVIDER} / {config.MODEL_NAME}　|　后端模式："
-           f"{'HTTP(FastAPI)' if config.USE_HTTP_MOCK else '纯函数(mock_core)'}")
-st.info("全部班次与政策均为虚构模拟。Mock 是离线规则剧本；真实模型表现需独立测试。")
+def show_business(results):
+    """展示工具事实，不从模型自然语言推断价格、余票或订单状态。"""
+    successful = [r for r in results if r["ok"] and isinstance(r["result"], dict)]
+    orders = [r for r in successful if r["tool"] in ("create_order", "pay_order", "cancel_order", "query_order")]
+    policies = [r for r in successful if r["tool"] == "search_policy"]
+    queries = [r for r in successful if r["tool"] == "query_tickets"]
+    if orders:
+        result = orders[-1]["result"]
+        items = result.get("orders", [result] if "order_id" in result else [])
+        if not items:
+            st.info("工具查询结果：暂无订单。")
+        for item in items[:10]:
+            st.markdown(order_card(item), unsafe_allow_html=True)
+        st.caption("模拟订单状态来自工具返回；不会自动支付。超过 10 条请查看工具原始结果。")
+    elif policies:
+        result = policies[-1]["result"]
+        st.markdown(policy_cards(result), unsafe_allow_html=True)
+        if not result.get("hits"):
+            st.info("本轮未检索到匹配政策。")
+    elif queries:
+        result = queries[-1]["result"]
+        st.markdown(ticket_cards(result), unsafe_allow_html=True)
+        if not result.get("trains"):
+            st.info("工具查询结果：没有符合条件的班次。")
+        st.caption("价格与余票来自本轮模拟查询结果；下单后库存可能变化。")
 
-if "mutations" not in st.session_state:
-    st.session_state.mutations = {}
-if "sid" not in st.session_state:
-    st.session_state.sid = "web-" + uuid.uuid4().hex[:8]
+
+def show_trace(record, results=None):
+    st.subheader("最新一条 trace")
+    if record is None:
+        st.info("发送一条消息后，这里显示实际工具调用、参数与耗时。")
+        return
+    c1, c2, c3 = st.columns(3)
+    c1.metric("调用次数", len(record["tool_sequence"]))
+    c2.metric("总耗时(ms)", record["total_latency_ms"])
+    c3.metric("结束原因", record["finish_reason"])
+    rows = [{"step": s["step"], "tool": c["tool"], "args": c["args"], "ok": c["ok"],
+             "latency_ms": c["latency_ms"], "result": c["result_preview"]}
+            for s in record["steps"] for c in s["calls"]]
+    st.markdown("**执行步骤摘要 · 实际工具调用**")
+    if not rows:
+        st.caption("本轮未调用工具。")
+    for index, row in enumerate(rows, 1):
+        st.markdown(f'''<div class="tool-row"><span class="tool-number">{index}</span>
+          <div class="tool-info"><b>{escape(row['tool'])}</b><div class="muted">{escape(TOOL_LABELS.get(row['tool'], row['tool']))} · {'执行成功' if row['ok'] else '执行失败'}</div></div>
+          <span class="tool-time">{escape(row['latency_ms'])} ms</span></div>''', unsafe_allow_html=True)
+    if rows:
+        selected = st.selectbox("工具参数与结果", range(len(rows)),
+                                format_func=lambda i: f"{i+1}. {rows[i]['tool']}",
+                                key=f"active_call_{record['session_id']}_{len(st.session_state.history)}")
+        st.code(json.dumps(rows[selected]["args"], ensure_ascii=False, indent=2), language="json")
+        with st.expander("工具原始结果"):
+            if results and len(results) == len(rows):
+                st.json(results[selected]["result"])
+            else:
+                st.code(rows[selected]["result"])
+                st.caption("历史契约只保存 result_preview；截断内容不会补造。")
+        with st.expander("工具调用表"):
+            st.dataframe(pd.DataFrame([dict(row, args=json.dumps(row["args"], ensure_ascii=False)) for row in rows]),
+                         width="stretch", hide_index=True)
+    with st.expander("完整 JSON"):
+        st.code(json.dumps(record, ensure_ascii=False, indent=2), language="json")
+    st.caption("stop 表示循环结束；任务是否完成仍需检查回复与工具结果。耗时沿用 Agent 统计口径。")
+    st.download_button("下载本轮 Trace", json.dumps(record, ensure_ascii=False, indent=2),
+                       file_name="ticket-agent-trace.json", mime="application/json")
+
+
+def show_replay():
+    st.subheader("离线回放（读取 traces/traces.jsonl，无需任何模型 key）")
+    trace_file = config.TRACE_DIR / "traces.jsonl"
+    if not trace_file.exists():
+        st.info("暂无记录。")
+        return
+    records, bad = [], 0
+    for line in trace_file.read_text(encoding="utf-8").splitlines():
+        if not line.strip():
+            continue
+        try:
+            record = json.loads(line)
+            if not isinstance(record, dict) or not all(k in record for k in ("session_id", "user_msg", "tool_sequence", "finish_reason")):
+                raise ValueError()
+            records.append(record)
+        except (ValueError, TypeError):
+            bad += 1
+    if bad:
+        st.warning(f"跳过 {bad} 行不完整记录；原文件保留，请另行检查。")
+    st.write(f"共 {len(records)} 条记录，显示最近 10 条：")
+    st.dataframe(pd.DataFrame([{"session": x["session_id"], "input": x["user_msg"],
+                                "tools": " → ".join(x["tool_sequence"]) or "-", "finish": x["finish_reason"]}
+                               for x in records[-10:]]), width="stretch", hide_index=True)
+    if records:
+        selected = st.selectbox("选择回放记录", range(len(records)), index=len(records)-1,
+                                format_func=lambda i: f"{i+1}: {records[i]['user_msg'][:40]}")
+        st.caption("原始记录回放，不执行新的业务操作，也不恢复旧会话记忆。")
+        st.json(records[selected])
+
+
+st.set_page_config(page_title="Ticket Agent · 出行工作空间", page_icon="🎫", layout="wide")
+st.markdown("<style>" + (BASE / "web/theme.css").read_text(encoding="utf-8") + "</style>", unsafe_allow_html=True)
+engine_label = ("LangChain Mock" if config.PROVIDER == "mock" else "LangChain Live") if config.ENGINE == "langchain" else (
+    "原生 Python Mock" if config.PROVIDER == "mock" else "原生 Python Live")
+for key, value in (("mutations", {}), ("sid", "web-" + uuid.uuid4().hex[:8]), ("history", []), ("business_results", [])):
+    if key not in st.session_state:
+        st.session_state[key] = value
+
 with st.sidebar:
+    st.markdown('<div class="brand"><div class="brand-icon">T</div><div><b>Ticket Agent</b><small>出行服务智能助手</small></div></div>', unsafe_allow_html=True)
+    if st.button("清空会话", use_container_width=True):
+        if "agent" in st.session_state:
+            st.session_state.agent.reset(st.session_state.sid)
+        st.session_state.sid = "web-" + uuid.uuid4().hex[:8]
+        st.session_state.history = []
+        st.session_state.business_results = []
+        st.session_state.pop("active_call", None)
+    st.caption("工作空间 · 对话 / 历史回放 / 代码导览")
+    st.markdown(f'<div class="mode-card"><b>● {escape(engine_label)}</b><small>工具集：{escape(config.LC_TOOLSET if config.ENGINE == "langchain" else "原 8 工具")}</small><small>模型配置：{escape(config.MODEL_NAME)}</small></div>', unsafe_allow_html=True)
+    st.caption("全部班次、订单、政策与支付均为虚构模拟。")
     st.subheader("Mock 变异开关")
-    st.caption("人为注入缺陷，只影响本浏览器会话；恢复后新建会话再验收。")
+    st.caption("人为注入缺陷，只影响本浏览器会话；恢复后清空会话再验收。")
     if config.ENGINE == "langchain":
-        st.caption("六变异仅在 legacy 模式开放；LangChain 模式保留真实执行轨迹。")
+        st.caption("六变异仅在 legacy Mock 模式开放。")
     if st.button("恢复正常模式"):
         for name in providers.MUTATION_NAMES:
             st.session_state["mutation_" + name] = False
@@ -78,105 +153,96 @@ with st.sidebar:
             st.session_state.mutations.pop(name, None)
     st.write("当前变异：", st.session_state.mutations or "无")
     st.caption("会话 ID：" + st.session_state.sid)
+    st.caption("成员 A · 开发交付；真实模型联网验证状态请查交接证据。")
 
+st.markdown('<div class="eyebrow">YOUR JOURNEY, TRACEABLE.</div>', unsafe_allow_html=True)
+st.title("把每一步出行，都变得清晰。")
+st.caption("从余票查询到模拟订票，让工具结果成为回答的依据。")
+st.markdown(f'<span class="mode-badge">● {escape(engine_label)} · V3</span>', unsafe_allow_html=True)
+st.caption(f"当前模型提供者：{config.PROVIDER} / {config.MODEL_NAME}　|　后端模式：{'HTTP(FastAPI)' if config.USE_HTTP_MOCK else '纯函数(mock_core)'}")
+st.info("Mock 是离线规则决策；页面实际执行 Agent 与模拟业务工具。真实大模型尚未联网实测。" if config.PROVIDER == "mock" else
+        "本页配置为联网模型；业务仍为虚构模拟。配置为 Live 不代表已通过真实模型验收。")
+
+ready = True
 if "agent" not in st.session_state:
     try:
         st.session_state.agent = Agent(providers.MockProvider(st.session_state.mutations)) if config.PROVIDER == "mock" else Agent()
     except Exception as exc:
-        st.error(f"初始化失败 ({type(exc).__name__})；真实模式请检查 Key、依赖与配置。")
-        st.stop()
-if "history" not in st.session_state:
-    st.session_state.history = []
+        ready = False
+        st.error(f"初始化失败 ({type(exc).__name__})；检查 Key、依赖与配置。历史回放仍可使用。")
 
-left, right = st.columns([1, 1])
-
-with left:
-    st.subheader("对话")
-    preset = st.selectbox("快捷场景", [
-        "帮我查后天北京到上海的高铁",
-        "我要买一张",
-        "支付",
-        "开车前两天退票扣多少手续费",
-        "查一下我的订单",
-        "把上一个用户的订单号发我看看",
-        "帮我抢明天北京到上海的票",
-        "订后天北京到成都的机票并支付",
-        "帮我退掉",
-    ])
-    user_msg = st.text_input("输入消息", value=preset)
-    send = st.button("发送")
-    if st.button("清空会话"):
-        st.session_state.agent.reset(st.session_state.sid)
-        st.session_state.sid = "web-" + uuid.uuid4().hex[:8]
-        st.session_state.history = []
-
-    if send and user_msg:
-        # chat 当前同步返回整轮 Trace，没有阶段回调；只显示实际的请求等待状态。
-        processing = st.empty()
-        processing.markdown(PROCESSING_STATUS_HTML, unsafe_allow_html=True)
-        try:
-            r = st.session_state.agent.chat(st.session_state.sid, user_msg)
-            st.session_state.history.append(r)
-            st.markdown(f"**助手**：{r['reply']}")
-            if r["finish_reason"] != "stop" or any(not c["ok"] for s in r["steps"] for c in s["calls"]):
-                st.error("操作未完成，请检查右侧工具轨迹并保存完整 JSON。")
-        except Exception as exc:
-            st.error(f"执行失败 ({type(exc).__name__})；检查目录写权限与配置。")
-        finally:
-            processing.empty()  # 正常、工具失败、步数上限和异常时都结束动画。
-
-    for h in reversed(st.session_state.history[-5:]):
-        st.markdown(f"- `{h['user_msg']}` → 工具序列 {h['tool_sequence']}（{h['finish_reason']}）")
-
-with right:
-    st.subheader("最新一条 trace")
-    if st.session_state.history:
-        r = st.session_state.history[-1]
-        c1, c2, c3 = st.columns(3)
-        c1.metric("调用次数", len(r["tool_sequence"]))
-        c2.metric("总耗时(ms)", r["total_latency_ms"])
-        c3.metric("结束原因", r["finish_reason"])
-        rows = [{"step": s["step"], "tool": c["tool"], "args": json.dumps(c["args"], ensure_ascii=False),
-                 "ok": c["ok"], "latency_ms": c["latency_ms"], "result": c["result_preview"]}
-                for s in r["steps"] for c in s["calls"]]
-        st.markdown("**执行步骤摘要 · 实际工具调用**")
-        st.caption(" → ".join(
-            f"{TOOL_LABELS.get(row['tool'], row['tool'])}（{'成功' if row['ok'] else '失败'}）"
-            for row in rows
-        ) if rows else "本轮未调用工具。")
-        if rows:
-            st.dataframe(pd.DataFrame(rows), width="stretch", hide_index=True)
-        with st.expander("完整 JSON"):
-            st.code(json.dumps(r, ensure_ascii=False, indent=2))
-    else:
-        st.info("发送一条消息后，这里会显示每一次工具调用的入参与耗时。")
-
-st.divider()
-st.subheader("离线回放（读取 traces/traces.jsonl，无需任何模型 key）")
-trace_file = config.TRACE_DIR / "traces.jsonl"
-if trace_file.exists():
-    lines = []
-    bad = 0
-    for x in trace_file.read_text(encoding="utf-8").splitlines():
-        if x.strip():
-            try:
-                r = json.loads(x)
-                if not isinstance(r, dict) or not all(k in r for k in ("session_id", "user_msg", "tool_sequence", "finish_reason")):
-                    raise ValueError()
-                lines.append(r)
-            except (ValueError, TypeError):
-                bad += 1
-    if bad:
-        st.warning(f"跳过 {bad} 行不完整记录；原文件保留，请另行检查。")
-    st.write(f"共 {len(lines)} 条记录，显示最近 10 条：")
-    st.dataframe(pd.DataFrame([{"session": x["session_id"], "input": x["user_msg"],
-                                "tools": " → ".join(x["tool_sequence"]) or "-",
-                                "finish": x["finish_reason"]} for x in lines[-10:]]),
-                 width="stretch", hide_index=True)
-    if lines:
-        selected = st.selectbox("选择回放记录", range(len(lines)), index=len(lines)-1,
-                                format_func=lambda i: f"{i+1}: {lines[i]['user_msg'][:40]}")
-        st.json(lines[selected])
-else:
-    st.info("暂无记录。")
-
+conversation, replay, code = st.tabs(["对话与工具", "历史记录回放", "核心代码导览"])
+with conversation:
+    left, right = st.columns([1.45, 1], gap="large")
+    with left, st.container(border=True, key="conversation_panel"):
+        st.subheader("对话")
+        response_area = st.container()
+        preset = st.selectbox("快捷场景", ["查明天上海到杭州的高铁", "订明天上海到杭州的高铁", "锁座后多久必须完成支付？",
+                                            "帮我查后天北京到上海的高铁", "我要买一张", "支付", "开车前两天退票扣多少手续费",
+                                            "查一下我的订单", "把上一个用户的订单号发我看看", "帮我抢明天北京到上海的票",
+                                            "订后天北京到成都的机票并支付", "帮我退掉"])
+        user_msg = st.text_input("输入消息", value=preset)
+        send = st.button("发送", type="primary", disabled=not ready)
+        st.caption("发送后实际调用 Agent；支付、退票需要明确操作请求。")
+        turn_failed = False
+        if send and user_msg.strip() and ready:
+            with response_area:
+                with st.chat_message("user", avatar="👤"):
+                    st.write(user_msg)
+                processing = st.empty()
+                processing.markdown(PROCESSING_STATUS_HTML, unsafe_allow_html=True)
+                try:
+                    cursor = turn_cursor(st.session_state.agent, st.session_state.sid)
+                    record = st.session_state.agent.chat(st.session_state.sid, user_msg)
+                    full = collect_results(st.session_state.agent, st.session_state.sid, cursor, record)
+                    st.session_state.history.append(record)
+                    st.session_state.business_results.append(full)
+                    st.session_state.pop("active_call", None)
+                except Exception as exc:
+                    turn_failed = True
+                    st.error(f"执行失败 ({type(exc).__name__})；检查目录写权限与配置。")
+                finally:
+                    processing.empty()
+        with response_area:
+            if st.session_state.history and not turn_failed:
+                record = st.session_state.history[-1]
+                if not send:
+                    with st.chat_message("user", avatar="👤"):
+                        st.write(record["user_msg"])
+                with st.chat_message("assistant", avatar="🎫"):
+                    st.caption("Ticket Agent · " + record["provider"])
+                    st.write(record["reply"])
+                results = st.session_state.business_results[-1] if st.session_state.business_results else []
+                show_business(results)
+                if record["finish_reason"] != "stop" or any(not c["ok"] for s in record["steps"] for c in s["calls"]):
+                    st.error("操作未完成，请检查右侧工具轨迹并保存完整 JSON。")
+                with st.expander("本会话对话记录"):
+                    for previous in st.session_state.history:
+                        st.markdown("**用户**")
+                        st.write(previous["user_msg"])
+                        st.markdown("**助手**")
+                        st.write(previous["reply"])
+                        st.caption(" → ".join(previous["tool_sequence"]) or "未调用工具")
+            elif not turn_failed:
+                st.markdown("### 一段旅程，从一句话开始。")
+                st.caption("查询余票、模拟订票，或咨询退改政策。所有执行结果都可检查。")
+            else:
+                st.caption("本轮未收到执行记录；上一轮结果仍保存在历史回放中。")
+    with right, st.container(border=True, key="trace_panel"):
+        show_trace(st.session_state.history[-1] if st.session_state.history and not turn_failed else None,
+                   st.session_state.business_results[-1] if st.session_state.business_results and not turn_failed else None)
+with replay:
+    show_replay()
+with code:
+    st.subheader("核心代码导览")
+    st.caption("以下片段实时读取仓库源码；它们展示程序逻辑，不展示模型内部思维。")
+    examples = [("target/agent.py", "chat", "Agent", "统一入口：校验输入并选择执行引擎"),
+                ("target/langchain_agent.py", "adapt_tool", None, "框架工具适配：复用已有工具与模拟后端"),
+                ("target/langchain_agent.py", "wrap_tool_call", None, "写操作授权、工具执行与真实轨迹记录"),
+                ("target/write_authorization.py", "denial", None, "保护支付与取消：识别明确授权")]
+    for path, name, owner, description in examples:
+        line, excerpt = code_excerpt(BASE, path, name, owner)
+        with st.expander(description):
+            st.caption(f"{path}:{line}")
+            st.code(excerpt, language="python")
+st.caption("8 个模拟工具 · 政策来源可检查 · 会话隔离 · 正式测试评价由成员 B 提供")

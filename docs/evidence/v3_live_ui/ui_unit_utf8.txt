@@ -1,0 +1,25 @@
+test_cards_match_full_tool_results_and_no_extra_calls (tests.test_web_live_ui.LangChainLiveUITests.test_cards_match_full_tool_results_and_no_extra_calls) ... 2026-10-13 21:30:59.956 WARNING streamlit.runtime.scriptrunner_utils.script_run_context: Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+ok
+test_failure_does_not_show_ticket_cards (tests.test_web_live_ui.LangChainLiveUITests.test_failure_does_not_show_ticket_cards) ... 2026-10-13 21:31:01.354 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+ok
+test_order_policy_payment_and_clear (tests.test_web_live_ui.LangChainLiveUITests.test_order_policy_payment_and_clear) ... 2026-10-13 21:31:01.578 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+ok
+test_cards_match_full_tool_results_and_no_extra_calls (tests.test_web_live_ui.LegacyLiveUITests.test_cards_match_full_tool_results_and_no_extra_calls) ... 2026-10-13 21:31:01.929 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+ok
+test_failure_does_not_show_ticket_cards (tests.test_web_live_ui.LegacyLiveUITests.test_failure_does_not_show_ticket_cards) ... 2026-10-13 21:31:02.191 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+ok
+test_order_policy_payment_and_clear (tests.test_web_live_ui.LegacyLiveUITests.test_order_policy_payment_and_clear) ... 2026-10-13 21:31:02.402 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+ok
+test_mismatched_full_result_is_not_presented (tests.test_web_live_ui.PresentationSafetyTests.test_mismatched_full_result_is_not_presented) ... ok
+test_untrusted_tool_text_is_escaped (tests.test_web_live_ui.PresentationSafetyTests.test_untrusted_tool_text_is_escaped) ... ok
+
+----------------------------------------------------------------------
+Ran 8 tests in 2.765s
+
+OK
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录

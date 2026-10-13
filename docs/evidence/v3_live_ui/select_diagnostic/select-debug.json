@@ -1,0 +1,42 @@
+[
+  {
+    "html": "<input aria-label=\"date_offset\" disabled=\"\" type=\"checkbox\" data-react-aria-pressable=\"true\" style=\"\">",
+    "value": "on"
+  },
+  {
+    "html": "<input aria-label=\"skip_lock\" disabled=\"\" type=\"checkbox\" data-react-aria-pressable=\"true\" style=\"\">",
+    "value": "on"
+  },
+  {
+    "html": "<input aria-label=\"repeat_call\" disabled=\"\" type=\"checkbox\" data-react-aria-pressable=\"true\" style=\"\">",
+    "value": "on"
+  },
+  {
+    "html": "<input aria-label=\"infinite_loop\" disabled=\"\" type=\"checkbox\" data-react-aria-pressable=\"true\" style=\"\">",
+    "value": "on"
+  },
+  {
+    "html": "<input aria-label=\"route_error\" disabled=\"\" type=\"checkbox\" data-react-aria-pressable=\"true\" style=\"\">",
+    "value": "on"
+  },
+  {
+    "html": "<input aria-label=\"no_citation\" disabled=\"\" type=\"checkbox\" data-react-aria-pressable=\"true\" style=\"\">",
+    "value": "on"
+  },
+  {
+    "html": "<input aria-label=\"快捷场景\" type=\"text\" aria-autocomplete=\"list\" autocomplete=\"off\" placeholder=\"Choose an option\" autocorrect=\"off\" spellcheck=\"false\" tabindex=\"0\" id=\"react-aria3544331441-:r1g:\" role=\"combobox\" aria-expanded=\"false\" class=\"st-emotion-cache-zfrvrb e1fp86qc1\" data-rac=\"\" value=\"查明天上海到杭州的高铁\" title=\"\" style=\"\">",
+    "value": "查明天上海到杭州的高铁"
+  },
+  {
+    "html": "<input type=\"text\" autocomplete=\"\" placeholder=\"\" tabindex=\"0\" id=\":r1p:\" aria-label=\"输入消息\" data-testid=\"stTextInputField\" class=\"st-emotion-cache-1375sby eqy66r53\" data-rac=\"\" value=\"查明天上海到杭州的高铁\" style=\"\">",
+    "value": "查明天上海到杭州的高铁"
+  },
+  {
+    "html": "<input aria-label=\"工具参数与结果\" type=\"text\" aria-autocomplete=\"list\" autocomplete=\"off\" placeholder=\"Choose an option\" autocorrect=\"off\" spellcheck=\"false\" tabindex=\"0\" id=\"react-aria3544331441-:r2c:\" role=\"combobox\" aria-expanded=\"false\" class=\"st-emotion-cache-zfrvrb e1fp86qc1\" data-rac=\"\" value=\"1. query_tickets\" title=\"\" style=\"\">",
+    "value": "1. query_tickets"
+  },
+  {
+    "html": "<input aria-label=\"选择回放记录\" type=\"text\" aria-autocomplete=\"list\" autocomplete=\"off\" placeholder=\"Choose an option\" autocorrect=\"off\" spellcheck=\"false\" tabindex=\"0\" id=\"react-aria3544331441-:r2u:\" role=\"combobox\" aria-expanded=\"false\" class=\"st-emotion-cache-zfrvrb e1fp86qc1\" data-rac=\"\" value=\"1: 查明天上海到杭州的高铁\" title=\"\" style=\"\">",
+    "value": "1: 查明天上海到杭州的高铁"
+  }
+]

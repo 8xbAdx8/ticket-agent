@@ -1,0 +1,54 @@
+{
+  "scope": "A LangChain Mock prototype verification, not B official testing",
+  "toolset": "all",
+  "tools": [
+    "query_tickets",
+    "monitor_seat",
+    "lock_seat",
+    "create_order",
+    "pay_order",
+    "cancel_order",
+    "query_order",
+    "search_policy"
+  ],
+  "api_turns": 11,
+  "web_apptest_passed": true,
+  "cli_runs": [
+    {
+      "name": "once",
+      "command": "python cli.py once 查明天上海到杭州的高铁",
+      "exit_code": 0
+    },
+    {
+      "name": "chat",
+      "command": "python cli.py chat",
+      "exit_code": 0
+    }
+  ],
+  "protected_files_count": 99,
+  "protected_files_unchanged": true,
+  "real_model_tested": false,
+  "versions": {
+    "langchain": "1.4.5",
+    "langchain-core": "1.6.10",
+    "langchain-openai": "1.7.1",
+    "langgraph": "1.2.15",
+    "streamlit": "1.65.0",
+    "openai": "3.29.0"
+  },
+  "source_sha256": {
+    "target/agent.py": "80fc42cf2cdd34972f8a7a265b9ef6ae4f4ce42b99eda789f8b68bdd507f3c41",
+    "target/langchain_agent.py": "0c7e82dc024922b71c75353d32f378183010de61790d7bd9e92d4034f2549cc8",
+    "target/langchain_model.py": "a3afbf11c1b304558aaa8c00f0e6145155b86598872b47d218d8efd7901eae5a",
+    "target/mock_api.py": "18f810e942536affbde0095df84c8cdf7dd30149827ab0febcd8620c9ebd39e5",
+    "target/mock_core.py": "5577979796adf29175f42169d3f2a03370d0b1c7b375fd7cf94ac63b58f1c07d",
+    "target/providers.py": "b6ae4fd324d855599b55dbc64545a35c4c8ec72d7964142d57f32e5bdfa65c43",
+    "target/rag.py": "afa75847e568b31dfca42d73bc4e5be3f02e742e22326e431c2eaeff74beb827",
+    "target/tools.py": "c7e2cadfa549a1b9a1a34b4c987d6708e46425c0bed261dc97a1872c1fea72a3",
+    "target/trace.py": "bc6fb916a255cfaed55eb2cd5479506ead84edbdabecb97f494152e8eae8070e",
+    "target/write_authorization.py": "b0dac0740ac0570c055a57a387c63cf0897de14f0a7443f74633fd716965a7ac",
+    "target/__init__.py": "4bf3d2f36aecf165b1673c8883c2a18f743e98f3a398a1d6f4fb4301a377a39c",
+    "web/app.py": "1fae1fd45c62d1b2c618b04f7432c96f44919b6b440496fe157c3e7afac2e61d",
+    "web/presentation.py": "4d25db5a5de11269d6eb0bfe8c791b9a0b8c1534a382f04ef00ebe4b986b95de"
+  }
+}

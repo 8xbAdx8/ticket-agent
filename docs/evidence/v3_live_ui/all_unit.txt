@@ -1,0 +1,137 @@
+test_errors_dates_and_sessions (test_agent.AgentTests.test_errors_dates_and_sessions) ... ok
+test_multiturn_and_trace_contract (test_agent.AgentTests.test_multiturn_and_trace_contract) ... ok
+test_six_injected_mutations (test_agent.AgentTests.test_six_injected_mutations) ... ok
+test_waitlist_and_flight (test_agent.AgentTests.test_waitlist_and_flight) ... ok
+test_authorization_and_passenger_match (test_core.CoreTests.test_authorization_and_passenger_match) ... ok
+test_order_idempotency_refund_and_inventory (test_core.CoreTests.test_order_idempotency_refund_and_inventory) ... ok
+test_pending_cancel_and_expiration (test_core.CoreTests.test_pending_cancel_and_expiration) ... ok
+test_schema_fault_and_waitlist (test_core.CoreTests.test_schema_fault_and_waitlist) ... ok
+test_backend_error_returns_to_model_without_secret (test_langchain_agent.LangChainPrototypeTests.test_backend_error_returns_to_model_without_secret) ... ok
+test_distinct_sessions_are_isolated (test_langchain_agent.LangChainPrototypeTests.test_distinct_sessions_are_isolated) ... ok
+test_legacy_and_mutation_behavior_are_retained (test_langchain_agent.LangChainPrototypeTests.test_legacy_and_mutation_behavior_are_retained) ... ok
+test_live_requires_key_before_network (test_langchain_agent.LangChainPrototypeTests.test_live_requires_key_before_network) ... ok
+test_model_budget_and_recovery_are_not_graph_node_count (test_langchain_agent.LangChainPrototypeTests.test_model_budget_and_recovery_are_not_graph_node_count) ... ok
+test_model_exception_is_safe_and_returns_stop (test_langchain_agent.LangChainPrototypeTests.test_model_exception_is_safe_and_returns_stop) ... ok
+test_multiturn_kind_date_and_seat_inheritance (test_langchain_agent.LangChainPrototypeTests.test_multiturn_kind_date_and_seat_inheritance) ... ok
+test_original_schema_and_invalid_arguments (test_langchain_agent.LangChainPrototypeTests.test_original_schema_and_invalid_arguments) ... ok
+test_policy_returns_checkable_source (test_langchain_agent.LangChainPrototypeTests.test_policy_returns_checkable_source) ... ok
+test_reset_removes_framework_thread_state (test_langchain_agent.LangChainPrototypeTests.test_reset_removes_framework_thread_state) ... ok
+test_single_query_runs_framework_and_feedback (test_langchain_agent.LangChainPrototypeTests.test_single_query_runs_framework_and_feedback) ... ok
+test_trace_jsonl_equals_return_value (test_langchain_agent.LangChainPrototypeTests.test_trace_jsonl_equals_return_value) ... ok
+test_unknown_tool_is_an_actual_failed_trace_call (test_langchain_agent.LangChainPrototypeTests.test_unknown_tool_is_an_actual_failed_trace_call) ... ok
+test_sdk_error_is_safe_and_next_turn_can_recover (test_langchain_live_adapter.LangChainLiveAdapterTests.test_sdk_error_is_safe_and_next_turn_can_recover) ... ok
+test_sdk_request_tool_schema_call_id_feedback_and_tokens (test_langchain_live_adapter.LangChainLiveAdapterTests.test_sdk_request_tool_schema_call_id_feedback_and_tokens) ... ok
+test_all_schemas_reused_and_invalid_mode_rejected (test_langchain_orders.LangChainOrderTests.test_all_schemas_reused_and_invalid_mode_rejected) ... ok
+test_buy_does_not_implicitly_authorize_payment (test_langchain_orders.LangChainOrderTests.test_buy_does_not_implicitly_authorize_payment) ... ok
+test_create_requires_this_turn_lock (test_langchain_orders.LangChainOrderTests.test_create_requires_this_turn_lock) ... ok
+test_eight_tools_and_idempotent_payment_and_refund (test_langchain_orders.LangChainOrderTests.test_eight_tools_and_idempotent_payment_and_refund) ... ok
+test_foreign_user_query_stays_denied (test_langchain_orders.LangChainOrderTests.test_foreign_user_query_stays_denied) ... ok
+test_model_cannot_change_order_reference (test_langchain_orders.LangChainOrderTests.test_model_cannot_change_order_reference) ... ok
+test_model_cannot_pay_policy_question_or_negative_command (test_langchain_orders.LangChainOrderTests.test_model_cannot_pay_policy_question_or_negative_command) ... ok
+test_monitor_backend_still_requires_sold_out (test_langchain_orders.LangChainOrderTests.test_monitor_backend_still_requires_sold_out) ... ok
+test_multiple_calls_in_one_model_step_are_serial_and_guarded (test_langchain_orders.LangChainOrderTests.test_multiple_calls_in_one_model_step_are_serial_and_guarded) ... ok
+test_no_extra_lock_even_if_model_repeats (test_langchain_orders.LangChainOrderTests.test_no_extra_lock_even_if_model_repeats) ... ok
+test_permission_boundary_is_conservative (test_langchain_orders.LangChainOrderTests.test_permission_boundary_is_conservative) ... ok
+test_read_only_mode_cannot_execute_orders (test_langchain_orders.LangChainOrderTests.test_read_only_mode_cannot_execute_orders) ... ok
+test_sold_out_and_no_schedule_are_distinct (test_langchain_orders.LangChainOrderTests.test_sold_out_and_no_schedule_are_distinct) ... ok
+test_ids_usage_and_malformed_json (test_provider.ProviderTests.test_ids_usage_and_malformed_json) ... ok
+test_missing_key (test_provider.ProviderTests.test_missing_key) ... ok
+test_def01_explicit_seat_and_tool_validation (test_v2_defects.V2DefectTests.test_def01_explicit_seat_and_tool_validation) ... ok
+test_def01_reset_seat_on_flight_switch (test_v2_defects.V2DefectTests.test_def01_reset_seat_on_flight_switch) ... ok
+test_def02_ambiguous_mode_and_city_request_clarification (test_v2_defects.V2DefectTests.test_def02_ambiguous_mode_and_city_request_clarification) ... ok
+test_def02_omission_inherits_mode_seat_date_and_route (test_v2_defects.V2DefectTests.test_def02_omission_inherits_mode_seat_date_and_route) ... ok
+test_def02_switch_back_to_rail (test_v2_defects.V2DefectTests.test_def02_switch_back_to_rail) ... ok
+test_def03_available_and_no_match_are_distinct (test_v2_defects.V2DefectTests.test_def03_available_and_no_match_are_distinct) ... ok
+test_def03_mixed_inventory_marks_unsellable_rows (test_v2_defects.V2DefectTests.test_def03_mixed_inventory_marks_unsellable_rows) ... ok
+test_def03_sold_out_is_explicit_without_extra_tool_calls (test_v2_defects.V2DefectTests.test_def03_sold_out_is_explicit_without_extra_tool_calls) ... ok
+test_def04_duplicate_payment_explains_idempotency (test_v2_defects.V2DefectTests.test_def04_duplicate_payment_explains_idempotency) ... ok
+test_def05_explicit_pay_my_order_remains_an_operation (test_v2_defects.V2DefectTests.test_def05_explicit_pay_my_order_remains_an_operation) ... ok
+test_def05_payment_deadline_routes_to_policy_with_p11 (test_v2_defects.V2DefectTests.test_def05_payment_deadline_routes_to_policy_with_p11) ... ok
+test_def05_policy_with_existing_order_never_writes (test_v2_defects.V2DefectTests.test_def05_policy_with_existing_order_never_writes) ... ok
+test_def05_purchase_without_payment_and_compound_purchase_payment (test_v2_defects.V2DefectTests.test_def05_purchase_without_payment_and_compound_purchase_payment) ... ok
+test_sdk_function_result_returns_matching_call_id_and_usage (test_v2_provider.V2ProviderTests.test_sdk_function_result_returns_matching_call_id_and_usage) ... ok
+test_sdk_repeated_requests_hit_configured_limit (test_v2_provider.V2ProviderTests.test_sdk_repeated_requests_hit_configured_limit) ... ok
+test_sdk_tool_error_is_returned_to_model (test_v2_provider.V2ProviderTests.test_sdk_tool_error_is_returned_to_model) ... ok
+test_all_controls_and_restore (test_web.WebTests.test_all_controls_and_restore) ... 2026-10-13 21:30:56.420 WARNING streamlit.runtime.scriptrunner_utils.script_run_context: Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+ok
+test_conversation_and_replay (test_web.WebTests.test_conversation_and_replay) ... 2026-10-13 21:30:57.402 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+ok
+test_cards_match_full_tool_results_and_no_extra_calls (test_web_live_ui.LangChainLiveUITests.test_cards_match_full_tool_results_and_no_extra_calls) ... 2026-10-13 21:30:57.708 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+ok
+test_failure_does_not_show_ticket_cards (test_web_live_ui.LangChainLiveUITests.test_failure_does_not_show_ticket_cards) ... 2026-10-13 21:30:57.918 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+ok
+test_order_policy_payment_and_clear (test_web_live_ui.LangChainLiveUITests.test_order_policy_payment_and_clear) ... 2026-10-13 21:30:58.134 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+ok
+test_cards_match_full_tool_results_and_no_extra_calls (test_web_live_ui.LegacyLiveUITests.test_cards_match_full_tool_results_and_no_extra_calls) ... 2026-10-13 21:30:58.476 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+ok
+test_failure_does_not_show_ticket_cards (test_web_live_ui.LegacyLiveUITests.test_failure_does_not_show_ticket_cards) ... 2026-10-13 21:30:58.677 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+ok
+test_order_policy_payment_and_clear (test_web_live_ui.LegacyLiveUITests.test_order_policy_payment_and_clear) ... 2026-10-13 21:30:58.886 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+ok
+test_mismatched_full_result_is_not_presented (test_web_live_ui.PresentationSafetyTests.test_mismatched_full_result_is_not_presented) ... ok
+test_untrusted_tool_text_is_escaped (test_web_live_ui.PresentationSafetyTests.test_untrusted_tool_text_is_escaped) ... ok
+
+----------------------------------------------------------------------
+Ran 64 tests in 4.537s
+
+OK
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录

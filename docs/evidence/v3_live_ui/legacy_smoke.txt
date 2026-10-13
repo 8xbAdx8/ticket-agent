@@ -1,0 +1,1 @@
+{"status": "passed", "commands": 10, "mock_trace_count": 32, "protected_files_unchanged": true, "evidence_dir": "docs/evidence/v3_live_ui/legacy_smoke/verification.json"}

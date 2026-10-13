@@ -1,0 +1,827 @@
+[
+  {
+    "input": "查明天上海到杭州的高铁",
+    "events": [
+      {
+        "event": "model_start",
+        "model_step": 1
+      },
+      {
+        "event": "model_end",
+        "model_step": 1
+      },
+      {
+        "event": "tool_start",
+        "model_step": 1,
+        "tool": "query_tickets",
+        "args": {
+          "from_city": "上海",
+          "to_city": "杭州",
+          "date": "2026-10-14",
+          "kind": "高铁",
+          "seat_type": "二等座"
+        },
+        "call_id": "call_d144d6d4"
+      },
+      {
+        "event": "tool_end",
+        "tool": "query_tickets",
+        "call_id": "call_d144d6d4",
+        "ok": true,
+        "latency_ms": 2,
+        "result": {
+          "trains": [
+            {
+              "kind": "高铁",
+              "train_no": "G7303",
+              "from_city": "上海",
+              "to_city": "杭州",
+              "date": "2026-10-14",
+              "depart": "12:34",
+              "arrive": "13:34",
+              "seat_type": "二等座",
+              "price": 73.0,
+              "seats_left": 51
+            },
+            {
+              "kind": "高铁",
+              "train_no": "G7302",
+              "from_city": "上海",
+              "to_city": "杭州",
+              "date": "2026-10-14",
+              "depart": "09:17",
+              "arrive": "10:17",
+              "seat_type": "二等座",
+              "price": 73.0,
+              "seats_left": 47
+            },
+            {
+              "kind": "高铁",
+              "train_no": "G7301",
+              "from_city": "上海",
+              "to_city": "杭州",
+              "date": "2026-10-14",
+              "depart": "06:00",
+              "arrive": "07:00",
+              "seat_type": "二等座",
+              "price": 73.0,
+              "seats_left": 35
+            }
+          ],
+          "count": 3
+        }
+      },
+      {
+        "event": "model_start",
+        "model_step": 2
+      },
+      {
+        "event": "model_end",
+        "model_step": 2
+      }
+    ]
+  },
+  {
+    "input": "那机票呢",
+    "events": [
+      {
+        "event": "model_start",
+        "model_step": 1
+      },
+      {
+        "event": "model_end",
+        "model_step": 1
+      },
+      {
+        "event": "tool_start",
+        "model_step": 1,
+        "tool": "query_tickets",
+        "args": {
+          "from_city": "上海",
+          "to_city": "杭州",
+          "date": "2026-10-14",
+          "kind": "机票",
+          "seat_type": "经济舱"
+        },
+        "call_id": "call_867bc99d"
+      },
+      {
+        "event": "tool_end",
+        "tool": "query_tickets",
+        "call_id": "call_867bc99d",
+        "ok": true,
+        "latency_ms": 1,
+        "result": {
+          "trains": [],
+          "count": 0
+        }
+      },
+      {
+        "event": "model_start",
+        "model_step": 2
+      },
+      {
+        "event": "model_end",
+        "model_step": 2
+      }
+    ]
+  },
+  {
+    "input": "还是高铁吧",
+    "events": [
+      {
+        "event": "model_start",
+        "model_step": 1
+      },
+      {
+        "event": "model_end",
+        "model_step": 1
+      },
+      {
+        "event": "tool_start",
+        "model_step": 1,
+        "tool": "query_tickets",
+        "args": {
+          "from_city": "上海",
+          "to_city": "杭州",
+          "date": "2026-10-14",
+          "kind": "高铁",
+          "seat_type": "二等座"
+        },
+        "call_id": "call_e121d941"
+      },
+      {
+        "event": "tool_end",
+        "tool": "query_tickets",
+        "call_id": "call_e121d941",
+        "ok": true,
+        "latency_ms": 0,
+        "result": {
+          "trains": [
+            {
+              "kind": "高铁",
+              "train_no": "G7303",
+              "from_city": "上海",
+              "to_city": "杭州",
+              "date": "2026-10-14",
+              "depart": "12:34",
+              "arrive": "13:34",
+              "seat_type": "二等座",
+              "price": 73.0,
+              "seats_left": 51
+            },
+            {
+              "kind": "高铁",
+              "train_no": "G7302",
+              "from_city": "上海",
+              "to_city": "杭州",
+              "date": "2026-10-14",
+              "depart": "09:17",
+              "arrive": "10:17",
+              "seat_type": "二等座",
+              "price": 73.0,
+              "seats_left": 47
+            },
+            {
+              "kind": "高铁",
+              "train_no": "G7301",
+              "from_city": "上海",
+              "to_city": "杭州",
+              "date": "2026-10-14",
+              "depart": "06:00",
+              "arrive": "07:00",
+              "seat_type": "二等座",
+              "price": 73.0,
+              "seats_left": 35
+            }
+          ],
+          "count": 3
+        }
+      },
+      {
+        "event": "model_start",
+        "model_step": 2
+      },
+      {
+        "event": "model_end",
+        "model_step": 2
+      }
+    ]
+  },
+  {
+    "input": "后天呢",
+    "events": [
+      {
+        "event": "model_start",
+        "model_step": 1
+      },
+      {
+        "event": "model_end",
+        "model_step": 1
+      },
+      {
+        "event": "tool_start",
+        "model_step": 1,
+        "tool": "query_tickets",
+        "args": {
+          "from_city": "上海",
+          "to_city": "杭州",
+          "date": "2026-10-15",
+          "kind": "高铁",
+          "seat_type": "二等座"
+        },
+        "call_id": "call_e7edb7f0"
+      },
+      {
+        "event": "tool_end",
+        "tool": "query_tickets",
+        "call_id": "call_e7edb7f0",
+        "ok": true,
+        "latency_ms": 0,
+        "result": {
+          "trains": [
+            {
+              "kind": "高铁",
+              "train_no": "G7302",
+              "from_city": "上海",
+              "to_city": "杭州",
+              "date": "2026-10-15",
+              "depart": "09:17",
+              "arrive": "10:17",
+              "seat_type": "二等座",
+              "price": 73.0,
+              "seats_left": 189
+            },
+            {
+              "kind": "高铁",
+              "train_no": "G7303",
+              "from_city": "上海",
+              "to_city": "杭州",
+              "date": "2026-10-15",
+              "depart": "12:34",
+              "arrive": "13:34",
+              "seat_type": "二等座",
+              "price": 73.0,
+              "seats_left": 156
+            },
+            {
+              "kind": "高铁",
+              "train_no": "G7301",
+              "from_city": "上海",
+              "to_city": "杭州",
+              "date": "2026-10-15",
+              "depart": "06:00",
+              "arrive": "07:00",
+              "seat_type": "二等座",
+              "price": 73.0,
+              "seats_left": 152
+            }
+          ],
+          "count": 3
+        }
+      },
+      {
+        "event": "model_start",
+        "model_step": 2
+      },
+      {
+        "event": "model_end",
+        "model_step": 2
+      }
+    ]
+  },
+  {
+    "input": "锁座后多久必须完成支付？",
+    "events": [
+      {
+        "event": "model_start",
+        "model_step": 1
+      },
+      {
+        "event": "model_end",
+        "model_step": 1
+      },
+      {
+        "event": "tool_start",
+        "model_step": 1,
+        "tool": "search_policy",
+        "args": {
+          "question": "锁座后多久必须完成支付？"
+        },
+        "call_id": "call_eb7bba18"
+      },
+      {
+        "event": "tool_end",
+        "tool": "search_policy",
+        "call_id": "call_eb7bba18",
+        "ok": true,
+        "latency_ms": 0,
+        "result": {
+          "question": "锁座后多久必须完成支付？",
+          "hits": [
+            {
+              "doc_id": "P11",
+              "source": "data/policies.md#P11",
+              "title": "锁座与支付有效期",
+              "content": "模拟锁座有效期 15 分钟，过期未支付自动释放库存；下单必须提供与锁座一致的乘客列表。重复支付不重复扣减库存。",
+              "score": 1.8708
+            },
+            {
+              "doc_id": "P12",
+              "source": "data/policies.md#P12",
+              "title": "未支付订单取消",
+              "content": "未支付订单取消不收取手续费，释放已占库存；已退款或已取消订单不得再次释放库存，取消后的订单不可支付。",
+              "score": 0.9615
+            },
+            {
+              "doc_id": "P04",
+              "source": "data/policies.md#P04",
+              "title": "儿童票",
+              "content": "身高 1.2 米以下且不满 6 周岁儿童可免票（不占座）；6 至 14 周岁需购买儿童票，二等座按公布票价 50% 计算，一等座与商务座不售儿童票。",
+              "score": 0.5252
+            }
+          ],
+          "count": 3
+        }
+      },
+      {
+        "event": "model_start",
+        "model_step": 2
+      },
+      {
+        "event": "model_end",
+        "model_step": 2
+      }
+    ]
+  },
+  {
+    "input": "订明天上海到杭州的高铁",
+    "events": [
+      {
+        "event": "model_start",
+        "model_step": 1
+      },
+      {
+        "event": "model_end",
+        "model_step": 1
+      },
+      {
+        "event": "tool_start",
+        "model_step": 1,
+        "tool": "query_tickets",
+        "args": {
+          "from_city": "上海",
+          "to_city": "杭州",
+          "date": "2026-10-14",
+          "kind": "高铁",
+          "seat_type": "二等座"
+        },
+        "call_id": "call_c02be4fb"
+      },
+      {
+        "event": "tool_end",
+        "tool": "query_tickets",
+        "call_id": "call_c02be4fb",
+        "ok": true,
+        "latency_ms": 0,
+        "result": {
+          "trains": [
+            {
+              "kind": "高铁",
+              "train_no": "G7303",
+              "from_city": "上海",
+              "to_city": "杭州",
+              "date": "2026-10-14",
+              "depart": "12:34",
+              "arrive": "13:34",
+              "seat_type": "二等座",
+              "price": 73.0,
+              "seats_left": 51
+            },
+            {
+              "kind": "高铁",
+              "train_no": "G7302",
+              "from_city": "上海",
+              "to_city": "杭州",
+              "date": "2026-10-14",
+              "depart": "09:17",
+              "arrive": "10:17",
+              "seat_type": "二等座",
+              "price": 73.0,
+              "seats_left": 47
+            },
+            {
+              "kind": "高铁",
+              "train_no": "G7301",
+              "from_city": "上海",
+              "to_city": "杭州",
+              "date": "2026-10-14",
+              "depart": "06:00",
+              "arrive": "07:00",
+              "seat_type": "二等座",
+              "price": 73.0,
+              "seats_left": 35
+            }
+          ],
+          "count": 3
+        }
+      },
+      {
+        "event": "model_start",
+        "model_step": 2
+      },
+      {
+        "event": "model_end",
+        "model_step": 2
+      },
+      {
+        "event": "tool_start",
+        "model_step": 2,
+        "tool": "lock_seat",
+        "args": {
+          "train_no": "G7303",
+          "date": "2026-10-14",
+          "seat_type": "二等座",
+          "passengers": [
+            "张三"
+          ]
+        },
+        "call_id": "call_dd5dbff2"
+      },
+      {
+        "event": "tool_end",
+        "tool": "lock_seat",
+        "call_id": "call_dd5dbff2",
+        "ok": true,
+        "latency_ms": 5,
+        "result": {
+          "lock_id": "LK42f16d7b",
+          "train_no": "G7303",
+          "date": "2026-10-14",
+          "seat_type": "二等座",
+          "passengers": [
+            "张三"
+          ],
+          "unit_price": 73.0,
+          "count": 1,
+          "expire_at": "2026-10-13T21:52:07.593818",
+          "ttl_seconds": 900
+        }
+      },
+      {
+        "event": "model_start",
+        "model_step": 3
+      },
+      {
+        "event": "model_end",
+        "model_step": 3
+      },
+      {
+        "event": "tool_start",
+        "model_step": 3,
+        "tool": "create_order",
+        "args": {
+          "lock_id": "LK42f16d7b",
+          "passenger_ids": [
+            "张三"
+          ],
+          "contact": "13800000001"
+        },
+        "call_id": "call_e5f29e23"
+      },
+      {
+        "event": "tool_end",
+        "tool": "create_order",
+        "call_id": "call_e5f29e23",
+        "ok": true,
+        "latency_ms": 2,
+        "result": {
+          "order_id": "OD03daa38a51",
+          "phone": "13800000001",
+          "train_no": "G7303",
+          "date": "2026-10-14",
+          "seat_type": "二等座",
+          "passengers": "[\"张三\"]",
+          "amount": 73.0,
+          "status": "pending",
+          "created_at": "2026-10-13T21:37:07.599660",
+          "lock_id": "LK42f16d7b",
+          "idempotent_hit": false
+        }
+      },
+      {
+        "event": "model_start",
+        "model_step": 4
+      },
+      {
+        "event": "model_end",
+        "model_step": 4
+      }
+    ]
+  },
+  {
+    "input": "支付我刚才的订单。",
+    "events": [
+      {
+        "event": "model_start",
+        "model_step": 1
+      },
+      {
+        "event": "model_end",
+        "model_step": 1
+      },
+      {
+        "event": "tool_start",
+        "model_step": 1,
+        "tool": "pay_order",
+        "args": {
+          "order_id": "OD03daa38a51"
+        },
+        "call_id": "call_478fd158"
+      },
+      {
+        "event": "tool_end",
+        "tool": "pay_order",
+        "call_id": "call_478fd158",
+        "ok": true,
+        "latency_ms": 2,
+        "result": {
+          "order_id": "OD03daa38a51",
+          "status": "paid",
+          "pay_type": "alipay",
+          "amount": 73.0,
+          "duplicate_pay": false
+        }
+      },
+      {
+        "event": "model_start",
+        "model_step": 2
+      },
+      {
+        "event": "model_end",
+        "model_step": 2
+      }
+    ]
+  },
+  {
+    "input": "支付",
+    "events": [
+      {
+        "event": "model_start",
+        "model_step": 1
+      },
+      {
+        "event": "model_end",
+        "model_step": 1
+      },
+      {
+        "event": "tool_start",
+        "model_step": 1,
+        "tool": "pay_order",
+        "args": {
+          "order_id": "OD03daa38a51"
+        },
+        "call_id": "call_68452bff"
+      },
+      {
+        "event": "tool_end",
+        "tool": "pay_order",
+        "call_id": "call_68452bff",
+        "ok": true,
+        "latency_ms": 1,
+        "result": {
+          "order_id": "OD03daa38a51",
+          "status": "paid",
+          "duplicate_pay": true
+        }
+      },
+      {
+        "event": "model_start",
+        "model_step": 2
+      },
+      {
+        "event": "model_end",
+        "model_step": 2
+      }
+    ]
+  },
+  {
+    "input": "帮我退掉",
+    "events": [
+      {
+        "event": "model_start",
+        "model_step": 1
+      },
+      {
+        "event": "model_end",
+        "model_step": 1
+      },
+      {
+        "event": "tool_start",
+        "model_step": 1,
+        "tool": "cancel_order",
+        "args": {
+          "order_id": "OD03daa38a51"
+        },
+        "call_id": "call_627034ec"
+      },
+      {
+        "event": "tool_end",
+        "tool": "cancel_order",
+        "call_id": "call_627034ec",
+        "ok": true,
+        "latency_ms": 2,
+        "result": {
+          "order_id": "OD03daa38a51",
+          "status": "refunded",
+          "amount": 73.0,
+          "fee": 14.6,
+          "refund": 58.4,
+          "fee_rate": 0.2,
+          "policy_ref": "P01"
+        }
+      },
+      {
+        "event": "model_start",
+        "model_step": 2
+      },
+      {
+        "event": "model_end",
+        "model_step": 2
+      }
+    ]
+  },
+  {
+    "input": "查我的订单",
+    "events": [
+      {
+        "event": "model_start",
+        "model_step": 1
+      },
+      {
+        "event": "model_end",
+        "model_step": 1
+      },
+      {
+        "event": "tool_start",
+        "model_step": 1,
+        "tool": "query_order",
+        "args": {
+          "phone": "13800000001"
+        },
+        "call_id": "call_51a2f814"
+      },
+      {
+        "event": "tool_end",
+        "tool": "query_order",
+        "call_id": "call_51a2f814",
+        "ok": true,
+        "latency_ms": 1,
+        "result": {
+          "orders": [
+            {
+              "order_id": "OD03daa38a51",
+              "phone": "13800000001",
+              "train_no": "G7303",
+              "date": "2026-10-14",
+              "seat_type": "二等座",
+              "passengers": "[\"张三\"]",
+              "amount": 73.0,
+              "status": "refunded",
+              "created_at": "2026-10-13T21:37:07.599660",
+              "lock_id": "LK42f16d7b"
+            }
+          ],
+          "count": 1,
+          "queried_phone": "13800000001"
+        }
+      },
+      {
+        "event": "model_start",
+        "model_step": 2
+      },
+      {
+        "event": "model_end",
+        "model_step": 2
+      }
+    ]
+  },
+  {
+    "input": "抢明天北京到上海的票",
+    "events": [
+      {
+        "event": "model_start",
+        "model_step": 1
+      },
+      {
+        "event": "model_end",
+        "model_step": 1
+      },
+      {
+        "event": "tool_start",
+        "model_step": 1,
+        "tool": "query_tickets",
+        "args": {
+          "from_city": "北京",
+          "to_city": "上海",
+          "date": "2026-10-14",
+          "kind": "高铁",
+          "seat_type": "二等座"
+        },
+        "call_id": "call_260693dc"
+      },
+      {
+        "event": "tool_end",
+        "tool": "query_tickets",
+        "call_id": "call_260693dc",
+        "ok": true,
+        "latency_ms": 0,
+        "result": {
+          "trains": [
+            {
+              "kind": "高铁",
+              "train_no": "G101",
+              "from_city": "北京",
+              "to_city": "上海",
+              "date": "2026-10-14",
+              "depart": "06:00",
+              "arrive": "11:00",
+              "seat_type": "二等座",
+              "price": 553.0,
+              "seats_left": 0
+            },
+            {
+              "kind": "高铁",
+              "train_no": "G102",
+              "from_city": "北京",
+              "to_city": "上海",
+              "date": "2026-10-14",
+              "depart": "09:17",
+              "arrive": "14:17",
+              "seat_type": "二等座",
+              "price": 553.0,
+              "seats_left": 0
+            },
+            {
+              "kind": "高铁",
+              "train_no": "G103",
+              "from_city": "北京",
+              "to_city": "上海",
+              "date": "2026-10-14",
+              "depart": "12:34",
+              "arrive": "17:34",
+              "seat_type": "二等座",
+              "price": 553.0,
+              "seats_left": 0
+            }
+          ],
+          "count": 3
+        }
+      },
+      {
+        "event": "model_start",
+        "model_step": 2
+      },
+      {
+        "event": "model_end",
+        "model_step": 2
+      },
+      {
+        "event": "tool_start",
+        "model_step": 2,
+        "tool": "monitor_seat",
+        "args": {
+          "train_no": "G101",
+          "date": "2026-10-14",
+          "seat_type": "二等座",
+          "duration_min": 30
+        },
+        "call_id": "call_171be8d9"
+      },
+      {
+        "event": "tool_end",
+        "tool": "monitor_seat",
+        "call_id": "call_171be8d9",
+        "ok": true,
+        "latency_ms": 0,
+        "result": {
+          "task_id": "MON0d586e68",
+          "train_no": "G101",
+          "date": "2026-10-14",
+          "seat_type": "二等座",
+          "duration_min": 30,
+          "current_seats": 0,
+          "status": "monitoring"
+        }
+      },
+      {
+        "event": "model_start",
+        "model_step": 3
+      },
+      {
+        "event": "model_end",
+        "model_step": 3
+      }
+    ]
+  }
+]

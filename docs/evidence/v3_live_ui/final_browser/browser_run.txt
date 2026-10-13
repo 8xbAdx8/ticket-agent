@@ -1,0 +1,5 @@
+locator.waitFor: Timeout 30000ms exceeded.
+Call log:
+[2m  - waiting for getByText('1. query_tickets', { exact: true }) to be visible[22m
+
+    at main (D:\codexproject\ticket-agent\scripts\capture_v3_live_ui.cjs:49:60)

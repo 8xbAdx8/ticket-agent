@@ -1,0 +1,25 @@
+test_all_controls_and_restore (tests.test_web.WebTests.test_all_controls_and_restore) ... 2026-10-13 21:37:49.677 WARNING streamlit.runtime.scriptrunner_utils.script_run_context: Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+ok
+test_conversation_and_replay (tests.test_web.WebTests.test_conversation_and_replay) ... 2026-10-13 21:37:52.716 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+ok
+test_cards_match_full_tool_results_and_no_extra_calls (tests.test_web_live_ui.LangChainLiveUITests.test_cards_match_full_tool_results_and_no_extra_calls) ... skipped '原 V2 环境没有 LangChain，框架 UI 在 V3 环境验证'
+test_failure_does_not_show_ticket_cards (tests.test_web_live_ui.LangChainLiveUITests.test_failure_does_not_show_ticket_cards) ... skipped '原 V2 环境没有 LangChain，框架 UI 在 V3 环境验证'
+test_order_policy_payment_and_clear (tests.test_web_live_ui.LangChainLiveUITests.test_order_policy_payment_and_clear) ... skipped '原 V2 环境没有 LangChain，框架 UI 在 V3 环境验证'
+test_cards_match_full_tool_results_and_no_extra_calls (tests.test_web_live_ui.LegacyLiveUITests.test_cards_match_full_tool_results_and_no_extra_calls) ... 2026-10-13 21:37:52.979 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+ok
+test_failure_does_not_show_ticket_cards (tests.test_web_live_ui.LegacyLiveUITests.test_failure_does_not_show_ticket_cards) ... 2026-10-13 21:37:53.159 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+ok
+test_order_policy_payment_and_clear (tests.test_web_live_ui.LegacyLiveUITests.test_order_policy_payment_and_clear) ... 2026-10-13 21:37:53.351 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+ok
+test_mismatched_full_result_is_not_presented (tests.test_web_live_ui.PresentationSafetyTests.test_mismatched_full_result_is_not_presented) ... ok
+test_untrusted_tool_text_is_escaped (tests.test_web_live_ui.PresentationSafetyTests.test_untrusted_tool_text_is_escaped) ... ok
+
+----------------------------------------------------------------------
+Ran 10 tests in 4.031s
+
+OK (skipped=3)
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
