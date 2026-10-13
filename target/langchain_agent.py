@@ -15,6 +15,7 @@ import config
 from target import tools, providers
 from target.trace import Trace
 from target.langchain_model import LangChainMockModel
+from target.write_authorization import denial
 
 READ_ONLY_TOOLS = ("query_tickets", "search_policy")
 
@@ -31,6 +32,7 @@ class TurnContext:
     model_calls: int = 0
     current_step: int = 0
     events: list[dict[str, Any]] = field(default_factory=list)
+    lock_ids: set[str] = field(default_factory=set)
 
 
 class ContractMiddleware(AgentMiddleware):
@@ -57,7 +59,12 @@ class ContractMiddleware(AgentMiddleware):
         ctx.events.append({"event":"tool_start", "model_step":ctx.current_step+1,
                            "tool":name, "args":args, "call_id":call["id"]})
         try:
-            response = handler(request)  # LangChain 真正调度注册的 StructuredTool。
+            blocked = denial(name, args, ctx, request.state["messages"])
+            if blocked:
+                response = ToolMessage(content=json.dumps({"error":blocked},ensure_ascii=False),
+                                       tool_call_id=call["id"],name=name,status="error")
+            else:
+                response = handler(request)  # LangChain 调度；复用 V2 后端校验/状态机。
             try:
                 result = json.loads(response.content)
             except (ValueError, TypeError):
@@ -65,6 +72,8 @@ class ContractMiddleware(AgentMiddleware):
             ok = response.status != "error" and not (isinstance(result,dict) and "error" in result)
             if not ok:
                 response = response.model_copy(update={"status":"error"})
+            elif name == "lock_seat":
+                ctx.lock_ids.add(result["lock_id"])
         except Exception as exc:
             result, ok = {"error":f"工具执行失败 ({type(exc).__name__})"}, False
             response = ToolMessage(content=json.dumps(result,ensure_ascii=False),tool_call_id=call["id"],name=name,status="error")
@@ -89,9 +98,12 @@ class LangChainAgent:
             raise ValueError("AGENT_PROVIDER 只支持 mock/openai")
         if providers.MUTATIONS or getattr(provider,"mutations",{}):
             raise ValueError("六变异目前仅适用于 legacy 模式，请先清除开关")
-        names = tuple(tool_names) if tool_names is not None else READ_ONLY_TOOLS
-        if not names or len(set(names)) != len(names) or set(names)-set(READ_ONLY_TOOLS):
-            raise ValueError("当前 LangChain 原型只开放 query_tickets/search_policy")
+        if config.LC_TOOLSET not in ("read_only","all"):
+            raise ValueError("AGENT_LC_TOOLSET 只支持 read_only/all")
+        names = tuple(tool_names) if tool_names is not None else (
+            tuple(tools.TOOL_NAMES) if config.LC_TOOLSET == "all" else READ_ONLY_TOOLS)
+        if not names or len(set(names)) != len(names) or set(names)-set(tools.TOOL_NAMES):
+            raise ValueError("LangChain 工具必须是现有八个工具的非空、不重复子集")
         self.tool_names = names
         if model is not None:
             self.model = model
@@ -106,7 +118,9 @@ class LangChainAgent:
         self.provider_name = "langchain_mock" if config.PROVIDER == "mock" else "langchain_live"
         self.checkpointer = InMemorySaver()
         self.graph = create_agent(model=self.model, tools=[adapt_tool(n) for n in names],
-                                  system_prompt=system_prompt+f"\n当前北京时间日期 {config.today().isoformat()}；业务全部虚构。",
+                                  system_prompt=system_prompt+f"\n当前北京时间日期 {config.today().isoformat()}；业务全部虚构。"
+                                  "\n写操作必须获得本轮明确授权；订票不包含支付。锁座一轮至多一次成功，下单必须用本轮成功 lock_id。"
+                                  "支付/退票使用用户指定或最近工具结果订单；不明确时先澄清。",
                                   middleware=[ContractMiddleware()],context_schema=TurnContext,
                                   checkpointer=self.checkpointer)
         self.threads: set[str] = set()

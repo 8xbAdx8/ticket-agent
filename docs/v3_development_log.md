@@ -28,3 +28,16 @@
 - B/C 影响：新 provider 值 langchain_mock/langchain_live 用于明确模式；contract 原 provider 字段没有枚举限制，未新增字段。step 为本轮实际模型调用轮，工具耗时包含框架工具执行/序列化，total 为 Trace 起止；框架模型无工具轮不强造工具步骤。
 - 限制：第一轮只开放 query_tickets/search_policy；其余六工具等待业务授权/重放风险评估。InMemorySaver 只在当前 Agent/进程内保留，未实现跨重启持久化；六故意变异仅 legacy，不外推为 LangChain 模型能力。真实大模型尚未联网实测。
 - 本模块源码 SHA 在下一阶段登记。
+
+两个工具原型提交：92efc2a739bd3712d2ff62910bf8944cd9ad81b9。
+
+## 2026-10-13 八工具与独立写操作授权
+
+- 先完成 docs/v3_tool_migration_assessment.md 的六工具成本/状态/重放风险评估，再接入。
+- 修改 target/langchain_agent.py：read_only/all 两种工具集；仍由 create_agent 执行原工具。新增 target/write_authorization.py：当前用户独立授权检查、订单引用核验、本轮成功锁限定、一轮最多一次成功锁座。被拒绝调用真实记入 Trace，不调用后端。
+- 新增 tests/test_langchain_orders.py（最终13项）；原型 tests/test_langchain_agent.py 增加未知工具与多调用模型桩支持（最终13项）。查询、监控、锁座、创建、支付、重复支付、退款、订单查询及安全阻断均实际运行。
+- 初次运行漏设 PYTHONIOENCODING，日志采集器不能按 UTF-8 解码，未生成日志；设置后保留 orders_unit_utf8.txt 的实际失败（A 自测连接关闭和预期回复措辞），修正自测后 orders_unit_passed.txt 12项全过。后来新增同模型轮重复写探针，在最终56项自测中通过。
+- 实际 `.venv-v3/Scripts/python.exe scripts/verify_v3.py --toolset all --output-dir docs/evidence/v3/full_tools` 和 final_framework：11轮 API、CLI once/chat、Web AppTest 通过，覆盖8工具；保护99原文件通过。
+- B/C 影响：默认只读原型不变；all 才开放完整模拟流程。新的拒绝信息在原 result_preview/error 内，不新增契约字段。必须对授权规则适用范围和写操作工具序列做独立回归。六变异保留 legacy。
+- 已知限制：中文保守命令识别，跨轮使用旧锁、多路线一轮多订单未支持；模拟固定身份不等同真实登录系统。没有真实模型结果。
+- 本模块 commit SHA 在下一阶段登记。

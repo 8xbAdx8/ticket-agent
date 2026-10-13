@@ -1,0 +1,29 @@
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+test_all_schemas_reused_and_invalid_mode_rejected (test_langchain_orders.LangChainOrderTests.test_all_schemas_reused_and_invalid_mode_rejected) ... ok
+test_buy_does_not_implicitly_authorize_payment (test_langchain_orders.LangChainOrderTests.test_buy_does_not_implicitly_authorize_payment) ... ok
+test_create_requires_this_turn_lock (test_langchain_orders.LangChainOrderTests.test_create_requires_this_turn_lock) ... ok
+test_eight_tools_and_idempotent_payment_and_refund (test_langchain_orders.LangChainOrderTests.test_eight_tools_and_idempotent_payment_and_refund) ... ok
+test_foreign_user_query_stays_denied (test_langchain_orders.LangChainOrderTests.test_foreign_user_query_stays_denied) ... ok
+test_model_cannot_change_order_reference (test_langchain_orders.LangChainOrderTests.test_model_cannot_change_order_reference) ... ok
+test_model_cannot_pay_policy_question_or_negative_command (test_langchain_orders.LangChainOrderTests.test_model_cannot_pay_policy_question_or_negative_command) ... ok
+test_monitor_backend_still_requires_sold_out (test_langchain_orders.LangChainOrderTests.test_monitor_backend_still_requires_sold_out) ... ok
+test_no_extra_lock_even_if_model_repeats (test_langchain_orders.LangChainOrderTests.test_no_extra_lock_even_if_model_repeats) ... ok
+test_permission_boundary_is_conservative (test_langchain_orders.LangChainOrderTests.test_permission_boundary_is_conservative) ... ok
+test_read_only_mode_cannot_execute_orders (test_langchain_orders.LangChainOrderTests.test_read_only_mode_cannot_execute_orders) ... ok
+test_sold_out_and_no_schedule_are_distinct (test_langchain_orders.LangChainOrderTests.test_sold_out_and_no_schedule_are_distinct) ... ok
+
+----------------------------------------------------------------------
+Ran 12 tests in 0.588s
+
+OK

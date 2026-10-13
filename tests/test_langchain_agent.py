@@ -32,6 +32,8 @@ if AVAILABLE:
             if item.get("raise"):
                 raise RuntimeError("sensitive-provider-detail")
             calls = [{"name":item["tool"],"args":item["args"],"id":f"script_{self.index}","type":"tool_call"}] if "tool" in item else []
+            if "calls" in item:
+                calls = [{**c,"id":f"script_{self.index}_{i}","type":"tool_call"} for i,c in enumerate(item["calls"])]
             m = AIMessage(content=item.get("content",""),tool_calls=calls,
                           usage_metadata={"input_tokens":3,"output_tokens":2,"total_tokens":5})
             return ChatResult(generations=[ChatGeneration(message=m)])
@@ -165,6 +167,12 @@ class LangChainPrototypeTests(unittest.TestCase):
         with patch.object(config,"PROVIDER","openai"), patch.object(config,"API_KEY",""):
             with self.assertRaises(ValueError):
                 Agent(engine="langchain")
+
+    def test_unknown_tool_is_an_actual_failed_trace_call(self):
+        model = ScriptedModel(script=[{"tool":"made_up_tool","args":{}}])
+        r = self.chat("查票",agent=Agent(engine="langchain",model=model))
+        self.assertEqual(r["tool_sequence"],["made_up_tool"])
+        self.assertFalse(r["steps"][0]["calls"][0]["ok"])
 
 
 if __name__ == "__main__":
