@@ -1,0 +1,9 @@
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+test_sdk_error_is_safe_and_next_turn_can_recover (test_langchain_live_adapter.LangChainLiveAdapterTests.test_sdk_error_is_safe_and_next_turn_can_recover) ... ok
+test_sdk_request_tool_schema_call_id_feedback_and_tokens (test_langchain_live_adapter.LangChainLiveAdapterTests.test_sdk_request_tool_schema_call_id_feedback_and_tokens) ... ok
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.355s
+
+OK

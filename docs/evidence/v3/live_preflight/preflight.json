@@ -1,0 +1,17 @@
+{
+  "engine": "langchain",
+  "provider": "mock",
+  "model": "glm-4-flash",
+  "endpoint": {
+    "scheme": "https",
+    "host": "open.bigmodel.cn",
+    "path": "/api/paas/v4"
+  },
+  "api_key_present": false,
+  "real_api_attempted": false,
+  "real_model_tested": false,
+  "real_trace_count": 0,
+  "status": "真实大模型尚未联网实测",
+  "scope": "成员 A 接入验证，非 B 正式评分；全部业务虚构",
+  "reason": "未执行 --run"
+}

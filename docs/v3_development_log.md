@@ -41,3 +41,17 @@
 - B/C 影响：默认只读原型不变；all 才开放完整模拟流程。新的拒绝信息在原 result_preview/error 内，不新增契约字段。必须对授权规则适用范围和写操作工具序列做独立回归。六变异保留 legacy。
 - 已知限制：中文保守命令识别，跨轮使用旧锁、多路线一轮多订单未支持；模拟固定身份不等同真实登录系统。没有真实模型结果。
 - 本模块 commit SHA 在下一阶段登记。
+
+八工具授权模块提交：950b0f2b62f41a6988cb28c306808baabebfab9b。
+
+## 2026-10-13 Live 接入准备、扩展回归和开销对照
+
+- 新增 scripts/validate_langchain_live.py：默认只预检；--run 且 openai/有效 Key 才尝试远端。每场景独立临时 DB/Trace，记录实际框架事件、模型消息、调用参数/call_id/结果回传与耗时，错误与业务完成情况单独确认；不会写入旧 Trace。
+- 新增 tests/test_langchain_live_adapter.py：实际 ChatOpenAI/SDK 转换链上的2项无网络桩验证，覆盖工具Schema、服务器call_id、ToolMessage、token累计、异常/下一轮恢复。SDK 边界已替换，不能把这些结果当真实模型结果。
+- 实际 live_sdk_stub.txt 2项通过；live_preflight/preflight.json：无 Key、未调用远端、0真实Trace，状态“真实大模型尚未联网实测”。配置使用既有 AGENT_PROVIDER/MODEL/API_KEY/BASE_URL，无秘密提交。
+- 最终 `.venv-v3/Scripts/python.exe scripts/smoke.py --output-dir docs/evidence/v3/final_legacy_smoke`：56项自测全通过（原28+框架原型13+订单13+Live SDK桩2），10入口/服务检查、32 legacy Mock Trace。原 `.venv/Scripts/python.exe scripts/smoke.py --output-dir docs/evidence/v3/original_environment_smoke`：原28通过、新框架28明确skip；10入口/服务检查、32 legacy Mock Trace。六变异仍通过 test_six_injected_mutations。
+- 最终 verify_v3 --toolset all --output-dir docs/evidence/v3/final_framework：11轮框架API覆盖8工具、CLI/Web成功、99保护文件相同。B正式judge未在仓库，未执行或改写正式断言，不声称100/100。
+- 新增 scripts/compare_v3_modes.py，实际 --output-dir docs/evidence/v3/mock_overhead；同环境每模式3组5轮（15轮）Mock，保存原始耗时，不形成正式性能指标。首次框架初始化包含懒导入，调用中位数见 comparison.json。pip check再次确认无依赖冲突。
+- B/C 影响：需要区分legacy Mock/LangChain Mock/Live SDK桩/真实模型；stop不等于业务成功。新provider值虽不改变字段，B如果自行枚举provider需审查；最终测试成绩须B提供。
+- 未完成：真实远端Function Calling、跨重启会话持久化、LangChain六变异、正式压力/模型幻觉评估、C人工验收与录屏。只交付准备/可复现A自测。
+- 本阶段源码 SHA 在交接文档登记。

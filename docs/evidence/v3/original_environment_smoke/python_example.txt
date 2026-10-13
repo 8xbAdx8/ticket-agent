@@ -1,0 +1,781 @@
+[
+  {
+    "label": "normal",
+    "result": {
+      "session_id": "handoff-normal",
+      "provider": "mock",
+      "model": "glm-4-flash",
+      "user_msg": "查明天上海到杭州的高铁",
+      "steps": [
+        {
+          "step": 1,
+          "calls": [
+            {
+              "tool": "query_tickets",
+              "args": {
+                "from_city": "上海",
+                "to_city": "杭州",
+                "date": "2026-10-14",
+                "kind": "高铁",
+                "seat_type": "二等座"
+              },
+              "ok": true,
+              "latency_ms": 1,
+              "result_preview": "{\"trains\": [{\"kind\": \"高铁\", \"train_no\": \"G7303\", \"from_city\": \"上海\", \"to_city\": \"杭州\", \"date\": \"2026-10-14\", \"depart\": \"12:34\", \"arrive\": \"13:34\", \"seat_type\": \"二等座\", \"price\": 73.0, \"seats_left\": 50}, {\"..."
+            }
+          ]
+        }
+      ],
+      "tool_sequence": [
+        "query_tickets"
+      ],
+      "reply": "为您查到以下有余票的班次：G7303 上海→杭州 12:34 开，二等座 ¥73.0，余票 50；G7302 上海→杭州 09:17 开，二等座 ¥73.0，余票 47；G7301 上海→杭州 06:00 开，二等座 ¥73.0，余票 35。",
+      "finish_reason": "stop",
+      "tokens": {
+        "prompt": 0,
+        "completion": 0
+      },
+      "total_latency_ms": 3
+    }
+  },
+  {
+    "label": "normal",
+    "result": {
+      "session_id": "handoff-normal",
+      "provider": "mock",
+      "model": "glm-4-flash",
+      "user_msg": "我要买一张",
+      "steps": [
+        {
+          "step": 1,
+          "calls": [
+            {
+              "tool": "query_tickets",
+              "args": {
+                "from_city": "上海",
+                "to_city": "杭州",
+                "date": "2026-10-14",
+                "kind": "高铁",
+                "seat_type": "二等座"
+              },
+              "ok": true,
+              "latency_ms": 0,
+              "result_preview": "{\"trains\": [{\"kind\": \"高铁\", \"train_no\": \"G7303\", \"from_city\": \"上海\", \"to_city\": \"杭州\", \"date\": \"2026-10-14\", \"depart\": \"12:34\", \"arrive\": \"13:34\", \"seat_type\": \"二等座\", \"price\": 73.0, \"seats_left\": 50}, {\"..."
+            }
+          ]
+        },
+        {
+          "step": 2,
+          "calls": [
+            {
+              "tool": "lock_seat",
+              "args": {
+                "train_no": "G7303",
+                "date": "2026-10-14",
+                "seat_type": "二等座",
+                "passengers": [
+                  "张三"
+                ]
+              },
+              "ok": true,
+              "latency_ms": 21,
+              "result_preview": "{\"lock_id\": \"LKa62617b0\", \"train_no\": \"G7303\", \"date\": \"2026-10-14\", \"seat_type\": \"二等座\", \"passengers\": [\"张三\"], \"unit_price\": 73.0, \"count\": 1, \"expire_at\": \"2026-10-13T14:08:35.745206\", \"ttl_seconds\":..."
+            }
+          ]
+        },
+        {
+          "step": 3,
+          "calls": [
+            {
+              "tool": "create_order",
+              "args": {
+                "lock_id": "LKa62617b0",
+                "passenger_ids": [
+                  "张三"
+                ],
+                "contact": "13800000001"
+              },
+              "ok": true,
+              "latency_ms": 2,
+              "result_preview": "{\"order_id\": \"OD33dd7f99ba\", \"phone\": \"13800000001\", \"train_no\": \"G7303\", \"date\": \"2026-10-14\", \"seat_type\": \"二等座\", \"passengers\": \"[\\\"张三\\\"]\", \"amount\": 73.0, \"status\": \"pending\", \"created_at\": \"2026-1..."
+            }
+          ]
+        }
+      ],
+      "tool_sequence": [
+        "query_tickets",
+        "lock_seat",
+        "create_order"
+      ],
+      "reply": "订单已创建：OD33dd7f99ba，金额 ¥73.0，车次 G7303 2026-10-14，请在锁座有效期内完成支付。",
+      "finish_reason": "stop",
+      "tokens": {
+        "prompt": 0,
+        "completion": 0
+      },
+      "total_latency_ms": 25
+    }
+  },
+  {
+    "label": "normal",
+    "result": {
+      "session_id": "handoff-normal",
+      "provider": "mock",
+      "model": "glm-4-flash",
+      "user_msg": "支付",
+      "steps": [
+        {
+          "step": 1,
+          "calls": [
+            {
+              "tool": "pay_order",
+              "args": {
+                "order_id": "OD33dd7f99ba"
+              },
+              "ok": true,
+              "latency_ms": 2,
+              "result_preview": "{\"order_id\": \"OD33dd7f99ba\", \"status\": \"paid\", \"pay_type\": \"alipay\", \"amount\": 73.0, \"duplicate_pay\": false}"
+            }
+          ]
+        }
+      ],
+      "tool_sequence": [
+        "pay_order"
+      ],
+      "reply": "支付成功，订单 OD33dd7f99ba 已完成，祝您旅途愉快。",
+      "finish_reason": "stop",
+      "tokens": {
+        "prompt": 0,
+        "completion": 0
+      },
+      "total_latency_ms": 2
+    }
+  },
+  {
+    "label": "normal",
+    "result": {
+      "session_id": "handoff-normal",
+      "provider": "mock",
+      "model": "glm-4-flash",
+      "user_msg": "帮我退掉",
+      "steps": [
+        {
+          "step": 1,
+          "calls": [
+            {
+              "tool": "cancel_order",
+              "args": {
+                "order_id": "OD33dd7f99ba"
+              },
+              "ok": true,
+              "latency_ms": 2,
+              "result_preview": "{\"order_id\": \"OD33dd7f99ba\", \"status\": \"refunded\", \"amount\": 73.0, \"fee\": 14.6, \"refund\": 58.4, \"fee_rate\": 0.2, \"policy_ref\": \"P01\"}"
+            }
+          ]
+        }
+      ],
+      "tool_sequence": [
+        "cancel_order"
+      ],
+      "reply": "退票成功，订单 OD33dd7f99ba，手续费 ¥14.6（0.2），退款 ¥58.4。依据政策 P01。",
+      "finish_reason": "stop",
+      "tokens": {
+        "prompt": 0,
+        "completion": 0
+      },
+      "total_latency_ms": 2
+    }
+  },
+  {
+    "label": "normal",
+    "result": {
+      "session_id": "handoff-normal",
+      "provider": "mock",
+      "model": "glm-4-flash",
+      "user_msg": "退票手续费怎么算",
+      "steps": [
+        {
+          "step": 1,
+          "calls": [
+            {
+              "tool": "search_policy",
+              "args": {
+                "question": "退票手续费怎么算"
+              },
+              "ok": true,
+              "latency_ms": 0,
+              "result_preview": "{\"question\": \"退票手续费怎么算\", \"hits\": [{\"doc_id\": \"P01\", \"source\": \"data/policies.md#P01\", \"title\": \"退票手续费阶梯\", \"content\": \"开车前 48 小时以上退票，收取票价 5% 手续费；开车前 24 至 48 小时退票，收取 10%；开车前不足 24 小时退票，收取 20%。已取报销凭证或已改签的..."
+            }
+          ]
+        }
+      ],
+      "tool_sequence": [
+        "search_policy"
+      ],
+      "reply": "开车前 48 小时以上退票，收取票价 5% 手续费；开车前 24 至 48 小时退票，收取 10%；开车前不足 24 小时退票，收取 20%。已取报销凭证或已改签的车票不退。 机票经济舱起飞前 24 小时以上退票收取票面价 10%，24 小时内收取 30%；特价舱位（折扣低于 4 折）不支持退票，仅退机场建设费与燃油附加费。（依据 P01, P09）",
+      "finish_reason": "stop",
+      "tokens": {
+        "prompt": 0,
+        "completion": 0
+      },
+      "total_latency_ms": 0
+    }
+  },
+  {
+    "label": "normal",
+    "result": {
+      "session_id": "handoff-normal",
+      "provider": "mock",
+      "model": "glm-4-flash",
+      "user_msg": "查我的订单",
+      "steps": [
+        {
+          "step": 1,
+          "calls": [
+            {
+              "tool": "query_order",
+              "args": {
+                "phone": "13800000001"
+              },
+              "ok": true,
+              "latency_ms": 0,
+              "result_preview": "{\"orders\": [{\"order_id\": \"OD33dd7f99ba\", \"phone\": \"13800000001\", \"train_no\": \"G7303\", \"date\": \"2026-10-14\", \"seat_type\": \"二等座\", \"passengers\": \"[\\\"张三\\\"]\", \"amount\": 73.0, \"status\": \"refunded\", \"created..."
+            }
+          ]
+        }
+      ],
+      "tool_sequence": [
+        "query_order"
+      ],
+      "reply": "您的订单：OD33dd7f99ba G7303 2026-10-14 ¥73.0 refunded；ODf2b1498333 G7303 2026-10-14 ¥73.0 paid；OD34c5724e10 G701 2026-10-15 ¥862.0 pending；OD7a432f29cf G102 2026-10-15 ¥553.0 paid；OD95a3947034 G701 2026-10-15 ¥862.0 pending",
+      "finish_reason": "stop",
+      "tokens": {
+        "prompt": 0,
+        "completion": 0
+      },
+      "total_latency_ms": 1
+    }
+  },
+  {
+    "label": "normal-waitlist",
+    "result": {
+      "session_id": "handoff-wait",
+      "provider": "mock",
+      "model": "glm-4-flash",
+      "user_msg": "抢明天北京到上海的票",
+      "steps": [
+        {
+          "step": 1,
+          "calls": [
+            {
+              "tool": "query_tickets",
+              "args": {
+                "from_city": "北京",
+                "to_city": "上海",
+                "date": "2026-10-14",
+                "kind": "高铁",
+                "seat_type": "二等座"
+              },
+              "ok": true,
+              "latency_ms": 0,
+              "result_preview": "{\"trains\": [{\"kind\": \"高铁\", \"train_no\": \"G101\", \"from_city\": \"北京\", \"to_city\": \"上海\", \"date\": \"2026-10-14\", \"depart\": \"06:00\", \"arrive\": \"11:00\", \"seat_type\": \"二等座\", \"price\": 553.0, \"seats_left\": 0}, {\"k..."
+            }
+          ]
+        },
+        {
+          "step": 2,
+          "calls": [
+            {
+              "tool": "monitor_seat",
+              "args": {
+                "train_no": "G101",
+                "date": "2026-10-14",
+                "seat_type": "二等座",
+                "duration_min": 30
+              },
+              "ok": true,
+              "latency_ms": 0,
+              "result_preview": "{\"task_id\": \"MON7fb4c5bf\", \"train_no\": \"G101\", \"date\": \"2026-10-14\", \"seat_type\": \"二等座\", \"duration_min\": 30, \"current_seats\": 0, \"status\": \"monitoring\"}"
+            }
+          ]
+        }
+      ],
+      "tool_sequence": [
+        "query_tickets",
+        "monitor_seat"
+      ],
+      "reply": "该车次当前无票，我已为您开启余票监控（候补）。",
+      "finish_reason": "stop",
+      "tokens": {
+        "prompt": 0,
+        "completion": 0
+      },
+      "total_latency_ms": 1
+    }
+  },
+  {
+    "label": "injected:date_offset",
+    "result": {
+      "session_id": "handoff-date_offset",
+      "provider": "mock",
+      "model": "glm-4-flash",
+      "user_msg": "订明天上海到杭州的高铁",
+      "steps": [
+        {
+          "step": 1,
+          "calls": [
+            {
+              "tool": "query_tickets",
+              "args": {
+                "from_city": "上海",
+                "to_city": "杭州",
+                "date": "2026-10-15",
+                "kind": "高铁",
+                "seat_type": "二等座"
+              },
+              "ok": true,
+              "latency_ms": 0,
+              "result_preview": "{\"trains\": [{\"kind\": \"高铁\", \"train_no\": \"G7302\", \"from_city\": \"上海\", \"to_city\": \"杭州\", \"date\": \"2026-10-15\", \"depart\": \"09:17\", \"arrive\": \"10:17\", \"seat_type\": \"二等座\", \"price\": 73.0, \"seats_left\": 189}, {..."
+            }
+          ]
+        },
+        {
+          "step": 2,
+          "calls": [
+            {
+              "tool": "lock_seat",
+              "args": {
+                "train_no": "G7302",
+                "date": "2026-10-15",
+                "seat_type": "二等座",
+                "passengers": [
+                  "张三"
+                ]
+              },
+              "ok": true,
+              "latency_ms": 1,
+              "result_preview": "{\"lock_id\": \"LK589dd0a6\", \"train_no\": \"G7302\", \"date\": \"2026-10-15\", \"seat_type\": \"二等座\", \"passengers\": [\"张三\"], \"unit_price\": 73.0, \"count\": 1, \"expire_at\": \"2026-10-13T14:08:35.779415\", \"ttl_seconds\":..."
+            }
+          ]
+        },
+        {
+          "step": 3,
+          "calls": [
+            {
+              "tool": "create_order",
+              "args": {
+                "lock_id": "LK589dd0a6",
+                "passenger_ids": [
+                  "张三"
+                ],
+                "contact": "13800000001"
+              },
+              "ok": true,
+              "latency_ms": 2,
+              "result_preview": "{\"order_id\": \"OD5200c5a337\", \"phone\": \"13800000001\", \"train_no\": \"G7302\", \"date\": \"2026-10-15\", \"seat_type\": \"二等座\", \"passengers\": \"[\\\"张三\\\"]\", \"amount\": 73.0, \"status\": \"pending\", \"created_at\": \"2026-1..."
+            }
+          ]
+        }
+      ],
+      "tool_sequence": [
+        "query_tickets",
+        "lock_seat",
+        "create_order"
+      ],
+      "reply": "订单已创建：OD5200c5a337，金额 ¥73.0，车次 G7302 2026-10-15，请在锁座有效期内完成支付。",
+      "finish_reason": "stop",
+      "tokens": {
+        "prompt": 0,
+        "completion": 0
+      },
+      "total_latency_ms": 5
+    }
+  },
+  {
+    "label": "injected:skip_lock",
+    "result": {
+      "session_id": "handoff-skip_lock",
+      "provider": "mock",
+      "model": "glm-4-flash",
+      "user_msg": "订明天上海到杭州的高铁",
+      "steps": [
+        {
+          "step": 1,
+          "calls": [
+            {
+              "tool": "query_tickets",
+              "args": {
+                "from_city": "上海",
+                "to_city": "杭州",
+                "date": "2026-10-14",
+                "kind": "高铁",
+                "seat_type": "二等座"
+              },
+              "ok": true,
+              "latency_ms": 1,
+              "result_preview": "{\"trains\": [{\"kind\": \"高铁\", \"train_no\": \"G7303\", \"from_city\": \"上海\", \"to_city\": \"杭州\", \"date\": \"2026-10-14\", \"depart\": \"12:34\", \"arrive\": \"13:34\", \"seat_type\": \"二等座\", \"price\": 73.0, \"seats_left\": 50}, {\"..."
+            }
+          ]
+        },
+        {
+          "step": 2,
+          "calls": [
+            {
+              "tool": "create_order",
+              "args": {
+                "lock_id": "LK_INJECTED_MISSING",
+                "passenger_ids": [
+                  "张三"
+                ],
+                "contact": "13800000001"
+              },
+              "ok": false,
+              "latency_ms": 0,
+              "result_preview": "{\"error\": \"lock_id 不存在或已失效，请先调用 lock_seat\"}"
+            }
+          ]
+        }
+      ],
+      "tool_sequence": [
+        "query_tickets",
+        "create_order"
+      ],
+      "reply": "操作未完成：lock_id 不存在或已失效，请先调用 lock_seat。",
+      "finish_reason": "stop",
+      "tokens": {
+        "prompt": 0,
+        "completion": 0
+      },
+      "total_latency_ms": 1
+    }
+  },
+  {
+    "label": "injected:repeat_call",
+    "result": {
+      "session_id": "handoff-repeat_call",
+      "provider": "mock",
+      "model": "glm-4-flash",
+      "user_msg": "订明天上海到杭州的高铁",
+      "steps": [
+        {
+          "step": 1,
+          "calls": [
+            {
+              "tool": "query_tickets",
+              "args": {
+                "from_city": "上海",
+                "to_city": "杭州",
+                "date": "2026-10-14",
+                "kind": "高铁",
+                "seat_type": "二等座"
+              },
+              "ok": true,
+              "latency_ms": 0,
+              "result_preview": "{\"trains\": [{\"kind\": \"高铁\", \"train_no\": \"G7303\", \"from_city\": \"上海\", \"to_city\": \"杭州\", \"date\": \"2026-10-14\", \"depart\": \"12:34\", \"arrive\": \"13:34\", \"seat_type\": \"二等座\", \"price\": 73.0, \"seats_left\": 50}, {\"..."
+            },
+            {
+              "tool": "query_tickets",
+              "args": {
+                "from_city": "上海",
+                "to_city": "杭州",
+                "date": "2026-10-14",
+                "kind": "高铁",
+                "seat_type": "二等座"
+              },
+              "ok": true,
+              "latency_ms": 0,
+              "result_preview": "{\"trains\": [{\"kind\": \"高铁\", \"train_no\": \"G7303\", \"from_city\": \"上海\", \"to_city\": \"杭州\", \"date\": \"2026-10-14\", \"depart\": \"12:34\", \"arrive\": \"13:34\", \"seat_type\": \"二等座\", \"price\": 73.0, \"seats_left\": 50}, {\"..."
+            }
+          ]
+        },
+        {
+          "step": 2,
+          "calls": [
+            {
+              "tool": "lock_seat",
+              "args": {
+                "train_no": "G7303",
+                "date": "2026-10-14",
+                "seat_type": "二等座",
+                "passengers": [
+                  "张三"
+                ]
+              },
+              "ok": true,
+              "latency_ms": 1,
+              "result_preview": "{\"lock_id\": \"LK346b8692\", \"train_no\": \"G7303\", \"date\": \"2026-10-14\", \"seat_type\": \"二等座\", \"passengers\": [\"张三\"], \"unit_price\": 73.0, \"count\": 1, \"expire_at\": \"2026-10-13T14:08:35.786532\", \"ttl_seconds\":..."
+            }
+          ]
+        },
+        {
+          "step": 3,
+          "calls": [
+            {
+              "tool": "create_order",
+              "args": {
+                "lock_id": "LK346b8692",
+                "passenger_ids": [
+                  "张三"
+                ],
+                "contact": "13800000001"
+              },
+              "ok": true,
+              "latency_ms": 2,
+              "result_preview": "{\"order_id\": \"OD32f6923e70\", \"phone\": \"13800000001\", \"train_no\": \"G7303\", \"date\": \"2026-10-14\", \"seat_type\": \"二等座\", \"passengers\": \"[\\\"张三\\\"]\", \"amount\": 73.0, \"status\": \"pending\", \"created_at\": \"2026-1..."
+            }
+          ]
+        }
+      ],
+      "tool_sequence": [
+        "query_tickets",
+        "query_tickets",
+        "lock_seat",
+        "create_order"
+      ],
+      "reply": "订单已创建：OD32f6923e70，金额 ¥73.0，车次 G7303 2026-10-14，请在锁座有效期内完成支付。",
+      "finish_reason": "stop",
+      "tokens": {
+        "prompt": 0,
+        "completion": 0
+      },
+      "total_latency_ms": 5
+    }
+  },
+  {
+    "label": "injected:infinite_loop",
+    "result": {
+      "session_id": "handoff-infinite_loop",
+      "provider": "mock",
+      "model": "glm-4-flash",
+      "user_msg": "抢明天北京到上海的票",
+      "steps": [
+        {
+          "step": 1,
+          "calls": [
+            {
+              "tool": "query_tickets",
+              "args": {
+                "from_city": "北京",
+                "to_city": "上海",
+                "date": "2026-10-14",
+                "kind": "高铁",
+                "seat_type": "二等座"
+              },
+              "ok": true,
+              "latency_ms": 0,
+              "result_preview": "{\"trains\": [{\"kind\": \"高铁\", \"train_no\": \"G101\", \"from_city\": \"北京\", \"to_city\": \"上海\", \"date\": \"2026-10-14\", \"depart\": \"06:00\", \"arrive\": \"11:00\", \"seat_type\": \"二等座\", \"price\": 553.0, \"seats_left\": 0}, {\"k..."
+            }
+          ]
+        },
+        {
+          "step": 2,
+          "calls": [
+            {
+              "tool": "monitor_seat",
+              "args": {
+                "train_no": "G101",
+                "date": "2026-10-14",
+                "seat_type": "二等座",
+                "duration_min": 30
+              },
+              "ok": true,
+              "latency_ms": 0,
+              "result_preview": "{\"task_id\": \"MON76211ffe\", \"train_no\": \"G101\", \"date\": \"2026-10-14\", \"seat_type\": \"二等座\", \"duration_min\": 30, \"current_seats\": 0, \"status\": \"monitoring\"}"
+            }
+          ]
+        },
+        {
+          "step": 3,
+          "calls": [
+            {
+              "tool": "monitor_seat",
+              "args": {
+                "train_no": "G101",
+                "date": "2026-10-14",
+                "seat_type": "二等座",
+                "duration_min": 30
+              },
+              "ok": true,
+              "latency_ms": 0,
+              "result_preview": "{\"task_id\": \"MON408b9705\", \"train_no\": \"G101\", \"date\": \"2026-10-14\", \"seat_type\": \"二等座\", \"duration_min\": 30, \"current_seats\": 0, \"status\": \"monitoring\"}"
+            }
+          ]
+        },
+        {
+          "step": 4,
+          "calls": [
+            {
+              "tool": "monitor_seat",
+              "args": {
+                "train_no": "G101",
+                "date": "2026-10-14",
+                "seat_type": "二等座",
+                "duration_min": 30
+              },
+              "ok": true,
+              "latency_ms": 0,
+              "result_preview": "{\"task_id\": \"MONede63e26\", \"train_no\": \"G101\", \"date\": \"2026-10-14\", \"seat_type\": \"二等座\", \"duration_min\": 30, \"current_seats\": 0, \"status\": \"monitoring\"}"
+            }
+          ]
+        },
+        {
+          "step": 5,
+          "calls": [
+            {
+              "tool": "monitor_seat",
+              "args": {
+                "train_no": "G101",
+                "date": "2026-10-14",
+                "seat_type": "二等座",
+                "duration_min": 30
+              },
+              "ok": true,
+              "latency_ms": 0,
+              "result_preview": "{\"task_id\": \"MON202c9914\", \"train_no\": \"G101\", \"date\": \"2026-10-14\", \"seat_type\": \"二等座\", \"duration_min\": 30, \"current_seats\": 0, \"status\": \"monitoring\"}"
+            }
+          ]
+        },
+        {
+          "step": 6,
+          "calls": [
+            {
+              "tool": "monitor_seat",
+              "args": {
+                "train_no": "G101",
+                "date": "2026-10-14",
+                "seat_type": "二等座",
+                "duration_min": 30
+              },
+              "ok": true,
+              "latency_ms": 0,
+              "result_preview": "{\"task_id\": \"MONb4224dae\", \"train_no\": \"G101\", \"date\": \"2026-10-14\", \"seat_type\": \"二等座\", \"duration_min\": 30, \"current_seats\": 0, \"status\": \"monitoring\"}"
+            }
+          ]
+        },
+        {
+          "step": 7,
+          "calls": [
+            {
+              "tool": "monitor_seat",
+              "args": {
+                "train_no": "G101",
+                "date": "2026-10-14",
+                "seat_type": "二等座",
+                "duration_min": 30
+              },
+              "ok": true,
+              "latency_ms": 0,
+              "result_preview": "{\"task_id\": \"MONd845c7d2\", \"train_no\": \"G101\", \"date\": \"2026-10-14\", \"seat_type\": \"二等座\", \"duration_min\": 30, \"current_seats\": 0, \"status\": \"monitoring\"}"
+            }
+          ]
+        },
+        {
+          "step": 8,
+          "calls": [
+            {
+              "tool": "monitor_seat",
+              "args": {
+                "train_no": "G101",
+                "date": "2026-10-14",
+                "seat_type": "二等座",
+                "duration_min": 30
+              },
+              "ok": true,
+              "latency_ms": 0,
+              "result_preview": "{\"task_id\": \"MON8c1e0170\", \"train_no\": \"G101\", \"date\": \"2026-10-14\", \"seat_type\": \"二等座\", \"duration_min\": 30, \"current_seats\": 0, \"status\": \"monitoring\"}"
+            }
+          ]
+        }
+      ],
+      "tool_sequence": [
+        "query_tickets",
+        "monitor_seat",
+        "monitor_seat",
+        "monitor_seat",
+        "monitor_seat",
+        "monitor_seat",
+        "monitor_seat",
+        "monitor_seat"
+      ],
+      "reply": "达到最大执行步数，操作尚未完成；请查看工具轨迹。",
+      "finish_reason": "max_steps_exceeded",
+      "tokens": {
+        "prompt": 0,
+        "completion": 0
+      },
+      "total_latency_ms": 3
+    }
+  },
+  {
+    "label": "injected:route_error",
+    "result": {
+      "session_id": "handoff-route_error",
+      "provider": "mock",
+      "model": "glm-4-flash",
+      "user_msg": "退票手续费怎么算",
+      "steps": [
+        {
+          "step": 1,
+          "calls": [
+            {
+              "tool": "query_tickets",
+              "args": {
+                "from_city": "北京",
+                "to_city": "上海",
+                "date": "2026-10-14"
+              },
+              "ok": true,
+              "latency_ms": 0,
+              "result_preview": "{\"trains\": [{\"kind\": \"高铁\", \"train_no\": \"G101\", \"from_city\": \"北京\", \"to_city\": \"上海\", \"date\": \"2026-10-14\", \"depart\": \"06:00\", \"arrive\": \"11:00\", \"seat_type\": \"一等座\", \"price\": 884.8, \"seats_left\": 195}, {..."
+            }
+          ]
+        }
+      ],
+      "tool_sequence": [
+        "query_tickets"
+      ],
+      "reply": "为您查到以下有余票的班次：G101 北京→上海 06:00 开，一等座 ¥884.8，余票 195；G102 北京→上海 09:17 开，一等座 ¥884.8，余票 172；G103 北京→上海 12:34 开，一等座 ¥884.8，余票 57。另有 4 个返回班次当前余票 0（不可售）。",
+      "finish_reason": "stop",
+      "tokens": {
+        "prompt": 0,
+        "completion": 0
+      },
+      "total_latency_ms": 0
+    }
+  },
+  {
+    "label": "injected:no_citation",
+    "result": {
+      "session_id": "handoff-no_citation",
+      "provider": "mock",
+      "model": "glm-4-flash",
+      "user_msg": "退票手续费怎么算",
+      "steps": [
+        {
+          "step": 1,
+          "calls": [
+            {
+              "tool": "search_policy",
+              "args": {
+                "question": "退票手续费怎么算"
+              },
+              "ok": true,
+              "latency_ms": 0,
+              "result_preview": "{\"question\": \"退票手续费怎么算\", \"hits\": [{\"doc_id\": \"P01\", \"source\": \"data/policies.md#P01\", \"title\": \"退票手续费阶梯\", \"content\": \"开车前 48 小时以上退票，收取票价 5% 手续费；开车前 24 至 48 小时退票，收取 10%；开车前不足 24 小时退票，收取 20%。已取报销凭证或已改签的..."
+            }
+          ]
+        }
+      ],
+      "tool_sequence": [
+        "search_policy"
+      ],
+      "reply": "开车前 48 小时以上退票，收取票价 5% 手续费；开车前 24 至 48 小时退票，收取 10%；开车前不足 24 小时退票，收取 20%。已取报销凭证或已改签的车票不退。 机票经济舱起飞前 24 小时以上退票收取票面价 10%，24 小时内收取 30%；特价舱位（折扣低于 4 折）不支持退票，仅退机场建设费与燃油附加费。",
+      "finish_reason": "stop",
+      "tokens": {
+        "prompt": 0,
+        "completion": 0
+      },
+      "total_latency_ms": 0
+    }
+  }
+]

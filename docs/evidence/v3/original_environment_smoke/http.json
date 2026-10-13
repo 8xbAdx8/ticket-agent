@@ -1,0 +1,210 @@
+{
+  "health": {
+    "status": "ok",
+    "tools": [
+      "query_tickets",
+      "monitor_seat",
+      "lock_seat",
+      "create_order",
+      "pay_order",
+      "cancel_order",
+      "query_order",
+      "search_policy"
+    ]
+  },
+  "calls": [
+    {
+      "tool": "query_tickets",
+      "args": {
+        "from_city": "上海",
+        "to_city": "杭州",
+        "date": "2026-10-14",
+        "seat_type": "二等座"
+      },
+      "result": {
+        "trains": [
+          {
+            "kind": "高铁",
+            "train_no": "G7303",
+            "from_city": "上海",
+            "to_city": "杭州",
+            "date": "2026-10-14",
+            "depart": "12:34",
+            "arrive": "13:34",
+            "seat_type": "二等座",
+            "price": 73.0,
+            "seats_left": 49
+          },
+          {
+            "kind": "高铁",
+            "train_no": "G7302",
+            "from_city": "上海",
+            "to_city": "杭州",
+            "date": "2026-10-14",
+            "depart": "09:17",
+            "arrive": "10:17",
+            "seat_type": "二等座",
+            "price": 73.0,
+            "seats_left": 47
+          },
+          {
+            "kind": "高铁",
+            "train_no": "G7301",
+            "from_city": "上海",
+            "to_city": "杭州",
+            "date": "2026-10-14",
+            "depart": "06:00",
+            "arrive": "07:00",
+            "seat_type": "二等座",
+            "price": 73.0,
+            "seats_left": 35
+          }
+        ],
+        "count": 3
+      }
+    },
+    {
+      "tool": "lock_seat",
+      "args": {
+        "train_no": "G7303",
+        "date": "2026-10-14",
+        "seat_type": "二等座",
+        "passengers": [
+          "张三"
+        ]
+      },
+      "result": {
+        "lock_id": "LK9d2d1adc",
+        "train_no": "G7303",
+        "date": "2026-10-14",
+        "seat_type": "二等座",
+        "passengers": [
+          "张三"
+        ],
+        "unit_price": 73.0,
+        "count": 1,
+        "expire_at": "2026-10-13T14:08:36.952663",
+        "ttl_seconds": 900
+      }
+    },
+    {
+      "tool": "create_order",
+      "args": {
+        "lock_id": "LK9d2d1adc",
+        "passenger_ids": [
+          "张三"
+        ],
+        "contact": "13800000001"
+      },
+      "result": {
+        "order_id": "OD9f03aaba9e",
+        "phone": "13800000001",
+        "train_no": "G7303",
+        "date": "2026-10-14",
+        "seat_type": "二等座",
+        "passengers": "[\"张三\"]",
+        "amount": 73.0,
+        "status": "pending",
+        "created_at": "2026-10-13T13:53:36.956659",
+        "lock_id": "LK9d2d1adc",
+        "idempotent_hit": false
+      }
+    },
+    {
+      "tool": "pay_order",
+      "args": {
+        "order_id": "OD9f03aaba9e"
+      },
+      "result": {
+        "order_id": "OD9f03aaba9e",
+        "status": "paid",
+        "pay_type": "alipay",
+        "amount": 73.0,
+        "duplicate_pay": false
+      }
+    },
+    {
+      "tool": "cancel_order",
+      "args": {
+        "order_id": "OD9f03aaba9e"
+      },
+      "result": {
+        "order_id": "OD9f03aaba9e",
+        "status": "refunded",
+        "amount": 73.0,
+        "fee": 14.6,
+        "refund": 58.4,
+        "fee_rate": 0.2,
+        "policy_ref": "P01"
+      }
+    },
+    {
+      "tool": "query_order",
+      "args": {
+        "order_id": "OD9f03aaba9e"
+      },
+      "result": {
+        "order_id": "OD9f03aaba9e",
+        "phone": "13800000001",
+        "train_no": "G7303",
+        "date": "2026-10-14",
+        "seat_type": "二等座",
+        "passengers": "[\"张三\"]",
+        "amount": 73.0,
+        "status": "refunded",
+        "created_at": "2026-10-13T13:53:36.956659",
+        "lock_id": "LK9d2d1adc"
+      }
+    },
+    {
+      "tool": "monitor_seat",
+      "args": {
+        "train_no": "G101",
+        "date": "2026-10-14",
+        "seat_type": "二等座"
+      },
+      "result": {
+        "task_id": "MON5d3a27de",
+        "train_no": "G101",
+        "date": "2026-10-14",
+        "seat_type": "二等座",
+        "duration_min": 30,
+        "current_seats": 0,
+        "status": "monitoring"
+      }
+    },
+    {
+      "tool": "search_policy",
+      "args": {
+        "question": "退票手续费怎么算"
+      },
+      "result": {
+        "question": "退票手续费怎么算",
+        "hits": [
+          {
+            "doc_id": "P01",
+            "source": "data/policies.md#P01",
+            "title": "退票手续费阶梯",
+            "content": "开车前 48 小时以上退票，收取票价 5% 手续费；开车前 24 至 48 小时退票，收取 10%；开车前不足 24 小时退票，收取 20%。已取报销凭证或已改签的车票不退。",
+            "score": 2.0926
+          },
+          {
+            "doc_id": "P09",
+            "source": "data/policies.md#P09",
+            "title": "机票退改规则",
+            "content": "机票经济舱起飞前 24 小时以上退票收取票面价 10%，24 小时内收取 30%；特价舱位（折扣低于 4 折）不支持退票，仅退机场建设费与燃油附加费。",
+            "score": 1.397
+          },
+          {
+            "doc_id": "P04",
+            "source": "data/policies.md#P04",
+            "title": "儿童票",
+            "content": "身高 1.2 米以下且不满 6 周岁儿童可免票（不占座）；6 至 14 周岁需购买儿童票，二等座按公布票价 50% 计算，一等座与商务座不售儿童票。",
+            "score": 0.7878
+          }
+        ],
+        "count": 3
+      }
+    }
+  ]
+}

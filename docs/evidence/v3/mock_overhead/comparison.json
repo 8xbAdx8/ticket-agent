@@ -1,0 +1,391 @@
+{
+  "scope": "A 同环境本地 Mock 3组x5轮；非正式比赛性能结论",
+  "engine_order": "each trial legacy then langchain, not randomized",
+  "limitations": "首次框架延迟包含懒导入；无远端网络、并发压力、持久化检查点或内存测量；样本很小",
+  "summaries": {
+    "legacy": {
+      "turns": 15,
+      "chat_wall_median_ms": 0.87599999824306,
+      "chat_wall_min_ms": 0.41430000055697747,
+      "chat_wall_max_ms": 3.3637999986240175,
+      "init_ms": [
+        0.015800000255694613,
+        0.13019999823882245,
+        0.09810000119614415
+      ]
+    },
+    "langchain": {
+      "turns": 15,
+      "chat_wall_median_ms": 5.5114999995566905,
+      "chat_wall_min_ms": 4.138700001931284,
+      "chat_wall_max_ms": 9.877599997707875,
+      "init_ms": [
+        686.6719000026933,
+        1.779299996996997,
+        2.6490999989619013
+      ]
+    }
+  },
+  "rows": [
+    {
+      "trial": 0,
+      "engine": "legacy",
+      "input": "查明天上海到杭州的高铁",
+      "turn": 1,
+      "init_ms": 0.015800000255694613,
+      "chat_wall_ms": 3.3637999986240175,
+      "trace_latency_ms": 2,
+      "tools": [
+        "query_tickets"
+      ]
+    },
+    {
+      "trial": 0,
+      "engine": "legacy",
+      "input": "那机票呢",
+      "turn": 2,
+      "init_ms": null,
+      "chat_wall_ms": 1.0502999975869898,
+      "trace_latency_ms": 0,
+      "tools": [
+        "query_tickets"
+      ]
+    },
+    {
+      "trial": 0,
+      "engine": "legacy",
+      "input": "还是高铁吧",
+      "turn": 3,
+      "init_ms": null,
+      "chat_wall_ms": 0.8831999984977301,
+      "trace_latency_ms": 0,
+      "tools": [
+        "query_tickets"
+      ]
+    },
+    {
+      "trial": 0,
+      "engine": "legacy",
+      "input": "后天呢",
+      "turn": 4,
+      "init_ms": null,
+      "chat_wall_ms": 0.8314000006066635,
+      "trace_latency_ms": 0,
+      "tools": [
+        "query_tickets"
+      ]
+    },
+    {
+      "trial": 0,
+      "engine": "legacy",
+      "input": "锁座后多久必须完成支付？",
+      "turn": 5,
+      "init_ms": null,
+      "chat_wall_ms": 0.7371000028797425,
+      "trace_latency_ms": 0,
+      "tools": [
+        "search_policy"
+      ]
+    },
+    {
+      "trial": 0,
+      "engine": "langchain",
+      "input": "查明天上海到杭州的高铁",
+      "turn": 1,
+      "init_ms": 686.6719000026933,
+      "chat_wall_ms": 9.877599997707875,
+      "trace_latency_ms": 9,
+      "tools": [
+        "query_tickets"
+      ]
+    },
+    {
+      "trial": 0,
+      "engine": "langchain",
+      "input": "那机票呢",
+      "turn": 2,
+      "init_ms": null,
+      "chat_wall_ms": 4.906199999823002,
+      "trace_latency_ms": 4,
+      "tools": [
+        "query_tickets"
+      ]
+    },
+    {
+      "trial": 0,
+      "engine": "langchain",
+      "input": "还是高铁吧",
+      "turn": 3,
+      "init_ms": null,
+      "chat_wall_ms": 6.6311000009591226,
+      "trace_latency_ms": 6,
+      "tools": [
+        "query_tickets"
+      ]
+    },
+    {
+      "trial": 0,
+      "engine": "langchain",
+      "input": "后天呢",
+      "turn": 4,
+      "init_ms": null,
+      "chat_wall_ms": 5.095000000437722,
+      "trace_latency_ms": 4,
+      "tools": [
+        "query_tickets"
+      ]
+    },
+    {
+      "trial": 0,
+      "engine": "langchain",
+      "input": "锁座后多久必须完成支付？",
+      "turn": 5,
+      "init_ms": null,
+      "chat_wall_ms": 4.138700001931284,
+      "trace_latency_ms": 3,
+      "tools": [
+        "search_policy"
+      ]
+    },
+    {
+      "trial": 1,
+      "engine": "legacy",
+      "input": "查明天上海到杭州的高铁",
+      "turn": 1,
+      "init_ms": 0.13019999823882245,
+      "chat_wall_ms": 1.9279000007372815,
+      "trace_latency_ms": 1,
+      "tools": [
+        "query_tickets"
+      ]
+    },
+    {
+      "trial": 1,
+      "engine": "legacy",
+      "input": "那机票呢",
+      "turn": 2,
+      "init_ms": null,
+      "chat_wall_ms": 0.9175000013783574,
+      "trace_latency_ms": 0,
+      "tools": [
+        "query_tickets"
+      ]
+    },
+    {
+      "trial": 1,
+      "engine": "legacy",
+      "input": "还是高铁吧",
+      "turn": 3,
+      "init_ms": null,
+      "chat_wall_ms": 0.872299999173265,
+      "trace_latency_ms": 0,
+      "tools": [
+        "query_tickets"
+      ]
+    },
+    {
+      "trial": 1,
+      "engine": "legacy",
+      "input": "后天呢",
+      "turn": 4,
+      "init_ms": null,
+      "chat_wall_ms": 0.8601000008638948,
+      "trace_latency_ms": 0,
+      "tools": [
+        "query_tickets"
+      ]
+    },
+    {
+      "trial": 1,
+      "engine": "legacy",
+      "input": "锁座后多久必须完成支付？",
+      "turn": 5,
+      "init_ms": null,
+      "chat_wall_ms": 0.87599999824306,
+      "trace_latency_ms": 0,
+      "tools": [
+        "search_policy"
+      ]
+    },
+    {
+      "trial": 1,
+      "engine": "langchain",
+      "input": "查明天上海到杭州的高铁",
+      "turn": 1,
+      "init_ms": 1.779299996996997,
+      "chat_wall_ms": 8.950400002504466,
+      "trace_latency_ms": 8,
+      "tools": [
+        "query_tickets"
+      ]
+    },
+    {
+      "trial": 1,
+      "engine": "langchain",
+      "input": "那机票呢",
+      "turn": 2,
+      "init_ms": null,
+      "chat_wall_ms": 7.306999999855179,
+      "trace_latency_ms": 6,
+      "tools": [
+        "query_tickets"
+      ]
+    },
+    {
+      "trial": 1,
+      "engine": "langchain",
+      "input": "还是高铁吧",
+      "turn": 3,
+      "init_ms": null,
+      "chat_wall_ms": 6.752300003427081,
+      "trace_latency_ms": 6,
+      "tools": [
+        "query_tickets"
+      ]
+    },
+    {
+      "trial": 1,
+      "engine": "langchain",
+      "input": "后天呢",
+      "turn": 4,
+      "init_ms": null,
+      "chat_wall_ms": 6.314499998552492,
+      "trace_latency_ms": 6,
+      "tools": [
+        "query_tickets"
+      ]
+    },
+    {
+      "trial": 1,
+      "engine": "langchain",
+      "input": "锁座后多久必须完成支付？",
+      "turn": 5,
+      "init_ms": null,
+      "chat_wall_ms": 5.5114999995566905,
+      "trace_latency_ms": 5,
+      "tools": [
+        "search_policy"
+      ]
+    },
+    {
+      "trial": 2,
+      "engine": "legacy",
+      "input": "查明天上海到杭州的高铁",
+      "turn": 1,
+      "init_ms": 0.09810000119614415,
+      "chat_wall_ms": 1.6448999995191116,
+      "trace_latency_ms": 1,
+      "tools": [
+        "query_tickets"
+      ]
+    },
+    {
+      "trial": 2,
+      "engine": "legacy",
+      "input": "那机票呢",
+      "turn": 2,
+      "init_ms": null,
+      "chat_wall_ms": 0.8809999999357387,
+      "trace_latency_ms": 0,
+      "tools": [
+        "query_tickets"
+      ]
+    },
+    {
+      "trial": 2,
+      "engine": "legacy",
+      "input": "还是高铁吧",
+      "turn": 3,
+      "init_ms": null,
+      "chat_wall_ms": 0.851400000101421,
+      "trace_latency_ms": 0,
+      "tools": [
+        "query_tickets"
+      ]
+    },
+    {
+      "trial": 2,
+      "engine": "legacy",
+      "input": "后天呢",
+      "turn": 4,
+      "init_ms": null,
+      "chat_wall_ms": 0.8173000023816712,
+      "trace_latency_ms": 0,
+      "tools": [
+        "query_tickets"
+      ]
+    },
+    {
+      "trial": 2,
+      "engine": "legacy",
+      "input": "锁座后多久必须完成支付？",
+      "turn": 5,
+      "init_ms": null,
+      "chat_wall_ms": 0.41430000055697747,
+      "trace_latency_ms": 0,
+      "tools": [
+        "search_policy"
+      ]
+    },
+    {
+      "trial": 2,
+      "engine": "langchain",
+      "input": "查明天上海到杭州的高铁",
+      "turn": 1,
+      "init_ms": 2.6490999989619013,
+      "chat_wall_ms": 8.771600001637125,
+      "trace_latency_ms": 8,
+      "tools": [
+        "query_tickets"
+      ]
+    },
+    {
+      "trial": 2,
+      "engine": "langchain",
+      "input": "那机票呢",
+      "turn": 2,
+      "init_ms": null,
+      "chat_wall_ms": 5.258900000626454,
+      "trace_latency_ms": 4,
+      "tools": [
+        "query_tickets"
+      ]
+    },
+    {
+      "trial": 2,
+      "engine": "langchain",
+      "input": "还是高铁吧",
+      "turn": 3,
+      "init_ms": null,
+      "chat_wall_ms": 5.315900001733098,
+      "trace_latency_ms": 5,
+      "tools": [
+        "query_tickets"
+      ]
+    },
+    {
+      "trial": 2,
+      "engine": "langchain",
+      "input": "后天呢",
+      "turn": 4,
+      "init_ms": null,
+      "chat_wall_ms": 4.680699999880744,
+      "trace_latency_ms": 4,
+      "tools": [
+        "query_tickets"
+      ]
+    },
+    {
+      "trial": 2,
+      "engine": "langchain",
+      "input": "锁座后多久必须完成支付？",
+      "turn": 5,
+      "init_ms": null,
+      "chat_wall_ms": 4.559700002573663,
+      "trace_latency_ms": 4,
+      "tools": [
+        "search_policy"
+      ]
+    }
+  ]
+}
