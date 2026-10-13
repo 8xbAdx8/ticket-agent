@@ -1,0 +1,26 @@
+{
+  "status": "passed",
+  "source": "unmodified web/app.py real browser rendering",
+  "provider": "langchain_mock",
+  "real_model_tested": false,
+  "inputs": [
+    {
+      "message": "查明天上海到杭州的高铁",
+      "screenshot": "01-actual-query.png"
+    },
+    {
+      "message": "订明天上海到杭州的高铁",
+      "screenshot": "02-actual-order.png"
+    },
+    {
+      "message": "锁座后多久必须完成支付？",
+      "screenshot": "03-actual-policy.png"
+    }
+  ],
+  "viewport": {
+    "width": 1600,
+    "height": 1120
+  },
+  "browser_version": "155.0.4283.45",
+  "javascript_errors": 0
+}

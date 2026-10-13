@@ -1,0 +1,370 @@
+window.TICKET_DEMO = {
+  "label": "界面设计稿 · 历史LangChain Mock数据 · 不连接Agent服务",
+  "evidence_date": "2026-10-13",
+  "source_commit": "a4d6d62f88f796b39f4f27f239eaa6308d4143b2",
+  "scenes": {
+    "query": {
+      "trace": {
+        "session_id": "v3-demo",
+        "provider": "langchain_mock",
+        "model": "glm-4-flash",
+        "user_msg": "查明天上海到杭州的高铁",
+        "steps": [
+          {
+            "step": 1,
+            "calls": [
+              {
+                "tool": "query_tickets",
+                "args": {
+                  "from_city": "上海",
+                  "to_city": "杭州",
+                  "date": "2026-10-14",
+                  "kind": "高铁",
+                  "seat_type": "二等座"
+                },
+                "ok": true,
+                "latency_ms": 1,
+                "result_preview": "{\"trains\": [{\"kind\": \"高铁\", \"train_no\": \"G7303\", \"from_city\": \"上海\", \"to_city\": \"杭州\", \"date\": \"2026-10-14\", \"depart\": \"12:34\", \"arrive\": \"13:34\", \"seat_type\": \"二等座\", \"price\": 73.0, \"seats_left\": 51}, {\"..."
+              }
+            ]
+          }
+        ],
+        "tool_sequence": [
+          "query_tickets"
+        ],
+        "reply": "为您查到以下有余票的班次：G7303 上海→杭州 12:34 开，二等座 ¥73.0，余票 51；G7302 上海→杭州 09:17 开，二等座 ¥73.0，余票 47；G7301 上海→杭州 06:00 开，二等座 ¥73.0，余票 35。",
+        "finish_reason": "stop",
+        "tokens": {
+          "prompt": 0,
+          "completion": 0
+        },
+        "total_latency_ms": 9
+      },
+      "tools": [
+        {
+          "event": "tool_end",
+          "tool": "query_tickets",
+          "call_id": "call_fee7f259",
+          "ok": true,
+          "latency_ms": 1,
+          "result": {
+            "trains": [
+              {
+                "kind": "高铁",
+                "train_no": "G7303",
+                "from_city": "上海",
+                "to_city": "杭州",
+                "date": "2026-10-14",
+                "depart": "12:34",
+                "arrive": "13:34",
+                "seat_type": "二等座",
+                "price": 73.0,
+                "seats_left": 51
+              },
+              {
+                "kind": "高铁",
+                "train_no": "G7302",
+                "from_city": "上海",
+                "to_city": "杭州",
+                "date": "2026-10-14",
+                "depart": "09:17",
+                "arrive": "10:17",
+                "seat_type": "二等座",
+                "price": 73.0,
+                "seats_left": 47
+              },
+              {
+                "kind": "高铁",
+                "train_no": "G7301",
+                "from_city": "上海",
+                "to_city": "杭州",
+                "date": "2026-10-14",
+                "depart": "06:00",
+                "arrive": "07:00",
+                "seat_type": "二等座",
+                "price": 73.0,
+                "seats_left": 35
+              }
+            ],
+            "count": 3
+          }
+        }
+      ]
+    },
+    "order": {
+      "trace": {
+        "session_id": "v3-orders",
+        "provider": "langchain_mock",
+        "model": "glm-4-flash",
+        "user_msg": "订明天上海到杭州的高铁",
+        "steps": [
+          {
+            "step": 1,
+            "calls": [
+              {
+                "tool": "query_tickets",
+                "args": {
+                  "from_city": "上海",
+                  "to_city": "杭州",
+                  "date": "2026-10-14",
+                  "kind": "高铁",
+                  "seat_type": "二等座"
+                },
+                "ok": true,
+                "latency_ms": 0,
+                "result_preview": "{\"trains\": [{\"kind\": \"高铁\", \"train_no\": \"G7303\", \"from_city\": \"上海\", \"to_city\": \"杭州\", \"date\": \"2026-10-14\", \"depart\": \"12:34\", \"arrive\": \"13:34\", \"seat_type\": \"二等座\", \"price\": 73.0, \"seats_left\": 51}, {\"..."
+              }
+            ]
+          },
+          {
+            "step": 2,
+            "calls": [
+              {
+                "tool": "lock_seat",
+                "args": {
+                  "train_no": "G7303",
+                  "date": "2026-10-14",
+                  "seat_type": "二等座",
+                  "passengers": [
+                    "张三"
+                  ]
+                },
+                "ok": true,
+                "latency_ms": 4,
+                "result_preview": "{\"lock_id\": \"LKa8f3b356\", \"train_no\": \"G7303\", \"date\": \"2026-10-14\", \"seat_type\": \"二等座\", \"passengers\": [\"张三\"], \"unit_price\": 73.0, \"count\": 1, \"expire_at\": \"2026-10-13T14:08:31.905101\", \"ttl_seconds\":..."
+              }
+            ]
+          },
+          {
+            "step": 3,
+            "calls": [
+              {
+                "tool": "create_order",
+                "args": {
+                  "lock_id": "LKa8f3b356",
+                  "passenger_ids": [
+                    "张三"
+                  ],
+                  "contact": "13800000001"
+                },
+                "ok": true,
+                "latency_ms": 3,
+                "result_preview": "{\"order_id\": \"OD9d689c6329\", \"phone\": \"13800000001\", \"train_no\": \"G7303\", \"date\": \"2026-10-14\", \"seat_type\": \"二等座\", \"passengers\": \"[\\\"张三\\\"]\", \"amount\": 73.0, \"status\": \"pending\", \"created_at\": \"2026-1..."
+              }
+            ]
+          }
+        ],
+        "tool_sequence": [
+          "query_tickets",
+          "lock_seat",
+          "create_order"
+        ],
+        "reply": "订单已创建：OD9d689c6329，金额 ¥73.0，车次 G7303 2026-10-14，请在锁座有效期内完成支付。",
+        "finish_reason": "stop",
+        "tokens": {
+          "prompt": 0,
+          "completion": 0
+        },
+        "total_latency_ms": 15
+      },
+      "tools": [
+        {
+          "event": "tool_end",
+          "tool": "query_tickets",
+          "call_id": "call_6a572cdd",
+          "ok": true,
+          "latency_ms": 0,
+          "result": {
+            "trains": [
+              {
+                "kind": "高铁",
+                "train_no": "G7303",
+                "from_city": "上海",
+                "to_city": "杭州",
+                "date": "2026-10-14",
+                "depart": "12:34",
+                "arrive": "13:34",
+                "seat_type": "二等座",
+                "price": 73.0,
+                "seats_left": 51
+              },
+              {
+                "kind": "高铁",
+                "train_no": "G7302",
+                "from_city": "上海",
+                "to_city": "杭州",
+                "date": "2026-10-14",
+                "depart": "09:17",
+                "arrive": "10:17",
+                "seat_type": "二等座",
+                "price": 73.0,
+                "seats_left": 47
+              },
+              {
+                "kind": "高铁",
+                "train_no": "G7301",
+                "from_city": "上海",
+                "to_city": "杭州",
+                "date": "2026-10-14",
+                "depart": "06:00",
+                "arrive": "07:00",
+                "seat_type": "二等座",
+                "price": 73.0,
+                "seats_left": 35
+              }
+            ],
+            "count": 3
+          }
+        },
+        {
+          "event": "tool_end",
+          "tool": "lock_seat",
+          "call_id": "call_69644a89",
+          "ok": true,
+          "latency_ms": 4,
+          "result": {
+            "lock_id": "LKa8f3b356",
+            "train_no": "G7303",
+            "date": "2026-10-14",
+            "seat_type": "二等座",
+            "passengers": [
+              "张三"
+            ],
+            "unit_price": 73.0,
+            "count": 1,
+            "expire_at": "2026-10-13T14:08:31.905101",
+            "ttl_seconds": 900
+          }
+        },
+        {
+          "event": "tool_end",
+          "tool": "create_order",
+          "call_id": "call_d60c9b72",
+          "ok": true,
+          "latency_ms": 3,
+          "result": {
+            "order_id": "OD9d689c6329",
+            "phone": "13800000001",
+            "train_no": "G7303",
+            "date": "2026-10-14",
+            "seat_type": "二等座",
+            "passengers": "[\"张三\"]",
+            "amount": 73.0,
+            "status": "pending",
+            "created_at": "2026-10-13T13:53:31.910935",
+            "lock_id": "LKa8f3b356",
+            "idempotent_hit": false
+          }
+        }
+      ]
+    },
+    "policy": {
+      "trace": {
+        "session_id": "v3-demo",
+        "provider": "langchain_mock",
+        "model": "glm-4-flash",
+        "user_msg": "锁座后多久必须完成支付？",
+        "steps": [
+          {
+            "step": 1,
+            "calls": [
+              {
+                "tool": "search_policy",
+                "args": {
+                  "question": "锁座后多久必须完成支付？"
+                },
+                "ok": true,
+                "latency_ms": 0,
+                "result_preview": "{\"question\": \"锁座后多久必须完成支付？\", \"hits\": [{\"doc_id\": \"P11\", \"source\": \"data/policies.md#P11\", \"title\": \"锁座与支付有效期\", \"content\": \"模拟锁座有效期 15 分钟，过期未支付自动释放库存；下单必须提供与锁座一致的乘客列表。重复支付不重复扣减库存。\", \"score\": 1.8708}, {..."
+              }
+            ]
+          }
+        ],
+        "tool_sequence": [
+          "search_policy"
+        ],
+        "reply": "模拟锁座有效期 15 分钟，过期未支付自动释放库存；下单必须提供与锁座一致的乘客列表。重复支付不重复扣减库存。 未支付订单取消不收取手续费，释放已占库存；已退款或已取消订单不得再次释放库存，取消后的订单不可支付。（依据 P11, P12）",
+        "finish_reason": "stop",
+        "tokens": {
+          "prompt": 0,
+          "completion": 0
+        },
+        "total_latency_ms": 4
+      },
+      "tools": [
+        {
+          "event": "tool_end",
+          "tool": "search_policy",
+          "call_id": "call_e617d45c",
+          "ok": true,
+          "latency_ms": 0,
+          "result": {
+            "question": "锁座后多久必须完成支付？",
+            "hits": [
+              {
+                "doc_id": "P11",
+                "source": "data/policies.md#P11",
+                "title": "锁座与支付有效期",
+                "content": "模拟锁座有效期 15 分钟，过期未支付自动释放库存；下单必须提供与锁座一致的乘客列表。重复支付不重复扣减库存。",
+                "score": 1.8708
+              },
+              {
+                "doc_id": "P12",
+                "source": "data/policies.md#P12",
+                "title": "未支付订单取消",
+                "content": "未支付订单取消不收取手续费，释放已占库存；已退款或已取消订单不得再次释放库存，取消后的订单不可支付。",
+                "score": 0.9615
+              },
+              {
+                "doc_id": "P04",
+                "source": "data/policies.md#P04",
+                "title": "儿童票",
+                "content": "身高 1.2 米以下且不满 6 周岁儿童可免票（不占座）；6 至 14 周岁需购买儿童票，二等座按公布票价 50% 计算，一等座与商务座不售儿童票。",
+                "score": 0.5252
+              }
+            ],
+            "count": 3
+          }
+        }
+      ]
+    }
+  },
+  "code": [
+    {
+      "title": "统一对话入口",
+      "purpose": "选择legacy或LangChain，保留B依赖的chat接口。",
+      "path": "target/agent.py",
+      "line": 61,
+      "end": 67,
+      "code": "    def chat(self, session_id, message, save_trace=True):\n        if not isinstance(session_id, str) or not session_id.strip() or not isinstance(message, str) or not message.strip():\n            raise ValueError(\"session_id 与 message 必须是非空字符串\")\n        with self._mutex:\n            if self.langchain_engine is not None:\n                return self.langchain_engine.chat(session_id, message, save_trace=save_trace)\n            return self._chat(session_id, message, save_trace)"
+    },
+    {
+      "title": "标准工具适配",
+      "purpose": "复用原工具Schema与dispatch，不重复实现数据库业务。",
+      "path": "target/langchain_agent.py",
+      "line": 87,
+      "end": 92,
+      "code": "def adapt_tool(name: str) -> StructuredTool:\n    definition = next(t[\"function\"] for t in tools.TOOLS if t[\"function\"][\"name\"] == name)\n    def execute(**args):\n        return tools.dispatch(name,args)[0]\n    return StructuredTool.from_function(execute,name=name,description=definition[\"description\"],\n                                        args_schema=copy.deepcopy(definition[\"parameters\"]))"
+    },
+    {
+      "title": "真实工具轨迹",
+      "purpose": "独立授权后由框架执行工具，再记录参数、结果、耗时并返回ToolMessage。",
+      "path": "target/langchain_agent.py",
+      "line": 54,
+      "end": 84,
+      "code": "    def wrap_tool_call(self, request, handler):\n        ctx = request.runtime.context\n        call = request.tool_call\n        name, args = call[\"name\"], call[\"args\"]\n        started = time.perf_counter()\n        ctx.events.append({\"event\":\"tool_start\", \"model_step\":ctx.current_step+1,\n                           \"tool\":name, \"args\":args, \"call_id\":call[\"id\"]})\n        try:\n            blocked = denial(name, args, ctx, request.state[\"messages\"])\n            if blocked:\n                response = ToolMessage(content=json.dumps({\"error\":blocked},ensure_ascii=False),\n                                       tool_call_id=call[\"id\"],name=name,status=\"error\")\n            else:\n                response = handler(request)  # LangChain 调度；复用 V2 后端校验/状态机。\n            try:\n                result = json.loads(response.content)\n            except (ValueError, TypeError):\n                result = {\"error\":response.content} if response.status == \"error\" else {\"result\":response.content}\n            ok = response.status != \"error\" and not (isinstance(result,dict) and \"error\" in result)\n            if not ok:\n                response = response.model_copy(update={\"status\":\"error\"})\n            elif name == \"lock_seat\":\n                ctx.lock_ids.add(result[\"lock_id\"])\n        except Exception as exc:\n            result, ok = {\"error\":f\"工具执行失败 ({type(exc).__name__})\"}, False\n            response = ToolMessage(content=json.dumps(result,ensure_ascii=False),tool_call_id=call[\"id\"],name=name,status=\"error\")\n        latency = int((time.perf_counter()-started)*1000)\n        ctx.trace.record_call(ctx.current_step,name,args,result,ok,latency)\n        ctx.events.append({\"event\":\"tool_end\", \"tool\":name,\"call_id\":call[\"id\"],\n                           \"ok\":ok,\"latency_ms\":latency,\"result\":result})\n        return response"
+    },
+    {
+      "title": "写操作授权",
+      "purpose": "当前用户原文、成功锁与订单引用决定是否放行，不只依赖模型Prompt。",
+      "path": "target/write_authorization.py",
+      "line": 59,
+      "end": 70,
+      "code": "def denial(name, args, context, messages) -> str | None:\n    if name not in WRITE_TOOLS:\n        return None\n    if name not in permissions(context.user_message):\n        return \"当前消息未明确授权该操作，请明确说明订票、支付、退票或候补请求。\"\n    if name == \"lock_seat\" and context.lock_ids:\n        return \"本轮已成功锁座，不重复占用库存；请先检查已返回的锁座结果。\"\n    if name == \"create_order\" and args.get(\"lock_id\") not in context.lock_ids:\n        return \"本轮没有该 lock_id 的成功锁座记录，请先锁座再创建订单。\"\n    if name in {\"pay_order\", \"cancel_order\"} and args.get(\"order_id\") not in order_reference(context.user_message, messages):\n        return \"无法确认该订单是用户指定或最近工具结果中的订单，请明确提供本人订单号。\"\n    return None"
+    }
+  ],
+  "evidence_sha256": {
+    "docs/evidence/v3/final_framework/api_results.json": "88c66378faf5442dbeb83e4ae266a73500c43f36ac4b5c182b17367f08de77c5",
+    "docs/evidence/v3/final_framework/framework_events.json": "79e2f484586e1c3f8bd1a69c7c5fe9083569cd8de60dc09e195b729e7fbc9948"
+  }
+};

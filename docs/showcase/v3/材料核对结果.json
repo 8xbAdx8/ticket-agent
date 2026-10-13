@@ -1,0 +1,51 @@
+{
+  "status": "passed",
+  "design_png_count": 6,
+  "actual_mock_png_count": 3,
+  "code_excerpts_match_source": 4,
+  "excerpt_agent_chat_line": 61,
+  "image_dimensions": {
+    "效果图/01-query.png": [
+      1600,
+      1030
+    ],
+    "效果图/02-order.png": [
+      1600,
+      1064
+    ],
+    "效果图/03-policy.png": [
+      1600,
+      1000
+    ],
+    "效果图/04-processing.png": [
+      1600,
+      1000
+    ],
+    "效果图/05-code-tour.png": [
+      1600,
+      1624
+    ],
+    "效果图/06-mobile-query.png": [
+      390,
+      1573
+    ],
+    "真实截图/01-actual-query.png": [
+      1600,
+      1120
+    ],
+    "真实截图/02-actual-order.png": [
+      1600,
+      1120
+    ],
+    "真实截图/03-actual-policy.png": [
+      1600,
+      1120
+    ]
+  },
+  "markdown_links_exist": true,
+  "protected_original_files_unchanged": 99,
+  "agent_source_unchanged": true,
+  "v1_v2_tags_unchanged": true,
+  "real_model_tested": false,
+  "formal_b_score_generated": false
+}
