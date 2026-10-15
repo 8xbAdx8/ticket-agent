@@ -1,0 +1,150 @@
+{
+  "status": "passed",
+  "review_date": "2026-10-16",
+  "review_type": "offline_existing_live_evidence",
+  "review_head": "4ac1b756a1d8e652e7a9999bf43e1ae3b65701a5",
+  "live_folder": "docs/evidence/deepseek/api-20261016-001224-2c3484",
+  "execution_beijing_date": "2026-10-16",
+  "review_added_api_requests": 0,
+  "recorded_generation_requests": 5,
+  "recorded_balance_gets": 1,
+  "budget_limit": 5,
+  "budget_used": 5,
+  "budget_remaining": 0,
+  "ledger_matches_saved_report": true,
+  "tokens": {
+    "prompt": 4796,
+    "completion": 563,
+    "total": 5359,
+    "cache_hit_input": 2944,
+    "cache_miss_input": 1852
+  },
+  "actual_fee": null,
+  "actual_fee_status": "unknown_no_provider_receipt_or_balance_delta",
+  "tools_verified": [
+    "query_tickets",
+    "search_policy"
+  ],
+  "all_eight_tools_live_verified": false,
+  "public_traces": 2,
+  "independent_sessions": 2,
+  "multiturn_quality_verified": false,
+  "cases": [
+    {
+      "tool": "query_tickets",
+      "call_id": "call_00_Zp5kqjYsmvGfgsj8RPf04824",
+      "args": {
+        "from_city": "上海",
+        "to_city": "杭州",
+        "date": "2026-10-17",
+        "seat_type": "二等座",
+        "kind": "高铁"
+      },
+      "tool_latency_ms": 1,
+      "agent_latency_ms": 4960,
+      "tokens": {
+        "prompt": 2445,
+        "completion": 337
+      },
+      "actual_response_models": [
+        "deepseek-flash",
+        "deepseek-flash"
+      ],
+      "trace_and_events_match": true
+    },
+    {
+      "tool": "search_policy",
+      "call_id": "call_00_8YZZeU8hxUMXxcBQr3508788",
+      "args": {
+        "question": "锁座后多久必须完成支付？未支付订单会否自动取消？"
+      },
+      "tool_latency_ms": 2,
+      "agent_latency_ms": 3262,
+      "tokens": {
+        "prompt": 2343,
+        "completion": 225
+      },
+      "actual_response_models": [
+        "deepseek-flash",
+        "deepseek-flash"
+      ],
+      "trace_and_events_match": true
+    }
+  ],
+  "query_rows": [
+    {
+      "kind": "高铁",
+      "train_no": "G7303",
+      "from_city": "上海",
+      "to_city": "杭州",
+      "date": "2026-10-17",
+      "depart": "12:34",
+      "arrive": "13:34",
+      "seat_type": "二等座",
+      "price": 73.0,
+      "seats_left": 51
+    },
+    {
+      "kind": "高铁",
+      "train_no": "G7302",
+      "from_city": "上海",
+      "to_city": "杭州",
+      "date": "2026-10-17",
+      "depart": "09:17",
+      "arrive": "10:17",
+      "seat_type": "二等座",
+      "price": 73.0,
+      "seats_left": 47
+    },
+    {
+      "kind": "高铁",
+      "train_no": "G7301",
+      "from_city": "上海",
+      "to_city": "杭州",
+      "date": "2026-10-17",
+      "depart": "06:00",
+      "arrive": "07:00",
+      "seat_type": "二等座",
+      "price": 73.0,
+      "seats_left": 35
+    }
+  ],
+  "policy_citations": [
+    "P11",
+    "P12"
+  ],
+  "live_database_counts": {
+    "inventory": 2100,
+    "locks": 0,
+    "orders": 0
+  },
+  "original_protected_files_unchanged": 356,
+  "original_db_and_history_trace_unchanged": true,
+  "tags": {
+    "handoff-a-20261012": "e719956d7c82bd6392c25916d3c193be7e4b452e",
+    "handoff-a-langchain-v3-20261013": "a4d6d62f88f796b39f4f27f239eaa6308d4143b2",
+    "handoff-a-v2-20261013": "6ef683a50f60970dbd4ded1678a818d026afcbde"
+  },
+  "file_sha256": {
+    "docs/evidence/deepseek/api-20261016-001224-2c3484/report.json": "b7c1853160875627b2042d61a2684721fdf807f011d435bb3a4393f5d0b23cef",
+    "docs/evidence/deepseek/api-20261016-001224-2c3484/tickets.db": "ff4c55f41852a939de103c08ea2f448bcbc09dcdd3a46b4b124588f056593674",
+    "docs/evidence/deepseek/api-20261016-001224-2c3484/traces/traces.jsonl": "b52e59df94d25abdd36aaa7ab0991ee12ec033c5571ae489f632c72decc5e209",
+    "docs/evidence/deepseek/api-20261016-001224-2c3484/traces/deepseek_runs.jsonl": "58279106902053588aa65d5787e839f046ab6e135f23d7ee27bfefbba1a2f33e",
+    "data/tickets.db": "67e6c6e2fb51432dbc4e4c8a97849b2347f5fb811cd2922f6bc9fb06e93cc54e",
+    "traces/traces.jsonl": "3116f84f8c8e1d464441d2548350d2c006cb471509b87c1b3652ab6b4851fc19",
+    "artifacts/runtime/deepseek-budget/requests.db": "71fe87c135e5668e63f3c39a8f5be3df9ad1170531a21ddaf5fe9f6040d0f8cb"
+  },
+  "findings": [
+    {
+      "id": "LIVE-REVIEW-01",
+      "kind": "readonly_capability_wording",
+      "status": "needs_B_triage",
+      "description": "查询回复末尾询问是否办理订票；当前只读，可能误导能力边界；实际无写工具执行。"
+    }
+  ],
+  "limits": [
+    "应用层事件与落盘一致；未保存完整原始 HTTP 工具结果回传报文。",
+    "实际模型返回名称为 deepseek-flash，服务端内部构建版本未知。",
+    "只有两个独立只读场景，不代表100条正式测试、真实多轮或8工具Live通过。"
+  ]
+}
