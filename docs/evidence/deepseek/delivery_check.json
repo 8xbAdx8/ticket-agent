@@ -1,0 +1,22 @@
+{
+  "status": "passed",
+  "source_commit": "d40b005ebdad2a57c8a09aa86d97911e1203f344",
+  "reports": [
+    "A_DeepSeek真实API接入报告.md",
+    "B_DeepSeek真实模型测试对接说明.md",
+    "C_DeepSeek真实模型演示说明.md",
+    "Mock与DeepSeek真实模型对照.md",
+    "DeepSeek_API安全与费用记录.md"
+  ],
+  "protected_files_unchanged": 356,
+  "tags_unchanged": true,
+  "old_dependency_pins_preserved": true,
+  "only_added_dependency": "langchain-deepseek==1.1.1",
+  "normal_agent_contract_unchanged": true,
+  "powershell_blocks_parsed": 5,
+  "python_examples_parsed": true,
+  "report_links_exist": true,
+  "real_generation_requests": 0,
+  "live_api_verified": false,
+  "secrets_and_reasoning_fields_absent": true
+}

@@ -4,6 +4,21 @@
 
 保留原 MVP 结构及 `docs/contract.md`。成员 A 开发被测 Agent；B 设计和执行正式测试；C 持续跟进、组织验收与作品报告/录屏。
 
+## DeepSeek 官方 API 接入补充（2026-10-15）
+
+独立分支 `codex/ticket-agent-deepseek-live` 使用 `ChatDeepSeek` 复用原 `create_agent()`，模型 `deepseek-flash`，显式关闭思考，仅开放 `query_tickets` / `search_policy`。原 8 工具与 legacy/Mock 保留；使用独立 `.venv-deepseek` 和 `requirements-deepseek-lock.txt`。密钥只读 `DEEPSEEK_API_KEY`，5 次生成请求持久预算、超时和 0 自动重试。
+
+**尚无真实 API 成功结果：本次缺少密钥，在线请求 0 次。** 新环境 88 项 A 自测通过；SDK 协议桩与 Mock 结果分别标注。真实调用、真实多轮表现及正式 B/C 验收仍待完成。
+
+- [A 接入报告](docs/handoff/v3/A_DeepSeek真实API接入报告.md)
+- [B 配置、测试与安全预算](docs/handoff/v3/B_DeepSeek真实模型测试对接说明.md)
+- [C 演示与拍摄说明](docs/handoff/v3/C_DeepSeek真实模型演示说明.md)
+- [Mock/DeepSeek 对照](docs/handoff/v3/Mock与DeepSeek真实模型对照.md)
+- [安全与费用记录](docs/handoff/v3/DeepSeek_API安全与费用记录.md)
+- [持续开发记录](docs/deepseek_development_log.md)
+
+本地预检：`.\.venv-deepseek\Scripts\python.exe scripts/check_deepseek_api.py`。配置密钥后 `--run` 才会访问 API；完整检查与网页演示共用最多 5 次额度，先阅读 B/C 说明。未知 Token/请求错误会抛脱敏 `DeepSeekError`、另存失败证据，不把未知用量伪装为正常契约里的 0。
+
 ## V3 真实前端补充（2026-10-13）
 
 绿色工作空间已接入 `web/app.py`：实际对话、余票/订单/政策卡片、执行轨迹、完整工具结果、Trace 下载、历史回放和源码导览。卡片来自本轮工具返回值，不增加工具调用或契约字段。67 项 A 自测通过，实际浏览器 5 轮 LangChain Mock 操作通过；真实大模型仍待联网实测。

@@ -1,0 +1,63 @@
+{
+  "client_date": "2026-10-15",
+  "source_commit": "d40b005ebdad2a57c8a09aa86d97911e1203f344",
+  "branch": "codex/ticket-agent-deepseek-live",
+  "baseline_head": "85d457a4f34b4fad848ded4cf9c2d7334813c399",
+  "versions": {
+    "langchain": "1.4.5",
+    "langchain-core": "1.6.10",
+    "langchain-deepseek": "1.1.1",
+    "langchain-openai": "1.7.1",
+    "langgraph": "1.2.15",
+    "openai": "3.29.0",
+    "httpx": "0.28.1",
+    "streamlit": "1.65.0"
+  },
+  "tests": {
+    "deepseek": {
+      "total": 88,
+      "passed": 88,
+      "skipped": 0
+    },
+    "v3": {
+      "total": 88,
+      "passed": 78,
+      "skipped": 10
+    },
+    "v2": {
+      "total": 88,
+      "passed": 35,
+      "skipped": 53
+    }
+  },
+  "online_generation_requests": 0,
+  "balance_requests": 0,
+  "real_api_verified": false,
+  "real_function_calling_verified": false,
+  "thinking_mode_supported": false,
+  "deepseek_tools": [
+    "query_tickets",
+    "search_policy"
+  ],
+  "existing_tools_retained": 8,
+  "source_files": [
+    ".gitignore",
+    "cli.py",
+    "config.py",
+    "requirements-deepseek-lock.txt",
+    "requirements-deepseek.txt",
+    "scripts/capture_v3_live_ui.cjs",
+    "scripts/check_deepseek_api.py",
+    "scripts/verify_deepseek_offline.py",
+    "scripts/verify_v3.py",
+    "target/agent.py",
+    "target/deepseek_runtime.py",
+    "target/langchain_agent.py",
+    "tests/test_deepseek_agent.py",
+    "tests/test_deepseek_api_check.py",
+    "tests/test_deepseek_runtime.py",
+    "web/app.py"
+  ],
+  "protected_files": 356,
+  "handoff": "有条件交接"
+}
