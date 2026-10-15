@@ -27,3 +27,11 @@
 - 业务源码仍为e216fdf修复；此模块文档提交见Git历史，打包源码版本以manifest为准。新机器全新pip安装未在本轮重装，解压自测复用本机锁定依赖，不能说已在B电脑验证。
 
 - 新交接入口实际命令：`.\.venv-deepseek\Scripts\python.exe scripts/handoff_offline_selftest.py`；102通过、0跳过、0外连、0新API。日志/结果写入docs/evidence/deepseek/B-package-20261016/portable_selftest*；原361文件/真实账本哈希不变。
+
+## 2026-10-16：当前版本代码与功能介绍
+
+- 新增docs/handoff/v3/Ticket_Agent_V3_代码与功能介绍_20261016.md及HTML阅读打印版，含16章、8工具参数、3段实际源码及相对行号、RAG/Trace/会话/六变异和验证边界；源码基线fbabf38d，对应上一交接包。
+- scripts/build_v3_code_intro.py只读AST/既有证据提取工具Schema、政策数量与函数，不导入Agent、不请求模型；HTML使用捆绑Node marked生成。
+- 实际检查：8个本地链接与源码行号、3段Python语法；Edge桌面及移动宽度无横向溢出，16节/8工具/5代码块正确，0外部请求；可视检查目录、工具参数、Trace、证据等截图。361文件及真实账本未变。证据code-intro-20261016/verification.json。
+- 本轮仅文档，不重新运行102项业务自测；引用的是已保存结果，未修改业务代码或契约。当前缺少LibreOffice，未生成未经渲染检查的Word；交付可单独阅读的HTML与可编辑MD。
+- 文档不进入此前已生成ZIP，避免覆盖既有哈希；可以单独发送给B/C。Git提交见本模块提交历史。

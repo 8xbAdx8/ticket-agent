@@ -1,0 +1,37 @@
+{
+  "status": "passed",
+  "source_commit": "fbabf38dbb4855f040ff2cac607fb83ba1eec69b",
+  "local_links_checked": 8,
+  "python_source_blocks_parsed": 3,
+  "tool_schema_count": 8,
+  "policy_count": 15,
+  "browser_check": {
+    "headings": 16,
+    "tools": [
+      "query_tickets",
+      "monitor_seat",
+      "lock_seat",
+      "create_order",
+      "pay_order",
+      "cancel_order",
+      "query_order",
+      "search_policy"
+    ],
+    "bodyHasReplacementChar": false,
+    "desktopOverflow": false,
+    "codeBlocks": 5,
+    "mobileOverflow": false,
+    "externalRequests": 0,
+    "status": "passed"
+  },
+  "protected_files_unchanged": 361,
+  "new_model_api_requests": 0,
+  "product_source_changed": false,
+  "unit_tests_rerun_for_document_only_change": false,
+  "Word_created": false,
+  "Word_note": "Not created: native LibreOffice renderer unavailable; delivered static HTML and Markdown instead.",
+  "outputs_sha256": {
+    "docs/handoff/v3/Ticket_Agent_V3_代码与功能介绍_20261016.md": "cb32e844aa0e10f36bee8b3772deb3ef2c2d2ed4d3b0a6b8fc4b3e0d223ce0de",
+    "docs/handoff/v3/Ticket_Agent_V3_代码与功能介绍_20261016.html": "2ab19f3441b025c8984f30cf18ce369555db2f9feec43cf18d37bcb0178a3f49"
+  }
+}
