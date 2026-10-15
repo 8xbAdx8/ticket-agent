@@ -1,0 +1,10 @@
+{
+  "status": "passed",
+  "markdown_files": 13,
+  "links_checked": 94,
+  "broken_links": [],
+  "control_character_findings": [],
+  "python_blocks_parsed": 2,
+  "no_snippet_executed": true,
+  "powershell_blocks_parsed": 14
+}

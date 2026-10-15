@@ -1,0 +1,34 @@
+{
+  "source_commit": "e216fdf57ec8f34b84134ba2b30b05e5d6ff5985",
+  "branch": "codex/ticket-agent-deepseek-live",
+  "status": "ready_to_freeze_readonly_candidate_for_B",
+  "B_acceptance_or_formal_score": null,
+  "new_online_requests": 0,
+  "budget_remaining": 0,
+  "new_tools_enabled": false,
+  "normal_contract_and_trace_class_unchanged": true,
+  "old_live_and_review_evidence_unchanged": true,
+  "original_protected_and_live_ledger_files_unchanged": 361,
+  "source_working_tree_sha256": {
+    "target/deepseek_runtime.py": "2ff97cac197cdf1913dc67834e1ba2185423d3f2b35b8e1d24fb8cc10640ac63",
+    "target/langchain_agent.py": "8be7814ac049c58e38236f519dd9196d09efbfb8d73a9b194a9b7d3464a73865",
+    "cli.py": "bb5bbe4e4fae0baf852c633f5cfd7d6e158ced40430df37942611b76eba313af",
+    "web/app.py": "f5f198387f12559a18de46d827bc3e7e7260a5ce52584c5fa2230ee3d1ec3dd5",
+    "scripts/generate_deepseek_handoff.py": "f1f3bef8117446b281c3dd0c685a3df43d06ce73c4f80d7d839765519bea6899",
+    "tests/test_deepseek_agent.py": "e4b9b2e2d0734c7168bffa3de8f7d189a5700bcf327979be2d5a5725c885152c",
+    "tests/test_deepseek_readonly_quality.py": "01bfa9b4d7f0c9dfe25bb306bc94484a545303a9f256468b1e4f6a6514e0c417"
+  },
+  "A_unit_tests_passed": 102,
+  "final_regression": "final-regression/regression.json",
+  "document_check": "document_check.json",
+  "security_scan": "security_scan.json",
+  "new_prompt_live_retested": false,
+  "obsolete_zip_commit": "bff292cd",
+  "error_boundary": "DeepSeekError plus independent failure evidence; not a normal contract record",
+  "remaining_risks": [
+    "Prompt and guard changes not retested against real API; budget frozen.",
+    "Reply guard is deterministic phrase matching, with possible false positives/negatives; not a semantic safety proof.",
+    "Errors use typed exceptions rather than the normal ten-field return; B must catch DeepSeekError.",
+    "Failure clears in-memory session context; subsequent query needs full conditions."
+  ]
+}

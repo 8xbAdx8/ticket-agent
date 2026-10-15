@@ -1,0 +1,16 @@
+{
+  "status": "passed",
+  "scope": "workspace and one-level ZIP/DOCX entries, plus all reachable Git blobs; credential patterns/current environment values",
+  "head_before_scan": "e216fdf57ec8f34b84134ba2b30b05e5d6ff5985",
+  "working_tree_items_scanned": 2816,
+  "git_history_blobs_scanned": 634,
+  "credential_findings": [],
+  "history_credential_findings": [],
+  "local_secret_stores": [],
+  "files_over_size_limit": [],
+  "remote_host": "github.com",
+  "remote_path": "/8xbAdx8/ticket-agent.git",
+  "remote_embedded_credentials": false,
+  "scanner_literal_note": "Ignored old package_handoff.py contains only private-key marker comparison literals, not a PEM body; no key text reported.",
+  "limits": "Pattern scanning is not a mathematical proof of absence; credential stores/Codex authentication are not read."
+}
