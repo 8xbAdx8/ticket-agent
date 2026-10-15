@@ -1,0 +1,8 @@
+test_authentication_failure_is_failed_not_skipped_and_no_hello (tests.test_deepseek_api_check.ConnectivityScriptTests.test_authentication_failure_is_failed_not_skipped_and_no_hello) ... ok
+test_connection_only_records_sdk_stub_tokens_and_stops (tests.test_deepseek_api_check.ConnectivityScriptTests.test_connection_only_records_sdk_stub_tokens_and_stops) ... ok
+test_missing_key_skips_without_http_or_mock_fallback (tests.test_deepseek_api_check.ConnectivityScriptTests.test_missing_key_skips_without_http_or_mock_fallback) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.063s
+
+OK
