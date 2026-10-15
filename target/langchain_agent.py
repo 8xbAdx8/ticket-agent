@@ -24,6 +24,11 @@ class ModelStepLimit(Exception):
     """限制模型实际调用轮数，与 V2 MAX_STEPS 同口径。"""
 
 
+class BackendToolFailure(Exception):
+    def __init__(self, result):
+        self.result = result
+
+
 @dataclass
 class TurnContext:
     trace: Trace
@@ -54,16 +59,21 @@ class ContractMiddleware(AgentMiddleware):
             usage = getattr(m,"usage_metadata",None) or {}
             if ctx.deepseek_settings:
                 from target.deepseek_runtime import DeepSeekError, safe_text
-                if not all(type(usage.get(k)) is int and usage[k] >= 0 for k in ("input_tokens","output_tokens")):
-                    raise DeepSeekError("token_usage_unknown")
                 # 仅保存最终文字、结构化调用和元数据，不保存 reasoning_content。
                 ctx.events.append({"event":"model_response","model_step":ctx.model_calls,
                     "response_model":m.response_metadata.get("model_name"),"usage":usage,
                     "finish_reason":m.response_metadata.get("finish_reason"),
                     "tool_calls":[{"id":c["id"],"name":c["name"],"args":c["args"]} for c in m.tool_calls]})
+                if not m.tool_calls:
+                    ctx.events.append({"event":"model_final","model_step":ctx.model_calls,"text":safe_text(m.text)})
+                if not all(type(usage.get(k)) is int and usage[k] >= 0 for k in ("input_tokens","output_tokens")):
+                    raise DeepSeekError("token_usage_unknown")
                 m.content = safe_text(m.content) if isinstance(m.content,str) else m.content
             ctx.trace.tokens["prompt"] += usage.get("input_tokens",0)
             ctx.trace.tokens["completion"] += usage.get("output_tokens",0)
+            if ctx.deepseek_settings and m.invalid_tool_calls:
+                ctx.events.append({"event":"invalid_tool_calls","calls":m.invalid_tool_calls})
+                raise DeepSeekError("invalid_tool_call")
         ctx.events.append({"event":"model_end", "model_step":ctx.model_calls})
         return response
 
@@ -93,6 +103,10 @@ class ContractMiddleware(AgentMiddleware):
                 response = response.model_copy(update={"status":"error"})
             elif name == "lock_seat":
                 ctx.lock_ids.add(result["lock_id"])
+        except BackendToolFailure as exc:
+            result = exc.result if isinstance(exc.result,dict) and "error" in exc.result else {"error":"后端报告工具执行失败","result":exc.result}
+            ok = False
+            response = ToolMessage(content=json.dumps(result,ensure_ascii=False),tool_call_id=call["id"],name=name,status="error")
         except Exception as exc:
             result, ok = {"error":f"工具执行失败 ({type(exc).__name__})"}, False
             response = ToolMessage(content=json.dumps(result,ensure_ascii=False),tool_call_id=call["id"],name=name,status="error")
@@ -106,7 +120,10 @@ class ContractMiddleware(AgentMiddleware):
 def adapt_tool(name: str) -> StructuredTool:
     definition = next(t["function"] for t in tools.TOOLS if t["function"]["name"] == name)
     def execute(**args):
-        return tools.dispatch(name,args)[0]
+        result, ok, _ = tools.dispatch(name,args)
+        if not ok:
+            raise BackendToolFailure(result)
+        return result
     return StructuredTool.from_function(execute,name=name,description=definition["description"],
                                         args_schema=copy.deepcopy(definition["parameters"]))
 
@@ -139,19 +156,22 @@ class LangChainAgent:
             self.model = make_model(self.deepseek_settings)
         else:
             if not config.API_KEY:
-                raise ValueError("LangChain Live 需要 AGENT_API_KEY；真实大模型尚未联网实测")
+                raise ValueError("OpenAI 风格 LangChain Live 需要 AGENT_API_KEY；DeepSeek 使用独立 DEEPSEEK_API_KEY")
             from langchain_openai import ChatOpenAI
             self.model = ChatOpenAI(model=config.MODEL_NAME,api_key=config.API_KEY,base_url=config.BASE_URL,
                                     timeout=30,max_retries=0)
         self.provider_name = "deepseek_live" if config.PROVIDER == "deepseek" else (
             "langchain_mock" if config.PROVIDER == "mock" else "langchain_live")
         if self.deepseek_settings:
-            system_prompt += "\n当前为 DeepSeek 只读阶段，仅支持余票查询和政策检索；不可下单、支付、取消。不得宣称未执行的业务成功。不要展示内部推理内容。"
+            from target.deepseek_runtime import READ_ONLY_PROMPT
+            # 不继承通用订票/支付指令，避免与只读能力冲突。
+            system_prompt = READ_ONLY_PROMPT
         self.checkpointer = InMemorySaver()
         self.graph = create_agent(model=self.model, tools=[adapt_tool(n) for n in names],
                                   system_prompt=system_prompt+f"\n当前北京时间日期 {config.today().isoformat()}；业务全部虚构。"
+                                  + ("" if self.deepseek_settings else
                                   "\n写操作必须获得本轮明确授权；订票不包含支付。锁座一轮至多一次成功，下单必须用本轮成功 lock_id。"
-                                  "支付/退票使用用户指定或最近工具结果订单；不明确时先澄清。",
+                                  "支付/退票使用用户指定或最近工具结果订单；不明确时先澄清。"),
                                   middleware=[ContractMiddleware()],context_schema=TurnContext,
                                   checkpointer=self.checkpointer)
         self.threads: set[str] = set()
@@ -169,6 +189,11 @@ class LangChainAgent:
             with tracing_context(enabled=False):  # 默认不把本地会话上传到外部观测服务。
                 output = self.graph.invoke({"messages":[HumanMessage(content=message)]},config=run_config,context=context)
             reply = output["messages"][-1].text or "抱歉，我没能完成这次操作。"
+            if self.deepseek_settings:
+                from target.deepseek_runtime import DeepSeekError, validate_read_only_reply
+                if any(not c["ok"] for s in trace.steps for c in s["calls"]):
+                    raise DeepSeekError("tool_execution_failed")
+                validate_read_only_reply(reply)
             trace.finish(reply,"stop")
         except (ModelStepLimit,GraphRecursionError):
             reply = "达到最大执行步数，操作尚未完成；请查看工具轨迹。"
@@ -182,7 +207,12 @@ class LangChainAgent:
                 self.last_events = context.events
                 if save_trace:
                     save_run_evidence(trace,context.events,error)
-                self.graph.update_state(run_config,{"messages":[AIMessage(content="请求失败，请明确重新发起只读查询。") ]},as_node="model")
+                # 失败轮可能残留未配对 tool_call，不能污染下一轮协议；历史 JSONL 不删除。
+                try:
+                    self.reset(session_id)
+                except Exception:
+                    # 不用检查点清理异常覆盖原始脱敏错误。
+                    pass
                 # 不把未知用量伪装成契约内的数值 0；失败明细单独保存。
                 raise DeepSeekError(error["category"],error["http_status"]) from None
             reply = f"模型调用未完成 ({type(exc).__name__})，请检查配置或重试。"

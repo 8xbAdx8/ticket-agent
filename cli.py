@@ -20,6 +20,9 @@ import config
 def print_result(r, show_trace=True):
     print(f"[engine] {config.ENGINE}  [provider] {r['provider']}")
     if r["provider"] == "deepseek_live":
+        from target.deepseek_runtime import VALIDATION_NOTICE
+        print("[validation] " + VALIDATION_NOTICE)
+        print("[capability] 当前仅支持模拟查票和政策咨询。")
         print(f"[model] {r['model']}  [tokens reported by API] {json.dumps(r['tokens'])}")
     print(f"\n[reply] {r['reply']}")
     if show_trace:
@@ -36,6 +39,9 @@ def cmd_chat(args):
     agent = Agent()
     sid = "cli"
     print(f"出行服务智能助手（{config.PROVIDER} 模式，虚构票务，输入 q 退出）")
+    if config.PROVIDER == "deepseek":
+        from target.deepseek_runtime import VALIDATION_NOTICE
+        print(VALIDATION_NOTICE + "当前仅支持模拟查票和政策咨询。")
     while True:
         try:
             msg = input("\n你> ").strip()
@@ -96,7 +102,7 @@ def main():
         from target.deepseek_runtime import safe_error
         error = safe_error(exc)
         print(json.dumps({"provider":"deepseek_live","status":"failed","error":error,
-                          "tokens":None,"note":"本轮未返回正常契约记录；未自动重试，检查脱敏失败证据。"},ensure_ascii=False))
+                          "tokens":None,"note":"本轮未返回正常契约记录；未自动重试。检查 deepseek_runs.jsonl 的 tool_attempts/model_final；错误后会话记忆清空，重新查询须提供完整条件。"},ensure_ascii=False))
         raise SystemExit(2) from None
 
 

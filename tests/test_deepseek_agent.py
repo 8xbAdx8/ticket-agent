@@ -103,9 +103,11 @@ class DeepSeekAgentTests(unittest.TestCase):
         agent = self.agent([self.response({"content":None,"tool_calls":[self.call("pay_order",{"order_id":"imagined"})]}),
                             self.response({"content":"当前只读，未执行付款。"})])
         with patch("target.mock_core.pay_order",side_effect=AssertionError("不得付款")):
-            r = agent.chat("security","只查票")
-        self.assertEqual(r["tool_sequence"],["pay_order"])
-        self.assertFalse(r["steps"][0]["calls"][0]["ok"])
+            with self.assertRaisesRegex(DeepSeekError,"tool_execution_failed"):
+                agent.chat("security","只查票")
+        failed = json.loads((config.TRACE_DIR/"deepseek_runs.jsonl").read_text(encoding="utf-8"))
+        self.assertEqual(failed["tool_sequence"],["pay_order"])
+        self.assertFalse(failed["tool_attempts"][0]["calls"][0]["ok"])
 
     def test_missing_usage_raises_safe_error_without_fake_zero_trace(self):
         agent = self.agent([self.response({"content":"无用量的离线响应"},usage=False)])
@@ -142,8 +144,10 @@ class DeepSeekAgentTests(unittest.TestCase):
         calls = [self.call("search_policy",{"question":"支付规则"},str(i)) for i in range(3)]
         agent = self.agent([self.response({"content":None,"tool_calls":calls}),self.response({"content":"离线桩结束"})])
         agent.langchain_engine.deepseek_settings = replace(agent.langchain_engine.deepseek_settings,max_tool_calls=1)
-        r = agent.chat("limit","政策")
-        self.assertEqual([c["ok"] for s in r["steps"] for c in s["calls"]],[True,False,False])
+        with self.assertRaisesRegex(DeepSeekError,"tool_execution_failed"):
+            agent.chat("limit","政策")
+        failed = json.loads((config.TRACE_DIR/"deepseek_runs.jsonl").read_text(encoding="utf-8"))
+        self.assertEqual([c["ok"] for s in failed["tool_attempts"] for c in s["calls"]],[True,False,False])
         agent.reset("limit")
         with patch.object(config,"MAX_STEPS",1):
             # 重复使用纯离线响应；没有新增真实 API 请求。
@@ -155,11 +159,13 @@ class DeepSeekAgentTests(unittest.TestCase):
         agent = self.agent([self.response({"content":None,"tool_calls":[self.call("search_policy",{"question":"支付规则"})]}),
                             self.response({"content":"[离线桩] 工具失败，无法确认政策。"})])
         with patch("target.tools.dispatch",side_effect=RuntimeError("private-key-or-path")):
-            r = agent.chat("fault","支付规则")
-        self.assertFalse(r["steps"][0]["calls"][0]["ok"])
+            with self.assertRaisesRegex(DeepSeekError,"tool_execution_failed"):
+                agent.chat("fault","支付规则")
+        failed = json.loads((config.TRACE_DIR/"deepseek_runs.jsonl").read_text(encoding="utf-8"))
+        self.assertFalse(failed["tool_attempts"][0]["calls"][0]["ok"])
         feedback = next(m for m in self.payloads[1]["messages"] if m["role"]=="tool")
         self.assertIn("error",json.loads(feedback["content"]))
-        self.assertNotIn("private-key-or-path",json.dumps(r))
+        self.assertNotIn("private-key-or-path",json.dumps(failed))
 
     def test_streamlit_shows_deepseek_source_and_real_sdk_tool_result(self):
         from streamlit.testing.v1 import AppTest

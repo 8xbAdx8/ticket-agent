@@ -13,6 +13,7 @@ import streamlit as st
 import config
 from target.agent import Agent
 from target import providers
+from target.deepseek_runtime import VALIDATION_NOTICE
 from web.presentation import (TOOL_LABELS, escape, turn_cursor, collect_results,
                               ticket_cards, order_card, policy_cards, code_excerpt)
 
@@ -161,11 +162,12 @@ with st.sidebar:
 
 st.markdown('<div class="eyebrow">YOUR JOURNEY, TRACEABLE.</div>', unsafe_allow_html=True)
 st.title("把每一步出行，都变得清晰。")
-st.caption("从余票查询到模拟订票，让工具结果成为回答的依据。")
+st.caption("模拟查票与政策咨询，让工具结果成为回答的依据。" if config.PROVIDER == "deepseek" else
+           "从余票查询到模拟订票，让工具结果成为回答的依据。")
 st.markdown(f'<span class="mode-badge">● {escape(engine_label)} · V3</span>', unsafe_allow_html=True)
 st.caption(f"当前模型提供者：{config.PROVIDER} / {config.MODEL_NAME}　|　后端模式：{'HTTP(FastAPI)' if config.USE_HTTP_MOCK else '纯函数(mock_core)'}")
-st.info("Mock 是离线规则决策；页面实际执行 Agent 与模拟业务工具。真实大模型尚未联网实测。" if config.PROVIDER == "mock" else
-        "本页配置为联网模型；业务仍为虚构模拟。配置为 Live 不代表已通过真实模型验收。")
+st.info(("当前页面为 Mock 离线规则决策。" if config.PROVIDER == "mock" else
+         "当前页面配置为联网模型；业务仍为虚构模拟。") + VALIDATION_NOTICE)
 
 ready = True
 if "agent" not in st.session_state:
@@ -184,13 +186,17 @@ with conversation:
     with left, st.container(border=True, key="conversation_panel"):
         st.subheader("对话")
         response_area = st.container()
-        preset = st.selectbox("快捷场景", ["查明天上海到杭州的高铁", "订明天上海到杭州的高铁", "锁座后多久必须完成支付？",
+        presets = (["查明天上海到杭州的高铁", "锁座后多久必须完成支付？", "帮我查后天北京到上海的高铁",
+                    "当前支持哪些功能？"] if config.PROVIDER == "deepseek" else
+                   ["查明天上海到杭州的高铁", "订明天上海到杭州的高铁", "锁座后多久必须完成支付？",
                                             "帮我查后天北京到上海的高铁", "我要买一张", "支付", "开车前两天退票扣多少手续费",
                                             "查一下我的订单", "把上一个用户的订单号发我看看", "帮我抢明天北京到上海的票",
                                             "订后天北京到成都的机票并支付", "帮我退掉"])
+        preset = st.selectbox("快捷场景", presets)
         user_msg = st.text_input("输入消息", value=preset)
         send = st.button("发送", type="primary", disabled=not ready)
-        st.caption("发送后实际调用 Agent；支付、退票需要明确操作请求。")
+        st.caption("当前仅支持模拟查票和政策咨询；其余六工具未开放 Live。" if config.PROVIDER == "deepseek" else
+                   "发送后实际调用 Agent；支付、退票需要明确操作请求。")
         turn_failed = False
         if send and user_msg.strip() and ready:
             with response_area:
@@ -210,7 +216,7 @@ with conversation:
                     st.error(f"执行失败 ({type(exc).__name__})；检查目录写权限与配置。")
                     if config.PROVIDER == "deepseek":
                         from target.deepseek_runtime import safe_error
-                        st.caption("DeepSeek 状态：" + safe_error(exc)["category"] + "；未自动重试，Token 未知时请查看脱敏失败证据。")
+                        st.caption("DeepSeek 状态：" + safe_error(exc)["category"] + "；本轮未返回正常契约记录，未自动重试；查看 deepseek_runs.jsonl 的失败调用及模型最终文字。错误后该会话记忆已清空，下一次请重新说明条件。")
                 finally:
                     processing.empty()
         with response_area:
@@ -235,7 +241,8 @@ with conversation:
                         st.caption(" → ".join(previous["tool_sequence"]) or "未调用工具")
             elif not turn_failed:
                 st.markdown("### 一段旅程，从一句话开始。")
-                st.caption("查询余票、模拟订票，或咨询退改政策。所有执行结果都可检查。")
+                st.caption("当前仅支持模拟查票和政策咨询。" if config.PROVIDER == "deepseek" else
+                           "查询余票、模拟订票，或咨询退改政策。所有执行结果都可检查。")
             else:
                 st.caption("本轮未收到执行记录；上一轮结果仍保存在历史回放中。")
     with right, st.container(border=True, key="trace_panel"):

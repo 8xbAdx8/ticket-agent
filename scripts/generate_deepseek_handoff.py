@@ -11,6 +11,9 @@ EVIDENCE = ROOT/"docs/evidence/deepseek"
 
 
 def main():
+    # 只用于 10 月 15 日缺 Key 的历史快照，不能覆盖后续实际验证报告。
+    if (EVIDENCE/"review-20261016/audit.json").exists():
+        raise SystemExit("已有真实 API 审查证据；历史生成器已停用，禁止用 missing_key 快照覆盖当前交接。")
     def read(relative):
         return json.loads((EVIDENCE/relative).read_text(encoding="utf-8"))
     online, baseline = read("missing_key_run/report.json"), read("baseline.json")

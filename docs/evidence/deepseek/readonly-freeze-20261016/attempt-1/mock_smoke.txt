@@ -1,0 +1,1 @@
+{"status": "passed", "commands": 10, "mock_trace_count": 32, "protected_files_unchanged": true, "evidence_dir": "docs/evidence/deepseek/readonly-freeze-20261016/attempt-1/mock_smoke/verification.json"}

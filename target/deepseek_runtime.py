@@ -5,6 +5,7 @@
 import json
 import logging
 import os
+import re
 import sqlite3
 from contextlib import closing
 from dataclasses import dataclass
@@ -19,6 +20,29 @@ except ImportError:
 import config
 
 READ_ONLY = frozenset(("query_tickets", "search_policy"))
+VALIDATION_NOTICE = ("DeepSeek 已于 2026-10-16 验证 query_tickets、search_policy 两个 Live 工具；"
+                     "其余六个工具未开放 Live。该结论来自已保存的历史记录，不表示本轮实时调用或正式测试通过。")
+READ_ONLY_PROMPT = """你是只读的模拟出行咨询助手。当前只支持 query_tickets 查询虚构余票和 search_policy 检索政策。
+不得执行、承诺或主动邀请锁座、候补、下单、支付、取消或订单查询；即使用户要求，也应明确说明能力边界。
+可以说“当前仅支持模拟查票和政策咨询”。政策中可以解释锁座/支付规则，但不代表你能办理。
+具体班次、价格和库存必须来自 query_tickets；政策必须来自 search_policy，注明实际返回的 doc_id。
+相对日期先换算成 YYYY-MM-DD；明确切换高铁/机票时重置不兼容席别，未指定条件时继承上下文，含糊时澄清。
+区分目标席别售罄、存在余票、没有匹配班次；未查询其他席别时不能断言其有票。
+工具失败时如实说明，不得编造结果或声称业务成功。不要展示内部推理内容。"""
+
+
+def validate_read_only_reply(reply):
+    """拒绝能力越界的最终文字，不替换成成功回复；不是通用语义安全判定器。"""
+    action = r"锁座|锁定座位|订票|预订|下单|创建订单|支付|付款|扣款|退票|取消订单|候补|查询订单|查订单"
+    offer = r"(?:我(?:们)?(?:可以|能|来|会)|(?:您|你)(?:可以|可)|请(?:您|你)?(?:先)?(?:锁座|下单|订票|付款)|(?:帮|为)(?:您|你)|需要.{0,12}(?:吗|么)|是否|要不要|办理|继续.{0,8}(?:吗|么))"
+    done = r"(?:已经|已|成功).{0,12}(?:" + action + r")|(?:" + action + r").{0,6}成功"
+    for clause in re.split(r"[。！？!?；;,，\n]|但是|不过|但", reply):
+        if re.search(r"(?:不支持|不提供|不能|无法|不可|不会|未执行|未办理|没有执行|没有完成|未完成|尚未|不得|禁止|不允许|不能够)", clause):
+            continue
+        if re.search(done, clause) or (re.search(action, clause) and re.search(offer, clause)):
+            raise DeepSeekError("read_only_capability_violation")
+    if re.search(r"\b(?:I can|I will|shall I|would you like|let me)\b.{0,60}\b(?:book|reserve|pay|purchase|cancel)\b", reply, re.I):
+        raise DeepSeekError("read_only_capability_violation")
 ERRORS = {400: "invalid_format", 401: "authentication_failed", 402: "insufficient_balance",
           422: "invalid_parameters", 429: "rate_limited", 500: "server_error", 503: "service_unavailable"}
 
@@ -214,6 +238,13 @@ def save_run_evidence(trace, events, error=None):
               "tokens":None if error else trace.tokens,"latency_ms":trace.total_latency_ms,
               "reply":None if error else safe_text(trace.reply),"finish_reason":trace.finish_reason,
               "thinking":"disabled"}
+    if error:
+        # 错误不伪装为正常契约 Trace；保留真实失败工具及已确认的部分用量。
+        output["tool_attempts"] = trace.steps
+        output["tool_sequence"] = trace.tool_names
+        output["observed_tokens"] = trace.tokens if any(
+            e["event"] == "model_response" and all(type(e.get("usage",{}).get(k)) is int and e["usage"][k] >= 0
+                                                  for k in ("input_tokens","output_tokens")) for e in events) else None
     path = config.TRACE_DIR / "deepseek_runs.jsonl"
     path.parent.mkdir(parents=True,exist_ok=True)
     with path.open("a",encoding="utf-8") as f:

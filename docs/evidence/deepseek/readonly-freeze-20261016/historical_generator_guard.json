@@ -1,0 +1,8 @@
+{
+  "status": "passed",
+  "expected_refusal_exit_code": 1,
+  "protected_current_docs_unchanged": true,
+  "new_api_requests": 0,
+  "blocked_network_attempts": 0,
+  "sanitized_message": "已有真实 API 审查证据；历史生成器已停用，禁止用 missing_key 快照覆盖当前交接。"
+}
