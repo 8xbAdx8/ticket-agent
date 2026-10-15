@@ -1,3 +1,15 @@
+# 最新演示：2026-10-16 回放已验证 Live 证据
+
+当前仅允许回放，不发API请求。请用 [C 已验证证据演示](C_DeepSeek已验证证据演示_20261016.md)，展示原始tool_calls、参数、结果、最终回复和Token；明确标注“真实Live历史记录离线回放”。仅query_tickets/search_policy通过，不演示Live下单或付款。
+
+5次额度已用完，费用未知。Mock界面/动画不能作为实时Live证明，B正式成绩仍待提供。
+
+---
+
+## 历史存档：2026-10-15 演示安排原文
+
+下面的在线Hello/发送方案现在禁止执行；当时“无真实成功”不代表10月16日审查后的状态。
+
 # C：DeepSeek 真实模型演示说明
 
 日期：2026-10-15（Asia/Shanghai）。分支 `codex/ticket-agent-deepseek-live`，已验证源码与证据提交 `d40b005ebdad2a57c8a09aa86d97911e1203f344`，接手基线 `85d457a4f34b4fad848ded4cf9c2d7334813c399`。本批文档会形成后续提交；最终 SHA 用 `git rev-parse HEAD` 获取。本轮未推送远程分支。

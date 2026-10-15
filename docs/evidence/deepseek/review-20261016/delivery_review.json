@@ -1,0 +1,31 @@
+{
+  "files": [
+    "README.md",
+    "docs/deepseek_development_log.md",
+    "docs/handoff/v3/A_DeepSeek真实API接入报告.md",
+    "docs/handoff/v3/B_DeepSeek真实模型测试对接说明.md",
+    "docs/handoff/v3/C_DeepSeek真实模型演示说明.md",
+    "docs/handoff/v3/DeepSeek_API安全与费用记录.md",
+    "docs/handoff/v3/Mock与DeepSeek真实模型对照.md",
+    "docs/evidence/deepseek/api-20261016-001224-2c3484/README.md",
+    "docs/handoff/v3/A_DeepSeekLive验证审查_20261016.md",
+    "docs/handoff/v3/B_DeepSeek正式测试交接_20261016.md",
+    "docs/handoff/v3/C_DeepSeek已验证证据演示_20261016.md"
+  ],
+  "links_checked": 80,
+  "broken_links": [],
+  "control_character_findings": [],
+  "python_blocks_parsed": 1,
+  "status": "passed",
+  "powershell_blocks_parsed_without_execution": 11,
+  "new_api_requests": 0,
+  "protected_and_live_ledger_files_unchanged": 361,
+  "production_source_unchanged_since_review_start": true,
+  "tags_unchanged": {
+    "handoff-a-20261012": "e719956d7c82bd6392c25916d3c193be7e4b452e",
+    "handoff-a-langchain-v3-20261013": "a4d6d62f88f796b39f4f27f239eaa6308d4143b2",
+    "handoff-a-v2-20261013": "6ef683a50f60970dbd4ded1678a818d026afcbde"
+  },
+  "audit_commit": "190e723f7d8fa1b54e5ce5123a1b87c07af9fcca",
+  "package_note": "ZIP is a separate ignored deliverable; final source commit and payload hashes live in PACKAGE_MANIFEST.json; package verification stored beside ZIP."
+}

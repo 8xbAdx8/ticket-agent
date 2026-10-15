@@ -1,0 +1,11 @@
+{
+  "status": "passed",
+  "command": "python cli.py trace",
+  "mode": "offline reading existing Live record",
+  "new_api_requests": 0,
+  "source_provider": "deepseek_live",
+  "tool_sequence": [
+    "search_policy"
+  ],
+  "source_trace_files_unchanged": true
+}

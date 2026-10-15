@@ -4,11 +4,24 @@
 
 保留原 MVP 结构及 `docs/contract.md`。成员 A 开发被测 Agent；B 设计和执行正式测试；C 持续跟进、组织验收与作品报告/录屏。
 
-## DeepSeek 官方 API 接入补充（2026-10-15）
+## DeepSeek Live 当前审查结论（2026-10-16）
+
+**已有真实 API / Function Calling 证据：仅 `query_tickets`、`search_policy` 两个只读工具。当前冻结在线请求，5 次生成请求已用尽，剩余 0；不要执行下方历史章节中的在线运行命令。** 本次只审查保存的证据并完成离线回归，没有新增模型调用或改动业务代码。
+
+已有运行输入 Token 4,796、输出 563；实际费用未知，等待供应商账单。两个独立场景不证明真实多轮、完整八工具或 B 的正式 100 条通过。原数据库/历史 Trace/预算账本未变；新环境 A 自测 88 项通过。
+
+- [A：真实证据、用量、风险与离线回归](docs/handoff/v3/A_DeepSeekLive验证审查_20261016.md)
+- [B：正式测试交接、100 条 Mock 复用与成绩分组](docs/handoff/v3/B_DeepSeek正式测试交接_20261016.md)
+- [C：已验证 Live 历史证据的离线演示](docs/handoff/v3/C_DeepSeek已验证证据演示_20261016.md)
+- [原始 Live 报告](docs/evidence/deepseek/api-20261016-001224-2c3484/report.json)、[只读审查](docs/evidence/deepseek/review-20261016/audit.json)
+
+**成员 A 开发交接状态：有条件交接。** B 可开始正式测试接入、离线 Mock 回归与已有证据核验；新增 Live 测试需先获得新的明确预算授权。当前只读回复仍提及办理订票，须由 B 评估能力话术风险；C 可拍历史回放，不能声称实时演示或八工具 Live 已通过。以下 V1/V2/V3 阶段说明均保留历史时间背景，最新状态以本节为准。
+
+## DeepSeek 官方 API 接入历史记录（2026-10-15）
 
 独立分支 `codex/ticket-agent-deepseek-live` 使用 `ChatDeepSeek` 复用原 `create_agent()`，模型 `deepseek-flash`，显式关闭思考，仅开放 `query_tickets` / `search_policy`。原 8 工具与 legacy/Mock 保留；使用独立 `.venv-deepseek` 和 `requirements-deepseek-lock.txt`。密钥只读 `DEEPSEEK_API_KEY`，5 次生成请求持久预算、超时和 0 自动重试。
 
-**尚无真实 API 成功结果：本次缺少密钥，在线请求 0 次。** 新环境 88 项 A 自测通过；SDK 协议桩与 Mock 结果分别标注。真实调用、真实多轮表现及正式 B/C 验收仍待完成。
+**10 月 15 日历史状态：当时缺少密钥，在线请求 0 次；10 月 16 日已有真实证据见上方。** 新环境 88 项 A 自测通过；SDK 协议桩与 Mock 结果分别标注。真实调用、真实多轮表现及正式 B/C 验收仍待完成。
 
 - [A 接入报告](docs/handoff/v3/A_DeepSeek真实API接入报告.md)
 - [B 配置、测试与安全预算](docs/handoff/v3/B_DeepSeek真实模型测试对接说明.md)
@@ -17,7 +30,7 @@
 - [安全与费用记录](docs/handoff/v3/DeepSeek_API安全与费用记录.md)
 - [持续开发记录](docs/deepseek_development_log.md)
 
-本地预检：`.\.venv-deepseek\Scripts\python.exe scripts/check_deepseek_api.py`。配置密钥后 `--run` 才会访问 API；完整检查与网页演示共用最多 5 次额度，先阅读 B/C 说明。未知 Token/请求错误会抛脱敏 `DeepSeekError`、另存失败证据，不把未知用量伪装为正常契约里的 0。
+本地预检：`.\.venv-deepseek\Scripts\python.exe scripts/check_deepseek_api.py`。`--run` 会访问 API；历史配置共用 5 次额度，现已用尽且禁止重跑，先阅读最新 B/C 说明。未知 Token/请求错误会抛脱敏 `DeepSeekError`、另存失败证据，不把未知用量伪装为正常契约里的 0。
 
 ## V3 真实前端补充（2026-10-13）
 
@@ -120,6 +133,6 @@ $env:AGENT_TRACE_DIR="$PWD\artifacts\runtime\manual\traces"
 
 适配器使用 OpenAI 风格 Chat Completions function calling。设置 `AGENT_PROVIDER=openai`、`AGENT_API_KEY`、`AGENT_BASE_URL`、`AGENT_MODEL` 后重启进程。Key 只通过环境变量安全注入，不能写入仓库或截图。无 Key 会给出配置错误，不会假冒真实模型运行。
 
-**本次仅验证 Mock、SDK 模拟响应和本地服务；真实模型联网、可选向量检索、正式比赛测试与人工录屏验收均待完成。** 固定模拟用户身份，不提供生产登录系统；候补只返回任务凭据；实际改签、儿童/学生票折扣和身份证核验尚未实现。已有原数据库不会自动扩展或按天刷新，新库覆盖生成当天及之后六天，共 2100 条记录。
+**截至 10 月 16 日：DeepSeek 两个只读场景已真实运行；真实多轮/异常/安全的系统性质量、完整八工具 Live、可选向量检索、正式比赛测试与人工验收仍待完成。** 固定模拟用户身份，不提供生产登录系统；候补只返回任务凭据；实际改签、儿童/学生票折扣和身份证核验尚未实现。已有原数据库不会自动扩展或按天刷新，新库覆盖生成当天及之后六天，共 2100 条记录。
 
 每轮默认追加 `traces/traces.jsonl`，可用 `AGENT_TRACE_DIR` 隔离。GitHub 私有仓库为 `8xbAdx8/ticket-agent`，V1 与 V2 独立分支/标签保留；V2 不合并或覆盖原默认分支。

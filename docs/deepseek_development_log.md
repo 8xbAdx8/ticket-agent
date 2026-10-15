@@ -12,3 +12,16 @@
 早期问题记录：1. SQLite 的 with connection 不关闭连接，Windows 临时 DB 清理失败，改为显式 closing；2. 原 V2 未装 httpx，新测试应 skip 而不是 import error；3. 10 月 13 日 DB/Trace 哈希在接手前已有变化，保留用户当前数据，新增 --baseline-manifest 检查本次 356 文件；4. 源码插入安全检查导致行号改变，A 浏览器代码导览检查改为动态行号，不更改 B 判定。
 
 证据索引见 docs/evidence/deepseek/handoff_summary.json。源码提交对应上述文件和实际命令；后续仅文档与核对补充。没有真实 API 成功/失败结果；有无 Key 检查及明确跳过，不把 MockTransport 与真实 API 混计。尚未完成：真实只读闭环、在线多轮与安全、其余 6 工具开放、思考协议、正式 B 评价和 C 验收。
+
+
+## 2026-10-16：已有 Live 证据审查与交接（无新API）
+
+- 接手4ac1b756a1d8e652e7a9999bf43e1ae3b65701a5；审查/回归提交190e723f7d8fa1b54e5ce5123a1b87c07af9fcca。分支不变，原V1/V2/V3标签不移动。
+- 读取用户已运行的api-20261016-001224-2c3484：Hello + 查票2请求 + 政策2请求，合计5生成；余额GET另1次。输入4796、输出563，费用未知；额度5/5，不增加。
+- scripts/audit_deepseek_live.py只读核对声明调用、执行事件、公共Trace、回复事实、隔离SQLite与账本；原356文件及真实记录哈希不变。
+- scripts/run_deepseek_review_offline.py清除真实Key并限制非回环网络；新环境88通过；旧V3 78通过/10跳过；旧V2 35通过/53跳过；Mock入口检查通过。0外连尝试，原账本/361文件不变。
+- scripts/check_ticket_handoff_security.py检查工作区、ZIP/DOCX和可达Git历史；无凭据发现。旧ignored脚本只含私钥头比较字面量，不是实际私钥。
+- 新增A审查、B正式测试交接、C历史Live回放说明；原五份报告加当前状态，旧原文清晰归档。当前仓库没有B完整100条源码，只能说明复用，不冒充正式执行。
+- 发现并保留LIVE-REVIEW-01：只读查票答复仍邀请办理订票；交B定级，当前不修功能。另记录旧模式/验证标签和历史报告生成器的过时状态风险。
+- 只提供原始Live隔离库只读快照（2100库存、0锁、0订单），不替代原库。CLI只读历史回放已执行；无新真实API。
+- 后续文档/打包提交的最终SHA以Git历史和PACKAGE_MANIFEST为准。本轮可在安全通过后仅推送当前分支，不合main、不推标签、不强推。

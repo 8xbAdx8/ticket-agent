@@ -1,3 +1,15 @@
+# 最新对照：2026-10-16
+
+DeepSeek已有5个真实生成请求，Hello及两个独立只读工具闭环已复核。Mock原8工具与六变异离线回归保持通过；其他6工具的DeepSeek Live、真实多轮/安全质量和B正式100条回归未验证。两类成绩不能混合，SDK桩不计Live。
+
+实时已停止，当前API冻结；实际收费未知。详情见 [A 最新审查](A_DeepSeekLive验证审查_20261016.md) 和 [B 正式测试对接](B_DeepSeek正式测试交接_20261016.md)。
+
+---
+
+## 历史存档：2026-10-15 对照原文
+
+下面“Live尚未请求”的内容只反映当时接入准备。
+
 # Mock 与 DeepSeek 真实模型对照
 
 日期：2026-10-15（Asia/Shanghai）。分支 `codex/ticket-agent-deepseek-live`，已验证源码与证据提交 `d40b005ebdad2a57c8a09aa86d97911e1203f344`，接手基线 `85d457a4f34b4fad848ded4cf9c2d7334813c399`。本批文档会形成后续提交；最终 SHA 用 `git rev-parse HEAD` 获取。本轮未推送远程分支。
