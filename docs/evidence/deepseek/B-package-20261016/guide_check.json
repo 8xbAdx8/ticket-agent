@@ -1,0 +1,12 @@
+{
+  "status": "passed",
+  "documentation_local_links_checked": 8,
+  "offline_pip_check": "No broken requirements found.",
+  "mock_seed_records": 2100,
+  "mock_cli_trace_count": 6,
+  "mock_booking_payment_cancel_flow": "passed",
+  "key_presence_example_checked_with_dummy_only": true,
+  "blocked_network_attempts": 0,
+  "new_model_api_requests": 0,
+  "powershell_blocks_parsed_without_execution": 12
+}

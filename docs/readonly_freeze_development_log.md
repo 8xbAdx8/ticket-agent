@@ -17,3 +17,13 @@
 ## 实际模块提交与交接更新
 
 源码/测试/独立证据提交：`e216fdf57ec8f34b84134ba2b30b05e5d6ff5985`。后续文档补充 A 修复报告、B 异常捕获/分组测试和 C 历史回放说明，校正README及既有DeepSeek入口的当前状态。未修改过去真实运行原件或B正式测试层。最终文档提交见git log。
+
+## 2026-10-16：面向B的新机器交接包与Key教学
+
+- 新增根目录 B_先读我.md、docs/handoff/v3/B_安装运行与APIKey配置详解.md、scripts/handoff_offline_selftest.py；仅交接文档/离线运行入口，无业务代码修改。
+- 教程涵盖Python3.12、锁依赖、隔离Mock库、CLI多轮、Web、变异、官方Key获取入口、隐藏输入临时环境变量、仅布尔检查、.env不自动加载、异常与费用。当前API冻结，不提供绕预算启动器。
+- 实际验证：pip check通过；12段PowerShell仅语法解析；Mock生成2100库存、查询/多轮锁座下单支付查订单退票成功，共6条Trace；Key是否存在示例仅使用空值/离线假凭据验证，未读取或验证用户真实Key。0外连、0模型请求。证据docs/evidence/deepseek/B-package-20261016/guide_check.json。
+- 交接包由已跟踪文件组成，另加准确commit/逐文件哈希manifest；不含.venv/.git/密钥/原库/原Trace/真实预算账本；保留虚构Live证据只读快照。最终ZIP的SHA及解压自测记录保存在ZIP旁。
+- 业务源码仍为e216fdf修复；此模块文档提交见Git历史，打包源码版本以manifest为准。新机器全新pip安装未在本轮重装，解压自测复用本机锁定依赖，不能说已在B电脑验证。
+
+- 新交接入口实际命令：`.\.venv-deepseek\Scripts\python.exe scripts/handoff_offline_selftest.py`；102通过、0跳过、0外连、0新API。日志/结果写入docs/evidence/deepseek/B-package-20261016/portable_selftest*；原361文件/真实账本哈希不变。

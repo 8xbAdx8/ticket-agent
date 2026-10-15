@@ -1,0 +1,11 @@
+{
+  "status": "passed",
+  "scope": "A offline selftest, not B official 100 cases",
+  "tests": 102,
+  "skipped": 0,
+  "exit_code": 0,
+  "blocked_network_attempts": 0,
+  "new_deepseek_api_requests": 0,
+  "log": "artifacts/runtime/B-offline-c29b32d81d/unit.txt",
+  "uses_existing_installed_dependencies": true
+}
