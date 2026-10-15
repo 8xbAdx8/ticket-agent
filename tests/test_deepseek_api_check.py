@@ -7,12 +7,17 @@ import tempfile
 import unittest
 from pathlib import Path
 from unittest.mock import patch
-import httpx
 import config
 from scripts.check_deepseek_api import main
 from target.deepseek_runtime import guarded_client
+try:
+    import httpx
+    HTTPX_AVAILABLE = True
+except ImportError:
+    HTTPX_AVAILABLE = False
 
 
+@unittest.skipUnless(HTTPX_AVAILABLE,"原 V2 环境未安装 httpx；检查脚本桩测试在独立环境运行")
 class ConnectivityScriptTests(unittest.TestCase):
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()

@@ -88,7 +88,7 @@ async function main() {
     await page.getByText('原始记录回放，不执行新的业务操作，也不恢复旧会话记忆。',{exact:true}).waitFor();
     await page.getByRole('tab',{name:'核心代码导览',exact:true}).click();
     await page.getByText('统一入口：校验输入并选择执行引擎',{exact:true}).click();
-    await page.getByText('target/agent.py:61',{exact:true}).waitFor();
+    await page.getByText(/^target\/agent\.py:\d+$/).waitFor();
     await page.getByRole('button',{name:'清空会话',exact:true}).click();
     await page.getByRole('tab',{name:'对话与工具',exact:true}).click();
     await page.getByText('一段旅程，从一句话开始。',{exact:true}).waitFor();

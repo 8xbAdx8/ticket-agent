@@ -1,0 +1,9 @@
+已生成 2100 条虚构余票记录
+2026-10-15 22:57:49.657 WARNING streamlit.runtime.scriptrunner_utils.script_run_context: Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+Traceback (most recent call last):
+  File "<project>\scripts\verify_v3.py", line 99, in <module>
+    main()
+  File "<project>\scripts\verify_v3.py", line 85, in main
+    assert all(protected.values()),"V2 原始证据变化"
+           ^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: V2 原始证据变化

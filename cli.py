@@ -19,6 +19,8 @@ import config
 
 def print_result(r, show_trace=True):
     print(f"[engine] {config.ENGINE}  [provider] {r['provider']}")
+    if r["provider"] == "deepseek_live":
+        print(f"[model] {r['model']}  [tokens reported by API] {json.dumps(r['tokens'])}")
     print(f"\n[reply] {r['reply']}")
     if show_trace:
         print(f"[tools] {r['tool_sequence']}")
@@ -86,7 +88,16 @@ def main():
     args = ap.parse_args()
     if not args.cmd:
         ap.print_help(); return
-    args.func(args)
+    try:
+        args.func(args)
+    except Exception as exc:
+        if config.PROVIDER != "deepseek":
+            raise
+        from target.deepseek_runtime import safe_error
+        error = safe_error(exc)
+        print(json.dumps({"provider":"deepseek_live","status":"failed","error":error,
+                          "tokens":None,"note":"本轮未返回正常契约记录；未自动重试，检查脱敏失败证据。"},ensure_ascii=False))
+        raise SystemExit(2) from None
 
 
 if __name__ == "__main__":

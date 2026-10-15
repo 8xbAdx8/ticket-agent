@@ -9,11 +9,16 @@ from pathlib import Path
 from unittest.mock import patch
 
 import config
-import httpx
 from target.deepseek_runtime import (Settings, RequestBudget, guarded_client, safe_error,
                                       DeepSeekError, validate_configuration)
+try:
+    import httpx
+    HTTPX_AVAILABLE = True
+except ImportError:
+    HTTPX_AVAILABLE = False
 
 
+@unittest.skipUnless(HTTPX_AVAILABLE,"原 V2 环境未安装 httpx；安全传输测试在独立环境运行")
 class DeepSeekRuntimeTests(unittest.TestCase):
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()
@@ -28,11 +33,11 @@ class DeepSeekRuntimeTests(unittest.TestCase):
 
     def test_configuration_uses_only_canonical_key_and_defaults(self):
         env = dict(os.environ,AGENT_PROVIDER="deepseek",DEEPSEEK_API_KEY="offline-canonical",AGENT_API_KEY="offline-legacy")
-        for key in ("AGENT_MODEL","AGENT_ENGINE","AGENT_BASE_URL"):
+        for key in ("AGENT_MODEL","AGENT_ENGINE","AGENT_BASE_URL","AGENT_TRACE_DIR"):
             env.pop(key,None)
-        script = "import config,json; print(json.dumps({'canonical':config.API_KEY=='offline-canonical','model':config.MODEL_NAME,'engine':config.ENGINE,'base':config.BASE_URL}))"
+        script = "import config,json; print(json.dumps({'canonical':config.API_KEY=='offline-canonical','model':config.MODEL_NAME,'engine':config.ENGINE,'base':config.BASE_URL,'separate_trace':config.TRACE_DIR.name=='deepseek_live'}))"
         data = json.loads(subprocess.check_output([sys.executable,"-c",script],env=env,text=True))
-        self.assertEqual(data,{"canonical":True,"model":"deepseek-flash","engine":"langchain","base":"https://api.deepseek.com"})
+        self.assertEqual(data,{"canonical":True,"model":"deepseek-flash","engine":"langchain","base":"https://api.deepseek.com","separate_trace":True})
 
     def test_missing_key_endpoint_and_model_fail_closed(self):
         with patch.multiple(config,API_KEY="",BASE_URL="https://api.deepseek.com",MODEL_NAME="deepseek-flash"):

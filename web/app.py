@@ -56,6 +56,8 @@ def show_trace(record, results=None):
     c1.metric("调用次数", len(record["tool_sequence"]))
     c2.metric("总耗时(ms)", record["total_latency_ms"])
     c3.metric("结束原因", record["finish_reason"])
+    if record["provider"] == "deepseek_live":
+        st.caption(f"API 报告 Token：输入 {record['tokens']['prompt']} / 输出 {record['tokens']['completion']}")
     rows = [{"step": s["step"], "tool": c["tool"], "args": c["args"], "ok": c["ok"],
              "latency_ms": c["latency_ms"], "result": c["result_preview"]}
             for s in record["steps"] for c in s["calls"]]
@@ -121,6 +123,8 @@ st.set_page_config(page_title="Ticket Agent · 出行工作空间", page_icon="�
 st.markdown("<style>" + (BASE / "web/theme.css").read_text(encoding="utf-8") + "</style>", unsafe_allow_html=True)
 engine_label = ("LangChain Mock" if config.PROVIDER == "mock" else "LangChain Live") if config.ENGINE == "langchain" else (
     "原生 Python Mock" if config.PROVIDER == "mock" else "原生 Python Live")
+if config.PROVIDER == "deepseek":
+    engine_label = "DeepSeek Live · 只读"
 for key, value in (("mutations", {}), ("sid", "web-" + uuid.uuid4().hex[:8]), ("history", []), ("business_results", [])):
     if key not in st.session_state:
         st.session_state[key] = value
@@ -170,6 +174,9 @@ if "agent" not in st.session_state:
     except Exception as exc:
         ready = False
         st.error(f"初始化失败 ({type(exc).__name__})；检查 Key、依赖与配置。历史回放仍可使用。")
+        if config.PROVIDER == "deepseek":
+            from target.deepseek_runtime import safe_error
+            st.caption("DeepSeek 状态：" + safe_error(exc)["category"])
 
 conversation, replay, code = st.tabs(["对话与工具", "历史记录回放", "核心代码导览"])
 with conversation:
@@ -201,6 +208,9 @@ with conversation:
                 except Exception as exc:
                     turn_failed = True
                     st.error(f"执行失败 ({type(exc).__name__})；检查目录写权限与配置。")
+                    if config.PROVIDER == "deepseek":
+                        from target.deepseek_runtime import safe_error
+                        st.caption("DeepSeek 状态：" + safe_error(exc)["category"] + "；未自动重试，Token 未知时请查看脱敏失败证据。")
                 finally:
                     processing.empty()
         with response_area:
@@ -245,4 +255,5 @@ with code:
         with st.expander(description):
             st.caption(f"{path}:{line}")
             st.code(excerpt, language="python")
-st.caption("8 个模拟工具 · 政策来源可检查 · 会话隔离 · 正式测试评价由成员 B 提供")
+st.caption(("DeepSeek 当前开放 2 个只读工具" if config.PROVIDER == "deepseek" else "8 个模拟工具") +
+           " · 政策来源可检查 · 会话隔离 · 正式测试评价由成员 B 提供")

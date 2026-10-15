@@ -1,0 +1,19 @@
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+test_http_error_is_not_retried_and_never_leaks_secret_or_body (tests.test_deepseek_agent.DeepSeekAgentTests.test_http_error_is_not_retried_and_never_leaks_secret_or_body) ... ok
+test_live_write_expansion_is_rejected_and_model_cannot_pay (tests.test_deepseek_agent.DeepSeekAgentTests.test_live_write_expansion_is_rejected_and_model_cannot_pay) ... ok
+test_missing_usage_raises_safe_error_without_fake_zero_trace (tests.test_deepseek_agent.DeepSeekAgentTests.test_missing_usage_raises_safe_error_without_fake_zero_trace) ... ok
+test_policy_sources_and_multiturn_context_are_returned_to_sdk (tests.test_deepseek_agent.DeepSeekAgentTests.test_policy_sources_and_multiturn_context_are_returned_to_sdk) ... ok
+test_real_sdk_tool_call_feedback_usage_and_contract (tests.test_deepseek_agent.DeepSeekAgentTests.test_real_sdk_tool_call_feedback_usage_and_contract) ... ok
+test_reasoning_is_not_logged_and_thinking_replay_is_unsupported (tests.test_deepseek_agent.DeepSeekAgentTests.test_reasoning_is_not_logged_and_thinking_replay_is_unsupported) ... ok
+test_tool_call_count_limit_and_max_model_steps (tests.test_deepseek_agent.DeepSeekAgentTests.test_tool_call_count_limit_and_max_model_steps) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.630s
+
+OK

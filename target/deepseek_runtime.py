@@ -12,7 +12,10 @@ from datetime import datetime, timezone
 from pathlib import Path
 from urllib.parse import urlsplit
 
-import httpx
+try:
+    import httpx
+except ImportError:
+    httpx = None  # V2 的 Mock 环境不因新增适配器而被迫安装 SDK。
 import config
 
 READ_ONLY = frozenset(("query_tickets", "search_policy"))
@@ -37,13 +40,15 @@ def safe_error(exc):
             return {"category":cause.category,"http_status":cause.status}
         cause = cause.__cause__
     status = getattr(exc, "status_code", None)
-    if status is None and isinstance(exc, httpx.HTTPStatusError):
+    if status is None and httpx and isinstance(exc, httpx.HTTPStatusError):
         status = exc.response.status_code
     if status:
         return {"category": ERRORS.get(status, "http_error"), "http_status": status}
+    if isinstance(exc, ImportError):
+        return {"category":"dependency_missing","http_status":None}
     name = type(exc).__name__.lower()
-    category = "timeout" if isinstance(exc, httpx.TimeoutException) or "timeout" in name else (
-        "network_connection" if isinstance(exc, httpx.TransportError) or "connection" in name else "client_error")
+    category = "timeout" if (httpx and isinstance(exc, httpx.TimeoutException)) or "timeout" in name else (
+        "network_connection" if (httpx and isinstance(exc, httpx.TransportError)) or "connection" in name else "client_error")
     return {"category": category, "http_status": None}
 
 
@@ -142,6 +147,10 @@ class RequestBudget:
 
 
 def guarded_client(settings, *, transport=None):
+    if httpx is None:
+        raise DeepSeekError("dependency_missing")
+    for name in ("httpx","httpcore"):
+        logging.getLogger(name).setLevel(logging.WARNING)
     budget = RequestBudget(settings)
 
     def before(request):
@@ -174,6 +183,8 @@ def guarded_client(settings, *, transport=None):
         try:
             body = response.json()
         except (ValueError, TypeError):
+            body = {}
+        if not isinstance(body,dict):
             body = {}
         budget.record(identity,status=response.status_code,
                       category="response_received" if response.is_success else ERRORS.get(response.status_code,"http_error"),

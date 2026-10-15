@@ -5,13 +5,13 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent
+PROVIDER = os.getenv("AGENT_PROVIDER", "mock")      # mock | openai | deepseek
 DB_PATH = Path(os.getenv("AGENT_DB_PATH", str(BASE_DIR / "data" / "tickets.db")))
 POLICY_PATH = BASE_DIR / "data" / "policies.md"
-TRACE_DIR = Path(os.getenv("AGENT_TRACE_DIR", str(BASE_DIR / "traces")))
+TRACE_DIR = Path(os.getenv("AGENT_TRACE_DIR", str(BASE_DIR / "traces" / "deepseek_live" if PROVIDER == "deepseek" else BASE_DIR / "traces")))
 TRACE_DIR.mkdir(parents=True, exist_ok=True)
 
 # ---- 模型提供者：mock（零依赖离线） 或 openai（OpenAI 兼容端点）----
-PROVIDER = os.getenv("AGENT_PROVIDER", "mock")      # mock | openai | deepseek
 MODEL_NAME = os.getenv("AGENT_MODEL", "deepseek-flash" if PROVIDER == "deepseek" else "glm-4-flash")
 BASE_URL = os.getenv("AGENT_BASE_URL", "https://api.deepseek.com" if PROVIDER == "deepseek" else "https://open.bigmodel.cn/api/paas/v4")
 # DeepSeek 只有一个密钥来源；AGENT_API_KEY 继续专用于旧 openai Provider。

@@ -1,0 +1,1 @@
+{"provider": "deepseek_live", "status": "failed", "error": {"category": "missing_DEEPSEEK_API_KEY", "http_status": null}, "tokens": null, "note": "本轮未返回正常契约记录；未自动重试，检查脱敏失败证据。"}

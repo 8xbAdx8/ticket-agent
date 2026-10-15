@@ -20,11 +20,13 @@ from target.agent import Agent
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--output-dir",type=Path,required=True)
+    parser.add_argument("--baseline-manifest",type=Path,default=ROOT/"docs/evidence/v3/v2_baseline/manifest.json",
+                        help="默认检查原 V2 证据；增量任务可指定接手时保存的保护清单，不重写原证据")
     parser.add_argument("--toolset",choices=("read_only","all"),default="read_only")
     args = parser.parse_args()
     out = args.output_dir if args.output_dir.is_absolute() else ROOT/args.output_dir
     out.mkdir(parents=True,exist_ok=False)
-    baseline = json.loads((ROOT/"docs/evidence/v3/v2_baseline/manifest.json").read_text(encoding="utf-8"))
+    baseline = json.loads(args.baseline_manifest.read_text(encoding="utf-8"))
     with tempfile.TemporaryDirectory() as tmp:
         db, trace = Path(tmp)/"tickets.db",out/"langchain_mock"
         with (patch.object(config,"DB_PATH",db),patch.object(config,"TRACE_DIR",trace),
