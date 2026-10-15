@@ -1,0 +1,3 @@
+# Preserve V3 pins; install this into the separate .venv-deepseek environment.
+-r requirements-v3-lock.txt
+langchain-deepseek==1.1.1

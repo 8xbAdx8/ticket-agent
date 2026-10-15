@@ -2,6 +2,7 @@ __pycache__/
 *.py[cod]
 .venv/
 .venv-v3/
+.venv-deepseek/
 .env
 *.db
 *.db-*

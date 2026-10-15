@@ -1,0 +1,13 @@
+test_balance_get_does_not_consume_generation_budget (tests.test_deepseek_runtime.DeepSeekRuntimeTests.test_balance_get_does_not_consume_generation_budget) ... ok
+test_configuration_uses_only_canonical_key_and_defaults (tests.test_deepseek_runtime.DeepSeekRuntimeTests.test_configuration_uses_only_canonical_key_and_defaults) ... ok
+test_error_categories_do_not_leak_body_or_key (tests.test_deepseek_runtime.DeepSeekRuntimeTests.test_error_categories_do_not_leak_body_or_key) ... ok
+test_global_budget_is_persistent_and_sixth_request_never_reaches_transport (tests.test_deepseek_runtime.DeepSeekRuntimeTests.test_global_budget_is_persistent_and_sixth_request_never_reaches_transport) ... ok
+test_missing_key_endpoint_and_model_fail_closed (tests.test_deepseek_runtime.DeepSeekRuntimeTests.test_missing_key_endpoint_and_model_fail_closed) ... ok
+test_read_only_thinking_output_and_host_guards (tests.test_deepseek_runtime.DeepSeekRuntimeTests.test_read_only_thinking_output_and_host_guards) ... ok
+test_unknown_usage_is_null_in_ledger_not_invented_zero (tests.test_deepseek_runtime.DeepSeekRuntimeTests.test_unknown_usage_is_null_in_ledger_not_invented_zero) ... ok
+test_unsafe_limits_and_thinking_opt_in_are_rejected (tests.test_deepseek_runtime.DeepSeekRuntimeTests.test_unsafe_limits_and_thinking_opt_in_are_rejected) ... ok
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.116s
+
+OK

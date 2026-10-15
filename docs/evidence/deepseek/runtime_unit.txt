@@ -1,0 +1,65 @@
+test_balance_get_does_not_consume_generation_budget (tests.test_deepseek_runtime.DeepSeekRuntimeTests.test_balance_get_does_not_consume_generation_budget) ... ok
+test_configuration_uses_only_canonical_key_and_defaults (tests.test_deepseek_runtime.DeepSeekRuntimeTests.test_configuration_uses_only_canonical_key_and_defaults) ... ok
+test_error_categories_do_not_leak_body_or_key (tests.test_deepseek_runtime.DeepSeekRuntimeTests.test_error_categories_do_not_leak_body_or_key) ... ok
+test_global_budget_is_persistent_and_sixth_request_never_reaches_transport (tests.test_deepseek_runtime.DeepSeekRuntimeTests.test_global_budget_is_persistent_and_sixth_request_never_reaches_transport) ... ERROR
+test_missing_key_endpoint_and_model_fail_closed (tests.test_deepseek_runtime.DeepSeekRuntimeTests.test_missing_key_endpoint_and_model_fail_closed) ... ok
+test_read_only_thinking_output_and_host_guards (tests.test_deepseek_runtime.DeepSeekRuntimeTests.test_read_only_thinking_output_and_host_guards) ... ok
+test_unknown_usage_is_null_in_ledger_not_invented_zero (tests.test_deepseek_runtime.DeepSeekRuntimeTests.test_unknown_usage_is_null_in_ledger_not_invented_zero) ... ERROR
+test_unsafe_limits_and_thinking_opt_in_are_rejected (tests.test_deepseek_runtime.DeepSeekRuntimeTests.test_unsafe_limits_and_thinking_opt_in_are_rejected) ... ok
+
+======================================================================
+ERROR: test_global_budget_is_persistent_and_sixth_request_never_reaches_transport (tests.test_deepseek_runtime.DeepSeekRuntimeTests.test_global_budget_is_persistent_and_sixth_request_never_reaches_transport)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<user>\AppData\Roaming\uv\python\cpython-3.12.14-windows-x86_64-none\Lib\shutil.py", line 633, in _rmtree_unsafe
+    os.unlink(fullname)
+PermissionError: [WinError 32] 另一个程序正在使用此文件，进程无法访问。: 'C:\\Users\\W\\AppData\\Local\\Temp\\tmpxgrqjeh0\\budget.db'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "<project>\tests\test_deepseek_runtime.py", line 23, in tearDown
+    self.tmp.cleanup()
+  File "<user>\AppData\Roaming\uv\python\cpython-3.12.14-windows-x86_64-none\Lib\tempfile.py", line 954, in cleanup
+    self._rmtree(self.name, ignore_errors=self._ignore_cleanup_errors)
+  File "<user>\AppData\Roaming\uv\python\cpython-3.12.14-windows-x86_64-none\Lib\tempfile.py", line 934, in _rmtree
+    _shutil.rmtree(name, onexc=onexc)
+  File "<user>\AppData\Roaming\uv\python\cpython-3.12.14-windows-x86_64-none\Lib\shutil.py", line 781, in rmtree
+    return _rmtree_unsafe(path, onexc)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<user>\AppData\Roaming\uv\python\cpython-3.12.14-windows-x86_64-none\Lib\shutil.py", line 635, in _rmtree_unsafe
+    onexc(os.unlink, fullname, err)
+  File "<user>\AppData\Roaming\uv\python\cpython-3.12.14-windows-x86_64-none\Lib\tempfile.py", line 909, in onexc
+    _os.unlink(path)
+PermissionError: [WinError 32] 另一个程序正在使用此文件，进程无法访问。: 'C:\\Users\\W\\AppData\\Local\\Temp\\tmpxgrqjeh0\\budget.db'
+
+======================================================================
+ERROR: test_unknown_usage_is_null_in_ledger_not_invented_zero (tests.test_deepseek_runtime.DeepSeekRuntimeTests.test_unknown_usage_is_null_in_ledger_not_invented_zero)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<user>\AppData\Roaming\uv\python\cpython-3.12.14-windows-x86_64-none\Lib\shutil.py", line 633, in _rmtree_unsafe
+    os.unlink(fullname)
+PermissionError: [WinError 32] 另一个程序正在使用此文件，进程无法访问。: 'C:\\Users\\W\\AppData\\Local\\Temp\\tmpw24mkt2c\\budget.db'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "<project>\tests\test_deepseek_runtime.py", line 23, in tearDown
+    self.tmp.cleanup()
+  File "<user>\AppData\Roaming\uv\python\cpython-3.12.14-windows-x86_64-none\Lib\tempfile.py", line 954, in cleanup
+    self._rmtree(self.name, ignore_errors=self._ignore_cleanup_errors)
+  File "<user>\AppData\Roaming\uv\python\cpython-3.12.14-windows-x86_64-none\Lib\tempfile.py", line 934, in _rmtree
+    _shutil.rmtree(name, onexc=onexc)
+  File "<user>\AppData\Roaming\uv\python\cpython-3.12.14-windows-x86_64-none\Lib\shutil.py", line 781, in rmtree
+    return _rmtree_unsafe(path, onexc)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<user>\AppData\Roaming\uv\python\cpython-3.12.14-windows-x86_64-none\Lib\shutil.py", line 635, in _rmtree_unsafe
+    onexc(os.unlink, fullname, err)
+  File "<user>\AppData\Roaming\uv\python\cpython-3.12.14-windows-x86_64-none\Lib\tempfile.py", line 909, in onexc
+    _os.unlink(path)
+PermissionError: [WinError 32] 另一个程序正在使用此文件，进程无法访问。: 'C:\\Users\\W\\AppData\\Local\\Temp\\tmpw24mkt2c\\budget.db'
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.143s
+
+FAILED (errors=2)

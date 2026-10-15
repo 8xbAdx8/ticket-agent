@@ -11,13 +11,14 @@ TRACE_DIR = Path(os.getenv("AGENT_TRACE_DIR", str(BASE_DIR / "traces")))
 TRACE_DIR.mkdir(parents=True, exist_ok=True)
 
 # ---- 模型提供者：mock（零依赖离线） 或 openai（OpenAI 兼容端点）----
-PROVIDER = os.getenv("AGENT_PROVIDER", "mock")      # mock | openai
-MODEL_NAME = os.getenv("AGENT_MODEL", "glm-4-flash")
-BASE_URL = os.getenv("AGENT_BASE_URL", "https://open.bigmodel.cn/api/paas/v4")
-API_KEY = os.getenv("AGENT_API_KEY", "")
+PROVIDER = os.getenv("AGENT_PROVIDER", "mock")      # mock | openai | deepseek
+MODEL_NAME = os.getenv("AGENT_MODEL", "deepseek-flash" if PROVIDER == "deepseek" else "glm-4-flash")
+BASE_URL = os.getenv("AGENT_BASE_URL", "https://api.deepseek.com" if PROVIDER == "deepseek" else "https://open.bigmodel.cn/api/paas/v4")
+# DeepSeek 只有一个密钥来源；AGENT_API_KEY 继续专用于旧 openai Provider。
+API_KEY = os.getenv("DEEPSEEK_API_KEY" if PROVIDER == "deepseek" else "AGENT_API_KEY", "")
 
 # V3 增量引擎；legacy 保留 V2 零框架依赖路径。
-ENGINE = os.getenv("AGENT_ENGINE", "legacy")  # legacy | langchain
+ENGINE = os.getenv("AGENT_ENGINE", "langchain" if PROVIDER == "deepseek" else "legacy")  # legacy | langchain
 LC_TOOLSET = os.getenv("AGENT_LC_TOOLSET", "read_only")  # read_only | all
 
 # ---- Agent 主循环参数 ----
