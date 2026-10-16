@@ -1,0 +1,226 @@
+{
+  "status": "PASS",
+  "local_date": "2026-10-17",
+  "source_HEAD": "c6def7111cf4cebaabfa4c068417849b7077480b",
+  "branch": "codex/minimal-deepseek-20261017",
+  "minimal_fix": "new isolated DEEPSEEK_BUDGET_PATH with DEEPSEEK_MAX_REQUESTS=2; no production source change",
+  "localhost": "http://127.0.0.1:61081",
+  "input": "查明天上海到杭州的高铁二等座，请查询工具结果后列出有余票的车次。",
+  "actual_api_requests": 2,
+  "requests": [
+    {
+      "id": 1,
+      "status": 200,
+      "category": "response_received",
+      "prompt": 776,
+      "completion": 113,
+      "model": "deepseek-flash"
+    },
+    {
+      "id": 2,
+      "status": 200,
+      "category": "response_received",
+      "prompt": 1164,
+      "completion": 218,
+      "model": "deepseek-flash"
+    }
+  ],
+  "finish_reasons": [
+    "tool_calls",
+    "stop"
+  ],
+  "tool_calls": [
+    {
+      "id": "call_00_xKwsZfWH5PRsuwkaAYzQ6066",
+      "name": "query_tickets",
+      "args": {
+        "from_city": "上海",
+        "to_city": "杭州",
+        "date": "2026-10-18",
+        "seat_type": "二等座",
+        "kind": "高铁"
+      }
+    }
+  ],
+  "tool_results": [
+    {
+      "event": "tool_end",
+      "tool": "query_tickets",
+      "call_id": "call_00_xKwsZfWH5PRsuwkaAYzQ6066",
+      "ok": true,
+      "latency_ms": 2,
+      "result": {
+        "trains": [
+          {
+            "kind": "高铁",
+            "train_no": "G7303",
+            "from_city": "上海",
+            "to_city": "杭州",
+            "date": "2026-10-18",
+            "depart": "12:34",
+            "arrive": "13:34",
+            "seat_type": "二等座",
+            "price": 73.0,
+            "seats_left": 51
+          },
+          {
+            "kind": "高铁",
+            "train_no": "G7302",
+            "from_city": "上海",
+            "to_city": "杭州",
+            "date": "2026-10-18",
+            "depart": "09:17",
+            "arrive": "10:17",
+            "seat_type": "二等座",
+            "price": 73.0,
+            "seats_left": 47
+          },
+          {
+            "kind": "高铁",
+            "train_no": "G7301",
+            "from_city": "上海",
+            "to_city": "杭州",
+            "date": "2026-10-18",
+            "depart": "06:00",
+            "arrive": "07:00",
+            "seat_type": "二等座",
+            "price": 73.0,
+            "seats_left": 35
+          }
+        ],
+        "count": 3
+      }
+    }
+  ],
+  "final_reply": "已按 2026-10-18（明天）查询上海 → 杭州的高铁二等座，以下车次均有余票：\n\n| 车次 | 出发 | 到达 | 席别 | 票价 | 余票 |\n|---|---|---|---|---|---|\n| G7301 | 06:00 | 07:00 | 二等座 | ¥73.0 | 35 张 |\n| G7302 | 09:17 | 10:17 | 二等座 | ¥73.0 | 47 张 |\n| G7303 | 12:34 | 13:34 | 二等座 | ¥73.0 | 51 张 |\n\n共 3 个车次，二等座均有余票。以上为当前查询到的结果，余票会变动，请以实际为准。\n\n另外说明一下我的能力边界：当前仅支持模拟查票和政策咨询，不能为您锁座、候补、下单或支付。如需了解退改签、儿童票等规则，可以帮您检索政策。",
+  "final_reply_rows": {
+    "G7301": {
+      "depart": "06:00",
+      "arrive": "07:00",
+      "seat_type": "二等座",
+      "price": 73.0,
+      "seats_left": 35
+    },
+    "G7302": {
+      "depart": "09:17",
+      "arrive": "10:17",
+      "seat_type": "二等座",
+      "price": 73.0,
+      "seats_left": 47
+    },
+    "G7303": {
+      "depart": "12:34",
+      "arrive": "13:34",
+      "seat_type": "二等座",
+      "price": 73.0,
+      "seats_left": 51
+    }
+  },
+  "tool_rows": {
+    "G7303": {
+      "depart": "12:34",
+      "arrive": "13:34",
+      "seat_type": "二等座",
+      "price": 73.0,
+      "seats_left": 51
+    },
+    "G7302": {
+      "depart": "09:17",
+      "arrive": "10:17",
+      "seat_type": "二等座",
+      "price": 73.0,
+      "seats_left": 47
+    },
+    "G7301": {
+      "depart": "06:00",
+      "arrive": "07:00",
+      "seat_type": "二等座",
+      "price": 73.0,
+      "seats_left": 35
+    }
+  },
+  "checks": {
+    "two_http_200": true,
+    "two_model_responses": true,
+    "first_finish_tool_calls": true,
+    "second_finish_stop": true,
+    "query_tickets_selected_by_model": true,
+    "correct_arguments": true,
+    "one_successful_query": true,
+    "call_id_consistent": true,
+    "final_reply_nonempty": true,
+    "reply_matches_all_returned_rows": true,
+    "final_text_not_rewritten": true,
+    "normal_trace_contract": true,
+    "no_unauthorized_tools": true,
+    "no_order_lock_payment": true,
+    "formal_budget_unchanged": true,
+    "originals_unchanged": true,
+    "key_scan_clean": true,
+    "localhost_stopped": true,
+    "no_related_processes": true,
+    "no_agent_error": true,
+    "token_totals_match": true
+  },
+  "latency_ms": 4544,
+  "api_reported_tokens": {
+    "prompt": 1940,
+    "completion": 331,
+    "total": 2271
+  },
+  "actual_fee": null,
+  "fee_note": "unknown; no balance or billing request sent",
+  "formal_budget": {
+    "used": 5,
+    "limit": 5,
+    "changed": false
+  },
+  "isolated_budget": {
+    "used": 2,
+    "limit": 2
+  },
+  "sdk_retries": 0,
+  "api_retries": 0,
+  "database_counts": {
+    "inventory": 2100,
+    "locks": 0,
+    "orders": 0
+  },
+  "process_cleanup": {
+    "ServerPID": 29372,
+    "ServerStopped": true,
+    "RelatedRemainingCount": 0,
+    "RelatedRemaining": []
+  },
+  "protected_files": 763,
+  "changed_original_files": [],
+  "changed_B_files": [],
+  "credential_scan_hit_files": [],
+  "internal_reasoning_saved": false,
+  "offline_counts": {
+    "execution": {
+      "passed": 101,
+      "total": 101,
+      "failed_ids": []
+    },
+    "execution_langchain": {
+      "passed": 98,
+      "total": 100,
+      "failed_ids": [
+        "X15",
+        "X16"
+      ]
+    },
+    "mutation": {
+      "killed": 55,
+      "total": 55
+    },
+    "newcode": {
+      "passed": 37,
+      "failed": 0,
+      "na": 3
+    }
+  },
+  "offline_old_B_full_suite_status": "failed: unchanged X15/X16; not reclassified as pass",
+  "conclusion": "DeepSeek Live localhost 完整闭环 PASS。"
+}

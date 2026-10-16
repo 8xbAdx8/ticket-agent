@@ -1,0 +1,21 @@
+{
+  "source": "isolated actual request ledger; no credentials or headers",
+  "requests": [
+    {
+      "id": 1,
+      "status": 200,
+      "category": "response_received",
+      "prompt": 776,
+      "completion": 113,
+      "model": "deepseek-flash"
+    },
+    {
+      "id": 2,
+      "status": 200,
+      "category": "response_received",
+      "prompt": 1164,
+      "completion": 218,
+      "model": "deepseek-flash"
+    }
+  ]
+}

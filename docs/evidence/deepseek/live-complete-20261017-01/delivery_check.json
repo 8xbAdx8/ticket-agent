@@ -1,0 +1,12 @@
+{
+  "status": "passed",
+  "credential_scan_hit_files": [],
+  "broken_report_links": [],
+  "changed_existing_files": [],
+  "protected_files": 763,
+  "new_public_files_scanned": 21,
+  "source_changes": false,
+  "real_requests_this_turn": 2,
+  "formal_ledger_changed": false,
+  "no_auth_headers_or_reasoning_saved": true
+}

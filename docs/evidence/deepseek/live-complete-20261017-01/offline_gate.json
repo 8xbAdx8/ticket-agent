@@ -1,0 +1,35 @@
+{
+  "ready_for_one_live_turn": true,
+  "production_code_changes": false,
+  "offline_counts": {
+    "execution": {
+      "passed": 101,
+      "total": 101,
+      "failed_ids": []
+    },
+    "execution_langchain": {
+      "passed": 98,
+      "total": 100,
+      "failed_ids": [
+        "X15",
+        "X16"
+      ]
+    },
+    "mutation": {
+      "killed": 55,
+      "total": 55
+    },
+    "newcode": {
+      "passed": 37,
+      "failed": 0,
+      "na": 3
+    }
+  },
+  "known_old_B_failures_not_reclassified": [
+    "X15",
+    "X16"
+  ],
+  "new_failures_vs_current_HEAD": [],
+  "two_request_budget_fixture": "passed",
+  "real_requests_so_far": 0
+}

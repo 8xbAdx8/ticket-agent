@@ -1,0 +1,39 @@
+{
+  "branch": "codex/minimal-deepseek-20261017",
+  "HEAD": "c6def7111cf4cebaabfa4c068417849b7077480b",
+  "git_status": "?? \"docs/showcase/v3\\345\\261\\225\\347\\244\\272.zip\"",
+  "formal_budget": {
+    "used": 5,
+    "limit": 5
+  },
+  "temporary_budget": {
+    "used": 0,
+    "limit": 2
+  },
+  "provider": "deepseek",
+  "engine": "langchain",
+  "model": "deepseek-flash",
+  "toolset": "read_only",
+  "key": "<configured>",
+  "allowed_tools": [
+    "query_tickets",
+    "search_policy"
+  ],
+  "blocked_tools": [
+    "lock_seat",
+    "create_order",
+    "pay_order",
+    "cancel_order",
+    "query_order",
+    "monitor_seat"
+  ],
+  "max_retries": 0,
+  "max_model_calls": 2,
+  "max_tool_calls": 1,
+  "localhost": "http://127.0.0.1:61081",
+  "server_pid": 29372,
+  "real_api_requests_sent": 0,
+  "temporary_runtime": "artifacts/runtime/live-full-loop-20261017-01",
+  "input": "查明天上海到杭州的高铁二等座，请查询工具结果后列出有余票的车次。",
+  "localhost_health": "ok"
+}

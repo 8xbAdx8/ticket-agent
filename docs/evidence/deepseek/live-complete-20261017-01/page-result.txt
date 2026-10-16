@@ -1,0 +1,165 @@
+- generic: T
+- text: Ticket Agent
+- generic: 出行服务智能助手
+- button "清空会话":
+  - paragraph: 清空会话
+- paragraph: 工作空间 · 对话 / 历史回放 / 代码导览
+- text: ● DeepSeek Live · 只读
+- generic: 工具集：read_only
+- generic: 模型配置：deepseek-flash
+- paragraph: 全部班次、订单、政策与支付均为虚构模拟。
+- heading "Mock 变异开关" [level=3]
+- paragraph: 人为注入缺陷，只影响本浏览器会话；恢复后清空会话再验收。
+- paragraph: 六变异仅在 legacy Mock 模式开放。
+- button "恢复正常模式":
+  - paragraph: 恢复正常模式
+- checkbox "date_offset" [disabled]
+- paragraph: date_offset
+- checkbox "skip_lock" [disabled]
+- paragraph: skip_lock
+- checkbox "repeat_call" [disabled]
+- paragraph: repeat_call
+- checkbox "infinite_loop" [disabled]
+- paragraph: infinite_loop
+- checkbox "route_error" [disabled]
+- paragraph: route_error
+- checkbox "no_citation" [disabled]
+- paragraph: no_citation
+- paragraph: 当前变异： 无
+- paragraph: 会话 ID：web-dfd1025e
+- paragraph: 成员 A · 开发交付；真实模型联网验证状态请查交接证据。
+- banner:
+  - button "Deploy":
+    - generic: Deploy
+  - button "Main menu":
+- generic: YOUR JOURNEY, TRACEABLE.
+- heading "把每一步出行，都变得清晰。" [level=1]:
+  - text: 把每一步出行，都变得清晰。
+  - link "Link to heading":
+    - /url: "#3b49d17e"
+- paragraph: 模拟查票与政策咨询，让工具结果成为回答的依据。
+- paragraph:
+  - generic: ● DeepSeek Live · 只读 · V3
+- paragraph: 当前模型提供者：deepseek / deepseek-flash | 后端模式：纯函数(mock_core)
+- status:
+  - paragraph: 当前页面配置为联网模型；业务仍为虚构模拟。DeepSeek 已于 2026-10-16 验证 query_tickets、search_policy 两个 Live 工具；其余六个工具未开放 Live。该结论来自已保存的历史记录，不表示本轮实时调用或正式测试通过。
+- tablist:
+  - tab "对话与工具" [selected]:
+    - paragraph: 对话与工具
+  - tab "历史记录回放":
+    - paragraph: 历史记录回放
+  - tab "核心代码导览":
+    - paragraph: 核心代码导览
+- tabpanel "对话与工具":
+  - heading "对话" [level=3]:
+    - text: 对话
+    - link "Link to heading":
+      - /url: "#e1778110"
+  - generic: 👤
+  - generic "Chat message from user":
+    - paragraph: 查明天上海到杭州的高铁二等座，请查询工具结果后列出有余票的车次。
+  - generic: 🎫
+  - generic "Chat message from assistant":
+    - paragraph: Ticket Agent · deepseek_live
+    - paragraph: 已按 2026-10-18（明天）查询上海 → 杭州的高铁二等座，以下车次均有余票：
+    - table:
+      - rowgroup:
+        - row "车次 出发 到达 席别 票价 余票":
+          - columnheader "车次"
+          - columnheader "出发"
+          - columnheader "到达"
+          - columnheader "席别"
+          - columnheader "票价"
+          - columnheader "余票"
+      - rowgroup:
+        - row "G7301 06:00 07:00 二等座 ¥73.0 35 张":
+          - cell "G7301"
+          - cell "06:00"
+          - cell "07:00"
+          - cell "二等座"
+          - cell "¥73.0"
+          - cell "35 张"
+        - row "G7302 09:17 10:17 二等座 ¥73.0 47 张":
+          - cell "G7302"
+          - cell "09:17"
+          - cell "10:17"
+          - cell "二等座"
+          - cell "¥73.0"
+          - cell "47 张"
+        - row "G7303 12:34 13:34 二等座 ¥73.0 51 张":
+          - cell "G7303"
+          - cell "12:34"
+          - cell "13:34"
+          - cell "二等座"
+          - cell "¥73.0"
+          - cell "51 张"
+    - paragraph: 共 3 个车次，二等座均有余票。以上为当前查询到的结果，余票会变动，请以实际为准。
+    - paragraph: 另外说明一下我的能力边界：当前仅支持模拟查票和政策咨询，不能为您锁座、候补、下单或支付。如需了解退改签、儿童票等规则，可以帮您检索政策。
+  - strong: G7303
+  - generic: 二等座 · 2026-10-18
+  - generic: 12:34 → 13:34
+  - generic: 上海 → 杭州
+  - strong: ¥73.0
+  - generic: 余票 51 张
+  - strong: G7302
+  - generic: 二等座 · 2026-10-18
+  - generic: 09:17 → 10:17
+  - generic: 上海 → 杭州
+  - strong: ¥73.0
+  - generic: 余票 47 张
+  - strong: G7301
+  - generic: 二等座 · 2026-10-18
+  - generic: 06:00 → 07:00
+  - generic: 上海 → 杭州
+  - strong: ¥73.0
+  - generic: 余票 35 张
+  - paragraph: 价格与余票来自本轮模拟查询结果；下单后库存可能变化。
+  - generic "keyboard_arrow_right 本会话对话记录":
+    - generic: keyboard_arrow_right
+    - paragraph: 本会话对话记录
+  - paragraph: 快捷场景
+  - combobox "快捷场景": 查明天上海到杭州的高铁
+  - button "Open":
+  - paragraph: 输入消息
+  - textbox "输入消息":
+    - /placeholder: ""
+    - text: 查明天上海到杭州的高铁二等座，请查询工具结果后列出有余票的车次。
+  - button "发送" [active]:
+    - paragraph: 发送
+  - paragraph: 当前仅支持模拟查票和政策咨询；其余六工具未开放 Live。
+  - heading "最新一条 trace" [level=3]:
+    - text: 最新一条 trace
+    - link "Link to heading":
+      - /url: "#trace"
+  - paragraph: 调用次数
+  - paragraph: "1"
+  - paragraph: 总耗时(ms)
+  - paragraph: "4544"
+  - paragraph: 结束原因
+  - paragraph: stop
+  - paragraph: API 报告 Token：输入 1940 / 输出 331
+  - paragraph:
+    - strong: 执行步骤摘要 · 实际工具调用
+  - generic: "1"
+  - text: query_tickets
+  - generic: 查询余票 · 执行成功
+  - generic: 2 ms
+  - paragraph: 工具参数与结果
+  - combobox "工具参数与结果": 1. query_tickets
+  - button "Open":
+  - code:
+    - text: "{ \"from_city\": \"上海\", \"to_city\": \"杭州\", \"date\": \"2026-10-18\", \"seat_type\": \"二等座\", \"kind\": \"高铁\""
+    - text: "}"
+  - generic "keyboard_arrow_right 工具原始结果":
+    - generic: keyboard_arrow_right
+    - paragraph: 工具原始结果
+  - generic "keyboard_arrow_right 工具调用表":
+    - generic: keyboard_arrow_right
+    - paragraph: 工具调用表
+  - generic "keyboard_arrow_right 完整 JSON":
+    - generic: keyboard_arrow_right
+    - paragraph: 完整 JSON
+  - paragraph: stop 表示循环结束；任务是否完成仍需检查回复与工具结果。耗时沿用 Agent 统计口径。
+  - button "下载本轮 Trace":
+    - paragraph: 下载本轮 Trace
+- paragraph: DeepSeek 当前开放 2 个只读工具 · 政策来源可检查 · 会话隔离 · 正式测试评价由成员 B 提供

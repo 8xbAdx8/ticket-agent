@@ -1,0 +1,8 @@
+{
+  "mode": "offline MockTransport fixture",
+  "limit": 2,
+  "mock_transport_calls": 2,
+  "third_request_blocked_before_transport": true,
+  "real_api_requests": 0,
+  "fixture_ledger_used": 2
+}

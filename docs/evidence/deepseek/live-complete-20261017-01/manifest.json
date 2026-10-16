@@ -1,0 +1,25 @@
+{
+  "scope": "working-tree SHA256 before Git newline normalization; excludes manifest and delivery_check",
+  "files": {
+    "budget2_offline_check.json": "57cecc8f89b00503d4b3382b42825cfaa313fa452c8f010f720c0b30e4bb936b",
+    "offline_gate.json": "e401bd6f824ae34db47916a685e92a4cfe3272018121b3bfb90be90c7044fb46",
+    "page-result.txt": "9fe9a89cbc0d0d9ec2ec33379ca46073627c64b61bd5dcc04c44abe5927c7cbb",
+    "preflight.json": "0c4988ed01ee68044714544285e75776cc73fb874bca29608d67d5bfd7a256a7",
+    "process_cleanup.json": "876df8c2037166ed0794ea071a56691e759370a6f55c08ce4263d7f14c5de9e5",
+    "requests.json": "895eb2d077d9c30c420320ac624e03f6b360ed18c11001a88df8f0c1bc4cd8e3",
+    "result.json": "4b8f06fe33f531e364f2c65c0aac479dcd7b7106bcf4950dfd833b893437ef29",
+    "result.png": "112d898e2561dff8c9d50d161500a5dbcdea623bf8696b04b3cbe9118062139e",
+    "offline/a_deepseek_unit.txt": "27db02ddf761b866845d304d018c1d656f6d77db6540a187d7fb95b1c20d115d",
+    "offline/a_legacy_unit.txt": "3a498904c340e08fd527bf5a809ef8b6ed3e8de3dc0a769dfbb6f525f4dffe87",
+    "offline/a_v3_unit.txt": "de2265f935e283287ea8cd1df46382f9ad1484d6862748ee1d428fc0786d41b6",
+    "offline/b_langchain.txt": "a3f75694d7c750cee51ebbe8d6f3d0038b51ccdf8eb316fc4d3b28ae29d37029",
+    "offline/b_legacy.txt": "f1d3a58cd23c39a80d5a1a83222e90e7e14dc261bfc8b5ce16e3d43b0d5fc57c",
+    "offline/b_mutation.txt": "7863122d1e129a5cd0b9778a12a9a92f0ce80408b1dbdecb31d2e5ca912a13da",
+    "offline/b_newcode.txt": "422fe6d3c26acf10a2fe49ab6c382364e9246a9948361ee49e59297753a5a31b",
+    "offline/b_pytest.txt": "e62962c5c5ebdf0efc6097d7770bae46e2cec8243afef28a77bb0d90e3109ff0",
+    "offline/b_test_source_manifest.json": "35e9e5eac937ce94fcf4606407a0d68de80bca54f0c5213872bf9afa023297eb",
+    "offline/verification.json": "22b6ab89febca06ef7a7119c373a35ea052ef63c04fa0cf4fd2b5012c32ce0a7",
+    "traces/deepseek_runs.jsonl": "e4209bf38f8216e4e19ac6d50c1b8c789e3418599a01f9ee9000ba85cb662bf9",
+    "traces/traces.jsonl": "67c568f3c7e137b6eac8db5633b13e0962cf930d0922e80319c5685bb2d6faed"
+  }
+}
