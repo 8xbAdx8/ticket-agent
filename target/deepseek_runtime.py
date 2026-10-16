@@ -104,7 +104,7 @@ def safe_text(text):
 @dataclass(frozen=True)
 class Settings:
     timeout: float = 20
-    max_requests: int = 5
+    max_requests: int = 5  # 0：用户手动使用时不限制累计请求数，仍逐次记账。
     max_output_tokens: int = 512
     max_model_calls: int = 3
     max_tool_calls: int = 4
@@ -122,7 +122,7 @@ class Settings:
             turn_token_budget=int(os.getenv("DEEPSEEK_TURN_TOKEN_BUDGET", "12000")),
             max_payload_bytes=int(os.getenv("DEEPSEEK_MAX_PAYLOAD_BYTES", "32000")),
             ledger_path=Path(os.getenv("DEEPSEEK_BUDGET_PATH",str(cls.ledger_path))))
-        bounds = {"timeout":(1,60),"max_requests":(1,5),"max_output_tokens":(16,1024),
+        bounds = {"timeout":(1,60),"max_requests":(0,5),"max_output_tokens":(16,1024),
                   "max_model_calls":(1,4),"max_tool_calls":(1,8),"turn_token_budget":(512,32000),
                   "max_payload_bytes":(1000,64000)}
         if any(not low <= values[k] <= high for k,(low,high) in bounds.items()):
@@ -145,7 +145,8 @@ def validate_configuration():
 class RequestBudget:
     """SQLite 事务先占预算再发送；崩溃/超时不退还，防止自动重发。
 
-    同一 ledger 的进程共享上限。人为删除/改路径、其他客户端不受此限制。
+    同一 ledger 的进程共享上限；max_requests=0 显式关闭累计上限，但保留账本。
+    人为删除/改路径、其他客户端不受此限制。
     """
     def __init__(self, settings):
         self.settings = settings
@@ -162,7 +163,7 @@ class RequestBudget:
         try:
             c.execute("BEGIN IMMEDIATE")
             count = c.execute("SELECT COUNT(*) FROM requests").fetchone()[0]
-            if count >= min(5,self.settings.max_requests):
+            if self.settings.max_requests != 0 and count >= min(5,self.settings.max_requests):
                 raise DeepSeekError("request_budget_exhausted")
             row = c.execute("INSERT INTO requests(created,category) VALUES (?,?)",
                             (datetime.now(timezone.utc).isoformat(), "reserved_outcome_unknown"))

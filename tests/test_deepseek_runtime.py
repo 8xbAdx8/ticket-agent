@@ -75,6 +75,50 @@ class DeepSeekRuntimeTests(unittest.TestCase):
         self.assertIsNone(row["prompt"])
         self.assertIsNone(row["completion"])
 
+    def test_zero_limit_allows_more_than_five_requests_and_keeps_recording(self):
+        with patch.dict(os.environ, {"DEEPSEEK_MAX_REQUESTS":"0",
+                                     "DEEPSEEK_THINKING":"disabled",
+                                     "DEEPSEEK_BUDGET_PATH":str(self.settings.ledger_path)}):
+            settings = Settings.from_env()
+        self.assertEqual(settings.max_requests, 0)
+        sent = []
+        def respond(request):
+            sent.append(True)
+            return httpx.Response(200, json={"model":"deepseek-flash",
+                "usage":{"prompt_tokens":2,"completion_tokens":1}})
+        # Recreate the client with the same ledger, as happens after a restart.
+        for count in (5, 2):
+            with guarded_client(settings, transport=httpx.MockTransport(respond)) as client:
+                for _ in range(count):
+                    client.post("https://api.deepseek.com/chat/completions", json=self.payload())
+        snapshot = RequestBudget(settings).snapshot()
+        self.assertEqual(len(sent), 7)
+        self.assertEqual(snapshot["reserved_requests"], 7)
+        self.assertEqual(snapshot["limit"], 0)
+        self.assertTrue(all(row["status"] == 200 and row["prompt"] == 2 for row in snapshot["requests"]))
+        # Re-enabling the original capped configuration blocks further requests,
+        # without discarding any of the seven recorded attempts.
+        with self.assertRaisesRegex(DeepSeekError, "request_budget_exhausted"):
+            RequestBudget(self.settings).reserve()
+        self.assertEqual(RequestBudget(settings).snapshot()["reserved_requests"], 7)
+
+    def test_unlimited_requests_still_reject_write_tools_before_transport(self):
+        settings = Settings(max_requests=0, ledger_path=self.settings.ledger_path)
+        with guarded_client(settings, transport=httpx.MockTransport(lambda r:self.fail("禁止到达网络层"))) as client:
+            for tool in ("lock_seat", "create_order", "pay_order", "cancel_order", "query_order", "monitor_seat"):
+                body = dict(self.payload(), tools=[{"function":{"name":tool}}])
+                with self.assertRaisesRegex(DeepSeekError, "read_only_tools_required"):
+                    client.post("https://api.deepseek.com/chat/completions", json=body)
+        self.assertEqual(RequestBudget(settings).snapshot()["reserved_requests"], 0)
+
+    def test_default_stays_capped_and_negative_limit_is_rejected(self):
+        with patch.dict(os.environ, {"DEEPSEEK_THINKING":"disabled"}):
+            os.environ.pop("DEEPSEEK_MAX_REQUESTS", None)
+            self.assertEqual(Settings.from_env().max_requests, 5)
+            os.environ["DEEPSEEK_MAX_REQUESTS"] = "-1"
+            with self.assertRaisesRegex(DeepSeekError, "invalid_safety_limits"):
+                Settings.from_env()
+
     def test_balance_get_does_not_consume_generation_budget(self):
         with guarded_client(self.settings,transport=httpx.MockTransport(lambda r:httpx.Response(200,json={"is_available":True}))) as client:
             client.get("https://api.deepseek.com/user/balance")
