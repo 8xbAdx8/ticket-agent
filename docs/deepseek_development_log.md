@@ -39,3 +39,12 @@
 - 原件保护、预算只读核对、源码及敏感信息检查见docs/evidence/deepseek/minimal-20261017/acceptance.json。无真实Key、无外网请求、0新模型调用，不改真实账本/上限/历史证据。临时假账本仅在MockTransport测试中使用。
 - 新教程docs/handoff/v3/DeepSeek最小接入与离线验证_20261017.md说明环境变量切换、Key隐藏输入、模型/工具角色、禁止Live发送与预算耗尽的区别。代码就绪不等于现在获准联网，需用户明确授权及可用预算。
 - 本模块源码、报告、自测和新证据同一独立提交，完整SHA见最终回复或本记录Git历史；不推送、不合并main、不打Tag、不创建Release。
+
+## 2026-10-17：用户手动对话取消累计请求次数限制
+
+- 授权：用户明确要求取消五次限制；本轮仅代码和离线验证，0 真实 API 请求。
+- 功能提交 `1c08ccc699fc068df03753e5a4bf6c27615ad11e`，分支 `codex/deepseek-manual-no-total-cap-20261017`；恢复点 `621a9585cf1f495c7750a5f38f9876eb3b75fbf6`。
+- `target/deepseek_runtime.py` 新增 `DEEPSEEK_MAX_REQUESTS=0` 的无限累计次数语义，仍逐次记账；默认五次与旧受限模式保留。`tests/test_deepseek_runtime.py` 新增 3 项测试，验证第六/七次离线桩请求、重新启用上限、六工具拒绝、默认值与非法负数。
+- 实际执行 `.venv-deepseek/Scripts/python.exe scripts/run_deepseek_review_offline.py --out artifacts/runtime/deepseek-request-limit-change-20261017/offline`：新环境125通过；旧V3 93通过/32跳过；旧V2 42通过/83跳过；Mock冒烟通过，0外网尝试。361个原保护文件和本轮数据库/Trace/账本哈希不变。
+- 本机 ignored 启动辅助文件同步设置0，语法检查通过；README、专项说明和离线结果摘要同步更新。尚未验证：改动后的新增真实请求；本次未重跑B正式测试。
+- 对B/C影响：原测试默认配置不变，手动无限模式需显式设置0；不再有累计费用硬上限，但单轮限制、只读保护、超时及零重试不变。详见 `docs/handoff/v3/DeepSeek手动使用取消累计请求限制_20261017.md`。
