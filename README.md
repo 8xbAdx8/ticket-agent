@@ -1,5 +1,11 @@
 # Ticket Agent
 
+## 2026-10-17：DeepSeek最小接入复核
+
+复用现有ChatDeepSeek/create_agent和两工具只读白名单，没有新Provider框架，也没有改Mock或六Mutation。本次仅补DeepSeek完整Trace及已加载Key的脱敏，新增8个离线测试；A自测122通过、legacy Mock101/101、Mutation55/55。旧LangChain判据98/100与恢复点相同，X15/X16规则冲突保留，不宣称B正式全部通过。
+
+**真实API新增0，预算仍5/5；可以手动配置Key，当前不能发送Live。** [最小接入、Mock/DeepSeek切换、隐藏输入Key及离线证据](docs/handoff/v3/DeepSeek最小接入与离线验证_20261017.md)。本节为当前状态，以下为历史开发记录。
+
 ## 2026-10-16：DEF-06 / DEF-07 定向修复
 
 当前仅离线修复购买冲突澄清与只读守卫误报；真实 API 新增0，预算仍5/5。A自测114通过，复用B原判据：legacy101/101、LangChain **98/100**（X15/X16旧判据与本轮新要求冲突，保留失败）、变异55/55、新增专项37通过/3 N/A。**有条件交接，交回成员B独立回归，不宣布V3全部通过。**

@@ -29,3 +29,13 @@
 ## 2026-10-16：只读冻结前最小质量修复
 
 详见 [专项持续记录](readonly_freeze_development_log.md)，源码提交 `e216fdf57ec8f34b84134ba2b30b05e5d6ff5985`。正常返回结构未改；专用只读Prompt、输出拒绝、失败工具留证与状态文案已离线验证。A自测102通过，旧V3 78通过/24跳过，旧环境35通过/67跳过，10冒烟含六变异通过；0新真实API、预算不变、旧证据不覆盖。B正式100条与新Prompt联网回归尚未执行。
+# 2026-10-17：最小接入复核（无新API）
+
+- 原分支codex/ticket-agent-deepseek-live，恢复点2a8da2f867e2356f623816a4d08e4fb9bbc3d37e；新增恢复分支codex/restore-before-minimal-deepseek-20261017，工作分支codex/minimal-deepseek-20261017。用户未跟踪ZIP保留。
+- 已有DeepSeek切换、ChatDeepSeek/create_agent、只读注册、middleware和传输白名单直接复用，不新增框架、配置项或工具。不改legacy/LangChain Mock、六变异、write_authorization及只读守卫判断。
+- 新增tests/test_minimal_deepseek.py先暴露2项凭据回显问题；target/deepseek_runtime.py只补已加载Key脱敏，target/langchain_agent.py只补DeepSeek公开Trace完整脱敏，8项新测试纳入A完整122项自测通过。两个生产文件合计新增11行/删除2行。
+- A实际命令：python scripts/verify_v3_def06_def07_offline.py --b-root artifacts/runtime/def06-def07-4d0b328f/b-rerun --baseline artifacts/runtime/minimal-deepseek-20261017/protected_before.json --out docs/evidence/deepseek/minimal-20261017/regression，使用.venv-deepseek解释器；已验证B保存副本16个判据文件与上轮提交哈希一致。
+- 实际结果：A新SDK122通过；旧V3环境90通过/32跳过；原环境42通过/80跳过；DEF06/07原12测试继续通过；legacy101/101、变异55/55、原pytest101通过、旧专项37通过/3 N/A。旧LangChain判据98/100仍为X15/X16，与恢复点相同，不改判据，不写全部通过。
+- 原件保护、预算只读核对、源码及敏感信息检查见docs/evidence/deepseek/minimal-20261017/acceptance.json。无真实Key、无外网请求、0新模型调用，不改真实账本/上限/历史证据。临时假账本仅在MockTransport测试中使用。
+- 新教程docs/handoff/v3/DeepSeek最小接入与离线验证_20261017.md说明环境变量切换、Key隐藏输入、模型/工具角色、禁止Live发送与预算耗尽的区别。代码就绪不等于现在获准联网，需用户明确授权及可用预算。
+- 本模块源码、报告、自测和新证据同一独立提交，完整SHA见最终回复或本记录Git历史；不推送、不合并main、不打Tag、不创建Release。

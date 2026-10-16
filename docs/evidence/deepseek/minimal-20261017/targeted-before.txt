@@ -1,0 +1,35 @@
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+test_fake_key_construction_never_sends_or_reserves (test_minimal_deepseek.MinimalDeepSeekTests.test_fake_key_construction_never_sends_or_reserves) ... ok
+test_loaded_credential_stays_redacted_if_environment_is_cleared (test_minimal_deepseek.MinimalDeepSeekTests.test_loaded_credential_stays_redacted_if_environment_is_cleared) ... FAIL
+test_missing_key_fails_before_client_or_transport (test_minimal_deepseek.MinimalDeepSeekTests.test_missing_key_fails_before_client_or_transport) ... ok
+test_normal_trace_and_logs_redact_secret_in_all_public_fields (test_minimal_deepseek.MinimalDeepSeekTests.test_normal_trace_and_logs_redact_secret_in_all_public_fields) ... FAIL
+test_six_tools_and_waitlist_alias_cannot_enter_live (test_minimal_deepseek.MinimalDeepSeekTests.test_six_tools_and_waitlist_alias_cannot_enter_live) ... ok
+test_two_readonly_schemas_and_tool_feedback_use_mocktransport (test_minimal_deepseek.MinimalDeepSeekTests.test_two_readonly_schemas_and_tool_feedback_use_mocktransport) ... ok
+test_deepseek_selects_existing_langchain_and_canonical_key_only (test_minimal_deepseek.ProviderSelectionTests.test_deepseek_selects_existing_langchain_and_canonical_key_only) ... ok
+test_default_is_unchanged_legacy_mock (test_minimal_deepseek.ProviderSelectionTests.test_default_is_unchanged_legacy_mock) ... ok
+
+======================================================================
+FAIL: test_loaded_credential_stays_redacted_if_environment_is_cleared (test_minimal_deepseek.MinimalDeepSeekTests.test_loaded_credential_stays_redacted_if_environment_is_cleared)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<project>\tests\test_minimal_deepseek.py", line 138, in test_loaded_credential_stays_redacted_if_environment_is_cleared
+    self.assertFalse(secret in safe_text("diagnostic " + secret), "loaded credential must stay redacted")
+AssertionError: True is not false : loaded credential must stay redacted
+
+======================================================================
+FAIL: test_normal_trace_and_logs_redact_secret_in_all_public_fields (test_minimal_deepseek.MinimalDeepSeekTests.test_normal_trace_and_logs_redact_secret_in_all_public_fields)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<project>\tests\test_minimal_deepseek.py", line 126, in test_normal_trace_and_logs_redact_secret_in_all_public_fields
+    self.assertFalse(secret in json.dumps(result), "credential must not enter returned trace")
+AssertionError: True is not false : credential must not enter returned trace
+
+----------------------------------------------------------------------
+Ran 8 tests in 1.003s
+
+FAILED (failures=2)

@@ -1,0 +1,142 @@
+{
+  "status": "failed",
+  "scope": "A rerun with unchanged B assertions; B independent verdict pending",
+  "base_commit": "2a8da2f867e2356f623816a4d08e4fb9bbc3d37e",
+  "runs": [
+    {
+      "name": "a_deepseek_unit",
+      "exit_code": 0,
+      "command": "python -m unittest discover -s tests -v",
+      "tests": 122,
+      "skipped": 0
+    },
+    {
+      "name": "a_v3_unit",
+      "exit_code": 0,
+      "command": "python -m unittest discover -s tests -v",
+      "tests": 122,
+      "skipped": 32
+    },
+    {
+      "name": "a_legacy_unit",
+      "exit_code": 0,
+      "command": "python -m unittest discover -s tests -v",
+      "tests": 122,
+      "skipped": 80
+    },
+    {
+      "name": "a_smoke",
+      "exit_code": 0,
+      "command": "python scripts/smoke.py --output-dir <new-evidence-directory>\\smoke",
+      "tests": null,
+      "skipped": 0
+    },
+    {
+      "name": "b_legacy",
+      "exit_code": 0,
+      "command": "python -m judge.executor",
+      "tests": null,
+      "skipped": 0
+    },
+    {
+      "name": "b_langchain",
+      "exit_code": 0,
+      "command": "python -m judge.executor",
+      "tests": null,
+      "skipped": 0
+    },
+    {
+      "name": "b_mutation",
+      "exit_code": 0,
+      "command": "python tests/test_mutation.py",
+      "tests": null,
+      "skipped": 0
+    },
+    {
+      "name": "b_newcode",
+      "exit_code": 0,
+      "command": "python verify_newcode_V3frozen.py",
+      "tests": null,
+      "skipped": 0
+    },
+    {
+      "name": "b_pytest",
+      "exit_code": 0,
+      "command": "python -m pytest tests/test_all.py -q -p no:cacheprovider",
+      "tests": null,
+      "skipped": 0
+    },
+    {
+      "name": "a_behavior_examples",
+      "exit_code": 0,
+      "command": "python -c <offline behavior example>",
+      "tests": null,
+      "skipped": 0
+    }
+  ],
+  "counts": {
+    "execution": {
+      "passed": 101,
+      "total": 101,
+      "failed_ids": []
+    },
+    "execution_langchain": {
+      "passed": 98,
+      "total": 100,
+      "failed_ids": [
+        "X15",
+        "X16"
+      ]
+    },
+    "mutation": {
+      "killed": 55,
+      "total": 55
+    },
+    "newcode": {
+      "passed": 37,
+      "failed": 0,
+      "na": 3
+    }
+  },
+  "new_real_api_requests": 0,
+  "blocked_external_network_attempts": 0,
+  "original_budget_modified": false,
+  "protected_project_files": 2421,
+  "protected_B_files": 0,
+  "changed_project_evidence": [],
+  "changed_B_originals": [],
+  "source_sha256": {
+    "config.py": "8de7275f7837e08738bfe7f2f62d91d2c1ccad49c5a11dc031cae6f3cb53e335",
+    "scripts/verify_v3_def06_def07_offline.py": "5dc6bee13cb893ae177221f25f2c97a25f904ec990e5a4d672f583fca5c8bae8",
+    "target/agent.py": "ecc9b1cd510934ced1212047943305d68889f7bc484111fad08ad66b370a225c",
+    "target/deepseek_runtime.py": "4f847b8bcf5c190bcadee9b05929eb75a4865343c50c726068a4b0179ee20ea9",
+    "target/langchain_agent.py": "886002e0924ad46abd43fbfd167a93bebf1d3c5d5101be81d0e009d2340952c6",
+    "target/langchain_model.py": "48d11f535d2aea952b7a4253860dbf37487e3ba594d20fa98410cedc4fd2b1a7",
+    "target/mock_api.py": "18f810e942536affbde0095df84c8cdf7dd30149827ab0febcd8620c9ebd39e5",
+    "target/mock_core.py": "5577979796adf29175f42169d3f2a03370d0b1c7b375fd7cf94ac63b58f1c07d",
+    "target/providers.py": "b6ae4fd324d855599b55dbc64545a35c4c8ec72d7964142d57f32e5bdfa65c43",
+    "target/rag.py": "afa75847e568b31dfca42d73bc4e5be3f02e742e22326e431c2eaeff74beb827",
+    "target/tools.py": "c7e2cadfa549a1b9a1a34b4c987d6708e46425c0bed261dc97a1872c1fea72a3",
+    "target/trace.py": "bc6fb916a255cfaed55eb2cd5479506ead84edbdabecb97f494152e8eae8070e",
+    "target/write_authorization.py": "e84caa65fa17fd2db709339868fcfe60c94f6c3f5828ddeccbb3b93cb86677ea",
+    "target/__init__.py": "4bf3d2f36aecf165b1673c8883c2a18f743e98f3a398a1d6f4fb4301a377a39c",
+    "tests/test_agent.py": "1687d3d1ff5fed26d0a17c8f68f714c79bb4528cbe4ca8d60bfbaa51305e61b5",
+    "tests/test_core.py": "c6a73841510f89d1dc27ec9848286b6a751267b299b045439f4dcf97bb310e3c",
+    "tests/test_deepseek_agent.py": "e4b9b2e2d0734c7168bffa3de8f7d189a5700bcf327979be2d5a5725c885152c",
+    "tests/test_deepseek_api_check.py": "32e4da06c86a7ada2e83de34ea5aab6c3443fdfdc9c3e8713f8ec8b0eb6f88d4",
+    "tests/test_deepseek_readonly_quality.py": "01bfa9b4d7f0c9dfe25bb306bc94484a545303a9f256468b1e4f6a6514e0c417",
+    "tests/test_deepseek_runtime.py": "f0f86333640ee234c84a9822036d04457d1ac73171736dc5ad09f7e09891dedc",
+    "tests/test_langchain_agent.py": "134adc5db65f428c5ea5a302eca5ef153702cf8c02ecf288fea70f398d028455",
+    "tests/test_langchain_live_adapter.py": "cc5898759973275d6bc9eb4b8a6becfd167726dc4febc09d4c014935a4b03e16",
+    "tests/test_langchain_orders.py": "0bb07cabdecf5afd1c2193866e5f0656dff0605effa3fe37d7844a0069f3dc7f",
+    "tests/test_minimal_deepseek.py": "f5b82f79a22291050e68066e9e029c7545fb1aae7c39c15201e3751c6796fae0",
+    "tests/test_provider.py": "fa916162f9d20deb5ad6deb272e0d6f0072481de99108e89d6c2e5b6a0994b57",
+    "tests/test_v2_defects.py": "65fbcafe943f9ee91fc4ac9639357a831e9f7b98d77dfe20427f306cfd262ea1",
+    "tests/test_v2_provider.py": "75ba03aaf278771382f97e11637001cadb61be36055000a032f26040b6a0edee",
+    "tests/test_v3_def06_def07.py": "3840cf23d40aa70389289c3ab789a4d8960f0dd404bbef9aec42d251338d42d3",
+    "tests/test_web.py": "714a7c5aadaf833e9c342e2ce4c27998b396cb9c023ea4cb7e2b87b17e0d68ec",
+    "tests/test_web_live_ui.py": "be055cfc13e6c14240658f781ab6290f834ccf5631cbef3e9f915e81f1dd3264"
+  },
+  "source_unchanged_during_run": true,
+  "b_sources_copied_byte_identically": true
+}

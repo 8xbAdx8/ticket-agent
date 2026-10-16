@@ -1,0 +1,1 @@
+{"status": "passed", "commands": 10, "mock_trace_count": 32, "protected_files_unchanged": true, "evidence_dir": "docs/evidence/deepseek/minimal-20261017/regression/smoke/verification.json"}

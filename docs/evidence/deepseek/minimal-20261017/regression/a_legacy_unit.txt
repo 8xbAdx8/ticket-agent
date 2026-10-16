@@ -1,0 +1,164 @@
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+test_errors_dates_and_sessions (test_agent.AgentTests.test_errors_dates_and_sessions) ... ok
+test_monitor_seat_and_flight (test_agent.AgentTests.test_monitor_seat_and_flight) ... ok
+test_multiturn_and_trace_contract (test_agent.AgentTests.test_multiturn_and_trace_contract) ... ok
+test_six_injected_mutations (test_agent.AgentTests.test_six_injected_mutations) ... ok
+test_authorization_and_passenger_match (test_core.CoreTests.test_authorization_and_passenger_match) ... ok
+test_order_idempotency_refund_and_inventory (test_core.CoreTests.test_order_idempotency_refund_and_inventory) ... ok
+test_pending_cancel_and_expiration (test_core.CoreTests.test_pending_cancel_and_expiration) ... ok
+test_schema_fault_and_monitor_seat (test_core.CoreTests.test_schema_fault_and_monitor_seat) ... ok
+test_http_error_is_not_retried_and_never_leaks_secret_or_body (test_deepseek_agent.DeepSeekAgentTests.test_http_error_is_not_retried_and_never_leaks_secret_or_body) ... skipped 'DeepSeek SDK 仅安装于独立 .venv-deepseek 环境'
+test_live_write_expansion_is_rejected_and_model_cannot_pay (test_deepseek_agent.DeepSeekAgentTests.test_live_write_expansion_is_rejected_and_model_cannot_pay) ... skipped 'DeepSeek SDK 仅安装于独立 .venv-deepseek 环境'
+test_missing_usage_raises_safe_error_without_fake_zero_trace (test_deepseek_agent.DeepSeekAgentTests.test_missing_usage_raises_safe_error_without_fake_zero_trace) ... skipped 'DeepSeek SDK 仅安装于独立 .venv-deepseek 环境'
+test_policy_sources_and_multiturn_context_are_returned_to_sdk (test_deepseek_agent.DeepSeekAgentTests.test_policy_sources_and_multiturn_context_are_returned_to_sdk) ... skipped 'DeepSeek SDK 仅安装于独立 .venv-deepseek 环境'
+test_real_sdk_tool_call_feedback_usage_and_contract (test_deepseek_agent.DeepSeekAgentTests.test_real_sdk_tool_call_feedback_usage_and_contract) ... skipped 'DeepSeek SDK 仅安装于独立 .venv-deepseek 环境'
+test_reasoning_is_not_logged_and_thinking_replay_is_unsupported (test_deepseek_agent.DeepSeekAgentTests.test_reasoning_is_not_logged_and_thinking_replay_is_unsupported) ... skipped 'DeepSeek SDK 仅安装于独立 .venv-deepseek 环境'
+test_streamlit_missing_key_is_clear_and_does_not_fall_back (test_deepseek_agent.DeepSeekAgentTests.test_streamlit_missing_key_is_clear_and_does_not_fall_back) ... skipped 'DeepSeek SDK 仅安装于独立 .venv-deepseek 环境'
+test_streamlit_shows_deepseek_source_and_real_sdk_tool_result (test_deepseek_agent.DeepSeekAgentTests.test_streamlit_shows_deepseek_source_and_real_sdk_tool_result) ... skipped 'DeepSeek SDK 仅安装于独立 .venv-deepseek 环境'
+test_tool_call_count_limit_and_max_model_steps (test_deepseek_agent.DeepSeekAgentTests.test_tool_call_count_limit_and_max_model_steps) ... skipped 'DeepSeek SDK 仅安装于独立 .venv-deepseek 环境'
+test_tool_exception_is_returned_to_sdk_as_failure (test_deepseek_agent.DeepSeekAgentTests.test_tool_exception_is_returned_to_sdk_as_failure) ... skipped 'DeepSeek SDK 仅安装于独立 .venv-deepseek 环境'
+test_authentication_failure_is_failed_not_skipped_and_no_hello (test_deepseek_api_check.ConnectivityScriptTests.test_authentication_failure_is_failed_not_skipped_and_no_hello) ... skipped '原 V2 环境未安装 httpx；检查脚本桩测试在独立环境运行'
+test_connection_only_records_sdk_stub_tokens_and_stops (test_deepseek_api_check.ConnectivityScriptTests.test_connection_only_records_sdk_stub_tokens_and_stops) ... skipped '原 V2 环境未安装 httpx；检查脚本桩测试在独立环境运行'
+test_missing_key_skips_without_http_or_mock_fallback (test_deepseek_api_check.ConnectivityScriptTests.test_missing_key_skips_without_http_or_mock_fallback) ... skipped '原 V2 环境未安装 httpx；检查脚本桩测试在独立环境运行'
+test_all_http_categories_fail_closed_without_retry_or_success_trace (test_deepseek_readonly_quality.ReadOnlyQualityTests.test_all_http_categories_fail_closed_without_retry_or_success_trace) ... skipped '需要独立 DeepSeek SDK 环境；所有传输仍是 MockTransport'
+test_cli_failure_has_exit_two_null_tokens_and_no_fake_normal_record (test_deepseek_readonly_quality.ReadOnlyQualityTests.test_cli_failure_has_exit_two_null_tokens_and_no_fake_normal_record) ... skipped '需要独立 DeepSeek SDK 环境；所有传输仍是 MockTransport'
+test_cli_success_status_is_historical_and_not_full_live_acceptance (test_deepseek_readonly_quality.ReadOnlyQualityTests.test_cli_success_status_is_historical_and_not_full_live_acceptance) ... skipped '需要独立 DeepSeek SDK 环境；所有传输仍是 MockTransport'
+test_exhausted_budget_never_enters_mock_transport (test_deepseek_readonly_quality.ReadOnlyQualityTests.test_exhausted_budget_never_enters_mock_transport) ... skipped '需要独立 DeepSeek SDK 环境；所有传输仍是 MockTransport'
+test_failure_does_not_pollute_followup_protocol_or_other_session (test_deepseek_readonly_quality.ReadOnlyQualityTests.test_failure_does_not_pollute_followup_protocol_or_other_session) ... skipped '需要独立 DeepSeek SDK 环境；所有传输仍是 MockTransport'
+test_false_backend_flag_and_model_false_success_are_not_hidden (test_deepseek_readonly_quality.ReadOnlyQualityTests.test_false_backend_flag_and_model_false_success_are_not_hidden) ... skipped '需要独立 DeepSeek SDK 环境；所有传输仍是 MockTransport'
+test_invitation_is_rejected_and_raw_final_is_preserved_not_rewritten (test_deepseek_readonly_quality.ReadOnlyQualityTests.test_invitation_is_rejected_and_raw_final_is_preserved_not_rewritten) ... skipped '需要独立 DeepSeek SDK 环境；所有传输仍是 MockTransport'
+test_malformed_tool_call_is_auditable_and_never_executes (test_deepseek_readonly_quality.ReadOnlyQualityTests.test_malformed_tool_call_is_auditable_and_never_executes) ... skipped '需要独立 DeepSeek SDK 环境；所有传输仍是 MockTransport'
+test_policy_rules_and_readonly_disclosure_are_not_misclassified (test_deepseek_readonly_quality.ReadOnlyQualityTests.test_policy_rules_and_readonly_disclosure_are_not_misclassified) ... skipped '需要独立 DeepSeek SDK 环境；所有传输仍是 MockTransport'
+test_readonly_prompt_and_unmodified_legitimate_reply (test_deepseek_readonly_quality.ReadOnlyQualityTests.test_readonly_prompt_and_unmodified_legitimate_reply) ... skipped '需要独立 DeepSeek SDK 环境；所有传输仍是 MockTransport'
+test_save_trace_false_does_not_create_failure_or_success_files (test_deepseek_readonly_quality.ReadOnlyQualityTests.test_save_trace_false_does_not_create_failure_or_success_files) ... skipped '需要独立 DeepSeek SDK 环境；所有传输仍是 MockTransport'
+test_timeout_and_connection_failure_do_not_retry_or_refund_reservation (test_deepseek_readonly_quality.ReadOnlyQualityTests.test_timeout_and_connection_failure_do_not_retry_or_refund_reservation) ... skipped '需要独立 DeepSeek SDK 环境；所有传输仍是 MockTransport'
+test_unknown_second_usage_keeps_real_calls_and_only_observed_tokens (test_deepseek_readonly_quality.ReadOnlyQualityTests.test_unknown_second_usage_keeps_real_calls_and_only_observed_tokens) ... skipped '需要独立 DeepSeek SDK 环境；所有传输仍是 MockTransport'
+test_web_readonly_options_and_error_do_not_show_model_false_success (test_deepseek_readonly_quality.ReadOnlyQualityTests.test_web_readonly_options_and_error_do_not_show_model_false_success) ... skipped '需要独立 DeepSeek SDK 环境；所有传输仍是 MockTransport'
+test_balance_get_does_not_consume_generation_budget (test_deepseek_runtime.DeepSeekRuntimeTests.test_balance_get_does_not_consume_generation_budget) ... skipped '原 V2 环境未安装 httpx；安全传输测试在独立环境运行'
+test_configuration_uses_only_canonical_key_and_defaults (test_deepseek_runtime.DeepSeekRuntimeTests.test_configuration_uses_only_canonical_key_and_defaults) ... skipped '原 V2 环境未安装 httpx；安全传输测试在独立环境运行'
+test_error_categories_do_not_leak_body_or_key (test_deepseek_runtime.DeepSeekRuntimeTests.test_error_categories_do_not_leak_body_or_key) ... skipped '原 V2 环境未安装 httpx；安全传输测试在独立环境运行'
+test_global_budget_is_persistent_and_sixth_request_never_reaches_transport (test_deepseek_runtime.DeepSeekRuntimeTests.test_global_budget_is_persistent_and_sixth_request_never_reaches_transport) ... skipped '原 V2 环境未安装 httpx；安全传输测试在独立环境运行'
+test_missing_key_endpoint_and_model_fail_closed (test_deepseek_runtime.DeepSeekRuntimeTests.test_missing_key_endpoint_and_model_fail_closed) ... skipped '原 V2 环境未安装 httpx；安全传输测试在独立环境运行'
+test_read_only_thinking_output_and_host_guards (test_deepseek_runtime.DeepSeekRuntimeTests.test_read_only_thinking_output_and_host_guards) ... skipped '原 V2 环境未安装 httpx；安全传输测试在独立环境运行'
+test_unknown_usage_is_null_in_ledger_not_invented_zero (test_deepseek_runtime.DeepSeekRuntimeTests.test_unknown_usage_is_null_in_ledger_not_invented_zero) ... skipped '原 V2 环境未安装 httpx；安全传输测试在独立环境运行'
+test_unsafe_limits_and_thinking_opt_in_are_rejected (test_deepseek_runtime.DeepSeekRuntimeTests.test_unsafe_limits_and_thinking_opt_in_are_rejected) ... skipped '原 V2 环境未安装 httpx；安全传输测试在独立环境运行'
+test_backend_error_returns_to_model_without_secret (test_langchain_agent.LangChainPrototypeTests.test_backend_error_returns_to_model_without_secret) ... skipped 'LangChain 仅安装在独立 V3 环境'
+test_distinct_sessions_are_isolated (test_langchain_agent.LangChainPrototypeTests.test_distinct_sessions_are_isolated) ... skipped 'LangChain 仅安装在独立 V3 环境'
+test_legacy_and_mutation_behavior_are_retained (test_langchain_agent.LangChainPrototypeTests.test_legacy_and_mutation_behavior_are_retained) ... skipped 'LangChain 仅安装在独立 V3 环境'
+test_live_requires_key_before_network (test_langchain_agent.LangChainPrototypeTests.test_live_requires_key_before_network) ... skipped 'LangChain 仅安装在独立 V3 环境'
+test_model_budget_and_recovery_are_not_graph_node_count (test_langchain_agent.LangChainPrototypeTests.test_model_budget_and_recovery_are_not_graph_node_count) ... skipped 'LangChain 仅安装在独立 V3 环境'
+test_model_exception_is_safe_and_returns_stop (test_langchain_agent.LangChainPrototypeTests.test_model_exception_is_safe_and_returns_stop) ... skipped 'LangChain 仅安装在独立 V3 环境'
+test_multiturn_kind_date_and_seat_inheritance (test_langchain_agent.LangChainPrototypeTests.test_multiturn_kind_date_and_seat_inheritance) ... skipped 'LangChain 仅安装在独立 V3 环境'
+test_original_schema_and_invalid_arguments (test_langchain_agent.LangChainPrototypeTests.test_original_schema_and_invalid_arguments) ... skipped 'LangChain 仅安装在独立 V3 环境'
+test_policy_returns_checkable_source (test_langchain_agent.LangChainPrototypeTests.test_policy_returns_checkable_source) ... skipped 'LangChain 仅安装在独立 V3 环境'
+test_reset_removes_framework_thread_state (test_langchain_agent.LangChainPrototypeTests.test_reset_removes_framework_thread_state) ... skipped 'LangChain 仅安装在独立 V3 环境'
+test_single_query_runs_framework_and_feedback (test_langchain_agent.LangChainPrototypeTests.test_single_query_runs_framework_and_feedback) ... skipped 'LangChain 仅安装在独立 V3 环境'
+test_trace_jsonl_equals_return_value (test_langchain_agent.LangChainPrototypeTests.test_trace_jsonl_equals_return_value) ... skipped 'LangChain 仅安装在独立 V3 环境'
+test_unknown_tool_is_an_actual_failed_trace_call (test_langchain_agent.LangChainPrototypeTests.test_unknown_tool_is_an_actual_failed_trace_call) ... skipped 'LangChain 仅安装在独立 V3 环境'
+test_sdk_error_is_safe_and_next_turn_can_recover (test_langchain_live_adapter.LangChainLiveAdapterTests.test_sdk_error_is_safe_and_next_turn_can_recover) ... skipped 'LangChain 仅安装在独立 V3 环境'
+test_sdk_request_tool_schema_call_id_feedback_and_tokens (test_langchain_live_adapter.LangChainLiveAdapterTests.test_sdk_request_tool_schema_call_id_feedback_and_tokens) ... skipped 'LangChain 仅安装在独立 V3 环境'
+test_all_schemas_reused_and_invalid_mode_rejected (test_langchain_orders.LangChainOrderTests.test_all_schemas_reused_and_invalid_mode_rejected) ... skipped 'LangChain 仅安装在独立 V3 环境'
+test_buy_does_not_implicitly_authorize_payment (test_langchain_orders.LangChainOrderTests.test_buy_does_not_implicitly_authorize_payment) ... skipped 'LangChain 仅安装在独立 V3 环境'
+test_create_requires_this_turn_lock (test_langchain_orders.LangChainOrderTests.test_create_requires_this_turn_lock) ... skipped 'LangChain 仅安装在独立 V3 环境'
+test_eight_tools_and_idempotent_payment_and_refund (test_langchain_orders.LangChainOrderTests.test_eight_tools_and_idempotent_payment_and_refund) ... skipped 'LangChain 仅安装在独立 V3 环境'
+test_foreign_user_query_stays_denied (test_langchain_orders.LangChainOrderTests.test_foreign_user_query_stays_denied) ... skipped 'LangChain 仅安装在独立 V3 环境'
+test_model_cannot_change_order_reference (test_langchain_orders.LangChainOrderTests.test_model_cannot_change_order_reference) ... skipped 'LangChain 仅安装在独立 V3 环境'
+test_model_cannot_pay_policy_question_or_negative_command (test_langchain_orders.LangChainOrderTests.test_model_cannot_pay_policy_question_or_negative_command) ... skipped 'LangChain 仅安装在独立 V3 环境'
+test_monitor_backend_still_requires_sold_out (test_langchain_orders.LangChainOrderTests.test_monitor_backend_still_requires_sold_out) ... skipped 'LangChain 仅安装在独立 V3 环境'
+test_multiple_calls_in_one_model_step_are_serial_and_guarded (test_langchain_orders.LangChainOrderTests.test_multiple_calls_in_one_model_step_are_serial_and_guarded) ... skipped 'LangChain 仅安装在独立 V3 环境'
+test_no_extra_lock_even_if_model_repeats (test_langchain_orders.LangChainOrderTests.test_no_extra_lock_even_if_model_repeats) ... skipped 'LangChain 仅安装在独立 V3 环境'
+test_permission_boundary_is_conservative (test_langchain_orders.LangChainOrderTests.test_permission_boundary_is_conservative) ... skipped 'LangChain 仅安装在独立 V3 环境'
+test_read_only_mode_cannot_execute_orders (test_langchain_orders.LangChainOrderTests.test_read_only_mode_cannot_execute_orders) ... skipped 'LangChain 仅安装在独立 V3 环境'
+test_sold_out_and_no_schedule_are_distinct (test_langchain_orders.LangChainOrderTests.test_sold_out_and_no_schedule_are_distinct) ... skipped 'LangChain 仅安装在独立 V3 环境'
+test_fake_key_construction_never_sends_or_reserves (test_minimal_deepseek.MinimalDeepSeekTests.test_fake_key_construction_never_sends_or_reserves) ... skipped '需要 DeepSeek SDK；仍只使用离线传输'
+test_loaded_credential_stays_redacted_if_environment_is_cleared (test_minimal_deepseek.MinimalDeepSeekTests.test_loaded_credential_stays_redacted_if_environment_is_cleared) ... skipped '需要 DeepSeek SDK；仍只使用离线传输'
+test_missing_key_fails_before_client_or_transport (test_minimal_deepseek.MinimalDeepSeekTests.test_missing_key_fails_before_client_or_transport) ... skipped '需要 DeepSeek SDK；仍只使用离线传输'
+test_normal_trace_and_logs_redact_secret_in_all_public_fields (test_minimal_deepseek.MinimalDeepSeekTests.test_normal_trace_and_logs_redact_secret_in_all_public_fields) ... skipped '需要 DeepSeek SDK；仍只使用离线传输'
+test_six_tools_and_waitlist_alias_cannot_enter_live (test_minimal_deepseek.MinimalDeepSeekTests.test_six_tools_and_waitlist_alias_cannot_enter_live) ... skipped '需要 DeepSeek SDK；仍只使用离线传输'
+test_two_readonly_schemas_and_tool_feedback_use_mocktransport (test_minimal_deepseek.MinimalDeepSeekTests.test_two_readonly_schemas_and_tool_feedback_use_mocktransport) ... skipped '需要 DeepSeek SDK；仍只使用离线传输'
+test_deepseek_selects_existing_langchain_and_canonical_key_only (test_minimal_deepseek.ProviderSelectionTests.test_deepseek_selects_existing_langchain_and_canonical_key_only) ... ok
+test_default_is_unchanged_legacy_mock (test_minimal_deepseek.ProviderSelectionTests.test_default_is_unchanged_legacy_mock) ... ok
+test_ids_usage_and_malformed_json (test_provider.ProviderTests.test_ids_usage_and_malformed_json) ... ok
+test_missing_key (test_provider.ProviderTests.test_missing_key) ... ok
+test_def01_explicit_seat_and_tool_validation (test_v2_defects.V2DefectTests.test_def01_explicit_seat_and_tool_validation) ... ok
+test_def01_reset_seat_on_flight_switch (test_v2_defects.V2DefectTests.test_def01_reset_seat_on_flight_switch) ... ok
+test_def02_ambiguous_mode_and_city_request_clarification (test_v2_defects.V2DefectTests.test_def02_ambiguous_mode_and_city_request_clarification) ... ok
+test_def02_omission_inherits_mode_seat_date_and_route (test_v2_defects.V2DefectTests.test_def02_omission_inherits_mode_seat_date_and_route) ... ok
+test_def02_switch_back_to_rail (test_v2_defects.V2DefectTests.test_def02_switch_back_to_rail) ... ok
+test_def03_available_and_no_match_are_distinct (test_v2_defects.V2DefectTests.test_def03_available_and_no_match_are_distinct) ... ok
+test_def03_mixed_inventory_marks_unsellable_rows (test_v2_defects.V2DefectTests.test_def03_mixed_inventory_marks_unsellable_rows) ... ok
+test_def03_sold_out_is_explicit_without_extra_tool_calls (test_v2_defects.V2DefectTests.test_def03_sold_out_is_explicit_without_extra_tool_calls) ... ok
+test_def04_duplicate_payment_explains_idempotency (test_v2_defects.V2DefectTests.test_def04_duplicate_payment_explains_idempotency) ... ok
+test_def05_explicit_pay_my_order_remains_an_operation (test_v2_defects.V2DefectTests.test_def05_explicit_pay_my_order_remains_an_operation) ... ok
+test_def05_payment_deadline_routes_to_policy_with_p11 (test_v2_defects.V2DefectTests.test_def05_payment_deadline_routes_to_policy_with_p11) ... ok
+test_def05_policy_with_existing_order_never_writes (test_v2_defects.V2DefectTests.test_def05_policy_with_existing_order_never_writes) ... ok
+test_def05_purchase_without_payment_and_compound_purchase_payment (test_v2_defects.V2DefectTests.test_def05_purchase_without_payment_and_compound_purchase_payment) ... ok
+test_sdk_function_result_returns_matching_call_id_and_usage (test_v2_provider.V2ProviderTests.test_sdk_function_result_returns_matching_call_id_and_usage) ... ok
+test_sdk_repeated_requests_hit_configured_limit (test_v2_provider.V2ProviderTests.test_sdk_repeated_requests_hit_configured_limit) ... ok
+test_sdk_tool_error_is_returned_to_model (test_v2_provider.V2ProviderTests.test_sdk_tool_error_is_returned_to_model) ... ok
+test_conflict_clarifies_before_model_or_tools_and_preserves_context (test_v3_def06_def07.PurchaseFlowTests.test_conflict_clarifies_before_model_or_tools_and_preserves_context) ... skipped '需要 LangChain 离线环境'
+test_declined_purchase_does_not_call_model_or_tools (test_v3_def06_def07.PurchaseFlowTests.test_declined_purchase_does_not_call_model_or_tools) ... skipped '需要 LangChain 离线环境'
+test_lock_confirmation_without_route_requests_missing_conditions (test_v3_def06_def07.PurchaseFlowTests.test_lock_confirmation_without_route_requests_missing_conditions) ... skipped '需要 LangChain 离线环境'
+test_lock_only_confirmation_does_not_authorize_create_or_pay (test_v3_def06_def07.PurchaseFlowTests.test_lock_only_confirmation_does_not_authorize_create_or_pay) ... skipped '需要 LangChain 离线环境'
+test_readonly_mode_does_not_offer_to_purchase (test_v3_def06_def07.PurchaseFlowTests.test_readonly_mode_does_not_offer_to_purchase) ... skipped '需要 LangChain 离线环境'
+test_purchase_intent_is_separate_from_lock_authorization (test_v3_def06_def07.PurchaseIntentTests.test_purchase_intent_is_separate_from_lock_authorization) ... ok
+test_external_channel_final_text_is_not_replaced (test_v3_def06_def07.ReadOnlySDKReplayTests.test_external_channel_final_text_is_not_replaced) ... skipped '需要 DeepSeek SDK；只用 MockTransport'
+test_policy_final_text_is_not_replaced (test_v3_def06_def07.ReadOnlySDKReplayTests.test_policy_final_text_is_not_replaced) ... skipped '需要 DeepSeek SDK；只用 MockTransport'
+test_denials_are_allowed (test_v3_def06_def07.ReadOnlySubjectTests.test_denials_are_allowed) ... ok
+test_external_channels_are_allowed (test_v3_def06_def07.ReadOnlySubjectTests.test_external_channels_are_allowed) ... ok
+test_own_promises_and_completion_are_rejected (test_v3_def06_def07.ReadOnlySubjectTests.test_own_promises_and_completion_are_rejected) ... ok
+test_policy_explanations_are_allowed (test_v3_def06_def07.ReadOnlySubjectTests.test_policy_explanations_are_allowed) ... ok
+test_all_controls_and_restore (test_web.WebTests.test_all_controls_and_restore) ... 2026-10-17 00:32:27.697 WARNING streamlit.runtime.scriptrunner_utils.script_run_context: Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+ok
+test_conversation_and_replay (test_web.WebTests.test_conversation_and_replay) ... 2026-10-17 00:32:31.715 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+ok
+test_cards_match_full_tool_results_and_no_extra_calls (test_web_live_ui.LangChainLiveUITests.test_cards_match_full_tool_results_and_no_extra_calls) ... skipped '原 V2 环境没有 LangChain，框架 UI 在 V3 环境验证'
+test_chat_exception_does_not_present_previous_turn_as_new_result (test_web_live_ui.LangChainLiveUITests.test_chat_exception_does_not_present_previous_turn_as_new_result) ... skipped '原 V2 环境没有 LangChain，框架 UI 在 V3 环境验证'
+test_failure_does_not_show_ticket_cards (test_web_live_ui.LangChainLiveUITests.test_failure_does_not_show_ticket_cards) ... skipped '原 V2 环境没有 LangChain，框架 UI 在 V3 环境验证'
+test_order_policy_payment_and_clear (test_web_live_ui.LangChainLiveUITests.test_order_policy_payment_and_clear) ... skipped '原 V2 环境没有 LangChain，框架 UI 在 V3 环境验证'
+test_cards_match_full_tool_results_and_no_extra_calls (test_web_live_ui.LegacyLiveUITests.test_cards_match_full_tool_results_and_no_extra_calls) ... 2026-10-17 00:32:31.995 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+ok
+test_chat_exception_does_not_present_previous_turn_as_new_result (test_web_live_ui.LegacyLiveUITests.test_chat_exception_does_not_present_previous_turn_as_new_result) ... 2026-10-17 00:32:32.197 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+ok
+test_failure_does_not_show_ticket_cards (test_web_live_ui.LegacyLiveUITests.test_failure_does_not_show_ticket_cards) ... 2026-10-17 00:32:32.396 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+ok
+test_order_policy_payment_and_clear (test_web_live_ui.LegacyLiveUITests.test_order_policy_payment_and_clear) ... 2026-10-17 00:32:32.614 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+ok
+test_initialization_failure_still_allows_trace_replay (test_web_live_ui.PresentationSafetyTests.test_initialization_failure_still_allows_trace_replay) ... 2026-10-17 00:32:32.988 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+ok
+test_mismatched_full_result_is_not_presented (test_web_live_ui.PresentationSafetyTests.test_mismatched_full_result_is_not_presented) ... ok
+test_untrusted_tool_text_is_escaped (test_web_live_ui.PresentationSafetyTests.test_untrusted_tool_text_is_escaped) ... ok
+
+----------------------------------------------------------------------
+Ran 122 tests in 7.216s
+
+OK (skipped=80)

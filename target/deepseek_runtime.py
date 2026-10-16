@@ -92,8 +92,13 @@ def safe_error(exc):
 
 
 def safe_text(text):
-    secret = os.getenv("DEEPSEEK_API_KEY", "")
-    return str(text).replace(secret, "<redacted>") if secret else str(text)
+    secrets = {os.getenv("DEEPSEEK_API_KEY", "")}
+    if config.PROVIDER == "deepseek":
+        secrets.add(config.API_KEY)  # SDK已加载的凭据不能因环境变量随后被清除而失去脱敏。
+    output = str(text)
+    for secret in sorted(secrets - {""}, key=len, reverse=True):
+        output = output.replace(secret, "<redacted>")
+    return output
 
 
 @dataclass(frozen=True)

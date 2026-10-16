@@ -1,0 +1,69 @@
+{
+  "scope": "minimal code integration and offline checks, not new Live validation or B independent acceptance",
+  "restore_sha": "2a8da2f867e2356f623816a4d08e4fb9bbc3d37e",
+  "branch": "codex/minimal-deepseek-20261017",
+  "new_real_api_requests": 0,
+  "production_budget_reserved_requests_readonly": 5,
+  "production_budget_changed": false,
+  "protected_existing_files": 2421,
+  "changed_original_files": [],
+  "unchanged_existing_modules": {
+    "config.py": true,
+    "target/agent.py": true,
+    "target/providers.py": true,
+    "target/langchain_model.py": true,
+    "target/mock_core.py": true,
+    "target/tools.py": true,
+    "target/mock_api.py": true,
+    "target/rag.py": true,
+    "target/write_authorization.py": true,
+    "target/trace.py": true,
+    "docs/contract.md": true,
+    "requirements-deepseek-lock.txt": true
+  },
+  "new_offline_test_methods": 8,
+  "all_sdk_environment_tests": 122,
+  "DEF06_DEF07_methods_passed": 12,
+  "old_assertion_comparison_to_restore": {
+    "legacy_mock_counts_identical": true,
+    "mutation_counts_identical": true,
+    "langchain_old_assertion_failures_identical": true
+  },
+  "source_hashes_match_full_regression": true,
+  "legacy_mock": {
+    "passed": 101,
+    "total": 101,
+    "failed_ids": []
+  },
+  "mutation": {
+    "killed": 55,
+    "total": 55
+  },
+  "langchain_old_B_assertions": {
+    "passed": 98,
+    "total": 100,
+    "failed_ids": [
+      "X15",
+      "X16"
+    ]
+  },
+  "python_syntax_file_count": 76,
+  "syntax_errors": [],
+  "pip_check_exit_code": 0,
+  "scanned_changed_new_text_files": 36,
+  "credential_pattern_hits": [],
+  "broken_new_doc_links": [],
+  "blocked_external_network_attempts": 0,
+  "limitations": [
+    "historical B receive directory unavailable; verified saved 16-file assertion copy used",
+    "old B LangChain X15/X16 still fail due unchanged assertion conflict; full old suite status remains failed",
+    "fake key never used for online authentication; SDK tests use MockTransport",
+    "no credentials validity, provider availability or new model quality verified"
+  ],
+  "code_safety_status": "passed",
+  "source_docs_diff_check_exit_code": 0,
+  "full_diff_check_exit_code": 2,
+  "raw_log_note": "Raw smoke/chat.txt preserves the CLI input prompt trailing space; not trimmed or treated as code failure",
+  "powershell_examples_syntax_parsed": 4,
+  "no_remote_push_or_online_commands_executed": true
+}

@@ -229,6 +229,10 @@ class LangChainAgent:
             self.graph.update_state(run_config,{"messages":[AIMessage(content=reply)]},as_node="model")
         self.last_events = context.events
         result = trace.to_dict()
+        if self.deepseek_settings:
+            from target.deepseek_runtime import safe_text
+            # 仅DeepSeek公开Trace脱敏，覆盖user_msg/工具参数/结果预览；Mock原样返回。
+            result = json.loads(safe_text(json.dumps(result, ensure_ascii=False)))
         if save_trace:
             trace.save(record=result)
             if self.deepseek_settings:
