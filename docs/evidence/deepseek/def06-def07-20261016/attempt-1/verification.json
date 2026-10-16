@@ -1,0 +1,102 @@
+{
+  "status": "failed",
+  "scope": "A rerun with unchanged B assertions; B independent verdict pending",
+  "base_commit": "9f6e551738841874a3a556a45a1c281aa0a1834e",
+  "runs": [
+    {
+      "name": "a_deepseek_unit",
+      "exit_code": 0,
+      "command": "python -m unittest discover -s tests -v",
+      "tests": 112,
+      "skipped": 0
+    },
+    {
+      "name": "a_v3_unit",
+      "exit_code": 0,
+      "command": "python -m unittest discover -s tests -v",
+      "tests": 112,
+      "skipped": 24
+    },
+    {
+      "name": "a_legacy_unit",
+      "exit_code": 0,
+      "command": "python -m unittest discover -s tests -v",
+      "tests": 112,
+      "skipped": 72
+    },
+    {
+      "name": "a_smoke",
+      "exit_code": 0,
+      "command": "python scripts/smoke.py --output-dir <new-evidence-directory>\\smoke",
+      "tests": null,
+      "skipped": 0
+    },
+    {
+      "name": "b_legacy",
+      "exit_code": 0,
+      "command": "python -m judge.executor",
+      "tests": null,
+      "skipped": 0
+    },
+    {
+      "name": "b_langchain",
+      "exit_code": 0,
+      "command": "python -m judge.executor",
+      "tests": null,
+      "skipped": 0
+    },
+    {
+      "name": "b_mutation",
+      "exit_code": 0,
+      "command": "python tests/test_mutation.py",
+      "tests": null,
+      "skipped": 0
+    },
+    {
+      "name": "b_newcode",
+      "exit_code": 0,
+      "command": "python verify_newcode_V3frozen.py",
+      "tests": null,
+      "skipped": 0
+    },
+    {
+      "name": "b_pytest",
+      "exit_code": 0,
+      "command": "python -m pytest tests/test_all.py -q -p no:cacheprovider",
+      "tests": null,
+      "skipped": 0
+    }
+  ],
+  "counts": {
+    "execution": {
+      "passed": 101,
+      "total": 101,
+      "failed_ids": []
+    },
+    "execution_langchain": {
+      "passed": 98,
+      "total": 100,
+      "failed_ids": [
+        "X15",
+        "X16"
+      ]
+    },
+    "mutation": {
+      "killed": 55,
+      "total": 55
+    },
+    "newcode": {
+      "passed": 37,
+      "failed": 0,
+      "na": 3
+    }
+  },
+  "new_real_api_requests": 0,
+  "blocked_external_network_attempts": 0,
+  "original_budget_modified": false,
+  "protected_project_files": 482,
+  "protected_B_files": 279,
+  "changed_project_evidence": [],
+  "changed_B_originals": [],
+  "b_sources_copied_byte_identically": true
+}

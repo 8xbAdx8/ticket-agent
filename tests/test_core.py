@@ -75,7 +75,7 @@ class CoreTests(unittest.TestCase):
             self.assertIn("error", self.invoke(name, order_id=order["order_id"]))
         self.assertIn("error", self.invoke("query_order", phone=config.OTHER_USER_PHONE))
 
-    def test_schema_fault_and_waitlist(self):
+    def test_schema_fault_and_monitor_seat(self):
         for args in ({}, {"from_city":"上海", "to_city":"杭州", "date":"2026-02-30"}):
             self.assertFalse(tools.dispatch("query_tickets", args)[1])
         self.assertFalse(tools.dispatch("__dict__", {})[1])

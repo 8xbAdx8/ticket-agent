@@ -6,6 +6,7 @@ from dataclasses import dataclass, field
 from typing import Any
 from langchain.agents import create_agent
 from langchain.agents.middleware import AgentMiddleware
+from langchain.agents.middleware.types import ModelResponse
 from langchain_core.messages import AIMessage, HumanMessage, ToolMessage
 from langchain_core.tools import StructuredTool
 from langgraph.checkpoint.memory import InMemorySaver
@@ -15,7 +16,7 @@ import config
 from target import tools, providers
 from target.trace import Trace
 from target.langchain_model import LangChainMockModel
-from target.write_authorization import denial
+from target.write_authorization import denial, purchase_clarification
 
 READ_ONLY_TOOLS = ("query_tickets", "search_policy")
 
@@ -40,11 +41,18 @@ class TurnContext:
     lock_ids: set[str] = field(default_factory=set)
     deepseek_settings: Any = None
     tool_calls: int = 0
+    purchase_tools_available: bool = False
 
 
 class ContractMiddleware(AgentMiddleware):
     def wrap_model_call(self, request, handler):
         ctx = request.runtime.context
+        if ctx.model_calls == 0 and ctx.purchase_tools_available and not ctx.deepseek_settings:
+            clarification = purchase_clarification(ctx.user_message)
+            if clarification:
+                # 在模型与工具之前完成澄清；框架仍保存真实用户消息和助手消息。
+                ctx.events.append({"event":"authorization_clarification", "text":clarification})
+                return ModelResponse(result=[AIMessage(content=clarification)])
         if ctx.model_calls >= ctx.max_steps:
             raise ModelStepLimit()
         ctx.current_step = ctx.model_calls
@@ -181,7 +189,8 @@ class LangChainAgent:
         trace = Trace(session_id,message)
         trace.provider = self.provider_name
         limit = min(config.MAX_STEPS,self.deepseek_settings.max_model_calls) if self.deepseek_settings else config.MAX_STEPS
-        context = TurnContext(trace,message,limit,deepseek_settings=self.deepseek_settings)
+        context = TurnContext(trace,message,limit,deepseek_settings=self.deepseek_settings,
+                              purchase_tools_available={"lock_seat","create_order"} <= set(self.tool_names))
         run_config = {"configurable":{"thread_id":session_id},"max_concurrency":1,
                       "recursion_limit":4*config.MAX_STEPS+10}
         self.threads.add(session_id)

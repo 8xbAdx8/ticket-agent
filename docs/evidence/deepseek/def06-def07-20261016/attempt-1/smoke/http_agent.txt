@@ -1,0 +1,9 @@
+[engine] legacy  [provider] mock
+
+[reply] 支付成功，订单 ODe4cbedbf09 已完成，祝您旅途愉快。
+[tools] ['query_tickets', 'lock_seat', 'create_order', 'pay_order']
+  step1 OK  query_tickets({"from_city": "上海", "to_city": "杭州", "date": "2026-10-17", "kind": "高铁", "seat_type": "二等座"}) 64ms
+  step2 OK  lock_seat({"train_no": "G7303", "date": "2026-10-17", "seat_type": "二等座", "passengers": ["张三"]}) 31ms
+  step3 OK  create_order({"lock_id": "LK36ccaa2c", "passenger_ids": ["张三"], "contact": "13800000001"}) 25ms
+  step4 OK  pay_order({"order_id": "ODe4cbedbf09", "pay_type": "alipay"}) 31ms
+[finish] stop  154ms

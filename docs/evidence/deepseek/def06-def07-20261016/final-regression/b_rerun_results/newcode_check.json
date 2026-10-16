@@ -1,0 +1,366 @@
+{
+ "generated": "2026-10-16",
+ "real_api_requests": 0,
+ "records": [
+  {
+   "id": "A01",
+   "group": "只读守卫",
+   "name": "历史真实查票回复（结尾邀请办理订票）",
+   "expect": "raise:read_only_capability_violation",
+   "actual": "pass",
+   "detail": "",
+   "passed": false
+  },
+  {
+   "id": "A02",
+   "group": "只读守卫",
+   "name": "历史真实政策回复（含只读声明）",
+   "expect": "pass",
+   "actual": "pass",
+   "detail": "",
+   "passed": true
+  },
+  {
+   "id": "A03",
+   "group": "只读守卫",
+   "name": "明确拒绝：不支持订票和支付",
+   "expect": "pass",
+   "actual": "pass",
+   "detail": "",
+   "passed": true
+  },
+  {
+   "id": "A04",
+   "group": "只读守卫",
+   "name": "主动邀约：我可以帮您锁定座位并下单",
+   "expect": "raise:read_only_capability_violation",
+   "actual": "raise:read_only_capability_violation",
+   "detail": "read_only_capability_violation",
+   "passed": true
+  },
+  {
+   "id": "A05",
+   "group": "只读守卫",
+   "name": "英文越界：I can book the ticket for you",
+   "expect": "raise:read_only_capability_violation",
+   "actual": "raise:read_only_capability_violation",
+   "detail": "read_only_capability_violation",
+   "passed": true
+  },
+  {
+   "id": "A06",
+   "group": "只读守卫",
+   "name": "声称已办：已为您成功锁定座位",
+   "expect": "raise:read_only_capability_violation",
+   "actual": "raise:read_only_capability_violation",
+   "detail": "read_only_capability_violation",
+   "passed": true
+  },
+  {
+   "id": "A07",
+   "group": "只读守卫",
+   "name": "纯政策解释：锁座后需办理支付（不含邀约）",
+   "expect": "pass",
+   "actual": "pass",
+   "detail": "",
+   "passed": true
+  },
+  {
+   "id": "A08",
+   "group": "只读守卫",
+   "name": "政策解释含'办理'二字（易误报场景）",
+   "expect": "pass",
+   "actual": "pass",
+   "detail": "",
+   "passed": true
+  },
+  {
+   "id": "A09",
+   "group": "只读守卫",
+   "name": "主动询问是否需要办理退票（应拦截）",
+   "expect": "raise:read_only_capability_violation",
+   "actual": "raise:read_only_capability_violation",
+   "detail": "read_only_capability_violation",
+   "passed": true
+  },
+  {
+   "id": "A10",
+   "group": "只读守卫",
+   "name": "指引用户去官方渠道办理（不应拦截）",
+   "expect": "pass",
+   "actual": "pass",
+   "detail": "",
+   "passed": true
+  },
+  {
+   "id": "B01",
+   "group": "配置校验",
+   "name": "官方端点 + deepseek-flash + 有密钥",
+   "expect": "pass",
+   "actual": "pass",
+   "detail": "",
+   "passed": true
+  },
+  {
+   "id": "B02",
+   "group": "配置校验",
+   "name": "非官方端点",
+   "expect": "raise:official_endpoint_required",
+   "actual": "raise:official_endpoint_required",
+   "detail": "official_endpoint_required",
+   "passed": true
+  },
+  {
+   "id": "B03",
+   "group": "配置校验",
+   "name": "模型不是 deepseek-flash",
+   "expect": "raise:deepseek_flash_required",
+   "actual": "raise:deepseek_flash_required",
+   "detail": "deepseek_flash_required",
+   "passed": true
+  },
+  {
+   "id": "B04",
+   "group": "配置校验",
+   "name": "密钥为空",
+   "expect": "raise:missing_DEEPSEEK_API_KEY",
+   "actual": "raise:missing_DEEPSEEK_API_KEY",
+   "detail": "missing_DEEPSEEK_API_KEY",
+   "passed": true
+  },
+  {
+   "id": "B05",
+   "group": "配置校验",
+   "name": "http 明文端点",
+   "expect": "raise:official_endpoint_required",
+   "actual": "raise:official_endpoint_required",
+   "detail": "official_endpoint_required",
+   "passed": true
+  },
+  {
+   "id": "C01",
+   "group": "安全边界",
+   "name": "max_requests=99 越界",
+   "expect": "raise:invalid_safety_limits",
+   "actual": "raise:invalid_safety_limits",
+   "detail": "invalid_safety_limits",
+   "passed": true
+  },
+  {
+   "id": "C02",
+   "group": "安全边界",
+   "name": "思考模式未禁用",
+   "expect": "raise:thinking_mode_not_validated",
+   "actual": "raise:thinking_mode_not_validated",
+   "detail": "thinking_mode_not_validated",
+   "passed": true
+  },
+  {
+   "id": "C03",
+   "group": "安全边界",
+   "name": "max_output_tokens=99999 越界",
+   "expect": "raise:invalid_safety_limits",
+   "actual": "raise:invalid_safety_limits",
+   "detail": "invalid_safety_limits",
+   "passed": true
+  },
+  {
+   "id": "C04",
+   "group": "安全边界",
+   "name": "默认值 5/512/3/4/20s 与说明一致",
+   "expect": "pass",
+   "actual": "pass",
+   "detail": "",
+   "passed": true
+  },
+  {
+   "id": "D01",
+   "group": "请求预算",
+   "name": "满载 5 次后第 6 次",
+   "expect": "raise:request_budget_exhausted",
+   "actual": "raise:request_budget_exhausted",
+   "detail": "request_budget_exhausted",
+   "passed": true
+  },
+  {
+   "id": "D02",
+   "group": "请求预算",
+   "name": "查询快照不建账本、不占预算",
+   "expect": "pass",
+   "actual": "pass",
+   "detail": "",
+   "passed": true
+  },
+  {
+   "id": "D03",
+   "group": "请求预算",
+   "name": "失败请求也记账（防重发）",
+   "expect": "pass",
+   "actual": "pass",
+   "detail": "",
+   "passed": true
+  },
+  {
+   "id": "E01",
+   "group": "脱敏",
+   "name": "safe_text 抹去密钥",
+   "expect": "pass",
+   "actual": "pass",
+   "detail": "",
+   "passed": true
+  },
+  {
+   "id": "E02",
+   "group": "脱敏",
+   "name": "safe_error 只回 category/status，不带原文",
+   "expect": "pass",
+   "actual": "pass",
+   "detail": "",
+   "passed": true
+  },
+  {
+   "id": "E03",
+   "group": "脱敏",
+   "name": "HTTP 401 归类 authentication_failed",
+   "expect": "pass",
+   "actual": "pass",
+   "detail": "",
+   "passed": true
+  },
+  {
+   "id": "F01",
+   "group": "请求守卫",
+   "name": "工具含 lock_seat（非只读）",
+   "expect": "raise:read_only_tools_required",
+   "actual": "raise:read_only_tools_required",
+   "detail": "read_only_tools_required",
+   "passed": true
+  },
+  {
+   "id": "F02",
+   "group": "请求守卫",
+   "name": "非官方端点",
+   "expect": "raise:official_endpoint_required",
+   "actual": "raise:official_endpoint_required",
+   "detail": "official_endpoint_required",
+   "passed": true
+  },
+  {
+   "id": "F03",
+   "group": "请求守卫",
+   "name": "查余额放行且不占预算",
+   "expect": "pass",
+   "actual": "pass",
+   "detail": "",
+   "passed": true
+  },
+  {
+   "id": "F04",
+   "group": "请求守卫",
+   "name": "开启流式",
+   "expect": "raise:streaming_not_validated",
+   "actual": "raise:streaming_not_validated",
+   "detail": "streaming_not_validated",
+   "passed": true
+  },
+  {
+   "id": "F05",
+   "group": "请求守卫",
+   "name": "max_tokens 超限",
+   "expect": "raise:output_token_limit_required",
+   "actual": "raise:output_token_limit_required",
+   "detail": "output_token_limit_required",
+   "passed": true
+  },
+  {
+   "id": "F06",
+   "group": "请求守卫",
+   "name": "请求体超限（合法 JSON 超长）",
+   "expect": "raise:request_payload_limit",
+   "actual": "raise:request_payload_limit",
+   "detail": "request_payload_limit",
+   "passed": true
+  },
+  {
+   "id": "F07",
+   "group": "请求守卫",
+   "name": "模型非 deepseek-flash",
+   "expect": "raise:request_configuration_rejected",
+   "actual": "raise:request_configuration_rejected",
+   "detail": "request_configuration_rejected",
+   "passed": true
+  },
+  {
+   "id": "F08",
+   "group": "请求守卫",
+   "name": "思考模式未禁用",
+   "expect": "raise:request_configuration_rejected",
+   "actual": "raise:request_configuration_rejected",
+   "detail": "request_configuration_rejected",
+   "passed": true
+  },
+  {
+   "id": "F09",
+   "group": "请求守卫",
+   "name": "合法只读请求放行并登记预算",
+   "expect": "pass",
+   "actual": "pass",
+   "detail": "",
+   "passed": true
+  },
+  {
+   "id": "F10",
+   "group": "请求守卫",
+   "name": "命中未放行路径",
+   "expect": "raise:endpoint_not_allowed",
+   "actual": "raise:endpoint_not_allowed",
+   "detail": "endpoint_not_allowed",
+   "passed": true
+  },
+  {
+   "id": "F11",
+   "group": "请求守卫",
+   "name": "非 JSON 请求体抛原生异常（观察项）",
+   "expect": "raise:ValueError",
+   "actual": "raise:ValueError",
+   "detail": "Expecting value: line 1 column 1 (char 0)",
+   "passed": true
+  },
+  {
+   "id": "G01",
+   "group": "引擎守卫",
+   "name": "PROVIDER=deepseek 且 engine=legacy",
+   "expect": "raise:ValueError",
+   "actual": "raise:ValueError",
+   "detail": "DeepSeek 只通过 langchain 引擎接入；请设置 AGENT_ENGINE=langchain",
+   "passed": true
+  },
+  {
+   "id": "G02",
+   "group": "引擎守卫",
+   "name": "PROVIDER=deepseek 且工具集=all",
+   "expect": null,
+   "actual": null,
+   "detail": "未安装 langchain_core，无法实例化；该分支未验证",
+   "passed": null
+  },
+  {
+   "id": "H01",
+   "group": "环境",
+   "name": "真实 httpx 是否安装",
+   "expect": null,
+   "actual": null,
+   "detail": "未安装 → guarded_client 抛 dependency_missing（V2 环境不受影响，符合设计）",
+   "passed": null
+  },
+  {
+   "id": "H02",
+   "group": "环境",
+   "name": "LangChain 引擎变异能力",
+   "expect": null,
+   "actual": null,
+   "detail": "六种变异注入仅 legacy 支持，langchain 会拒绝；本轮仍为覆盖空白",
+   "passed": null
+  }
+ ]
+}

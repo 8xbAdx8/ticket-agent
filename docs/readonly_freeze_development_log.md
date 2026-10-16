@@ -1,5 +1,18 @@
 # V3 只读冻结前质量修复记录
 
+## 2026-10-16：B反馈 DEF-06 / DEF-07 定向修复
+
+- 接手HEAD：9f6e551738841874a3a556a45a1c281aa0a1834e，当前分支codex/ticket-agent-deepseek-live。仅修两个缺陷；模型API仍冻结，0真实请求。
+- 文件：target/deepseek_runtime.py、write_authorization.py、langchain_agent.py、langchain_model.py；新增tests/test_v3_def06_def07.py、scripts/verify_v3_def06_def07_offline.py；示例标签与两个A测试方法名统一monitor_seat；README及A/B/C新补充报告。
+- 原因：只读守卫未区分办理主体及外部渠道；购买/锁座冲突未在模型工具之前澄清。保留原授权及业务前置条件，新增authorization_clarification事件；Mock仅锁座确认不自动下单。
+- 实际验证命令：python scripts/verify_v3_def06_def07_offline.py --b-root <B工程目录> --baseline artifacts/runtime/def06-def07-review/protected_before.json --out docs/evidence/deepseek/def06-def07-20261016/delivery-regression，解释器.venv-deepseek/Scripts/python.exe。
+- A新SDK环境114通过，原V3环境88通过/26跳过，原环境40通过/74跳过；10项冒烟；B原判据隔离复跑legacy101/101、LangChain98/100（T19 N/A）、变异55/55、pytest101 passed、专项37通过/3 N/A。首次迭代结果单独保留attempt-1，没有覆盖。
+- 已知失败：X15要求拒绝锁座时仍调用lock_seat；X16要求旧的“订单已创建/未明确授权”文字，两者与本轮用户明确要求冲突。原样保留失败，不修改B判据，需B独立确认。
+- 中间迭代final-regression暴露历史长邀约A01漏判（36通过/1失败/3 N/A）；保留该失败记录，补充明确Agent主体的长邀约检查和测试后，重新完整运行delivery-regression。原测试断言不降低。
+- 契约及B/C影响：docs/contract.md不变；澄清轮无工具；B需核对新的澄清和下一轮明确授权后锁座路径；C只演示Mock或历史Live回放。正常字段及显式错误留证保持兼容。
+- 原件保护：482项目文件及279个B文件哈希核验，真实账本不变；依赖/语法/敏感检查和详细结果在新证据目录。预算上限不变，未开放其他Live工具，模型真实表现仍待验证。
+- Git：本模块源码、A自测、报告与新证据同一个独立提交，完整SHA见本次最终交付回复及git log -1 --format=%H -- target/deepseek_runtime.py。不合并main、不打Tag、不创建Release。交回成员B独立回归，不由A自己宣布最终通过。
+
 日期：2026-10-16；分支 codex/ticket-agent-deepseek-live；接手 bff292cd79d88b25b72aa4c3880d76d59a9f9786。全程真实 API 请求新增 0，原预算仍 5/5，未开放其他工具。
 
 ## 模块：只读能力、错误轨迹与状态文案

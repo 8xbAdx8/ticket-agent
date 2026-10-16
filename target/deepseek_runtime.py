@@ -32,14 +32,29 @@ READ_ONLY_PROMPT = """你是只读的模拟出行咨询助手。当前只支持 
 
 
 def validate_read_only_reply(reply):
-    """拒绝能力越界的最终文字，不替换成成功回复；不是通用语义安全判定器。"""
+    """按执行主体识别承诺/邀约；政策和外部渠道说明不是本助手执行。
+
+    这是有限的语言规则，不是通用语义安全判定器；拒绝时不改写原回复。
+    """
     action = r"锁座|锁定座位|订票|预订|下单|创建订单|支付|付款|扣款|退票|取消订单|候补|查询订单|查订单"
-    offer = r"(?:我(?:们)?(?:可以|能|来|会)|(?:您|你)(?:可以|可)|请(?:您|你)?(?:先)?(?:锁座|下单|订票|付款)|(?:帮|为)(?:您|你)|需要.{0,12}(?:吗|么)|是否|要不要|办理|继续.{0,8}(?:吗|么))"
+    # “办理”本身不是承诺。先找助手自身的肯定承诺，再判断用户邀约的执行渠道。
+    own_offer = r"(?:我(?:们)?(?:可以|能够|能|来|会|将|要)|本助手(?:可以|能够|会|将)|(?:帮|替|为)(?:您|你))"
+    execution = r"(?:(?:现在|直接|马上|立即|继续|先|再|将|会|来|帮|替|为|您|你|办理|执行|完成|操作|进行|提供|成功))*"
+    invitation = r"(?:您|你)(?:可以|可)|请(?:您|你)?(?:先)?(?:锁座|下单|订票|付款)|需要.{0,12}(?:吗|么)|是否|要不要|继续.{0,8}(?:吗|么)"
+    own_invitation = r"需要(?:我(?:们)?|本助手).{0,60}(?:吗|么)"
+    external = r"(?:通过|前往|到|在|联系).{0,24}(?:官方渠道|官方平台|官网|12306|航空公司|航司|铁路|售票窗口)"
     done = r"(?:已经|已|成功).{0,12}(?:" + action + r")|(?:" + action + r").{0,6}成功"
-    for clause in re.split(r"[。！？!?；;,，\n]|但是|不过|但", reply):
+    # 否定只作用于自己的子句，不能豁免后面的“我可以……”肯定承诺。
+    clauses = re.split(r"[。！？!?；;,，\n]|但是|不过|但|并且|而且|(?=我(?:们)?(?:可以|能够|将|会|来))", reply)
+    for clause in clauses:
         if re.search(r"(?:不支持|不提供|不能|无法|不可|不会|未执行|未办理|没有执行|没有完成|未完成|尚未|不得|禁止|不允许|不能够)", clause):
             continue
-        if re.search(done, clause) or (re.search(action, clause) and re.search(offer, clause)):
+        if not re.search(action, clause):
+            continue
+        if (re.search(done, clause) or re.search(own_invitation, clause)
+                or re.search(own_offer + execution + r"(?:" + action + r")", clause)):
+            raise DeepSeekError("read_only_capability_violation")
+        if re.search(invitation, clause) and not re.search(external, clause):
             raise DeepSeekError("read_only_capability_violation")
     if re.search(r"\b(?:I can|I will|shall I|would you like|let me)\b.{0,60}\b(?:book|reserve|pay|purchase|cancel)\b", reply, re.I):
         raise DeepSeekError("read_only_capability_violation")

@@ -1,0 +1,9 @@
+[engine] legacy  [provider] mock
+
+[reply] 支付成功，订单 ODcb0bbd5d5f 已完成，祝您旅途愉快。
+[tools] ['query_tickets', 'lock_seat', 'create_order', 'pay_order']
+  step1 OK  query_tickets({"from_city": "上海", "to_city": "杭州", "date": "2026-10-17", "kind": "高铁", "seat_type": "二等座"}) 64ms
+  step2 OK  lock_seat({"train_no": "G7303", "date": "2026-10-17", "seat_type": "二等座", "passengers": ["张三"]}) 27ms
+  step3 OK  create_order({"lock_id": "LKbce37f1b", "passenger_ids": ["张三"], "contact": "13800000001"}) 4ms
+  step4 OK  pay_order({"order_id": "ODcb0bbd5d5f", "pay_type": "alipay"}) 19ms
+[finish] stop  118ms

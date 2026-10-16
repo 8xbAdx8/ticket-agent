@@ -1,5 +1,11 @@
 # Ticket Agent
 
+## 2026-10-16：DEF-06 / DEF-07 定向修复
+
+当前仅离线修复购买冲突澄清与只读守卫误报；真实 API 新增0，预算仍5/5。A自测114通过，复用B原判据：legacy101/101、LangChain **98/100**（X15/X16旧判据与本轮新要求冲突，保留失败）、变异55/55、新增专项37通过/3 N/A。**有条件交接，交回成员B独立回归，不宣布V3全部通过。**
+
+[A 修复报告](docs/handoff/v3/A_DEF06_DEF07定向修复报告_20261016.md) · [B 独立复测说明](docs/handoff/v3/B_DEF06_DEF07独立复测说明_20261016.md) · [C 演示补充](docs/handoff/v3/C_DEF06_DEF07演示补充_20261016.md)。以下各阶段成绩属于历史记录，当前状态以本节为准。
+
 项目讲解材料：[代码与功能介绍 阅读打印版](docs/handoff/v3/Ticket_Agent_V3_代码与功能介绍_20261016.html) · [Markdown版](docs/handoff/v3/Ticket_Agent_V3_代码与功能介绍_20261016.md)。
 
 成员 B 新机器接手先读 [B_先读我](B_先读我.md) 和 [安装运行/API Key 详解](docs/handoff/v3/B_安装运行与APIKey配置详解.md)。当前真实 API 仍冻结，教程配置不等于新增请求授权。

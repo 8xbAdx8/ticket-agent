@@ -64,7 +64,7 @@ class AgentTests(unittest.TestCase):
         providers.clear_mutations()
         self.assertRegex(self.agent.chat("clean", "退票手续费怎么算")["reply"], r"P01")
 
-    def test_waitlist_and_flight(self):
+    def test_monitor_seat_and_flight(self):
         wait = self.agent.chat("wait", "抢明天北京到上海的票")
         self.assertEqual(wait["tool_sequence"], ["query_tickets", "monitor_seat"])
         self.assertEqual(wait["finish_reason"], "stop")

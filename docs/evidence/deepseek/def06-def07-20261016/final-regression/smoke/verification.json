@@ -1,0 +1,160 @@
+{
+  "date": "2026-10-16T23:34:01.648250+08:00",
+  "provider": "mock",
+  "version_scope": "V2 A self-validation",
+  "real_model_tested": false,
+  "vector_tested": false,
+  "runs": [
+    {
+      "name": "unit",
+      "command": "python -m unittest discover -s tests -v",
+      "exit_code": 0,
+      "log": "docs/evidence/deepseek/def06-def07-20261016/final-regression/smoke/unit.txt"
+    },
+    {
+      "name": "demo",
+      "command": "python run_demo.py",
+      "exit_code": 0,
+      "log": "docs/evidence/deepseek/def06-def07-20261016/final-regression/smoke/demo.txt"
+    },
+    {
+      "name": "once",
+      "command": "python cli.py once 帮我查明天上海到杭州的高铁",
+      "exit_code": 0,
+      "log": "docs/evidence/deepseek/def06-def07-20261016/final-regression/smoke/once.txt"
+    },
+    {
+      "name": "batch",
+      "command": "python cli.py batch cases/demo.json",
+      "exit_code": 0,
+      "log": "docs/evidence/deepseek/def06-def07-20261016/final-regression/smoke/batch.txt"
+    },
+    {
+      "name": "chat",
+      "command": "python cli.py chat",
+      "exit_code": 0,
+      "log": "docs/evidence/deepseek/def06-def07-20261016/final-regression/smoke/chat.txt"
+    },
+    {
+      "name": "trace",
+      "command": "python cli.py trace",
+      "exit_code": 0,
+      "log": "docs/evidence/deepseek/def06-def07-20261016/final-regression/smoke/trace.txt"
+    },
+    {
+      "name": "python_example",
+      "command": "python scripts/handoff_example.py",
+      "exit_code": 0,
+      "log": "docs/evidence/deepseek/def06-def07-20261016/final-regression/smoke/python_example.txt"
+    },
+    {
+      "name": "http_agent",
+      "command": "python cli.py once 订明天上海到杭州的高铁并支付",
+      "exit_code": 0,
+      "log": "docs/evidence/deepseek/def06-def07-20261016/final-regression/smoke/http_agent.txt"
+    },
+    {
+      "name": "http",
+      "command": "python -m uvicorn target.mock_api:app --host 127.0.0.1 --port <free-port>; HTTP 8 tools",
+      "exit_code": 0,
+      "log": "docs/evidence/deepseek/def06-def07-20261016/final-regression/smoke/http.json"
+    },
+    {
+      "name": "web_health",
+      "command": "python -m streamlit run web/app.py --server.headless=true --server.port=<free-port>",
+      "exit_code": 0,
+      "log": "docs/evidence/deepseek/def06-def07-20261016/final-regression/smoke/web_health.txt"
+    }
+  ],
+  "trace_count": 32,
+  "protected_files_sha256": {
+    "docs/contract.md": "bfe2f8ebf1ec02b831765286652e50344d1cfcc24d5179bd8ffd78fe6e8c0381",
+    "data/tickets.db": "67e6c6e2fb51432dbc4e4c8a97849b2347f5fb811cd2922f6bc9fb06e93cc54e",
+    "traces/traces.jsonl": "3116f84f8c8e1d464441d2548350d2c006cb471509b87c1b3652ab6b4851fc19"
+  },
+  "python": "3.12.14",
+  "versions": {
+    "openai": "3.29.0",
+    "streamlit": "1.65.0",
+    "fastapi": "0.143.0",
+    "uvicorn": "0.54.0",
+    "pandas": "3.0.6",
+    "pytest": "9.1.1"
+  },
+  "source_files_sha256": {
+    "cli.py": "bb5bbe4e4fae0baf852c633f5cfd7d6e158ced40430df37942611b76eba313af",
+    "config.py": "8de7275f7837e08738bfe7f2f62d91d2c1ccad49c5a11dc031cae6f3cb53e335",
+    "run_demo.py": "ad6c79d020c2825b8df6aaeeed8b5d0a578498c84551c4b36ea038fed786f3b3",
+    "target/agent.py": "ecc9b1cd510934ced1212047943305d68889f7bc484111fad08ad66b370a225c",
+    "target/deepseek_runtime.py": "6a3d3346b64f9a756093fedcc092933dc2a33b2fe03ab5652efce9e9587f4447",
+    "target/langchain_agent.py": "6dc8d1efa57f2a218a508dc69226165212a65ee6c74367c5af04fdb4e55113ec",
+    "target/langchain_model.py": "48d11f535d2aea952b7a4253860dbf37487e3ba594d20fa98410cedc4fd2b1a7",
+    "target/mock_api.py": "18f810e942536affbde0095df84c8cdf7dd30149827ab0febcd8620c9ebd39e5",
+    "target/mock_core.py": "5577979796adf29175f42169d3f2a03370d0b1c7b375fd7cf94ac63b58f1c07d",
+    "target/providers.py": "b6ae4fd324d855599b55dbc64545a35c4c8ec72d7964142d57f32e5bdfa65c43",
+    "target/rag.py": "afa75847e568b31dfca42d73bc4e5be3f02e742e22326e431c2eaeff74beb827",
+    "target/tools.py": "c7e2cadfa549a1b9a1a34b4c987d6708e46425c0bed261dc97a1872c1fea72a3",
+    "target/trace.py": "bc6fb916a255cfaed55eb2cd5479506ead84edbdabecb97f494152e8eae8070e",
+    "target/write_authorization.py": "e84caa65fa17fd2db709339868fcfe60c94f6c3f5828ddeccbb3b93cb86677ea",
+    "target/__init__.py": "4bf3d2f36aecf165b1673c8883c2a18f743e98f3a398a1d6f4fb4301a377a39c",
+    "web/app.py": "f5f198387f12559a18de46d827bc3e7e7260a5ce52584c5fa2230ee3d1ec3dd5",
+    "web/presentation.py": "4d25db5a5de11269d6eb0bfe8c791b9a0b8c1534a382f04ef00ebe4b986b95de",
+    "tests/test_agent.py": "1687d3d1ff5fed26d0a17c8f68f714c79bb4528cbe4ca8d60bfbaa51305e61b5",
+    "tests/test_core.py": "c6a73841510f89d1dc27ec9848286b6a751267b299b045439f4dcf97bb310e3c",
+    "tests/test_deepseek_agent.py": "e4b9b2e2d0734c7168bffa3de8f7d189a5700bcf327979be2d5a5725c885152c",
+    "tests/test_deepseek_api_check.py": "32e4da06c86a7ada2e83de34ea5aab6c3443fdfdc9c3e8713f8ec8b0eb6f88d4",
+    "tests/test_deepseek_readonly_quality.py": "01bfa9b4d7f0c9dfe25bb306bc94484a545303a9f256468b1e4f6a6514e0c417",
+    "tests/test_deepseek_runtime.py": "f0f86333640ee234c84a9822036d04457d1ac73171736dc5ad09f7e09891dedc",
+    "tests/test_langchain_agent.py": "134adc5db65f428c5ea5a302eca5ef153702cf8c02ecf288fea70f398d028455",
+    "tests/test_langchain_live_adapter.py": "cc5898759973275d6bc9eb4b8a6becfd167726dc4febc09d4c014935a4b03e16",
+    "tests/test_langchain_orders.py": "0bb07cabdecf5afd1c2193866e5f0656dff0605effa3fe37d7844a0069f3dc7f",
+    "tests/test_provider.py": "fa916162f9d20deb5ad6deb272e0d6f0072481de99108e89d6c2e5b6a0994b57",
+    "tests/test_v2_defects.py": "65fbcafe943f9ee91fc4ac9639357a831e9f7b98d77dfe20427f306cfd262ea1",
+    "tests/test_v2_provider.py": "75ba03aaf278771382f97e11637001cadb61be36055000a032f26040b6a0edee",
+    "tests/test_v3_def06_def07.py": "65b6bde771607c2792908b8e0e84ff06e16e581b15ed836ba8df8624a1c713a4",
+    "tests/test_web.py": "714a7c5aadaf833e9c342e2ce4c27998b396cb9c023ea4cb7e2b87b17e0d68ec",
+    "tests/test_web_live_ui.py": "be055cfc13e6c14240658f781ab6290f834ccf5631cbef3e9f915e81f1dd3264",
+    "scripts/audit_deepseek_live.py": "f211ffb8fc3779dda24d2c4be61ffc61f822f3245b2bc73c55dd0f24b31b0834",
+    "scripts/audit_v2_evidence.py": "6472052af05f397620ca5d483fff4f952ed22f484036eca706169eb6a5b35268",
+    "scripts/build_v3_code_intro.py": "22bfb1b8d4c67dd5b9b88adc10fd8ecf71ef29e316cf3956c6b85452733600b9",
+    "scripts/build_v3_showcase.py": "af7ef5815477f252a77d39368f1d7714b4206a8e57084bd930bde078fd18bbbe",
+    "scripts/capture_v3_actual.py": "4c89177fe071ec09e4703bb0ba7d9679fa55a31ead744ba922a89e0be423c90a",
+    "scripts/capture_v3_live_ui.py": "cb3b7ededa75754b91059032f67fcf774ae26e7bb1b4d7d9b1ad5b500c838d2c",
+    "scripts/check_deepseek_api.py": "662f729c3333e359395d68b11a6b99766143765fec5da955c1973c889130bc00",
+    "scripts/check_deepseek_delivery.py": "0ab3363786cc759cf13fbb618c90c5167a224259ec9b020be64d948cbf7cfc7c",
+    "scripts/check_ticket_handoff_security.py": "b82ee5998abad40639deae33c889cca353ffd0f0a9d988804c24e3e390e3bc88",
+    "scripts/check_v2_handoff.py": "4a744427f3290c8246b71637fde15cebf1345f408102ef0236d31243f04962fc",
+    "scripts/check_v3_handoff.py": "40933bfc87f5ce51824973ecec15de5ab9cf8918dd1e39c1a9191978aad2c35f",
+    "scripts/check_v3_live_ui.py": "25f56c76049768fa1e75a2e0a5eedf0333a26cb20b9ba3d387c6b2810998fe64",
+    "scripts/check_v3_showcase.py": "20261cc86dbcfbfefcc9310214dd5ace45fd97064d0e6787151f04c81ffc1e11",
+    "scripts/compare_v3_modes.py": "20cb68c615787846892a3d6f6ebd4ac7ffb000c8ec2f9a37f47499b6f6d16c5f",
+    "scripts/generate_deepseek_handoff.py": "f1f3bef8117446b281c3dd0c685a3df43d06ce73c4f80d7d839765519bea6899",
+    "scripts/generate_handoff.py": "2d3894f0c43df833f973edeb8f19e28ec642574bbc6ac2314f2d7bf3662f0610",
+    "scripts/generate_v2_handoff.py": "8096cc0644d3ddb920c053ec2045d66b30f27a53a5aa083398f1daf80e618a16",
+    "scripts/generate_v3_handoff.py": "fa76cf93a5575564a5d7d29a47334fe8fc15212746beb25b3ba9f94be0935162",
+    "scripts/handoff_example.py": "f99de82375445f8d515183520c69d6d2b80554e6ce0efa99996f406781a3163d",
+    "scripts/handoff_offline_selftest.py": "c048d6830036282bc91b917f14cdd750e16d578ec99eb87f69c3978bdd9f133c",
+    "scripts/read_legacy_doc.py": "54e3db2af9099e24a94e1a1609f476c380838db1cfc4ded621c789ec40fa4aea",
+    "scripts/reproduce_v2_defects.py": "758b74743d398fa1ad124f5643ca40b22c2861b21d4c5772afa1215f72ab1d9a",
+    "scripts/run_deepseek_review_offline.py": "5b8a12a95cc4170672925ee83cea3a60181d0dc453ac3711d807a11d82d02333",
+    "scripts/run_v2_selftests.py": "f8dbde8a452e12baaff9999473c175fa38c88a83e5935898decbdd169b80d168",
+    "scripts/smoke.py": "4aef20dbedd85286c69b8597f2f3d8c612e119f7d4942194ee843b239f1413e3",
+    "scripts/snapshot_v3_baseline.py": "054fa9ff27e5aed9eb91421cc1d35d9dbb9820ac4f218f9ec0be1d57c338580f",
+    "scripts/v2_api_example.py": "2611546a76f3d4b42e47055239c5bd1a61cd25c3f23842528fd8ede0fdc61a38",
+    "scripts/v3_api_example.py": "184d85fcd9a9ce09769ba19ce00713fd15a1d3b5dc0e4ca415f84de484bf8730",
+    "scripts/validate_langchain_live.py": "c029dd91a0b0ee13e33667437fe7efa791e380a0b0c6ee1a5d94904a5192c2ec",
+    "scripts/validate_real_provider.py": "e4f187083bca34fc7e9622a96f71d659c56fbc01ea0f35bdb5d22d17c6a3b6e9",
+    "scripts/verify_deepseek_offline.py": "5a849853e160cd3cd77a5b300767d8cd14763385244af57dde6bddaabfe3c3af",
+    "scripts/verify_v3.py": "1d8a25e43f7e8e1a1b21f5b889c6d2af99aa717321a73a5022a412bcf5049db8",
+    "scripts/verify_v3_def06_def07_offline.py": "5dc6bee13cb893ae177221f25f2c97a25f904ec990e5a4d672f583fca5c8bae8",
+    "data/seed.py": "669923da4d15cd4798c1af85558bb5c5562d979f09df5417615d60d413bb464c"
+  },
+  "mutation_labels": [
+    "injected:date_offset",
+    "injected:skip_lock",
+    "injected:repeat_call",
+    "injected:infinite_loop",
+    "injected:route_error",
+    "injected:no_citation"
+  ]
+}

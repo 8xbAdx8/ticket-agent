@@ -34,6 +34,15 @@ def permissions(message: str) -> set[str]:
     return granted
 
 
+def purchase_clarification(message: str) -> str | None:
+    """完整工具模式的前置澄清；购买意图不能覆盖明确的锁座否定。"""
+    if "create_order" in permissions(message) and re.search(r"(?:不要|别|不|暂不|先不)\s*(?:锁座|锁定)", message):
+        return "已了解您的购买意图。当前流程必须先锁座才能下单；本轮未锁座、未下单。您是否同意先锁座？"
+    if re.fullmatch(r"(?:请)?(?:不要|别|暂不|先不)(?:买|订票|购票|下单)(?:了|啦)?[。！!\s]*", message.strip()):
+        return "已停止本次购买流程，本轮未执行锁座或下单。"
+    return None
+
+
 def order_reference(message: str, messages) -> set[str]:
     explicit = set(re.findall(r"OD[A-Za-z0-9_]+", message))
     if explicit:

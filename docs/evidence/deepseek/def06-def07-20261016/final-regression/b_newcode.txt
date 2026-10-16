@@ -1,0 +1,68 @@
+====================================================================================================
+  B 对 A 新增代码的离线专项验证　V3 只读冻结版　2026-10-16
+  真实 httpx 已安装：False（未安装时请求守卫用桩件做纯函数验证）
+  真实 API 请求：0 次　真实预算账本：未触碰
+====================================================================================================
+
+--- A 组　validate_read_only_reply 只读话术守卫 ---
+[FAIL] A01  历史真实查票回复（结尾邀请办理订票）                             期望 raise:read_only_capability_violation 实际 pass
+[PASS] A02  历史真实政策回复（含只读声明）                                期望 pass                               实际 pass
+[PASS] A03  明确拒绝：不支持订票和支付                                  期望 pass                               实际 pass
+[PASS] A04  主动邀约：我可以帮您锁定座位并下单                              期望 raise:read_only_capability_violation 实际 raise:read_only_capability_violation
+[PASS] A05  英文越界：I can book the ticket for you             期望 raise:read_only_capability_violation 实际 raise:read_only_capability_violation
+[PASS] A06  声称已办：已为您成功锁定座位                                 期望 raise:read_only_capability_violation 实际 raise:read_only_capability_violation
+[PASS] A07  纯政策解释：锁座后需办理支付（不含邀约）                           期望 pass                               实际 pass
+[PASS] A08  政策解释含'办理'二字（易误报场景）                             期望 pass                               实际 pass
+[PASS] A09  主动询问是否需要办理退票（应拦截）                              期望 raise:read_only_capability_violation 实际 raise:read_only_capability_violation
+[PASS] A10  指引用户去官方渠道办理（不应拦截）                              期望 pass                               实际 pass
+
+--- B 组　validate_configuration 官方端点 / 模型 / 密钥 ---
+[PASS] B01  官方端点 + deepseek-flash + 有密钥                    期望 pass                               实际 pass
+[PASS] B02  非官方端点                                          期望 raise:official_endpoint_required   实际 raise:official_endpoint_required
+[PASS] B03  模型不是 deepseek-flash                            期望 raise:deepseek_flash_required      实际 raise:deepseek_flash_required
+[PASS] B04  密钥为空                                           期望 raise:missing_DEEPSEEK_API_KEY     实际 raise:missing_DEEPSEEK_API_KEY
+[PASS] B05  http 明文端点                                      期望 raise:official_endpoint_required   实际 raise:official_endpoint_required
+
+--- C 组　Settings.from_env 安全边界 ---
+[PASS] C01  max_requests=99 越界                             期望 raise:invalid_safety_limits        实际 raise:invalid_safety_limits
+[PASS] C02  思考模式未禁用                                        期望 raise:thinking_mode_not_validated  实际 raise:thinking_mode_not_validated
+[PASS] C03  max_output_tokens=99999 越界                     期望 raise:invalid_safety_limits        实际 raise:invalid_safety_limits
+[PASS] C04  默认值 5/512/3/4/20s 与说明一致                        期望 pass                               实际 pass
+
+--- D 组　RequestBudget 预算硬上限（临时账本，不碰真实账本） ---
+[PASS] D01  满载 5 次后第 6 次                                   期望 raise:request_budget_exhausted     实际 raise:request_budget_exhausted
+[PASS] D02  查询快照不建账本、不占预算                                  期望 pass                               实际 pass
+[PASS] D03  失败请求也记账（防重发）                                   期望 pass                               实际 pass
+
+--- E 组　safe_text / safe_error 脱敏 ---
+[PASS] E01  safe_text 抹去密钥                                 期望 pass                               实际 pass
+[PASS] E02  safe_error 只回 category/status，不带原文             期望 pass                               实际 pass
+[PASS] E03  HTTP 401 归类 authentication_failed              期望 pass                               实际 pass
+
+--- F 组　guarded_client.before 请求守卫（桩件，未发送任何请求） ---
+[PASS] F01  工具含 lock_seat（非只读）                             期望 raise:read_only_tools_required     实际 raise:read_only_tools_required
+[PASS] F02  非官方端点                                          期望 raise:official_endpoint_required   实际 raise:official_endpoint_required
+[PASS] F03  查余额放行且不占预算                                     期望 pass                               实际 pass
+[PASS] F04  开启流式                                           期望 raise:streaming_not_validated      实际 raise:streaming_not_validated
+[PASS] F05  max_tokens 超限                                  期望 raise:output_token_limit_required  实际 raise:output_token_limit_required
+[PASS] F06  请求体超限（合法 JSON 超长）                              期望 raise:request_payload_limit        实际 raise:request_payload_limit
+[PASS] F07  模型非 deepseek-flash                             期望 raise:request_configuration_rejected 实际 raise:request_configuration_rejected
+[PASS] F08  思考模式未禁用                                        期望 raise:request_configuration_rejected 实际 raise:request_configuration_rejected
+[PASS] F09  合法只读请求放行并登记预算                                  期望 pass                               实际 pass
+[PASS] F10  命中未放行路径                                        期望 raise:endpoint_not_allowed         实际 raise:endpoint_not_allowed
+[PASS] F11  非 JSON 请求体抛原生异常（观察项）                           期望 raise:ValueError                   实际 raise:ValueError
+
+--- G 组　DeepSeek 引擎守卫 ---
+[PASS] G01  PROVIDER=deepseek 且 engine=legacy              期望 raise:ValueError                   实际 raise:ValueError
+[N/A ] G02  PROVIDER=deepseek 且工具集=all                     未安装 langchain_core，无法实例化；该分支未验证
+
+--- H 组　环境事实（不作通过/失败判定） ---
+[N/A ] H01  真实 httpx 是否安装                                  未安装 → guarded_client 抛 dependency_missing（V2 环境不受影响，符合设计）
+[N/A ] H02  LangChain 引擎变异能力                               六种变异注入仅 legacy 支持，langchain 会拒绝；本轮仍为覆盖空白
+
+====================================================================================================
+  新增代码专项验证：通过 36 / 失败 1 / 不适用 3
+  失败项：
+    A01 历史真实查票回复（结尾邀请办理订票） 期望 raise:read_only_capability_violation 实际 pass
+  明细已写入 results/newcode_check.json
+====================================================================================================

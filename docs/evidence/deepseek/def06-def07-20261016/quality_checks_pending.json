@@ -1,0 +1,42 @@
+{
+  "python_syntax_files": 75,
+  "syntax_errors": [],
+  "git_diff_check_exit_code": 0,
+  "pip_check_exit_code": 0,
+  "packages": {
+    "langchain": "1.4.5",
+    "langchain-core": "1.6.10",
+    "langchain-deepseek": "1.1.1",
+    "langgraph": "1.2.15",
+    "httpx": "0.28.1",
+    "openai": "3.29.0",
+    "streamlit": "1.65.0",
+    "pytest": "9.1.1"
+  },
+  "ruff_available": false,
+  "lint_note": "AST syntax and git diff --check executed; standalone ruff not installed, not claimed as run",
+  "changed_text_files_scanned": 96,
+  "known_secret_or_key_pattern_hits": [],
+  "secret_scan_scope": "changed/new text files against known environment credentials and sk- token pattern; no secret values recorded",
+  "broken_new_handoff_links": [
+    {
+      "file": "A_DEF06_DEF07定向修复报告_20261016.md",
+      "target": "../../evidence/deepseek/def06-def07-20261016/delivery-regression/verification.json"
+    },
+    {
+      "file": "B_DEF06_DEF07独立复测说明_20261016.md",
+      "target": "../../evidence/deepseek/def06-def07-20261016/delivery-regression/verification.json"
+    },
+    {
+      "file": "C_DEF06_DEF07演示补充_20261016.md",
+      "target": "../../evidence/deepseek/def06-def07-20261016/delivery-regression/verification.json"
+    }
+  ],
+  "changed_original_project_files": [],
+  "changed_B_files": [],
+  "protected_project_files": 482,
+  "protected_B_files": 279,
+  "real_budget_reserved_requests_readonly": 5,
+  "real_budget_modified": false,
+  "new_real_api_requests": 0
+}
