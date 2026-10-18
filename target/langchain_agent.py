@@ -71,9 +71,8 @@ class ContractMiddleware(AgentMiddleware):
                 raise DeepSeekError("observed_token_budget_exhausted")
         response = handler(request)
         for m in response.result:
-            if ctx.fault_run.config:
-                ctx.fault_run.model_requests.append({"model_step":ctx.model_calls,
-                    "tool_calls":copy.deepcopy(m.tool_calls),"final_text":m.text if not m.tool_calls else None})
+            ctx.fault_run.model_requests.append({"model_step":ctx.model_calls,
+                "tool_calls":copy.deepcopy(m.tool_calls),"final_text":m.text if not m.tool_calls else None})
             usage = getattr(m,"usage_metadata",None) or {}
             if ctx.deepseek_settings:
                 from target.deepseek_runtime import DeepSeekError, safe_text
@@ -134,13 +133,18 @@ class ContractMiddleware(AgentMiddleware):
                 if "create_order" in permissions(ctx.user_message):
                     blocked = None
             executed = False
+            execution_diagnostic={}
             try:
                 if blocked:
                     result,ok = {"error":blocked},False
                 else:
                     executed = True
                     actual_request = request if call == original else request.override(tool_call=call,tool=adapt_tool(name))
-                    response = handler(actual_request)
+                    token=tools.DISPATCH_OBSERVER.set(execution_diagnostic.update)
+                    try:
+                        response = handler(actual_request)
+                    finally:
+                        tools.DISPATCH_OBSERVER.reset(token)
                     try:
                         result = json.loads(response.content)
                     except (ValueError, TypeError):
@@ -161,13 +165,14 @@ class ContractMiddleware(AgentMiddleware):
             ctx.trace.record_call(ctx.current_step,name,args,result,ok,latency)
             entry = {"event":"tool_end","tool":name,"args":copy.deepcopy(args),"call_id":call["id"],
                      "ok":ok,"executed":executed,"execution_index":index,"latency_ms":latency,
-                     "result":copy.deepcopy(result)}
+                     "result":copy.deepcopy(result),"parameter_validation":execution_diagnostic.get("validation",{"status":"unknown"}),"step":ctx.current_step+1}
             ctx.events.append(entry)
+            run.executions.append({**entry,"original_result":original_result})
             if run.config:
-                run.executions.append({**entry,"original_result":original_result})
                 for event in run.events:
                     if event.get("call_id") == call["id"] and event["mutation"] in ("date_offset","route_error","skip_lock"):
                         event["execution"] = {"executed":executed,"ok":ok}
+                        event["related_step"]=ctx.current_step+1
                         event["status"] = "applied" if executed else "blocked"
                         if not executed:
                             event["reason"] = blocked or "执行器拒绝调用"
@@ -228,6 +233,7 @@ class LangChainAgent:
         from target.fault_injection import normalize
         self.mutations = normalize(mutations)
         self.last_fault_report = None
+        self.last_audit_report = None
         self.deepseek_settings = None
         if config.PROVIDER == "deepseek":
             from target.deepseek_runtime import Settings, DeepSeekError
@@ -273,7 +279,7 @@ class LangChainAgent:
         context = TurnContext(trace,message,limit,deepseek_settings=self.deepseek_settings,
                               purchase_tools_available={"lock_seat","create_order"} <= set(self.tool_names))
         from target.fault_injection import FaultRun
-        context.fault_run = FaultRun(self.mutations,session_id,self.provider_name)
+        context.fault_run = FaultRun(self.mutations,session_id,self.provider_name,trace_id=trace.trace_id)
         if self.deepseek_settings and config.MAX_STEPS > self.deepseek_settings.max_model_calls:
             context.model_limit_reason = "model_call_limit"
         if self.mutations:
@@ -316,6 +322,8 @@ class LangChainAgent:
                     save_run_evidence(trace,context.events,error)
                 self.last_fault_report = context.fault_run.save(trace,error=error) if self.mutations and save_trace else (
                     context.fault_run.report(error=error) if self.mutations else None)
+                from target.diagnostics import make_audit
+                self.last_audit_report=make_audit(trace,context.fault_run,events=context.events,error=error,save=save_trace)
                 # 失败轮可能残留未配对 tool_call，不能污染下一轮协议；历史 JSONL 不删除。
                 try:
                     self.reset(session_id)
@@ -335,6 +343,8 @@ class LangChainAgent:
             from target.deepseek_runtime import safe_text
             # 仅DeepSeek公开Trace脱敏，覆盖user_msg/工具参数/结果预览；Mock原样返回。
             result = json.loads(safe_text(json.dumps(result, ensure_ascii=False)))
+        from target.diagnostics import make_audit
+        self.last_audit_report=make_audit(trace,context.fault_run,events=context.events,save=save_trace,public_trace=result)
         if save_trace:
             trace.save(record=result)
             if self.deepseek_settings:

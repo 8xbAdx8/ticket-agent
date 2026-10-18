@@ -49,6 +49,7 @@ class Agent:
         from target.fault_injection import from_env, normalize
         self.mutations = from_env() if mutations is None else normalize(mutations)
         self.last_fault_report = None
+        self.last_audit_report = None
         if self.engine == "langchain":
             # 延迟导入：原 V2 环境不安装 LangChain 也能继续运行。
             from target.langchain_agent import LangChainAgent
@@ -93,6 +94,7 @@ class Agent:
                     return self.langchain_engine.chat(session_id, message, save_trace=save_trace)
                 finally:
                     self.last_fault_report = self.langchain_engine.last_fault_report
+                    self.last_audit_report = self.langchain_engine.last_audit_report
             from target.fault_injection import FaultRun, ACTIVE_LEGACY_RUN
             run = FaultRun(getattr(self.provider,"mutations",{}),session_id,"legacy_mock")
             token = ACTIVE_LEGACY_RUN.set(run)
@@ -104,11 +106,15 @@ class Agent:
     def _chat(self, session_id, message, save_trace):
         messages = self._messages(session_id)
         trace = Trace(session_id, message)
+        from target.fault_injection import ACTIVE_LEGACY_RUN
+        run=ACTIVE_LEGACY_RUN.get()
+        trace.trace_id=run.run_id
         trace.provider = getattr(self.provider, "name", config.PROVIDER)
         messages.append({"role": "user", "content": message})
 
         reply = "抱歉，我没能完成这次操作。"
         for step in range(config.MAX_STEPS):
+            event_start=len(run.events)
             try:
                 msg = self.provider.chat(messages, tools.TOOLS)
                 if not isinstance(msg, dict) or msg.get("role") != "assistant":
@@ -126,6 +132,13 @@ class Agent:
             for key in trace.tokens:
                 trace.tokens[key] += usage.get(key, 0)
             messages.append(msg)
+            run.model_requests.append({"model_step":step+1,"source":"legacy_provider",
+                "tool_calls":[{"id":c["id"],"name":c["name"],"args":c["arguments"]} for c in calls],
+                "final_text":msg.get("content") if not calls else None})
+            for event in run.events[event_start:]:
+                event["related_step"]=step+1
+                relevant=calls or [c for m in run.model_requests[:-1] for c in m["tool_calls"]][-1:]
+                if relevant:event["call_id"]=relevant[0]["id"]
 
             if not msg.get("tool_calls"):
                 reply = msg.get("content") or reply
@@ -134,12 +147,23 @@ class Agent:
 
             for call in msg["tool_calls"]:
                 name, args = call["name"], call["arguments"]
-                result, ok, latency = tools.dispatch(name, args)
+                execution_diagnostic={}
+                token=tools.DISPATCH_OBSERVER.set(execution_diagnostic.update)
+                try:
+                    result, ok, latency = tools.dispatch(name, args)
+                finally:
+                    tools.DISPATCH_OBSERVER.reset(token)
+                import copy
+                original_result=copy.deepcopy(result)
+                if ok and run.config.get("hallucinated_train"):
+                    result=run.result(name,result,call["id"])
                 trace.record_call(step, name, args, result, ok, latency)
                 from target.fault_injection import ACTIVE_LEGACY_RUN
                 run = ACTIVE_LEGACY_RUN.get()
-                if run and run.config:
-                    run.executions.append({"tool":name,"args":args,"result":result,"ok":ok,"call_id":call["id"]})
+                if run:
+                    run.executions.append({"tool":name,"args":copy.deepcopy(args),"result":copy.deepcopy(result),"original_result":original_result,
+                        "ok":ok,"call_id":call["id"],"executed":execution_diagnostic.get("backend_executed",True),
+                        "parameter_validation":execution_diagnostic.get("validation",{"status":"unknown"}),"step":step+1})
                 messages.append({
                     "role": "tool",
                     "tool_call_id": call["id"],
@@ -152,6 +176,8 @@ class Agent:
             trace.abort(reply, "max_steps_exceeded")
 
         out = trace.to_dict()
+        from target.diagnostics import make_audit
+        self.last_audit_report=make_audit(trace,run,save=save_trace,public_trace=out)
         from target.fault_injection import ACTIVE_LEGACY_RUN
         run = ACTIVE_LEGACY_RUN.get()
         self.last_fault_report = run.save(trace) if run and run.config and save_trace else (

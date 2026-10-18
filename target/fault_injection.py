@@ -4,11 +4,14 @@ import json
 import re
 import uuid
 from contextvars import ContextVar
-from datetime import date, timedelta
+from datetime import date, timedelta, datetime, timezone
 
 MUTATION_NAMES = ("date_offset", "skip_lock", "repeat_call", "infinite_loop", "route_error", "no_citation")
+LEGACY_MUTATION_NAMES = MUTATION_NAMES
+MUTATION_NAMES += ("hallucinated_train","concurrent_duplicate_order")
 STAGES = {"date_offset":"tool_arguments", "route_error":"tool_routing", "no_citation":"tool_result",
           "repeat_call":"tool_execution", "infinite_loop":"execution_strategy", "skip_lock":"tool_routing"}
+STAGES.update(hallucinated_train="tool_result",concurrent_duplicate_order="sandbox_concurrent_backend")
 ACTIVE_LEGACY_RUN = ContextVar("ticket_legacy_fault_run", default=None)
 
 
@@ -16,7 +19,7 @@ def normalize(values=None):
     if values is None:
         return {}
     if not isinstance(values, dict) or set(values) - set(MUTATION_NAMES):
-        raise ValueError("变异必须是六种已知标识组成的JSON对象")
+        raise ValueError("变异必须是八种已知标识组成的JSON对象")
     result = {}
     for name, value in values.items():
         if value is False or value == 0:
@@ -39,9 +42,9 @@ def from_env():
 
 
 class FaultRun:
-    def __init__(self, values, session_id, mode):
+    def __init__(self, values, session_id, mode, trace_id=None):
         self.config = normalize(values)
-        self.run_id = uuid.uuid4().hex
+        self.run_id = trace_id or uuid.uuid4().hex
         self.session_id, self.mode = session_id, mode
         self.events = []
         self.executions = []
@@ -50,7 +53,7 @@ class FaultRun:
     def emit(self, name, original=None, mutated=None, *, status="applied", reason=None, **extra):
         event = {"mutation":name,"stage":STAGES[name],"status":status,
                  "original":copy.deepcopy(original),"mutated":copy.deepcopy(mutated),
-                 "reason":reason,**copy.deepcopy(extra)}
+                 "reason":reason,"event_id":uuid.uuid4().hex,"timestamp":datetime.now(timezone.utc).isoformat(),**copy.deepcopy(extra)}
         self.events.append(event)
         return event
 
@@ -80,6 +83,21 @@ class FaultRun:
         return call
 
     def result(self, name, result, call_id):
+        if self.config.get("hallucinated_train") and name == "query_tickets":
+            from target.diagnostics import authority_snapshot
+            import config
+            authority=authority_snapshot(config.DB_PATH)
+            if not authority["available"] or "G9999" in authority["trains"]:
+                self.emit("hallucinated_train",result,result,status="blocked",reason="权威库不可读或G9999已存在",call_id=call_id)
+            elif not isinstance(result,dict) or not result.get("trains"):
+                self.emit("hallucinated_train",result,result,status="not_applicable",reason="无可作为字段模板的真实车次结果",call_id=call_id)
+            else:
+                changed=copy.deepcopy(result)
+                fake=copy.deepcopy(changed["trains"][0]);fake["train_no"]="G9999"
+                changed["trains"].insert(0,fake);changed["count"]=len(changed["trains"])
+                self.emit("hallucinated_train",result,changed,call_id=call_id,target="query_tickets.trains",
+                          authority_absent=True,test_only=True)
+                result=changed
         if not self.config.get("no_citation") or name != "search_policy":
             return result
         if not isinstance(result,dict) or not result.get("hits"):
@@ -103,8 +121,9 @@ class FaultRun:
                 event.update(status="failed",reason="参数或路由已准备，但未到达实际工具执行")
         for name in self.config:
             if not any(e["mutation"] == name for e in events):
-                events.append({"mutation":name,"stage":STAGES[name],"status":"not_triggered",
-                               "original":None,"mutated":None,"reason":"本轮没有到达适用的工具调用点"})
+                events.append({"mutation":name,"stage":STAGES[name],"status":"not_applicable" if name=="concurrent_duplicate_order" else "not_triggered",
+                               "original":None,"mutated":None,"reason":"M8使用独立并发测试执行器，不由模型随机触发" if name=="concurrent_duplicate_order" else "本轮没有到达适用的工具调用点",
+                               "event_id":uuid.uuid4().hex,"timestamp":datetime.now(timezone.utc).isoformat()})
         return {"run_id":self.run_id,"session_id":self.session_id,"mode":self.mode,
                 "mutations":self.config,"injection_events":events,"executions":copy.deepcopy(self.executions),
                 "model_requests":copy.deepcopy(self.model_requests),"finish_reason":finish_reason,"error":error,

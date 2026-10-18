@@ -17,6 +17,7 @@ class Trace:
     """
 
     def __init__(self, session_id=None, user_msg=""):
+        self.trace_id = uuid.uuid4().hex  # 仅旁证使用，不加入原公开十字段。
         self.session_id = session_id or ("S" + uuid.uuid4().hex[:8])
         self.user_msg = user_msg
         self.steps = []

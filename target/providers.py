@@ -25,7 +25,7 @@ ACTION_WORDS = ["抢", "买", "订", "下单", "购", "来一张", "要一张"]
 
 # 变异开关：成员 B 做变异测试时打开，用来验证测试集能否抓到缺陷
 MUTATIONS = {}
-from target.fault_injection import MUTATION_NAMES, legacy_event
+from target.fault_injection import LEGACY_MUTATION_NAMES as MUTATION_NAMES, legacy_event
 
 
 def set_mutation(name, value=True):

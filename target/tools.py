@@ -6,6 +6,8 @@
 """
 import json
 import time
+import copy
+from contextvars import ContextVar
 import urllib.request
 from datetime import date
 
@@ -14,6 +16,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 import config
 from target import mock_core, rag
+DISPATCH_OBSERVER = ContextVar("ticket_dispatch_observer",default=None)
 
 # ---------------- 工具 Schema ----------------
 TOOLS = [
@@ -215,12 +218,20 @@ for _tool in TOOLS:
 def dispatch(name, args):
     """真正执行工具的地方。返回 (result, ok, latency_ms)。"""
     t0 = time.perf_counter()
+    diagnostic = {"validation":{"status":"unknown"},"backend_executed":False}
     try:
         validate(name, args)
+        diagnostic["validation"]={"status":"valid","validated_args":copy.deepcopy(args)}
+        diagnostic["backend_executed"]=True
         result = _call_http(name, args) if config.USE_HTTP_MOCK else _call_local(name, args)
         ok = not (isinstance(result, dict) and "error" in result)
     except Exception as e:
+        if diagnostic["validation"]["status"] == "unknown":
+            diagnostic["validation"]={"status":"invalid","reason":type(e).__name__}
         # 参数错误可以说明；其他异常不回显外部响应、密钥或本机路径。
         result = {"error": str(e) if isinstance(e, ValueError) else f"工具执行失败 ({type(e).__name__})"}
         ok = False
+    observer=DISPATCH_OBSERVER.get()
+    if observer is not None:
+        observer(diagnostic)
     return result, ok, int((time.perf_counter() - t0) * 1000)
