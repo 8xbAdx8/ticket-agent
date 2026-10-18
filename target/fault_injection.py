@@ -44,6 +44,8 @@ class FaultRun:
         self.run_id = uuid.uuid4().hex
         self.session_id, self.mode = session_id, mode
         self.events = []
+        self.executions = []
+        self.model_requests = []
 
     def emit(self, name, original=None, mutated=None, *, status="applied", reason=None, **extra):
         event = {"mutation":name,"stage":STAGES[name],"status":status,
@@ -101,7 +103,8 @@ class FaultRun:
                 events.append({"mutation":name,"stage":STAGES[name],"status":"not_triggered",
                                "original":None,"mutated":None,"reason":"本轮没有到达适用的工具调用点"})
         return {"run_id":self.run_id,"session_id":self.session_id,"mode":self.mode,
-                "mutations":self.config,"injection_events":events,"finish_reason":finish_reason,"error":error,
+                "mutations":self.config,"injection_events":events,"executions":copy.deepcopy(self.executions),
+                "model_requests":copy.deepcopy(self.model_requests),"finish_reason":finish_reason,"error":error,
                 "assessment":{"agent_defect_detected":None,"agent_recovered":None,
                               "note":"由B根据原始轨迹和预先定义的期望独立判定，不等同于注入成功"}}
 
@@ -118,10 +121,10 @@ class FaultRun:
         path.parent.mkdir(parents=True,exist_ok=True)
         with path.open("a",encoding="utf-8") as out:
             out.write(safe_text(json.dumps(report,ensure_ascii=False))+"\n")
-        return report
+        return json.loads(safe_text(json.dumps(report,ensure_ascii=False)))
 
 
-def legacy_event(name, original, mutated):
+def legacy_event(name, original, mutated, **extra):
     run = ACTIVE_LEGACY_RUN.get()
     if run is not None:
-        run.emit(name, original, mutated)
+        run.emit(name, original, mutated, **extra)

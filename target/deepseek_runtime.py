@@ -111,6 +111,8 @@ class Settings:
     turn_token_budget: int = 12000
     max_payload_bytes: int = 32000
     ledger_path: Path = config.BASE_DIR / "artifacts/runtime/deepseek-budget/requests.db"
+    profile: str = "read_only"
+    sandbox_root: Path | None = None
 
     @classmethod
     def from_env(cls):
@@ -129,7 +131,39 @@ class Settings:
             raise DeepSeekError("invalid_safety_limits")
         if os.getenv("DEEPSEEK_THINKING", "disabled") != "disabled":
             raise DeepSeekError("thinking_mode_not_validated")
-        return cls(**values)
+        profile = os.getenv("DEEPSEEK_LIVE_TEST_PROFILE", "read_only")
+        if profile not in ("read_only", "full_sandbox"):
+            raise DeepSeekError("invalid_test_profile")
+        settings = cls(**values, profile=profile,
+                       sandbox_root=Path(os.environ["DEEPSEEK_SANDBOX_DIR"]) if os.getenv("DEEPSEEK_SANDBOX_DIR") else None)
+        if profile == "full_sandbox":
+            validate_sandbox(settings)
+        return settings
+
+
+def validate_sandbox(settings):
+    """全工具仅在显式创建的新本地沙箱；不允许HTTP后端或原始库。"""
+    root = settings.sandbox_root.resolve() if settings.sandbox_root else None
+    base = (config.BASE_DIR / "artifacts/runtime").resolve()
+    if (root is None or not root.is_relative_to(base) or root == base or config.USE_HTTP_MOCK
+            or config.DB_PATH.resolve() != root / "tickets.db"
+            or config.TRACE_DIR.resolve() != root / "traces"
+            or settings.ledger_path.resolve() != root / "requests.db" or settings.max_requests == 0):
+        raise DeepSeekError("isolated_sandbox_required")
+    try:
+        marker = json.loads((root / ".ticket-agent-sandbox.json").read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        raise DeepSeekError("sandbox_marker_required") from None
+    if marker != {"purpose":"ticket-agent-fault-test","version":1,"simulated_only":True}:
+        raise DeepSeekError("sandbox_marker_required")
+
+
+def allowed_tools(settings):
+    if settings.profile == "full_sandbox":
+        validate_sandbox(settings)  # 发送HTTP请求前也重新验证，防止运行中改变配置。
+        from target.tools import TOOL_NAMES
+        return frozenset(TOOL_NAMES)
+    return READ_ONLY
 
 
 def validate_configuration():
@@ -209,7 +243,7 @@ def guarded_client(settings, *, transport=None):
         names = {t.get("function",{}).get("name") for t in body.get("tools",[])}
         if body.get("model") != "deepseek-flash" or body.get("thinking") != {"type":"disabled"}:
             raise DeepSeekError("request_configuration_rejected")
-        if not names <= READ_ONLY:
+        if not names <= allowed_tools(settings):
             raise DeepSeekError("read_only_tools_required")
         if body.get("stream"):
             raise DeepSeekError("streaming_not_validated")

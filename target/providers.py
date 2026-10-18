@@ -25,7 +25,7 @@ ACTION_WORDS = ["抢", "买", "订", "下单", "购", "来一张", "要一张"]
 
 # 变异开关：成员 B 做变异测试时打开，用来验证测试集能否抓到缺陷
 MUTATIONS = {}
-MUTATION_NAMES = ("date_offset", "skip_lock", "repeat_call", "infinite_loop", "route_error", "no_citation")
+from target.fault_injection import MUTATION_NAMES, legacy_event
 
 
 def set_mutation(name, value=True):
@@ -66,7 +66,9 @@ def _parse_date(text, mutations=None):
             d = today + timedelta(days=int(m.group(1))) if m else today + timedelta(days=1)
     mutations = MUTATIONS if mutations is None else mutations
     if mutations.get("date_offset"):
+        original = d.isoformat()
         d = d + timedelta(days=int(mutations["date_offset"]))
+        legacy_event("date_offset",original,d.isoformat(),stage="legacy_date_parser")
     return d.isoformat()
 
 
@@ -167,6 +169,7 @@ class MockProvider:
 
         # 0) 死循环缺陷注入：持续监控不退出（用于验证 R6 能否捕获）
         if last == "monitor_seat" and mut.get("infinite_loop"):
+            legacy_event("infinite_loop","stop after monitor_seat","monitor_seat again",stage="legacy_decision")
             prev = _last_tool_result(messages, "monitor_seat")
             return _as_msg(None, [("monitor_seat", {
                 "train_no": prev.get("train_no", "G101"),
@@ -196,6 +199,7 @@ class MockProvider:
             trains = [t for t in _last_tool_result(messages, "query_tickets").get("trains", [])
                       if t.get("seats_left", 0) > 0]
             if trains and mut.get("skip_lock"):
+                legacy_event("skip_lock","lock_seat","create_order with LK_INJECTED_MISSING",stage="legacy_decision")
                 return _as_msg(None, [("create_order", {"lock_id": "LK_INJECTED_MISSING", "passenger_ids": ["张三"], "contact": config.CURRENT_USER_PHONE})])
             if trains:
                 t = trains[0]
@@ -227,6 +231,7 @@ class MockProvider:
         # 6) 规则类问题走 RAG（可注入"路由错误"缺陷）
         if is_policy_q:
             if mut.get("route_error"):
+                legacy_event("route_error","search_policy","query_tickets",stage="legacy_decision")
                 return _as_msg(None, [("query_tickets", {
                     "from_city": _extract(user_msg, CITIES) or "北京",
                     "to_city": "上海", "date": _parse_date(user_msg, mut)})])
@@ -284,6 +289,7 @@ class MockProvider:
         calls = [("query_tickets", args)]
         if mut.get("repeat_call"):
             calls.append(("query_tickets", args))
+            legacy_event("repeat_call",1,2,stage="legacy_decision")
         return _as_msg(None, calls)
 
     # ---------- 生成最终回复 ----------
@@ -297,6 +303,8 @@ class MockProvider:
                 return "知识库中没有相关政策，我不便作答。（未检索到依据）"
             body = " ".join(h["content"] for h in hits[:2])
             cite = "" if self.mutations.get("no_citation") else "（依据 " + ", ".join(h["doc_id"] for h in hits[:2]) + "）"
+            if self.mutations.get("no_citation"):
+                legacy_event("no_citation",[h["doc_id"] for h in hits[:2]],[],stage="legacy_reply")
             return f"{body}{cite}"
         if kind == "query_tickets":
             trains = r.get("trains", [])

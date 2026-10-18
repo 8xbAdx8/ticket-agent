@@ -25,6 +25,10 @@ class ModelStepLimit(Exception):
     """限制模型实际调用轮数，与 V2 MAX_STEPS 同口径。"""
 
 
+class ForcedLoopStop(ModelStepLimit):
+    """有限监控重入已达到Agent步数上限，没有伪造额外模型调用。"""
+
+
 class BackendToolFailure(Exception):
     def __init__(self, result):
         self.result = result
@@ -42,6 +46,8 @@ class TurnContext:
     deepseek_settings: Any = None
     tool_calls: int = 0
     purchase_tools_available: bool = False
+    fault_run: Any = None
+    model_limit_reason: str = "agent_max_steps"
 
 
 class ContractMiddleware(AgentMiddleware):
@@ -54,6 +60,7 @@ class ContractMiddleware(AgentMiddleware):
                 ctx.events.append({"event":"authorization_clarification", "text":clarification})
                 return ModelResponse(result=[AIMessage(content=clarification)])
         if ctx.model_calls >= ctx.max_steps:
+            ctx.events.append({"event":"termination","reason":ctx.model_limit_reason})
             raise ModelStepLimit()
         ctx.current_step = ctx.model_calls
         ctx.model_calls += 1
@@ -64,6 +71,9 @@ class ContractMiddleware(AgentMiddleware):
                 raise DeepSeekError("observed_token_budget_exhausted")
         response = handler(request)
         for m in response.result:
+            if ctx.fault_run.config:
+                ctx.fault_run.model_requests.append({"model_step":ctx.model_calls,
+                    "tool_calls":copy.deepcopy(m.tool_calls),"final_text":m.text if not m.tool_calls else None})
             usage = getattr(m,"usage_metadata",None) or {}
             if ctx.deepseek_settings:
                 from target.deepseek_runtime import DeepSeekError, safe_text
@@ -87,42 +97,84 @@ class ContractMiddleware(AgentMiddleware):
 
     def wrap_tool_call(self, request, handler):
         ctx = request.runtime.context
-        call = request.tool_call
-        name, args = call["name"], call["args"]
-        started = time.perf_counter()
-        ctx.events.append({"event":"tool_start", "model_step":ctx.current_step+1,
-                           "tool":name, "args":args, "call_id":call["id"]})
-        try:
+        original = copy.deepcopy(request.tool_call)
+        run = ctx.fault_run
+        call = run.arguments(original,ctx.user_message) if run.config else original
+
+        def execute(index):
+            name, args = call["name"], call["args"]
+            started = time.perf_counter()
+            ctx.events.append({"event":"tool_start", "model_step":ctx.current_step+1,
+                "tool":name,"args":copy.deepcopy(args),"call_id":call["id"],"execution_index":index,
+                "model_requested_tool":original["name"],"model_requested_args":original["args"]})
             ctx.tool_calls += 1
-            blocked = ("DeepSeek 当前仅开放两个只读工具" if ctx.deepseek_settings and name not in READ_ONLY_TOOLS else
-                       "达到工具调用次数上限" if ctx.deepseek_settings and ctx.tool_calls > ctx.deepseek_settings.max_tool_calls else
-                       denial(name, args, ctx, request.state["messages"]))
-            if blocked:
-                response = ToolMessage(content=json.dumps({"error":blocked},ensure_ascii=False),
-                                       tool_call_id=call["id"],name=name,status="error")
-            else:
-                response = handler(request)  # LangChain 调度；复用 V2 后端校验/状态机。
+            from target.deepseek_runtime import allowed_tools
+            blocked = ("当前Live工具白名单禁止该工具" if ctx.deepseek_settings and (
+                name not in allowed_tools(ctx.deepseek_settings) or original["name"] not in allowed_tools(ctx.deepseek_settings)) else
+                "达到工具调用次数上限" if ctx.deepseek_settings and ctx.tool_calls > ctx.deepseek_settings.max_tool_calls else
+                denial(name,args,ctx,request.state["messages"]))
+            # skip_lock仅取消本次调用的编排前置检查，仍检查用户购买授权；
+            # 原后端create_order必须实际执行并拒绝不存在的lock_id，不削弱其约束。
+            if (blocked and blocked.startswith("本轮没有该 lock_id") and run.config.get("skip_lock") and original["name"] == "lock_seat"
+                    and name == "create_order" and args.get("lock_id") == "LK_INJECTED_MISSING"
+                    and (not ctx.deepseek_settings or ctx.deepseek_settings.profile == "full_sandbox")):
+                from target.write_authorization import permissions
+                if "create_order" in permissions(ctx.user_message):
+                    blocked = None
+            executed = False
             try:
-                result = json.loads(response.content)
-            except (ValueError, TypeError):
-                result = {"error":response.content} if response.status == "error" else {"result":response.content}
-            ok = response.status != "error" and not (isinstance(result,dict) and "error" in result)
-            if not ok:
-                response = response.model_copy(update={"status":"error"})
-            elif name == "lock_seat":
-                ctx.lock_ids.add(result["lock_id"])
-        except BackendToolFailure as exc:
-            result = exc.result if isinstance(exc.result,dict) and "error" in exc.result else {"error":"后端报告工具执行失败","result":exc.result}
-            ok = False
-            response = ToolMessage(content=json.dumps(result,ensure_ascii=False),tool_call_id=call["id"],name=name,status="error")
-        except Exception as exc:
-            result, ok = {"error":f"工具执行失败 ({type(exc).__name__})"}, False
-            response = ToolMessage(content=json.dumps(result,ensure_ascii=False),tool_call_id=call["id"],name=name,status="error")
-        latency = int((time.perf_counter()-started)*1000)
-        ctx.trace.record_call(ctx.current_step,name,args,result,ok,latency)
-        ctx.events.append({"event":"tool_end", "tool":name,"call_id":call["id"],
-                           "ok":ok,"latency_ms":latency,"result":result})
-        return response
+                if blocked:
+                    result,ok = {"error":blocked},False
+                else:
+                    executed = True
+                    actual_request = request if call == original else request.override(tool_call=call,tool=adapt_tool(name))
+                    response = handler(actual_request)
+                    try:
+                        result = json.loads(response.content)
+                    except (ValueError, TypeError):
+                        result = {"error":response.content} if response.status == "error" else {"result":response.content}
+                    ok = response.status != "error" and not (isinstance(result,dict) and "error" in result)
+                    if ok and name == "lock_seat":
+                        ctx.lock_ids.add(result["lock_id"])
+            except BackendToolFailure as exc:
+                result,ok = exc.result,False
+            except Exception as exc:
+                result,ok = {"error":f"工具执行失败 ({type(exc).__name__})"},False
+            original_result = copy.deepcopy(result)
+            if ok and run.config:
+                result = run.result(name,result,call["id"])
+            latency = int((time.perf_counter()-started)*1000)
+            ctx.trace.record_call(ctx.current_step,name,args,result,ok,latency)
+            entry = {"event":"tool_end","tool":name,"args":copy.deepcopy(args),"call_id":call["id"],
+                     "ok":ok,"executed":executed,"execution_index":index,"latency_ms":latency,
+                     "result":copy.deepcopy(result)}
+            ctx.events.append(entry)
+            if run.config:
+                run.executions.append({**entry,"original_result":original_result})
+            return ToolMessage(content=json.dumps(result,ensure_ascii=False),tool_call_id=call["id"],name=name,
+                               status="success" if ok else "error"),ok,blocked
+
+        first,ok,blocked = execute(1)
+        if run.config.get("repeat_call") and call["name"] == "query_tickets":
+            second,ok2,blocked2 = execute(2)
+            run.emit("repeat_call",1,2 if not blocked2 else 1,status="blocked" if blocked2 else "applied",
+                     reason=blocked2,call_id=call["id"],second_ok=ok2)
+            if not ok2:
+                return second
+        if run.config.get("infinite_loop") and call["name"] == "monitor_seat" and ok:
+            count = 1
+            while count < config.MAX_STEPS:
+                _,success,guard = execute(count+1)
+                if guard or not success:
+                    run.emit("infinite_loop",1,count,status="blocked",reason=guard or "监控工具失败",call_id=call["id"])
+                    from target.deepseek_runtime import DeepSeekError
+                    ctx.events.append({"event":"termination","reason":"tool_call_limit" if guard else "tool_failure"})
+                    raise DeepSeekError("tool_call_limit_exceeded" if guard else "tool_execution_failed")
+                count += 1
+            run.emit("infinite_loop",1,count,call_id=call["id"],reason="有限模拟到达Agent max_steps")
+            ctx.events.append({"event":"termination","reason":"agent_max_steps","actual_tool_executions":count})
+            raise ForcedLoopStop()
+        return first
 
 
 def adapt_tool(name: str) -> StructuredTool:
@@ -137,7 +189,7 @@ def adapt_tool(name: str) -> StructuredTool:
 
 
 class LangChainAgent:
-    def __init__(self, system_prompt: str, *, provider=None, model=None, tool_names=None):
+    def __init__(self, system_prompt: str, *, provider=None, model=None, tool_names=None, mutations=None):
         if config.PROVIDER not in ("mock","openai","deepseek"):
             raise ValueError("AGENT_PROVIDER 只支持 mock/openai/deepseek")
         if providers.MUTATIONS or getattr(provider,"mutations",{}):
@@ -149,12 +201,17 @@ class LangChainAgent:
         if not names or len(set(names)) != len(names) or set(names)-set(tools.TOOL_NAMES):
             raise ValueError("LangChain 工具必须是现有八个工具的非空、不重复子集")
         self.tool_names = names
+        from target.fault_injection import normalize
+        self.mutations = normalize(mutations)
+        self.last_fault_report = None
         self.deepseek_settings = None
         if config.PROVIDER == "deepseek":
             from target.deepseek_runtime import Settings, DeepSeekError
-            if config.LC_TOOLSET != "read_only" or not set(names) <= set(READ_ONLY_TOOLS) or provider is not None:
-                raise DeepSeekError("read_only_tools_required")
             self.deepseek_settings = Settings.from_env()
+            from target.deepseek_runtime import allowed_tools
+            expected = "all" if self.deepseek_settings.profile == "full_sandbox" else "read_only"
+            if config.LC_TOOLSET != expected or not set(names) <= allowed_tools(self.deepseek_settings) or provider is not None:
+                raise DeepSeekError("read_only_tools_required")
         if model is not None:
             self.model = model
         elif config.PROVIDER == "mock":
@@ -170,14 +227,14 @@ class LangChainAgent:
                                     timeout=30,max_retries=0)
         self.provider_name = "deepseek_live" if config.PROVIDER == "deepseek" else (
             "langchain_mock" if config.PROVIDER == "mock" else "langchain_live")
-        if self.deepseek_settings:
+        if self.deepseek_settings and self.deepseek_settings.profile == "read_only":
             from target.deepseek_runtime import READ_ONLY_PROMPT
             # 不继承通用订票/支付指令，避免与只读能力冲突。
             system_prompt = READ_ONLY_PROMPT
         self.checkpointer = InMemorySaver()
         self.graph = create_agent(model=self.model, tools=[adapt_tool(n) for n in names],
                                   system_prompt=system_prompt+f"\n当前北京时间日期 {config.today().isoformat()}；业务全部虚构。"
-                                  + ("" if self.deepseek_settings else
+                                  + ("" if self.deepseek_settings and self.deepseek_settings.profile == "read_only" else
                                   "\n写操作必须获得本轮明确授权；订票不包含支付。锁座一轮至多一次成功，下单必须用本轮成功 lock_id。"
                                   "支付/退票使用用户指定或最近工具结果订单；不明确时先澄清。"),
                                   middleware=[ContractMiddleware()],context_schema=TurnContext,
@@ -191,6 +248,15 @@ class LangChainAgent:
         limit = min(config.MAX_STEPS,self.deepseek_settings.max_model_calls) if self.deepseek_settings else config.MAX_STEPS
         context = TurnContext(trace,message,limit,deepseek_settings=self.deepseek_settings,
                               purchase_tools_available={"lock_seat","create_order"} <= set(self.tool_names))
+        from target.fault_injection import FaultRun
+        context.fault_run = FaultRun(self.mutations,session_id,self.provider_name)
+        if self.deepseek_settings and config.MAX_STEPS > self.deepseek_settings.max_model_calls:
+            context.model_limit_reason = "model_call_limit"
+        if self.mutations:
+            context.events.append({"event":"fault_run","run_id":context.fault_run.run_id,"mutations":self.mutations})
+            for name,tool in (("skip_lock","lock_seat"),("infinite_loop","monitor_seat")):
+                if self.mutations.get(name) and tool not in self.tool_names:
+                    context.fault_run.emit(name,status="not_applicable",reason="当前工具集未开放"+tool)
         run_config = {"configurable":{"thread_id":session_id},"max_concurrency":1,
                       "recursion_limit":4*config.MAX_STEPS+10}
         self.threads.add(session_id)
@@ -202,12 +268,20 @@ class LangChainAgent:
                 from target.deepseek_runtime import DeepSeekError, validate_read_only_reply
                 if any(not c["ok"] for s in trace.steps for c in s["calls"]):
                     raise DeepSeekError("tool_execution_failed")
-                validate_read_only_reply(reply)
+                if self.deepseek_settings.profile == "read_only":
+                    validate_read_only_reply(reply)
+                if self.mutations.get("no_citation") and any(e["mutation"] == "no_citation" and e["status"] == "applied" for e in context.fault_run.events):
+                    import re
+                    if re.search(r"\bP\d+\b",reply):
+                        raise DeepSeekError("unavailable_policy_citation")
             trace.finish(reply,"stop")
-        except (ModelStepLimit,GraphRecursionError):
+        except (ModelStepLimit,GraphRecursionError) as exc:
             reply = "达到最大执行步数，操作尚未完成；请查看工具轨迹。"
             trace.abort(reply,"max_steps_exceeded")
-            self.graph.update_state(run_config,{"messages":[AIMessage(content=reply)]},as_node="model")
+            if isinstance(exc,ForcedLoopStop):
+                self.reset(session_id)
+            else:
+                self.graph.update_state(run_config,{"messages":[AIMessage(content=reply)]},as_node="model")
         except Exception as exc:
             if self.deepseek_settings:
                 from target.deepseek_runtime import DeepSeekError, safe_error, save_run_evidence
@@ -216,6 +290,8 @@ class LangChainAgent:
                 self.last_events = context.events
                 if save_trace:
                     save_run_evidence(trace,context.events,error)
+                self.last_fault_report = context.fault_run.save(trace,error=error) if self.mutations and save_trace else (
+                    context.fault_run.report(error=error) if self.mutations else None)
                 # 失败轮可能残留未配对 tool_call，不能污染下一轮协议；历史 JSONL 不删除。
                 try:
                     self.reset(session_id)
@@ -228,6 +304,8 @@ class LangChainAgent:
             trace.finish(reply,"stop")
             self.graph.update_state(run_config,{"messages":[AIMessage(content=reply)]},as_node="model")
         self.last_events = context.events
+        self.last_fault_report = context.fault_run.save(trace) if self.mutations and save_trace else (
+            context.fault_run.report(finish_reason=trace.finish_reason) if self.mutations else None)
         result = trace.to_dict()
         if self.deepseek_settings:
             from target.deepseek_runtime import safe_text

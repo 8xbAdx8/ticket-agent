@@ -36,7 +36,7 @@ SYSTEM_PROMPT = (
 
 
 class Agent:
-    def __init__(self, provider=None, system_prompt=SYSTEM_PROMPT, *, engine=None, model=None, tool_names=None):
+    def __init__(self, provider=None, system_prompt=SYSTEM_PROMPT, *, engine=None, model=None, tool_names=None, mutations=None):
         self.engine = engine or config.ENGINE
         if config.PROVIDER == "deepseek" and self.engine != "langchain":
             raise ValueError("DeepSeek 只通过 langchain 引擎接入；请设置 AGENT_ENGINE=langchain")
@@ -46,13 +46,37 @@ class Agent:
         self.sessions = {}
         self._mutex = RLock()
         self.langchain_engine = None
+        from target.fault_injection import from_env, normalize
+        self.mutations = from_env() if mutations is None else normalize(mutations)
+        self.last_fault_report = None
         if self.engine == "langchain":
             # 延迟导入：原 V2 环境不安装 LangChain 也能继续运行。
             from target.langchain_agent import LangChainAgent
-            self.langchain_engine = LangChainAgent(system_prompt, provider=provider, model=model, tool_names=tool_names)
+            self.langchain_engine = LangChainAgent(system_prompt, provider=provider, model=model, tool_names=tool_names, mutations=self.mutations)
             self.provider = self.langchain_engine.model
         else:
             self.provider = provider or get_provider()
+            if self.mutations:
+                from target.providers import MockProvider
+                if not isinstance(self.provider, MockProvider):
+                    raise ValueError("legacy变异只支持Mock；Live请使用LangChain")
+                self.provider.mutations = dict(self.mutations)
+
+    def set_mutations(self, mutations):
+        from target.fault_injection import normalize
+        values = normalize(mutations)
+        with self._mutex:
+            if values != self.mutations:
+                self.reset()  # 不把变异后的工具结果继承到新的正常模式。
+            self.mutations = values
+            if self.langchain_engine:
+                self.langchain_engine.mutations = dict(values)
+            else:
+                from target.providers import MockProvider
+                if not isinstance(self.provider, MockProvider):
+                    raise ValueError("legacy变异只支持Mock")
+                self.provider.mutations = dict(values)
+            self.last_fault_report = None
 
     def _messages(self, session_id):
         if session_id not in self.sessions:
@@ -65,8 +89,17 @@ class Agent:
             raise ValueError("session_id 与 message 必须是非空字符串")
         with self._mutex:
             if self.langchain_engine is not None:
-                return self.langchain_engine.chat(session_id, message, save_trace=save_trace)
-            return self._chat(session_id, message, save_trace)
+                try:
+                    return self.langchain_engine.chat(session_id, message, save_trace=save_trace)
+                finally:
+                    self.last_fault_report = self.langchain_engine.last_fault_report
+            from target.fault_injection import FaultRun, ACTIVE_LEGACY_RUN
+            run = FaultRun(getattr(self.provider,"mutations",{}),session_id,"legacy_mock")
+            token = ACTIVE_LEGACY_RUN.set(run)
+            try:
+                return self._chat(session_id, message, save_trace)
+            finally:
+                ACTIVE_LEGACY_RUN.reset(token)
 
     def _chat(self, session_id, message, save_trace):
         messages = self._messages(session_id)
@@ -103,6 +136,10 @@ class Agent:
                 name, args = call["name"], call["arguments"]
                 result, ok, latency = tools.dispatch(name, args)
                 trace.record_call(step, name, args, result, ok, latency)
+                from target.fault_injection import ACTIVE_LEGACY_RUN
+                run = ACTIVE_LEGACY_RUN.get()
+                if run and run.config:
+                    run.executions.append({"tool":name,"args":args,"result":result,"ok":ok,"call_id":call["id"]})
                 messages.append({
                     "role": "tool",
                     "tool_call_id": call["id"],
@@ -115,6 +152,10 @@ class Agent:
             trace.abort(reply, "max_steps_exceeded")
 
         out = trace.to_dict()
+        from target.fault_injection import ACTIVE_LEGACY_RUN
+        run = ACTIVE_LEGACY_RUN.get()
+        self.last_fault_report = run.save(trace) if run and run.config and save_trace else (
+            run.report(finish_reason=trace.finish_reason) if run and run.config else None)
         if save_trace:
             trace.save(record=out)
         return out

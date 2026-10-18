@@ -43,6 +43,10 @@ class LangChainMockModel(BaseChatModel):
         self.received_messages.append(list(messages))
         converted = legacy_messages(messages)
         response = self._lock_only_response(converted)
+        if converted and converted[-1].get("role") == "tool" and converted[-1].get("name") == "search_policy":
+            import json
+            if json.loads(converted[-1]["content"]).get("citation_status") == "unavailable":
+                response = {"content":"政策检索结果缺少可检查的引用，无法提供来源编号。", "tool_calls":[]}
         if response is None:
             response = self.decision_provider.chat(converted, [])
         if any(c["name"] not in self.bound_tool_names for c in response.get("tool_calls",[])):
