@@ -22,6 +22,9 @@ SCENARIOS = {
     "normal_purchase":({},True,"帮我订明天上海到杭州的高铁二等座，乘客张三，仅创建模拟订单，不要支付。"),
     "skip_lock":({"skip_lock":True},True,"帮我订明天上海到杭州的高铁二等座，乘客张三，仅创建模拟订单，不要支付。"),
     "infinite_loop":({"infinite_loop":True},True,"帮我抢明天北京到上海的高铁二等座，无票时请候补监控余票，不要支付。"),
+    "normal_purchase_selected":({},True,"帮我订明天上海到杭州G7301高铁二等座一张，乘客张三，联系手机号13800000001。已确认选择G7301且同意先锁座再创建模拟订单；不要支付，不用再次询问。"),
+    "skip_lock_selected":({"skip_lock":True},True,"帮我订明天上海到杭州G7301高铁二等座一张，乘客张三，联系手机号13800000001。已确认选择G7301且同意先锁座再创建模拟订单；不要支付，不用再次询问。"),
+    "infinite_loop_selected":({"infinite_loop":True},True,"请监控余票：明天北京到上海G101高铁二等座，监控30分钟。已确认只为G101开启模拟余票监控，不锁座、不下单、不支付，不用再次询问。"),
 }
 
 
@@ -32,10 +35,10 @@ def run_case(name, out):
     root.mkdir()
     os.environ.update(AGENT_PROVIDER="deepseek",AGENT_ENGINE="langchain",AGENT_MODEL="deepseek-flash",
         AGENT_BASE_URL="https://api.deepseek.com",AGENT_LC_TOOLSET="all" if sandbox else "read_only",
-        AGENT_USE_HTTP="0",AGENT_VECTOR_RAG="0",AGENT_MAX_STEPS="3" if name=="infinite_loop" else "4",
+        AGENT_USE_HTTP="0",AGENT_VECTOR_RAG="0",AGENT_MAX_STEPS="3" if name.startswith("infinite_loop") else "4",
         AGENT_DB_PATH=str(root/"tickets.db"),AGENT_TRACE_DIR=str(root/"traces"),AGENT_MUTATIONS="{}",
         DEEPSEEK_BUDGET_PATH=str(root/"requests.db"),DEEPSEEK_MAX_REQUESTS="5",DEEPSEEK_TIMEOUT="20",
-        DEEPSEEK_MAX_MODEL_CALLS="4",DEEPSEEK_MAX_TOOL_CALLS="4" if name=="infinite_loop" else "8",
+        DEEPSEEK_MAX_MODEL_CALLS="4",DEEPSEEK_MAX_TOOL_CALLS="4" if name.startswith("infinite_loop") else "8",
         DEEPSEEK_THINKING="disabled",DEEPSEEK_LIVE_TEST_PROFILE="full_sandbox" if sandbox else "read_only",
         DEEPSEEK_SANDBOX_DIR=str(root),LANGSMITH_TRACING="false",LANGCHAIN_TRACING_V2="false")
     import config

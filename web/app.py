@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """实际 Agent 前端：所有卡片来自本轮工具结果，公共 Trace 保持原样。"""
 import json
+import os
 import sys
 import uuid
 from pathlib import Path
@@ -126,7 +127,9 @@ st.markdown("<style>" + (BASE / "web/theme.css").read_text(encoding="utf-8") + "
 engine_label = ("LangChain Mock" if config.PROVIDER == "mock" else "LangChain Live") if config.ENGINE == "langchain" else (
     "原生 Python Mock" if config.PROVIDER == "mock" else "原生 Python Live")
 if config.PROVIDER == "deepseek":
-    engine_label = "DeepSeek Live · 只读"
+    engine_label = "DeepSeek Live · 全工具模拟沙箱" if os.getenv("DEEPSEEK_LIVE_TEST_PROFILE") == "full_sandbox" else "DeepSeek Live · 只读"
+live_capability = ("全工具模拟沙箱：仅在独立本地数据库执行明确授权的操作。" if "模拟沙箱" in engine_label else
+                   "当前仅支持模拟查票和政策咨询；其余六工具未开放默认 Live。")
 for key, value in (("mutations", from_env()), ("sid", "web-" + uuid.uuid4().hex[:8]), ("history", []), ("business_results", []), ("last_fault_report", None)):
     if key not in st.session_state:
         st.session_state[key] = value
@@ -208,7 +211,7 @@ with conversation:
         preset = st.selectbox("快捷场景", presets)
         user_msg = st.text_input("输入消息", value=preset)
         send = st.button("发送", type="primary", disabled=not ready)
-        st.caption("当前仅支持模拟查票和政策咨询；其余六工具未开放 Live。" if config.PROVIDER == "deepseek" else
+        st.caption(live_capability if config.PROVIDER == "deepseek" else
                    "发送后实际调用 Agent；支付、退票需要明确操作请求。")
         turn_failed = False
         if send and user_msg.strip() and ready:
@@ -256,7 +259,7 @@ with conversation:
                         st.caption(" → ".join(previous["tool_sequence"]) or "未调用工具")
             elif not turn_failed:
                 st.markdown("### 一段旅程，从一句话开始。")
-                st.caption("当前仅支持模拟查票和政策咨询。" if config.PROVIDER == "deepseek" else
+                st.caption(live_capability if config.PROVIDER == "deepseek" else
                            "查询余票、模拟订票，或咨询退改政策。所有执行结果都可检查。")
             else:
                 st.caption("本轮未收到执行记录；上一轮结果仍保存在历史回放中。")
