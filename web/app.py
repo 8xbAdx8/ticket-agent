@@ -15,7 +15,8 @@ import config
 from target.agent import Agent
 from target import providers
 from target.deepseek_runtime import VALIDATION_NOTICE
-from target.fault_injection import from_env, STAGES
+from target.fault_injection import from_env, STAGES, MUTATION_NAMES
+from web.audit_view import show_audit, show_audit_replay
 from web.presentation import (TOOL_LABELS, escape, turn_cursor, collect_results,
                               ticket_cards, order_card, policy_cards, code_excerpt)
 
@@ -130,7 +131,7 @@ if config.PROVIDER == "deepseek":
     engine_label = "DeepSeek Live · 全工具模拟沙箱" if os.getenv("DEEPSEEK_LIVE_TEST_PROFILE") == "full_sandbox" else "DeepSeek Live · 只读"
 live_capability = ("全工具模拟沙箱：仅在独立本地数据库执行明确授权的操作。" if "模拟沙箱" in engine_label else
                    "当前仅支持模拟查票和政策咨询；其余六工具未开放默认 Live。")
-for key, value in (("mutations", from_env()), ("sid", "web-" + uuid.uuid4().hex[:8]), ("history", []), ("business_results", []), ("last_fault_report", None)):
+for key, value in (("mutations", from_env()), ("sid", "web-" + uuid.uuid4().hex[:8]), ("history", []), ("business_results", []), ("last_fault_report", None), ("last_audit_report", None), ("concurrency_reports", [])):
     if key not in st.session_state:
         st.session_state[key] = value
 
@@ -143,6 +144,7 @@ with st.sidebar:
         st.session_state.history = []
         st.session_state.business_results = []
         st.session_state.last_fault_report = None
+        st.session_state.last_audit_report = None
         st.session_state.pop("active_call", None)
     st.caption("工作空间 · 对话 / 历史回放 / 代码导览")
     st.markdown(f'<div class="mode-card"><b>● {escape(engine_label)}</b><small>工具集：{escape(config.LC_TOOLSET if config.ENGINE == "langchain" else "原 8 工具")}</small><small>模型配置：{escape(config.MODEL_NAME)}</small></div>', unsafe_allow_html=True)
@@ -151,10 +153,10 @@ with st.sidebar:
     st.caption("人为注入缺陷，只影响本浏览器会话；恢复后清空会话再验收。")
     st.caption("显式测试模式：注入结果和Agent表现分别记录。默认Live只读，skip_lock/infinite_loop需要全工具沙箱。")
     if st.button("恢复正常模式"):
-        for name in providers.MUTATION_NAMES:
+        for name in MUTATION_NAMES:
             st.session_state["mutation_" + name] = False
         st.session_state.mutations.clear()
-    for name in providers.MUTATION_NAMES:
+    for name in MUTATION_NAMES:
         enabled = st.checkbox(name, value=bool(st.session_state.mutations.get(name)), key="mutation_" + name,
                               disabled=config.PROVIDER not in ("mock","deepseek"))
         if enabled:
@@ -165,6 +167,12 @@ with st.sidebar:
     if st.session_state.mutations:
         st.caption("注入阶段："+"；".join(name+" → "+STAGES[name] for name in st.session_state.mutations))
     st.caption("会话 ID：" + st.session_state.sid)
+    st.caption("M7 只改工具可见结果；M8 需运行独立并发对照，不由模型随机触发。")
+    if st.button("运行并发订单对照（离线）"):
+        from target.concurrency_probe import probe
+        with st.spinner("正在运行隔离数据库对照..."):
+            st.session_state.concurrency_reports=[probe(save=True),probe(mutant=True,save=True)]
+        st.success("正常组与受控变异组已保存；没有调用模型或真实支付。")
     st.caption("成员 A · 开发交付；真实模型联网验证状态请查交接证据。")
 
 st.markdown('<div class="eyebrow">YOUR JOURNEY, TRACEABLE.</div>', unsafe_allow_html=True)
@@ -193,6 +201,7 @@ if ready:
         st.session_state.history = []
         st.session_state.business_results = []
         st.session_state.last_fault_report = None
+        st.session_state.last_audit_report = None
     if config.PROVIDER == "deepseek" and st.session_state.agent.langchain_engine.deepseek_settings.profile == "full_sandbox":
         st.warning("全工具模拟沙箱：允许显式授权的模拟写操作；不连接真实票务或支付。")
 
@@ -224,12 +233,14 @@ with conversation:
                     cursor = turn_cursor(st.session_state.agent, st.session_state.sid)
                     record = st.session_state.agent.chat(st.session_state.sid, user_msg)
                     st.session_state.last_fault_report = st.session_state.agent.last_fault_report
+                    st.session_state.last_audit_report = st.session_state.agent.last_audit_report
                     full = collect_results(st.session_state.agent, st.session_state.sid, cursor, record)
                     st.session_state.history.append(record)
                     st.session_state.business_results.append(full)
                     st.session_state.pop("active_call", None)
                 except Exception as exc:
                     st.session_state.last_fault_report = st.session_state.agent.last_fault_report
+                    st.session_state.last_audit_report = st.session_state.agent.last_audit_report
                     turn_failed = True
                     st.error(f"执行失败 ({type(exc).__name__})；检查目录写权限与配置。")
                     if config.PROVIDER == "deepseek":
@@ -274,8 +285,12 @@ with conversation:
             st.caption("applied仅代表注入层实际改变行为；不等于Agent被检出缺陷或恢复成功。")
             with st.expander("变异前后参数、原始工具结果及执行次数"):
                 st.json(report)
+        show_audit(st.session_state.last_audit_report)
+        for report in st.session_state.concurrency_reports:
+            show_audit(report)
 with replay:
     show_replay()
+    show_audit_replay(config.TRACE_DIR)
 with code:
     st.subheader("核心代码导览")
     st.caption("以下片段实时读取仓库源码；它们展示程序逻辑，不展示模型内部思维。")
