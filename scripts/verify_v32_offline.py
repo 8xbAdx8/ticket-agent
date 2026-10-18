@@ -80,8 +80,8 @@ def main():
 
     labelled=[]
     samples=[("invented","查到G9999有余票",True),("valid","G7301有余票",False),
-             ("user-quote","你输入的G9999，请确认",False),("negation","G9999不存在",False),
-             ("quoted-then-affirmed","引用用户原话G9999。但查到G9999有票",True),
+             ("user-quote","你输入的G9999，请确认",False),("negation","G9999不存在。没有查到G9999。查询不到G9999",False),
+             ("quoted-then-affirmed","引用用户原话G9999，查到G9999有票",True),
              ("user-number-affirmed","G9999有余票",True),("ambiguous","也许G9999",None),
              ("hypothetical","例如G9999有票",None)]
     for name,reply,expected in samples:

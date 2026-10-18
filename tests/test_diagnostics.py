@@ -13,9 +13,10 @@ class DiagnosticTests(unittest.TestCase):
         self.assertEqual(r["findings"][0]["train"],"G9999")
 
     def test_user_input_is_not_automatically_agent_hallucination(self):
-        for reply in ("你输入的G9999，请确认。","引用用户原话：G9999","G9999不存在，未找到该车次。"):
+        for reply in ("你输入的G9999，请确认。","引用用户原话：G9999","G9999不存在，未找到该车次。","没有查到G9999","查询不到G9999"):
             self.assertFalse(detect_hallucinated_trains(reply,["G7301"],user_message="G9999")["hallucination_detected"])
         self.assertTrue(detect_hallucinated_trains("G9999有余票",["G7301"],user_message="G9999")["hallucination_detected"])
+        self.assertTrue(detect_hallucinated_trains("你输入的G9999，我查到G9999有余票",["G7301"],user_message="G9999")["hallucination_detected"])
 
     def test_valid_and_indeterminate_clauses_are_separate(self):
         self.assertEqual(detect_hallucinated_trains("G7301有余票",["G7301"])["status"],"clear")

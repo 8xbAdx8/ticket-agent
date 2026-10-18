@@ -79,11 +79,11 @@ def detect_hallucinated_trains(reply, authoritative_trains, *, user_message="", 
     """有限的陈述分类规则。引语/否定不算主动声称，含糊情况单列。"""
     known=set(authoritative_trains or ())|set(valid_query_trains)
     findings=[]
-    for clause in re.split(r"[。！？!?；;\n]|但是|不过|但",reply or ""):
+    for clause in re.split(r"[。！？!?；;，,\n]|但是|不过|但",reply or ""):
         for match in re.finditer(r"(?<![A-Za-z0-9])([GDCZTK]\d{1,5})(?!\d)",clause):
             train=match[1]
             context=clause[max(0,match.start()-35):match.end()+45]
-            if re.search(r"不存在|未找到|查无|无此|不能确认|无法确认|并不存在|不是实际|没有依据|并未查到",context):
+            if re.search(r"不存在|未找到|查无|无此|不能确认|无法确认|并不存在|不是实际|没有依据|未(?:查询|查|检索)到|没有(?:查询|查|找|检索)到|查询不到|查不到",context):
                 kind="negated"
             elif re.search(r"(?:用户|你|您)(?:输入|提到|说|写|提供|所说)|引用|原话",context):
                 kind="user_quote"
