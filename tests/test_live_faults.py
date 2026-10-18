@@ -208,3 +208,20 @@ class LiveFaultPathTests(unittest.TestCase):
         agent.langchain_engine.deepseek_settings=replace(agent.langchain_engine.deepseek_settings,max_tool_calls=1)
         with self.assertRaisesRegex(DeepSeekError,"tool_call_limit_exceeded"): agent.chat("toolcap","请帮我候补监控")
         self.assertEqual(sum(e["executed"] for e in agent.last_fault_report["executions"]),1)
+
+    def test_langchain_mock_write_fault_without_sandbox_is_blocked(self):
+        with patch.multiple(config,PROVIDER="mock",LC_TOOLSET="all",ENGINE="langchain"):
+            agent=Agent(mutations={"skip_lock":True})
+            result=agent.chat("mock-unsafe","帮我订明天上海到杭州的高铁")
+            self.assertTrue(any(not c["ok"] for s in result["steps"] for c in s["calls"]))
+            self.assertTrue(any(e["status"]=="blocked" for e in agent.last_fault_report["injection_events"]))
+            self.assertFalse(any(e["executed"] for e in agent.last_fault_report["executions"] if e["tool"]=="create_order"))
+
+    def test_langchain_mock_write_fault_in_isolated_sandbox_reaches_backend(self):
+        self.sandbox()
+        with patch.multiple(config,PROVIDER="mock",ENGINE="langchain"):
+            agent=Agent(mutations={"skip_lock":True})
+            agent.chat("mock-safe","帮我订明天上海到杭州的高铁")
+            attempts=[e for e in agent.last_fault_report["executions"] if e["tool"]=="create_order"]
+            self.assertTrue(attempts[0]["executed"])
+            self.assertFalse(attempts[0]["ok"])

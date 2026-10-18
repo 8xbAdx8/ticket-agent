@@ -100,6 +100,18 @@ class ContractMiddleware(AgentMiddleware):
         original = copy.deepcopy(request.tool_call)
         run = ctx.fault_run
         call = run.arguments(original,ctx.user_message) if run.config else original
+        sandbox_block = None
+        write_fault = "skip_lock" if original["name"] == "lock_seat" and run.config.get("skip_lock") else (
+            "infinite_loop" if original["name"] == "monitor_seat" and run.config.get("infinite_loop") else None)
+        if write_fault and not ctx.deepseek_settings:
+            from target.deepseek_runtime import Settings, DeepSeekError
+            try:
+                settings = Settings.from_env()
+                if settings.profile != "full_sandbox":
+                    raise DeepSeekError("isolated_sandbox_required")
+            except (DeepSeekError, ValueError):
+                sandbox_block = "LangChain Mock的写变异同样要求显式full_sandbox隔离库"
+                run.emit(write_fault,status="blocked",reason=sandbox_block,call_id=call["id"])
 
         def execute(index):
             name, args = call["name"], call["args"]
@@ -109,7 +121,7 @@ class ContractMiddleware(AgentMiddleware):
                 "model_requested_tool":original["name"],"model_requested_args":original["args"]})
             ctx.tool_calls += 1
             from target.deepseek_runtime import allowed_tools
-            blocked = ("当前Live工具白名单禁止该工具" if ctx.deepseek_settings and (
+            blocked = sandbox_block or ("当前Live工具白名单禁止该工具" if ctx.deepseek_settings and (
                 name not in allowed_tools(ctx.deepseek_settings) or original["name"] not in allowed_tools(ctx.deepseek_settings)) else
                 "达到工具调用次数上限" if ctx.deepseek_settings and ctx.tool_calls > ctx.deepseek_settings.max_tool_calls else
                 denial(name,args,ctx,request.state["messages"]))
