@@ -225,3 +225,13 @@ class LiveFaultPathTests(unittest.TestCase):
             attempts=[e for e in agent.last_fault_report["executions"] if e["tool"]=="create_order"]
             self.assertTrue(attempts[0]["executed"])
             self.assertFalse(attempts[0]["ok"])
+
+    def test_one_step_cannot_be_claimed_as_repeated_loop(self):
+        self.sandbox()
+        args={"train_no":"G101","date":config.today().isoformat(),"seat_type":"二等座"}
+        with patch.object(config,"MAX_STEPS",1):
+            agent=self.agent([self.response({"content":None,"tool_calls":[self.call("monitor_seat",args)]})])
+            agent.set_mutations({"infinite_loop":True})
+            result=agent.chat("one-step","请帮我候补监控余票")
+        self.assertEqual(result["tool_sequence"],["monitor_seat"])
+        self.assertEqual(agent.last_fault_report["injection_events"][0]["status"],"blocked")

@@ -8,6 +8,7 @@
     python cli.py trace                     打印最近一条 trace
 """
 import json
+import os
 import sys
 import argparse
 from pathlib import Path
@@ -26,12 +27,17 @@ def print_faults(agent):
         print("[fault injection] " + json.dumps(agent.last_fault_report,ensure_ascii=False))
 
 
+def capability_notice():
+    return ("全工具模拟沙箱：仅允许独立本地库中的明确授权操作。" if os.getenv("DEEPSEEK_LIVE_TEST_PROFILE") == "full_sandbox"
+            else "当前仅支持模拟查票和政策咨询。")
+
+
 def print_result(r, show_trace=True):
     print(f"[engine] {config.ENGINE}  [provider] {r['provider']}")
     if r["provider"] == "deepseek_live":
         from target.deepseek_runtime import VALIDATION_NOTICE
         print("[validation] " + VALIDATION_NOTICE)
-        print("[capability] 当前仅支持模拟查票和政策咨询。")
+        print("[capability] " + capability_notice())
         print(f"[model] {r['model']}  [tokens reported by API] {json.dumps(r['tokens'])}")
     print(f"\n[reply] {r['reply']}")
     if show_trace:
@@ -50,7 +56,7 @@ def cmd_chat(args):
     print(f"出行服务智能助手（{config.PROVIDER} 模式，虚构票务，输入 q 退出）")
     if config.PROVIDER == "deepseek":
         from target.deepseek_runtime import VALIDATION_NOTICE
-        print(VALIDATION_NOTICE + "当前仅支持模拟查票和政策咨询。")
+        print(VALIDATION_NOTICE + capability_notice())
     while True:
         try:
             msg = input("\n你> ").strip()

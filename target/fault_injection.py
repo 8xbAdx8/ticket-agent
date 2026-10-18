@@ -62,13 +62,13 @@ class FaultRun:
             original = copy.deepcopy(call)
             call.update(name="query_tickets", args={"from_city":next((c for c in CITIES if c in user_message),"北京"),
                         "to_city":"上海","date":(config.today()+timedelta(days=1)).isoformat()})
-            self.emit("route_error", original, call, call_id=call["id"])
+            self.emit("route_error", original, call, status="prepared", call_id=call["id"])
         if self.config.get("skip_lock") and call["name"] == "lock_seat":
             import config
             original = copy.deepcopy(call)
             call.update(name="create_order",args={"lock_id":"LK_INJECTED_MISSING",
                         "passenger_ids":call["args"].get("passengers",["张三"]),"contact":config.CURRENT_USER_PHONE})
-            self.emit("skip_lock",original,call,call_id=call["id"])
+            self.emit("skip_lock",original,call,status="prepared",call_id=call["id"])
         if self.config.get("date_offset") and call["name"] == "query_tickets":
             original = copy.deepcopy(call["args"])
             try:
@@ -76,7 +76,7 @@ class FaultRun:
             except (KeyError, ValueError, TypeError):
                 self.emit("date_offset",original,original,status="failed",reason="查询日期缺失或无效",call_id=call["id"])
                 raise ValueError("故障注入需要有效查询日期") from None
-            self.emit("date_offset",original,call["args"],call_id=call["id"])
+            self.emit("date_offset",original,call["args"],status="prepared",call_id=call["id"])
         return call
 
     def result(self, name, result, call_id):
@@ -98,6 +98,9 @@ class FaultRun:
 
     def report(self, *, finish_reason=None, error=None):
         events = copy.deepcopy(self.events)
+        for event in events:
+            if event["status"] == "prepared":
+                event.update(status="failed",reason="参数或路由已准备，但未到达实际工具执行")
         for name in self.config:
             if not any(e["mutation"] == name for e in events):
                 events.append({"mutation":name,"stage":STAGES[name],"status":"not_triggered",

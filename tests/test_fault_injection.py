@@ -62,3 +62,10 @@ class FaultDefinitionTests(unittest.TestCase):
         self.assertEqual(stats["injection_success_rate"],1)
         self.assertIsNone(stats["agent_defect_detection_rate"])
         self.assertIsNone(stats["agent_recovery_rate"])
+
+    def test_prepared_without_execution_is_not_counted_as_success(self):
+        run=FaultRun({"date_offset":1},"s","offline")
+        run.arguments({"id":"x","name":"query_tickets","args":{"date":"2026-10-18"}},"")
+        report=run.report(error={"category":"sandbox_guard"})
+        self.assertEqual(report["injection_events"][0]["status"],"failed")
+        self.assertEqual(summarize([report])["counts"]["applied"],0)

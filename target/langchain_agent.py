@@ -168,8 +168,9 @@ class ContractMiddleware(AgentMiddleware):
                 for event in run.events:
                     if event.get("call_id") == call["id"] and event["mutation"] in ("date_offset","route_error","skip_lock"):
                         event["execution"] = {"executed":executed,"ok":ok}
+                        event["status"] = "applied" if executed else "blocked"
                         if not executed:
-                            event.update(status="blocked",reason=blocked or "执行器拒绝调用")
+                            event["reason"] = blocked or "执行器拒绝调用"
             return ToolMessage(content=json.dumps(result,ensure_ascii=False),tool_call_id=call["id"],name=name,
                                status="success" if ok else "error"),ok,blocked
 
@@ -182,6 +183,10 @@ class ContractMiddleware(AgentMiddleware):
                 return second
         if run.config.get("infinite_loop") and call["name"] == "monitor_seat" and ok:
             count = 1
+            if config.MAX_STEPS < 2:
+                run.emit("infinite_loop",1,1,status="blocked",reason="Agent步数上限不允许再次执行",call_id=call["id"])
+                ctx.events.append({"event":"termination","reason":"agent_max_steps","actual_tool_executions":1})
+                raise ForcedLoopStop()
             while count < config.MAX_STEPS:
                 _,success,guard = execute(count+1)
                 if guard or not success:
