@@ -1,0 +1,48 @@
+{
+  "status": "passed",
+  "a_tests": 188,
+  "skipped": 0,
+  "errors": 0,
+  "failures": 0,
+  "live_fake_key_preflight_exit": 0,
+  "offline_streamlit_health": true,
+  "http_status": 200,
+  "launcher_exit_after_test_stop": 1,
+  "child_stopped": true,
+  "real_model_requests": 0,
+  "official_budget_unchanged": true,
+  "evidence_dir": "artifacts/runtime/launcher-verify-eb2034b0",
+  "powershell_preflight_from_other_directory": [
+    {
+      "mode": "offline",
+      "provider": "mock",
+      "engine": "legacy",
+      "toolset": "all",
+      "api_key_configured": false,
+      "database": "artifacts\\runtime\\launcher\\offline\\2026-10-18\\tickets.db",
+      "trace_dir": "artifacts\\runtime\\launcher\\offline\\2026-10-18\\traces",
+      "model_requests_sent": 0,
+      "status": "passed"
+    },
+    {
+      "mode": "live",
+      "provider": "deepseek",
+      "engine": "langchain",
+      "toolset": "read_only",
+      "api_key_configured": true,
+      "database": "artifacts\\runtime\\launcher\\live\\2026-10-18\\tickets.db",
+      "trace_dir": "artifacts\\runtime\\launcher\\live\\2026-10-18\\traces",
+      "model_requests_sent": 0,
+      "request_limit": 0,
+      "budget_reserved": 0,
+      "budget_path": "artifacts\\runtime\\launcher\\live\\requests.db",
+      "status": "passed"
+    }
+  ],
+  "protected_project_files": 712,
+  "changed_protected_files": [],
+  "mode_dependencies_not_installed_or_upgraded": true,
+  "browser_auto_open": "code path implemented; smoke used --no-browser to avoid opening a user tab",
+  "key_validation": "presence only; no real credential or API validation",
+  "stop_note": "test controller terminated only its own Streamlit child; launcher then exited with child code 1, not a startup failure"
+}
