@@ -1,0 +1,71 @@
+test_budget_exhaustion_retains_successful_injection_evidence (tests.test_live_faults.LiveFaultPathTests.test_budget_exhaustion_retains_successful_injection_evidence) ... ok
+test_citation_original_result_and_actual_feedback (tests.test_live_faults.LiveFaultPathTests.test_citation_original_result_and_actual_feedback) ... ok
+test_combined_route_date_repeat_real_path (tests.test_live_faults.LiveFaultPathTests.test_combined_route_date_repeat_real_path) ... ok
+test_date_actual_database_date_and_sdk_feedback (tests.test_live_faults.LiveFaultPathTests.test_date_actual_database_date_and_sdk_feedback) ... ok
+test_finite_loop_tool_limit_has_distinct_reason (tests.test_live_faults.LiveFaultPathTests.test_finite_loop_tool_limit_has_distinct_reason) ... ok
+test_finite_monitor_loop_stops_at_agent_steps_with_one_model_request (tests.test_live_faults.LiveFaultPathTests.test_finite_monitor_loop_stops_at_agent_steps_with_one_model_request) ... ok
+test_invented_citation_rejected_without_rewriting_raw_reply (tests.test_live_faults.LiveFaultPathTests.test_invented_citation_rejected_without_rewriting_raw_reply) ... ok
+test_normal_no_sidecar_and_restore_clears_mutated_memory (tests.test_live_faults.LiveFaultPathTests.test_normal_no_sidecar_and_restore_clears_mutated_memory) ... ok
+test_repeat_honors_tool_cap (tests.test_live_faults.LiveFaultPathTests.test_repeat_honors_tool_cap) ... ok
+test_repeat_one_model_call_two_real_backend_executions (tests.test_live_faults.LiveFaultPathTests.test_repeat_one_model_call_two_real_backend_executions) ... ok
+test_route_actual_query_not_policy_and_database_unchanged (tests.test_live_faults.LiveFaultPathTests.test_route_actual_query_not_policy_and_database_unchanged) ... ok
+test_sandbox_required_rejects_original_db_http_and_unbounded_budget (tests.test_live_faults.LiveFaultPathTests.test_sandbox_required_rejects_original_db_http_and_unbounded_budget) ... ok
+test_skip_lock_backend_rejects_fake_lock_no_orders_or_inventory_change (tests.test_live_faults.LiveFaultPathTests.test_skip_lock_backend_rejects_fake_lock_no_orders_or_inventory_change) ... ERROR
+test_skip_lock_does_not_bypass_payment_authorization (tests.test_live_faults.LiveFaultPathTests.test_skip_lock_does_not_bypass_payment_authorization) ... ok
+test_untriggered_and_inapplicable_are_explicit (tests.test_live_faults.LiveFaultPathTests.test_untriggered_and_inapplicable_are_explicit) ... ok
+test_errors_dates_and_sessions (tests.test_agent.AgentTests.test_errors_dates_and_sessions) ... ok
+test_monitor_seat_and_flight (tests.test_agent.AgentTests.test_monitor_seat_and_flight) ... ok
+test_multiturn_and_trace_contract (tests.test_agent.AgentTests.test_multiturn_and_trace_contract) ... ok
+test_six_injected_mutations (tests.test_agent.AgentTests.test_six_injected_mutations) ... ok
+
+======================================================================
+ERROR: test_skip_lock_backend_rejects_fake_lock_no_orders_or_inventory_change (tests.test_live_faults.LiveFaultPathTests.test_skip_lock_backend_rejects_fake_lock_no_orders_or_inventory_change)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\W\AppData\Roaming\uv\python\cpython-3.12.14-windows-x86_64-none\Lib\shutil.py", line 633, in _rmtree_unsafe
+    os.unlink(fullname)
+PermissionError: [WinError 32] 另一个程序正在使用此文件，进程无法访问。: 'D:\\codexproject\\ticket-agent\\artifacts\\runtime\\tmpe2r42qkl\\sandbox\\tickets.db'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\W\AppData\Roaming\uv\python\cpython-3.12.14-windows-x86_64-none\Lib\tempfile.py", line 954, in cleanup
+    self._rmtree(self.name, ignore_errors=self._ignore_cleanup_errors)
+  File "C:\Users\W\AppData\Roaming\uv\python\cpython-3.12.14-windows-x86_64-none\Lib\tempfile.py", line 934, in _rmtree
+    _shutil.rmtree(name, onexc=onexc)
+  File "C:\Users\W\AppData\Roaming\uv\python\cpython-3.12.14-windows-x86_64-none\Lib\shutil.py", line 781, in rmtree
+    return _rmtree_unsafe(path, onexc)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\W\AppData\Roaming\uv\python\cpython-3.12.14-windows-x86_64-none\Lib\shutil.py", line 635, in _rmtree_unsafe
+    onexc(os.unlink, fullname, err)
+  File "C:\Users\W\AppData\Roaming\uv\python\cpython-3.12.14-windows-x86_64-none\Lib\tempfile.py", line 909, in onexc
+    _os.unlink(path)
+PermissionError: [WinError 32] 另一个程序正在使用此文件，进程无法访问。: 'D:\\codexproject\\ticket-agent\\artifacts\\runtime\\tmpe2r42qkl\\sandbox\\tickets.db'
+
+----------------------------------------------------------------------
+Ran 19 tests in 1.240s
+
+FAILED (errors=1)
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录

@@ -1,0 +1,194 @@
+{
+  "case": "normal_policy",
+  "source": "real_deepseek_api",
+  "model": "deepseek-flash",
+  "profile": "read_only",
+  "input": "锁座后多久必须完成支付？请检索政策并给出来源。",
+  "mutations": {},
+  "result": {
+    "session_id": "live-v31-normal_policy",
+    "provider": "deepseek_live",
+    "model": "deepseek-flash",
+    "user_msg": "锁座后多久必须完成支付？请检索政策并给出来源。",
+    "steps": [
+      {
+        "step": 1,
+        "calls": [
+          {
+            "tool": "search_policy",
+            "args": {
+              "question": "锁座后多久必须完成支付？"
+            },
+            "ok": true,
+            "latency_ms": 1,
+            "result_preview": "{\"question\": \"锁座后多久必须完成支付？\", \"hits\": [{\"doc_id\": \"P11\", \"source\": \"data/policies.md#P11\", \"title\": \"锁座与支付有效期\", \"content\": \"模拟锁座有效期 15 分钟，过期未支付自动释放库存；下单必须提供与锁座一致的乘客列表。重复支付不重复扣减库存。\", \"score\": 1.8708}, {..."
+          }
+        ]
+      }
+    ],
+    "tool_sequence": [
+      "search_policy"
+    ],
+    "reply": "根据政策库检索结果：\n\n**模拟锁座有效期为 15 分钟，过期未支付会自动释放库存。**（doc_id: P11，《锁座与支付有效期》）\n\n政策中还提到以下两点（doc_id: P11、P12）：\n- 下单时必须提供与锁座时一致的乘客列表。\n- 未支付订单取消不收取手续费，会释放已占用的库存；取消后的订单不可再支付。\n\n需要说明的是，我当前仅支持模拟查票和政策咨询，不能为您实际办理锁座、支付或取消等操作。",
+    "finish_reason": "stop",
+    "tokens": {
+      "prompt": 1871,
+      "completion": 164
+    },
+    "total_latency_ms": 3473
+  },
+  "error": null,
+  "fault_report": null,
+  "framework_events": [
+    {
+      "event": "model_start",
+      "model_step": 1
+    },
+    {
+      "event": "model_response",
+      "model_step": 1,
+      "response_model": "deepseek-flash",
+      "usage": {
+        "input_tokens": 771,
+        "output_tokens": 45,
+        "total_tokens": 816,
+        "input_token_details": {
+          "cache_read": 512
+        },
+        "output_token_details": {}
+      },
+      "finish_reason": "tool_calls",
+      "tool_calls": [
+        {
+          "id": "call_00_YMtAEgsj7kByYnnBgFOo1813",
+          "name": "search_policy",
+          "args": {
+            "question": "锁座后多久必须完成支付？"
+          }
+        }
+      ]
+    },
+    {
+      "event": "model_end",
+      "model_step": 1
+    },
+    {
+      "event": "tool_start",
+      "model_step": 1,
+      "tool": "search_policy",
+      "args": {
+        "question": "锁座后多久必须完成支付？"
+      },
+      "call_id": "call_00_YMtAEgsj7kByYnnBgFOo1813",
+      "execution_index": 1,
+      "model_requested_tool": "search_policy",
+      "model_requested_args": {
+        "question": "锁座后多久必须完成支付？"
+      }
+    },
+    {
+      "event": "tool_end",
+      "tool": "search_policy",
+      "args": {
+        "question": "锁座后多久必须完成支付？"
+      },
+      "call_id": "call_00_YMtAEgsj7kByYnnBgFOo1813",
+      "ok": true,
+      "executed": true,
+      "execution_index": 1,
+      "latency_ms": 1,
+      "result": {
+        "question": "锁座后多久必须完成支付？",
+        "hits": [
+          {
+            "doc_id": "P11",
+            "source": "data/policies.md#P11",
+            "title": "锁座与支付有效期",
+            "content": "模拟锁座有效期 15 分钟，过期未支付自动释放库存；下单必须提供与锁座一致的乘客列表。重复支付不重复扣减库存。",
+            "score": 1.8708
+          },
+          {
+            "doc_id": "P12",
+            "source": "data/policies.md#P12",
+            "title": "未支付订单取消",
+            "content": "未支付订单取消不收取手续费，释放已占库存；已退款或已取消订单不得再次释放库存，取消后的订单不可支付。",
+            "score": 0.9615
+          },
+          {
+            "doc_id": "P04",
+            "source": "data/policies.md#P04",
+            "title": "儿童票",
+            "content": "身高 1.2 米以下且不满 6 周岁儿童可免票（不占座）；6 至 14 周岁需购买儿童票，二等座按公布票价 50% 计算，一等座与商务座不售儿童票。",
+            "score": 0.5252
+          }
+        ],
+        "count": 3
+      }
+    },
+    {
+      "event": "model_start",
+      "model_step": 2
+    },
+    {
+      "event": "model_response",
+      "model_step": 2,
+      "response_model": "deepseek-flash",
+      "usage": {
+        "input_tokens": 1100,
+        "output_tokens": 119,
+        "total_tokens": 1219,
+        "input_token_details": {
+          "cache_read": 768
+        },
+        "output_token_details": {}
+      },
+      "finish_reason": "stop",
+      "tool_calls": []
+    },
+    {
+      "event": "model_final",
+      "model_step": 2,
+      "text": "根据政策库检索结果：\n\n**模拟锁座有效期为 15 分钟，过期未支付会自动释放库存。**（doc_id: P11，《锁座与支付有效期》）\n\n政策中还提到以下两点（doc_id: P11、P12）：\n- 下单时必须提供与锁座时一致的乘客列表。\n- 未支付订单取消不收取手续费，会释放已占用的库存；取消后的订单不可再支付。\n\n需要说明的是，我当前仅支持模拟查票和政策咨询，不能为您实际办理锁座、支付或取消等操作。"
+    },
+    {
+      "event": "model_end",
+      "model_step": 2
+    }
+  ],
+  "request_count": 2,
+  "requests": [
+    {
+      "id": 1,
+      "created": "2026-10-18T13:26:57.787533+00:00",
+      "status": 200,
+      "category": "response_received",
+      "prompt": 771,
+      "completion": 45,
+      "model": "deepseek-flash"
+    },
+    {
+      "id": 2,
+      "created": "2026-10-18T13:26:59.555401+00:00",
+      "status": 200,
+      "category": "response_received",
+      "prompt": 1100,
+      "completion": 119,
+      "model": "deepseek-flash"
+    }
+  ],
+  "known_tokens": {
+    "prompt": 1871,
+    "completion": 164
+  },
+  "usage_complete": true,
+  "database_counts": {
+    "inventory": 2100,
+    "locks": 0,
+    "orders": 0
+  },
+  "database_unchanged": true,
+  "latency_ms": 5008,
+  "max_retries": 0,
+  "actual_fee": null,
+  "judgement": "A运行证据；Agent缺陷检出与恢复由B独立判定"
+}

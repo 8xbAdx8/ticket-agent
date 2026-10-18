@@ -1,5 +1,19 @@
 # Ticket Agent
 
+## 2026-10-18：V3.1 六种 Live 缺陷注入
+
+六种变异已进入LangChain实际工具执行路径，并分别取得真实DeepSeek注入证据。默认Live仍只读；`skip_lock`和`infinite_loop`需要显式`full_sandbox`、新隔离库和正数测试预算。原Legacy六变异语义保留。跨模式统一配置为`AGENT_MUTATIONS` JSON或`Agent(mutations=...)`，默认关闭。
+
+A完整自测153项通过；隔离复用B原判据回归：Legacy101/101、LangChain Mock100/100、六变异55/55，专项44通过/3 N/A。真实12场景共27次请求，输入42038/输出3733 Token，实际费用未知。六种唯一变异均实际触发，另有2次未触发样本完整保留；不把注入成功等同于Agent缺陷检出或恢复成功，正式Live质量结果待B评定。
+
+- [A：实现、验证、真实证据与风险](docs/handoff/v3/A_Live缺陷注入开发报告.md)
+- [B：隔离配置、Trace与独立判定](docs/handoff/v3/B_Live缺陷注入测试手册.md)
+- [C：真实证据演示说明](docs/handoff/v3/C_Live缺陷注入演示说明.md)
+- [六种变异支持范围对照](docs/handoff/v3/V3_Mock与Live六种变异对照表.md)
+- [实际证据与用量](docs/evidence/deepseek/v31-live-faults-20261018/summary.json)
+
+只预检：`python scripts/verify_live_faults.py`（0请求）；带`--run --out <全新artifacts/runtime目录> --cases <场景>`才会真实计费。Web勾选后会显示实际注入旁证；修改配置会清空当前内存会话，保留历史Trace。历史章节按当时结果保留，当前状态以本节及V3.1手册为准。
+
 ## 2026-10-17：手动 DeepSeek 对话可取消累计次数限制
 
 经用户授权，新增 `DEEPSEEK_MAX_REQUESTS=0`：不限制累计模型请求数，仍逐次保存请求状态与 Token 用量。未配置时仍默认 5 次，原受限测试行为保留。只读工具白名单、单轮调用上限、超时与零自动重试保持不变。此次只做离线验证，没有新增真实 API 请求，也没有清空或修改历史账本。

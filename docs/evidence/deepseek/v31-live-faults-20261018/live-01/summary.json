@@ -1,0 +1,87 @@
+{
+  "source_commit": "5af85b6d24ea31e089d63a334429968fe951bf58",
+  "source": "real_deepseek_api",
+  "cases_run": [
+    "normal_query",
+    "normal_policy",
+    "date_offset",
+    "route_error",
+    "no_citation",
+    "repeat_call",
+    "normal_purchase",
+    "skip_lock",
+    "infinite_loop"
+  ],
+  "actual_generation_requests": 18,
+  "known_tokens": {
+    "prompt": 23188,
+    "completion": 2523
+  },
+  "usage_complete": true,
+  "actual_fee": null,
+  "injection_statistics": {
+    "counts": {
+      "requested": 6,
+      "applied": 4,
+      "failed": 0,
+      "blocked": 0,
+      "not_triggered": 2,
+      "not_applicable": 0
+    },
+    "injection_success_rate": 1.0,
+    "injection_success_denominator": "applied + failed + blocked；未触发/不适用单列",
+    "agent_defect_detection_rate": null,
+    "agent_recovery_rate": null,
+    "explicit_agent_judgements": {
+      "agent_defect_detected": 0,
+      "agent_recovered": 0
+    }
+  },
+  "cases": [
+    {
+      "case": "normal_query",
+      "requests": 2,
+      "error": null
+    },
+    {
+      "case": "normal_policy",
+      "requests": 2,
+      "error": null
+    },
+    {
+      "case": "date_offset",
+      "requests": 2,
+      "error": null
+    },
+    {
+      "case": "route_error",
+      "requests": 2,
+      "error": null
+    },
+    {
+      "case": "no_citation",
+      "requests": 2,
+      "error": null
+    },
+    {
+      "case": "repeat_call",
+      "requests": 2,
+      "error": null
+    },
+    {
+      "case": "normal_purchase",
+      "requests": 2,
+      "error": null
+    },
+    {
+      "case": "skip_lock",
+      "requests": 2,
+      "error": null
+    },
+    {
+      "case": "infinite_loop",
+      "requests": 2,
+      "error": null
+    }
+  ]
+}

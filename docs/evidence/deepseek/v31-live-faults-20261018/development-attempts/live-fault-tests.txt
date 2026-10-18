@@ -1,0 +1,69 @@
+test_http_error_is_not_retried_and_never_leaks_secret_or_body (tests.test_deepseek_agent.DeepSeekAgentTests.test_http_error_is_not_retried_and_never_leaks_secret_or_body) ... ok
+test_live_write_expansion_is_rejected_and_model_cannot_pay (tests.test_deepseek_agent.DeepSeekAgentTests.test_live_write_expansion_is_rejected_and_model_cannot_pay) ... ok
+test_missing_usage_raises_safe_error_without_fake_zero_trace (tests.test_deepseek_agent.DeepSeekAgentTests.test_missing_usage_raises_safe_error_without_fake_zero_trace) ... ok
+test_policy_sources_and_multiturn_context_are_returned_to_sdk (tests.test_deepseek_agent.DeepSeekAgentTests.test_policy_sources_and_multiturn_context_are_returned_to_sdk) ... ok
+test_real_sdk_tool_call_feedback_usage_and_contract (tests.test_deepseek_agent.DeepSeekAgentTests.test_real_sdk_tool_call_feedback_usage_and_contract) ... ok
+test_reasoning_is_not_logged_and_thinking_replay_is_unsupported (tests.test_deepseek_agent.DeepSeekAgentTests.test_reasoning_is_not_logged_and_thinking_replay_is_unsupported) ... ok
+test_streamlit_missing_key_is_clear_and_does_not_fall_back (tests.test_deepseek_agent.DeepSeekAgentTests.test_streamlit_missing_key_is_clear_and_does_not_fall_back) ... 2026-10-18 21:19:29.678 WARNING streamlit.runtime.scriptrunner_utils.script_run_context: Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+ok
+test_streamlit_shows_deepseek_source_and_real_sdk_tool_result (tests.test_deepseek_agent.DeepSeekAgentTests.test_streamlit_shows_deepseek_source_and_real_sdk_tool_result) ... 2026-10-18 21:19:32.985 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+ok
+test_tool_call_count_limit_and_max_model_steps (tests.test_deepseek_agent.DeepSeekAgentTests.test_tool_call_count_limit_and_max_model_steps) ... ok
+test_tool_exception_is_returned_to_sdk_as_failure (tests.test_deepseek_agent.DeepSeekAgentTests.test_tool_exception_is_returned_to_sdk_as_failure) ... ok
+test_budget_exhaustion_retains_successful_injection_evidence (tests.test_live_faults.LiveFaultPathTests.test_budget_exhaustion_retains_successful_injection_evidence) ... ok
+test_citation_original_result_and_actual_feedback (tests.test_live_faults.LiveFaultPathTests.test_citation_original_result_and_actual_feedback) ... ok
+test_combined_route_date_repeat_real_path (tests.test_live_faults.LiveFaultPathTests.test_combined_route_date_repeat_real_path) ... ok
+test_date_actual_database_date_and_sdk_feedback (tests.test_live_faults.LiveFaultPathTests.test_date_actual_database_date_and_sdk_feedback) ... ok
+test_finite_loop_tool_limit_has_distinct_reason (tests.test_live_faults.LiveFaultPathTests.test_finite_loop_tool_limit_has_distinct_reason) ... ok
+test_finite_monitor_loop_stops_at_agent_steps_with_one_model_request (tests.test_live_faults.LiveFaultPathTests.test_finite_monitor_loop_stops_at_agent_steps_with_one_model_request) ... ok
+test_invented_citation_rejected_without_rewriting_raw_reply (tests.test_live_faults.LiveFaultPathTests.test_invented_citation_rejected_without_rewriting_raw_reply) ... ok
+test_normal_no_sidecar_and_restore_clears_mutated_memory (tests.test_live_faults.LiveFaultPathTests.test_normal_no_sidecar_and_restore_clears_mutated_memory) ... ok
+test_repeat_honors_tool_cap (tests.test_live_faults.LiveFaultPathTests.test_repeat_honors_tool_cap) ... ok
+test_repeat_one_model_call_two_real_backend_executions (tests.test_live_faults.LiveFaultPathTests.test_repeat_one_model_call_two_real_backend_executions) ... ok
+test_route_actual_query_not_policy_and_database_unchanged (tests.test_live_faults.LiveFaultPathTests.test_route_actual_query_not_policy_and_database_unchanged) ... ok
+test_sandbox_required_rejects_original_db_http_and_unbounded_budget (tests.test_live_faults.LiveFaultPathTests.test_sandbox_required_rejects_original_db_http_and_unbounded_budget) ... ok
+test_skip_lock_backend_rejects_fake_lock_no_orders_or_inventory_change (tests.test_live_faults.LiveFaultPathTests.test_skip_lock_backend_rejects_fake_lock_no_orders_or_inventory_change) ... FAIL
+test_skip_lock_does_not_bypass_payment_authorization (tests.test_live_faults.LiveFaultPathTests.test_skip_lock_does_not_bypass_payment_authorization) ... ok
+test_untriggered_and_inapplicable_are_explicit (tests.test_live_faults.LiveFaultPathTests.test_untriggered_and_inapplicable_are_explicit) ... ok
+
+======================================================================
+FAIL: test_skip_lock_backend_rejects_fake_lock_no_orders_or_inventory_change (tests.test_live_faults.LiveFaultPathTests.test_skip_lock_backend_rejects_fake_lock_no_orders_or_inventory_change)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\codexproject\ticket-agent\tests\test_live_faults.py", line 158, in test_skip_lock_backend_rejects_fake_lock_no_orders_or_inventory_change
+    self.assertTrue(entry["executed"])
+AssertionError: False is not true
+
+----------------------------------------------------------------------
+Ran 25 tests in 5.679s
+
+FAILED (failures=1)
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录

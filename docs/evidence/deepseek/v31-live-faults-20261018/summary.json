@@ -1,0 +1,134 @@
+{
+  "source_branch": "codex/ticket-agent-v31-live-faults",
+  "delivery_source_commit": "a1bc221d025ea191018ce5601f42da24c41b96ca",
+  "live_core_commit": "5af85b6d24ea31e089d63a334429968fe951bf58",
+  "live_source_note": "补充场景执行时仅测试输入及Web标签存在待提交改动；后续03ef15f仅给LangChain Mock写变异增加隔离检查。原始批次HEAD未改写。",
+  "real_generation_requests": 27,
+  "http_200_responses": 27,
+  "prompt_tokens": 42038,
+  "completion_tokens": 3733,
+  "total_tokens": 45771,
+  "actual_fee": null,
+  "actual_fee_note": "未知；未查询供应商账单或余额。",
+  "cases_run": 12,
+  "injection_statistics": {
+    "counts": {
+      "requested": 8,
+      "applied": 6,
+      "failed": 0,
+      "blocked": 0,
+      "not_triggered": 2,
+      "not_applicable": 0
+    },
+    "injection_success_rate": 1.0,
+    "injection_success_denominator": "applied + failed + blocked；未触发/不适用单列",
+    "agent_defect_detection_rate": null,
+    "agent_recovery_rate": null,
+    "explicit_agent_judgements": {
+      "agent_defect_detected": 0,
+      "agent_recovered": 0
+    }
+  },
+  "unique_live_mutations_applied": [
+    "date_offset",
+    "infinite_loop",
+    "no_citation",
+    "repeat_call",
+    "route_error",
+    "skip_lock"
+  ],
+  "checks": {
+    "all_27_http_200": true,
+    "sdk_event_usage_matches_ledger": true,
+    "date_model_original_differs_from_actual_execution": true,
+    "route_policy_request_executed_ticket_query": true,
+    "citation_original_has_doc_id_actual_result_has_none": true,
+    "repeat_one_model_call_two_executions": true,
+    "normal_selected_purchase_one_order": true,
+    "skip_reached_real_create_order_and_backend_rejected": true,
+    "skip_zero_locks_zero_orders": true,
+    "loop_one_request_three_executions_and_step_termination": true,
+    "no_pay_cancel_or_other_user_order_query": true,
+    "first_two_untriggered_attempts_preserved": true
+  },
+  "official_budget": {
+    "used": 5,
+    "limit": 5,
+    "unchanged": true
+  },
+  "protected_original_files": 622,
+  "b_assertions_unchanged": true,
+  "offline_regression": {
+    "execution": {
+      "passed": 101,
+      "total": 101,
+      "failed_ids": []
+    },
+    "execution_langchain": {
+      "passed": 100,
+      "total": 100,
+      "failed_ids": []
+    },
+    "mutation": {
+      "killed": 55,
+      "total": 55
+    },
+    "newcode": {
+      "passed": 44,
+      "failed": 0,
+      "na": 3
+    }
+  },
+  "live_errors": [
+    {
+      "case": "skip_lock_selected",
+      "error": {
+        "category": "tool_execution_failed",
+        "http_status": null
+      }
+    }
+  ],
+  "interpretation": "skip_lock_selected的后端拒绝与tool_execution_failed为预期安全证据；未触发2项单列；Agent正式检出/恢复率待B独立判定。",
+  "final_source_commit": "fc5bc46",
+  "final_offline_regression": {
+    "status": "passed",
+    "scope": "A offline regression, not B official 100 cases",
+    "real_keys_removed_from_children": true,
+    "non_loopback_python_network_blocked": true,
+    "blocked_network_attempts": 0,
+    "new_deepseek_api_requests": 0,
+    "production_budget_and_live_evidence_unchanged": true,
+    "checked_file_count": 361,
+    "runs": [
+      {
+        "name": "deepseek_unit",
+        "exit_code": 0,
+        "tests": 153,
+        "skipped": 0,
+        "log": "deepseek_unit.txt"
+      },
+      {
+        "name": "v3_unit",
+        "exit_code": 0,
+        "tests": 153,
+        "skipped": 51,
+        "log": "v3_unit.txt"
+      },
+      {
+        "name": "v2_unit",
+        "exit_code": 0,
+        "tests": 153,
+        "skipped": 102,
+        "log": "v2_unit.txt"
+      },
+      {
+        "name": "mock_smoke",
+        "exit_code": 0,
+        "tests": null,
+        "skipped": 0,
+        "log": "mock_smoke.txt"
+      }
+    ]
+  },
+  "post_live_change_note": "fc5bc46只补未执行注入和单步循环的审计边界、CLI沙箱标签；真实API场景核心行为和原始证据不改，不新增API。"
+}

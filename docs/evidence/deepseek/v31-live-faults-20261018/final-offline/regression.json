@@ -1,0 +1,40 @@
+{
+  "status": "passed",
+  "scope": "A offline regression, not B official 100 cases",
+  "real_keys_removed_from_children": true,
+  "non_loopback_python_network_blocked": true,
+  "blocked_network_attempts": 0,
+  "new_deepseek_api_requests": 0,
+  "production_budget_and_live_evidence_unchanged": true,
+  "checked_file_count": 361,
+  "runs": [
+    {
+      "name": "deepseek_unit",
+      "exit_code": 0,
+      "tests": 153,
+      "skipped": 0,
+      "log": "deepseek_unit.txt"
+    },
+    {
+      "name": "v3_unit",
+      "exit_code": 0,
+      "tests": 153,
+      "skipped": 51,
+      "log": "v3_unit.txt"
+    },
+    {
+      "name": "v2_unit",
+      "exit_code": 0,
+      "tests": 153,
+      "skipped": 102,
+      "log": "v2_unit.txt"
+    },
+    {
+      "name": "mock_smoke",
+      "exit_code": 0,
+      "tests": null,
+      "skipped": 0,
+      "log": "mock_smoke.txt"
+    }
+  ]
+}

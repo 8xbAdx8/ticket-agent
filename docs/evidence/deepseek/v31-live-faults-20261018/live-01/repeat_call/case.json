@@ -1,0 +1,590 @@
+{
+  "case": "repeat_call",
+  "source": "real_deepseek_api",
+  "model": "deepseek-flash",
+  "profile": "read_only",
+  "input": "查明天上海到杭州的高铁二等座，请查询工具后列出有余票的车次。",
+  "mutations": {
+    "repeat_call": true
+  },
+  "result": {
+    "session_id": "live-v31-repeat_call",
+    "provider": "deepseek_live",
+    "model": "deepseek-flash",
+    "user_msg": "查明天上海到杭州的高铁二等座，请查询工具后列出有余票的车次。",
+    "steps": [
+      {
+        "step": 1,
+        "calls": [
+          {
+            "tool": "query_tickets",
+            "args": {
+              "from_city": "上海",
+              "to_city": "杭州",
+              "date": "2026-10-19",
+              "seat_type": "二等座",
+              "kind": "高铁"
+            },
+            "ok": true,
+            "latency_ms": 1,
+            "result_preview": "{\"trains\": [{\"kind\": \"高铁\", \"train_no\": \"G7303\", \"from_city\": \"上海\", \"to_city\": \"杭州\", \"date\": \"2026-10-19\", \"depart\": \"12:34\", \"arrive\": \"13:34\", \"seat_type\": \"二等座\", \"price\": 73.0, \"seats_left\": 51}, {\"..."
+          },
+          {
+            "tool": "query_tickets",
+            "args": {
+              "from_city": "上海",
+              "to_city": "杭州",
+              "date": "2026-10-19",
+              "seat_type": "二等座",
+              "kind": "高铁"
+            },
+            "ok": true,
+            "latency_ms": 0,
+            "result_preview": "{\"trains\": [{\"kind\": \"高铁\", \"train_no\": \"G7303\", \"from_city\": \"上海\", \"to_city\": \"杭州\", \"date\": \"2026-10-19\", \"depart\": \"12:34\", \"arrive\": \"13:34\", \"seat_type\": \"二等座\", \"price\": 73.0, \"seats_left\": 51}, {\"..."
+          }
+        ]
+      }
+    ],
+    "tool_sequence": [
+      "query_tickets",
+      "query_tickets"
+    ],
+    "reply": "上海 → 杭州，2026-10-19（明天）高铁二等座查询结果如下，以下三个车次都有余票：\n\n| 车次 | 出发 | 到达 | 席别 | 票价 | 余票 |\n|---|---|---|---|---|---|\n| G7301 | 06:00 | 07:00 | 二等座 | ¥73.0 | 35 张 |\n| G7302 | 09:17 | 10:17 | 二等座 | ¥73.0 | 47 张 |\n| G7303 | 12:34 | 13:34 | 二等座 | ¥73.0 | 51 张 |\n\n补充说明：以上结果仅覆盖二等座查询结果；其他席别（如一等座、商务座）本次未查询，无法判断余票情况。当前仅支持模拟查票和政策咨询，不提供锁座、候补、下单或支付操作。如需了解退改签等规则，我可以帮你检索政策。",
+    "finish_reason": "stop",
+    "tokens": {
+      "prompt": 1962,
+      "completion": 347
+    },
+    "total_latency_ms": 3879
+  },
+  "error": null,
+  "fault_report": {
+    "run_id": "f5b3e995324b457a8411b642dd7d567c",
+    "session_id": "live-v31-repeat_call",
+    "mode": "deepseek_live",
+    "mutations": {
+      "repeat_call": true
+    },
+    "injection_events": [
+      {
+        "mutation": "repeat_call",
+        "stage": "tool_execution",
+        "status": "applied",
+        "original": 1,
+        "mutated": 2,
+        "reason": null,
+        "call_id": "call_00_XDyVgTfXgW9w51VziFq21865",
+        "second_ok": true
+      }
+    ],
+    "executions": [
+      {
+        "event": "tool_end",
+        "tool": "query_tickets",
+        "args": {
+          "from_city": "上海",
+          "to_city": "杭州",
+          "date": "2026-10-19",
+          "seat_type": "二等座",
+          "kind": "高铁"
+        },
+        "call_id": "call_00_XDyVgTfXgW9w51VziFq21865",
+        "ok": true,
+        "executed": true,
+        "execution_index": 1,
+        "latency_ms": 1,
+        "result": {
+          "trains": [
+            {
+              "kind": "高铁",
+              "train_no": "G7303",
+              "from_city": "上海",
+              "to_city": "杭州",
+              "date": "2026-10-19",
+              "depart": "12:34",
+              "arrive": "13:34",
+              "seat_type": "二等座",
+              "price": 73.0,
+              "seats_left": 51
+            },
+            {
+              "kind": "高铁",
+              "train_no": "G7302",
+              "from_city": "上海",
+              "to_city": "杭州",
+              "date": "2026-10-19",
+              "depart": "09:17",
+              "arrive": "10:17",
+              "seat_type": "二等座",
+              "price": 73.0,
+              "seats_left": 47
+            },
+            {
+              "kind": "高铁",
+              "train_no": "G7301",
+              "from_city": "上海",
+              "to_city": "杭州",
+              "date": "2026-10-19",
+              "depart": "06:00",
+              "arrive": "07:00",
+              "seat_type": "二等座",
+              "price": 73.0,
+              "seats_left": 35
+            }
+          ],
+          "count": 3
+        },
+        "original_result": {
+          "trains": [
+            {
+              "kind": "高铁",
+              "train_no": "G7303",
+              "from_city": "上海",
+              "to_city": "杭州",
+              "date": "2026-10-19",
+              "depart": "12:34",
+              "arrive": "13:34",
+              "seat_type": "二等座",
+              "price": 73.0,
+              "seats_left": 51
+            },
+            {
+              "kind": "高铁",
+              "train_no": "G7302",
+              "from_city": "上海",
+              "to_city": "杭州",
+              "date": "2026-10-19",
+              "depart": "09:17",
+              "arrive": "10:17",
+              "seat_type": "二等座",
+              "price": 73.0,
+              "seats_left": 47
+            },
+            {
+              "kind": "高铁",
+              "train_no": "G7301",
+              "from_city": "上海",
+              "to_city": "杭州",
+              "date": "2026-10-19",
+              "depart": "06:00",
+              "arrive": "07:00",
+              "seat_type": "二等座",
+              "price": 73.0,
+              "seats_left": 35
+            }
+          ],
+          "count": 3
+        }
+      },
+      {
+        "event": "tool_end",
+        "tool": "query_tickets",
+        "args": {
+          "from_city": "上海",
+          "to_city": "杭州",
+          "date": "2026-10-19",
+          "seat_type": "二等座",
+          "kind": "高铁"
+        },
+        "call_id": "call_00_XDyVgTfXgW9w51VziFq21865",
+        "ok": true,
+        "executed": true,
+        "execution_index": 2,
+        "latency_ms": 0,
+        "result": {
+          "trains": [
+            {
+              "kind": "高铁",
+              "train_no": "G7303",
+              "from_city": "上海",
+              "to_city": "杭州",
+              "date": "2026-10-19",
+              "depart": "12:34",
+              "arrive": "13:34",
+              "seat_type": "二等座",
+              "price": 73.0,
+              "seats_left": 51
+            },
+            {
+              "kind": "高铁",
+              "train_no": "G7302",
+              "from_city": "上海",
+              "to_city": "杭州",
+              "date": "2026-10-19",
+              "depart": "09:17",
+              "arrive": "10:17",
+              "seat_type": "二等座",
+              "price": 73.0,
+              "seats_left": 47
+            },
+            {
+              "kind": "高铁",
+              "train_no": "G7301",
+              "from_city": "上海",
+              "to_city": "杭州",
+              "date": "2026-10-19",
+              "depart": "06:00",
+              "arrive": "07:00",
+              "seat_type": "二等座",
+              "price": 73.0,
+              "seats_left": 35
+            }
+          ],
+          "count": 3
+        },
+        "original_result": {
+          "trains": [
+            {
+              "kind": "高铁",
+              "train_no": "G7303",
+              "from_city": "上海",
+              "to_city": "杭州",
+              "date": "2026-10-19",
+              "depart": "12:34",
+              "arrive": "13:34",
+              "seat_type": "二等座",
+              "price": 73.0,
+              "seats_left": 51
+            },
+            {
+              "kind": "高铁",
+              "train_no": "G7302",
+              "from_city": "上海",
+              "to_city": "杭州",
+              "date": "2026-10-19",
+              "depart": "09:17",
+              "arrive": "10:17",
+              "seat_type": "二等座",
+              "price": 73.0,
+              "seats_left": 47
+            },
+            {
+              "kind": "高铁",
+              "train_no": "G7301",
+              "from_city": "上海",
+              "to_city": "杭州",
+              "date": "2026-10-19",
+              "depart": "06:00",
+              "arrive": "07:00",
+              "seat_type": "二等座",
+              "price": 73.0,
+              "seats_left": 35
+            }
+          ],
+          "count": 3
+        }
+      }
+    ],
+    "model_requests": [
+      {
+        "model_step": 1,
+        "tool_calls": [
+          {
+            "name": "query_tickets",
+            "args": {
+              "from_city": "上海",
+              "to_city": "杭州",
+              "date": "2026-10-19",
+              "seat_type": "二等座",
+              "kind": "高铁"
+            },
+            "id": "call_00_XDyVgTfXgW9w51VziFq21865",
+            "type": "tool_call"
+          }
+        ],
+        "final_text": null
+      },
+      {
+        "model_step": 2,
+        "tool_calls": [],
+        "final_text": "上海 → 杭州，2026-10-19（明天）高铁二等座查询结果如下，以下三个车次都有余票：\n\n| 车次 | 出发 | 到达 | 席别 | 票价 | 余票 |\n|---|---|---|---|---|---|\n| G7301 | 06:00 | 07:00 | 二等座 | ¥73.0 | 35 张 |\n| G7302 | 09:17 | 10:17 | 二等座 | ¥73.0 | 47 张 |\n| G7303 | 12:34 | 13:34 | 二等座 | ¥73.0 | 51 张 |\n\n补充说明：以上结果仅覆盖二等座查询结果；其他席别（如一等座、商务座）本次未查询，无法判断余票情况。当前仅支持模拟查票和政策咨询，不提供锁座、候补、下单或支付操作。如需了解退改签等规则，我可以帮你检索政策。"
+      }
+    ],
+    "finish_reason": "stop",
+    "error": null,
+    "assessment": {
+      "agent_defect_detected": null,
+      "agent_recovered": null,
+      "note": "由B根据原始轨迹和预先定义的期望独立判定，不等同于注入成功"
+    },
+    "user_msg": "查明天上海到杭州的高铁二等座，请查询工具后列出有余票的车次。",
+    "agent_reply": "上海 → 杭州，2026-10-19（明天）高铁二等座查询结果如下，以下三个车次都有余票：\n\n| 车次 | 出发 | 到达 | 席别 | 票价 | 余票 |\n|---|---|---|---|---|---|\n| G7301 | 06:00 | 07:00 | 二等座 | ¥73.0 | 35 张 |\n| G7302 | 09:17 | 10:17 | 二等座 | ¥73.0 | 47 张 |\n| G7303 | 12:34 | 13:34 | 二等座 | ¥73.0 | 51 张 |\n\n补充说明：以上结果仅覆盖二等座查询结果；其他席别（如一等座、商务座）本次未查询，无法判断余票情况。当前仅支持模拟查票和政策咨询，不提供锁座、候补、下单或支付操作。如需了解退改签等规则，我可以帮你检索政策。",
+    "tool_sequence": [
+      "query_tickets",
+      "query_tickets"
+    ],
+    "tokens": {
+      "prompt": 1962,
+      "completion": 347
+    },
+    "trace_latency_ms": 3879
+  },
+  "framework_events": [
+    {
+      "event": "fault_run",
+      "run_id": "f5b3e995324b457a8411b642dd7d567c",
+      "mutations": {
+        "repeat_call": true
+      }
+    },
+    {
+      "event": "model_start",
+      "model_step": 1
+    },
+    {
+      "event": "model_response",
+      "model_step": 1,
+      "response_model": "deepseek-flash",
+      "usage": {
+        "input_tokens": 775,
+        "output_tokens": 137,
+        "total_tokens": 912,
+        "input_token_details": {
+          "cache_read": 640
+        },
+        "output_token_details": {}
+      },
+      "finish_reason": "tool_calls",
+      "tool_calls": [
+        {
+          "id": "call_00_XDyVgTfXgW9w51VziFq21865",
+          "name": "query_tickets",
+          "args": {
+            "from_city": "上海",
+            "to_city": "杭州",
+            "date": "2026-10-19",
+            "seat_type": "二等座",
+            "kind": "高铁"
+          }
+        }
+      ]
+    },
+    {
+      "event": "model_end",
+      "model_step": 1
+    },
+    {
+      "event": "tool_start",
+      "model_step": 1,
+      "tool": "query_tickets",
+      "args": {
+        "from_city": "上海",
+        "to_city": "杭州",
+        "date": "2026-10-19",
+        "seat_type": "二等座",
+        "kind": "高铁"
+      },
+      "call_id": "call_00_XDyVgTfXgW9w51VziFq21865",
+      "execution_index": 1,
+      "model_requested_tool": "query_tickets",
+      "model_requested_args": {
+        "from_city": "上海",
+        "to_city": "杭州",
+        "date": "2026-10-19",
+        "seat_type": "二等座",
+        "kind": "高铁"
+      }
+    },
+    {
+      "event": "tool_end",
+      "tool": "query_tickets",
+      "args": {
+        "from_city": "上海",
+        "to_city": "杭州",
+        "date": "2026-10-19",
+        "seat_type": "二等座",
+        "kind": "高铁"
+      },
+      "call_id": "call_00_XDyVgTfXgW9w51VziFq21865",
+      "ok": true,
+      "executed": true,
+      "execution_index": 1,
+      "latency_ms": 1,
+      "result": {
+        "trains": [
+          {
+            "kind": "高铁",
+            "train_no": "G7303",
+            "from_city": "上海",
+            "to_city": "杭州",
+            "date": "2026-10-19",
+            "depart": "12:34",
+            "arrive": "13:34",
+            "seat_type": "二等座",
+            "price": 73.0,
+            "seats_left": 51
+          },
+          {
+            "kind": "高铁",
+            "train_no": "G7302",
+            "from_city": "上海",
+            "to_city": "杭州",
+            "date": "2026-10-19",
+            "depart": "09:17",
+            "arrive": "10:17",
+            "seat_type": "二等座",
+            "price": 73.0,
+            "seats_left": 47
+          },
+          {
+            "kind": "高铁",
+            "train_no": "G7301",
+            "from_city": "上海",
+            "to_city": "杭州",
+            "date": "2026-10-19",
+            "depart": "06:00",
+            "arrive": "07:00",
+            "seat_type": "二等座",
+            "price": 73.0,
+            "seats_left": 35
+          }
+        ],
+        "count": 3
+      }
+    },
+    {
+      "event": "tool_start",
+      "model_step": 1,
+      "tool": "query_tickets",
+      "args": {
+        "from_city": "上海",
+        "to_city": "杭州",
+        "date": "2026-10-19",
+        "seat_type": "二等座",
+        "kind": "高铁"
+      },
+      "call_id": "call_00_XDyVgTfXgW9w51VziFq21865",
+      "execution_index": 2,
+      "model_requested_tool": "query_tickets",
+      "model_requested_args": {
+        "from_city": "上海",
+        "to_city": "杭州",
+        "date": "2026-10-19",
+        "seat_type": "二等座",
+        "kind": "高铁"
+      }
+    },
+    {
+      "event": "tool_end",
+      "tool": "query_tickets",
+      "args": {
+        "from_city": "上海",
+        "to_city": "杭州",
+        "date": "2026-10-19",
+        "seat_type": "二等座",
+        "kind": "高铁"
+      },
+      "call_id": "call_00_XDyVgTfXgW9w51VziFq21865",
+      "ok": true,
+      "executed": true,
+      "execution_index": 2,
+      "latency_ms": 0,
+      "result": {
+        "trains": [
+          {
+            "kind": "高铁",
+            "train_no": "G7303",
+            "from_city": "上海",
+            "to_city": "杭州",
+            "date": "2026-10-19",
+            "depart": "12:34",
+            "arrive": "13:34",
+            "seat_type": "二等座",
+            "price": 73.0,
+            "seats_left": 51
+          },
+          {
+            "kind": "高铁",
+            "train_no": "G7302",
+            "from_city": "上海",
+            "to_city": "杭州",
+            "date": "2026-10-19",
+            "depart": "09:17",
+            "arrive": "10:17",
+            "seat_type": "二等座",
+            "price": 73.0,
+            "seats_left": 47
+          },
+          {
+            "kind": "高铁",
+            "train_no": "G7301",
+            "from_city": "上海",
+            "to_city": "杭州",
+            "date": "2026-10-19",
+            "depart": "06:00",
+            "arrive": "07:00",
+            "seat_type": "二等座",
+            "price": 73.0,
+            "seats_left": 35
+          }
+        ],
+        "count": 3
+      }
+    },
+    {
+      "event": "model_start",
+      "model_step": 2
+    },
+    {
+      "event": "model_response",
+      "model_step": 2,
+      "response_model": "deepseek-flash",
+      "usage": {
+        "input_tokens": 1187,
+        "output_tokens": 210,
+        "total_tokens": 1397,
+        "input_token_details": {
+          "cache_read": 896
+        },
+        "output_token_details": {}
+      },
+      "finish_reason": "stop",
+      "tool_calls": []
+    },
+    {
+      "event": "model_final",
+      "model_step": 2,
+      "text": "上海 → 杭州，2026-10-19（明天）高铁二等座查询结果如下，以下三个车次都有余票：\n\n| 车次 | 出发 | 到达 | 席别 | 票价 | 余票 |\n|---|---|---|---|---|---|\n| G7301 | 06:00 | 07:00 | 二等座 | ¥73.0 | 35 张 |\n| G7302 | 09:17 | 10:17 | 二等座 | ¥73.0 | 47 张 |\n| G7303 | 12:34 | 13:34 | 二等座 | ¥73.0 | 51 张 |\n\n补充说明：以上结果仅覆盖二等座查询结果；其他席别（如一等座、商务座）本次未查询，无法判断余票情况。当前仅支持模拟查票和政策咨询，不提供锁座、候补、下单或支付操作。如需了解退改签等规则，我可以帮你检索政策。"
+    },
+    {
+      "event": "model_end",
+      "model_step": 2
+    }
+  ],
+  "request_count": 2,
+  "requests": [
+    {
+      "id": 1,
+      "created": "2026-10-18T13:27:20.287173+00:00",
+      "status": 200,
+      "category": "response_received",
+      "prompt": 775,
+      "completion": 137,
+      "model": "deepseek-flash"
+    },
+    {
+      "id": 2,
+      "created": "2026-10-18T13:27:22.420558+00:00",
+      "status": 200,
+      "category": "response_received",
+      "prompt": 1187,
+      "completion": 210,
+      "model": "deepseek-flash"
+    }
+  ],
+  "known_tokens": {
+    "prompt": 1962,
+    "completion": 347
+  },
+  "usage_complete": true,
+  "database_counts": {
+    "inventory": 2100,
+    "locks": 0,
+    "orders": 0
+  },
+  "database_unchanged": true,
+  "latency_ms": 5429,
+  "max_retries": 0,
+  "actual_fee": null,
+  "judgement": "A运行证据；Agent缺陷检出与恢复由B独立判定"
+}

@@ -1,0 +1,463 @@
+{
+  "case": "normal_purchase_selected",
+  "source": "real_deepseek_api",
+  "model": "deepseek-flash",
+  "profile": "full_sandbox",
+  "input": "帮我订明天上海到杭州G7301高铁二等座一张，乘客张三，联系手机号13800000001。已确认选择G7301且同意先锁座再创建模拟订单；不要支付，不用再次询问。",
+  "mutations": {},
+  "result": {
+    "session_id": "live-v31-normal_purchase_selected",
+    "provider": "deepseek_live",
+    "model": "deepseek-flash",
+    "user_msg": "帮我订明天上海到杭州G7301高铁二等座一张，乘客张三，联系手机号13800000001。已确认选择G7301且同意先锁座再创建模拟订单；不要支付，不用再次询问。",
+    "steps": [
+      {
+        "step": 1,
+        "calls": [
+          {
+            "tool": "query_tickets",
+            "args": {
+              "from_city": "上海",
+              "to_city": "杭州",
+              "date": "2026-10-19",
+              "kind": "高铁",
+              "seat_type": "二等座"
+            },
+            "ok": true,
+            "latency_ms": 1,
+            "result_preview": "{\"trains\": [{\"kind\": \"高铁\", \"train_no\": \"G7303\", \"from_city\": \"上海\", \"to_city\": \"杭州\", \"date\": \"2026-10-19\", \"depart\": \"12:34\", \"arrive\": \"13:34\", \"seat_type\": \"二等座\", \"price\": 73.0, \"seats_left\": 51}, {\"..."
+          }
+        ]
+      },
+      {
+        "step": 2,
+        "calls": [
+          {
+            "tool": "lock_seat",
+            "args": {
+              "train_no": "G7301",
+              "date": "2026-10-19",
+              "seat_type": "二等座",
+              "passengers": [
+                "张三"
+              ]
+            },
+            "ok": true,
+            "latency_ms": 6,
+            "result_preview": "{\"lock_id\": \"LK459c1f38\", \"train_no\": \"G7301\", \"date\": \"2026-10-19\", \"seat_type\": \"二等座\", \"passengers\": [\"张三\"], \"unit_price\": 73.0, \"count\": 1, \"expire_at\": \"2026-10-18T21:43:49.848999\", \"ttl_seconds\":..."
+          }
+        ]
+      },
+      {
+        "step": 3,
+        "calls": [
+          {
+            "tool": "create_order",
+            "args": {
+              "lock_id": "LK459c1f38",
+              "passenger_ids": [
+                "张三"
+              ],
+              "contact": "13800000001"
+            },
+            "ok": true,
+            "latency_ms": 4,
+            "result_preview": "{\"order_id\": \"ODe95b45f106\", \"phone\": \"13800000001\", \"train_no\": \"G7301\", \"date\": \"2026-10-19\", \"seat_type\": \"二等座\", \"passengers\": \"[\\\"张三\\\"]\", \"amount\": 73.0, \"status\": \"pending\", \"created_at\": \"2026-1..."
+          }
+        ]
+      }
+    ],
+    "tool_sequence": [
+      "query_tickets",
+      "lock_seat",
+      "create_order"
+    ],
+    "reply": "订单已创建完成，按你的要求未支付。\n\n| 项目 | 内容 |\n|---|---|\n| 订单号 | ODe95b45f106 |\n| 车次 | G7301（上海 06:00 → 杭州 07:00） |\n| 日期 | 2026-10-19（明天） |\n| 席别 | 二等座 ×1 |\n| 乘客 | 张三 |\n| 联系手机 | 13800000001 |\n| 金额 | ¥73.00 |\n| 状态 | 待支付（pending） |\n| 锁座截止 | 2026-10-18 21:43:49 |\n\n座位已锁定，锁座有效期约 15 分钟，请留意这个时限；如需了解未支付订单的具体处理规则，可以再让我查询政策条款。需要支付时告诉我支付方式即可。",
+    "finish_reason": "stop",
+    "tokens": {
+      "prompt": 8687,
+      "completion": 524
+    },
+    "total_latency_ms": 6265
+  },
+  "error": null,
+  "fault_report": null,
+  "framework_events": [
+    {
+      "event": "model_start",
+      "model_step": 1
+    },
+    {
+      "event": "model_response",
+      "model_step": 1,
+      "response_model": "deepseek-flash",
+      "usage": {
+        "input_tokens": 1696,
+        "output_tokens": 139,
+        "total_tokens": 1835,
+        "input_token_details": {
+          "cache_read": 1408
+        },
+        "output_token_details": {}
+      },
+      "finish_reason": "tool_calls",
+      "tool_calls": [
+        {
+          "id": "call_00_bhJlqVQZ0lZpbfg2dwDY3114",
+          "name": "query_tickets",
+          "args": {
+            "from_city": "上海",
+            "to_city": "杭州",
+            "date": "2026-10-19",
+            "kind": "高铁",
+            "seat_type": "二等座"
+          }
+        }
+      ]
+    },
+    {
+      "event": "model_end",
+      "model_step": 1
+    },
+    {
+      "event": "tool_start",
+      "model_step": 1,
+      "tool": "query_tickets",
+      "args": {
+        "from_city": "上海",
+        "to_city": "杭州",
+        "date": "2026-10-19",
+        "kind": "高铁",
+        "seat_type": "二等座"
+      },
+      "call_id": "call_00_bhJlqVQZ0lZpbfg2dwDY3114",
+      "execution_index": 1,
+      "model_requested_tool": "query_tickets",
+      "model_requested_args": {
+        "from_city": "上海",
+        "to_city": "杭州",
+        "date": "2026-10-19",
+        "kind": "高铁",
+        "seat_type": "二等座"
+      }
+    },
+    {
+      "event": "tool_end",
+      "tool": "query_tickets",
+      "args": {
+        "from_city": "上海",
+        "to_city": "杭州",
+        "date": "2026-10-19",
+        "kind": "高铁",
+        "seat_type": "二等座"
+      },
+      "call_id": "call_00_bhJlqVQZ0lZpbfg2dwDY3114",
+      "ok": true,
+      "executed": true,
+      "execution_index": 1,
+      "latency_ms": 1,
+      "result": {
+        "trains": [
+          {
+            "kind": "高铁",
+            "train_no": "G7303",
+            "from_city": "上海",
+            "to_city": "杭州",
+            "date": "2026-10-19",
+            "depart": "12:34",
+            "arrive": "13:34",
+            "seat_type": "二等座",
+            "price": 73.0,
+            "seats_left": 51
+          },
+          {
+            "kind": "高铁",
+            "train_no": "G7302",
+            "from_city": "上海",
+            "to_city": "杭州",
+            "date": "2026-10-19",
+            "depart": "09:17",
+            "arrive": "10:17",
+            "seat_type": "二等座",
+            "price": 73.0,
+            "seats_left": 47
+          },
+          {
+            "kind": "高铁",
+            "train_no": "G7301",
+            "from_city": "上海",
+            "to_city": "杭州",
+            "date": "2026-10-19",
+            "depart": "06:00",
+            "arrive": "07:00",
+            "seat_type": "二等座",
+            "price": 73.0,
+            "seats_left": 35
+          }
+        ],
+        "count": 3
+      }
+    },
+    {
+      "event": "model_start",
+      "model_step": 2
+    },
+    {
+      "event": "model_response",
+      "model_step": 2,
+      "response_model": "deepseek-flash",
+      "usage": {
+        "input_tokens": 2110,
+        "output_tokens": 121,
+        "total_tokens": 2231,
+        "input_token_details": {
+          "cache_read": 1792
+        },
+        "output_token_details": {}
+      },
+      "finish_reason": "tool_calls",
+      "tool_calls": [
+        {
+          "id": "call_00_NJ2DnLsig1cVkEiQMbxU6928",
+          "name": "lock_seat",
+          "args": {
+            "train_no": "G7301",
+            "date": "2026-10-19",
+            "seat_type": "二等座",
+            "passengers": [
+              "张三"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "event": "model_end",
+      "model_step": 2
+    },
+    {
+      "event": "tool_start",
+      "model_step": 2,
+      "tool": "lock_seat",
+      "args": {
+        "train_no": "G7301",
+        "date": "2026-10-19",
+        "seat_type": "二等座",
+        "passengers": [
+          "张三"
+        ]
+      },
+      "call_id": "call_00_NJ2DnLsig1cVkEiQMbxU6928",
+      "execution_index": 1,
+      "model_requested_tool": "lock_seat",
+      "model_requested_args": {
+        "train_no": "G7301",
+        "date": "2026-10-19",
+        "seat_type": "二等座",
+        "passengers": [
+          "张三"
+        ]
+      }
+    },
+    {
+      "event": "tool_end",
+      "tool": "lock_seat",
+      "args": {
+        "train_no": "G7301",
+        "date": "2026-10-19",
+        "seat_type": "二等座",
+        "passengers": [
+          "张三"
+        ]
+      },
+      "call_id": "call_00_NJ2DnLsig1cVkEiQMbxU6928",
+      "ok": true,
+      "executed": true,
+      "execution_index": 1,
+      "latency_ms": 6,
+      "result": {
+        "lock_id": "LK459c1f38",
+        "train_no": "G7301",
+        "date": "2026-10-19",
+        "seat_type": "二等座",
+        "passengers": [
+          "张三"
+        ],
+        "unit_price": 73.0,
+        "count": 1,
+        "expire_at": "2026-10-18T21:43:49.848999",
+        "ttl_seconds": 900
+      }
+    },
+    {
+      "event": "model_start",
+      "model_step": 3
+    },
+    {
+      "event": "model_response",
+      "model_step": 3,
+      "response_model": "deepseek-flash",
+      "usage": {
+        "input_tokens": 2335,
+        "output_tokens": 82,
+        "total_tokens": 2417,
+        "input_token_details": {
+          "cache_read": 2176
+        },
+        "output_token_details": {}
+      },
+      "finish_reason": "tool_calls",
+      "tool_calls": [
+        {
+          "id": "call_00_1GxuhkMUSzXoYW83znox4215",
+          "name": "create_order",
+          "args": {
+            "lock_id": "LK459c1f38",
+            "passenger_ids": [
+              "张三"
+            ],
+            "contact": "13800000001"
+          }
+        }
+      ]
+    },
+    {
+      "event": "model_end",
+      "model_step": 3
+    },
+    {
+      "event": "tool_start",
+      "model_step": 3,
+      "tool": "create_order",
+      "args": {
+        "lock_id": "LK459c1f38",
+        "passenger_ids": [
+          "张三"
+        ],
+        "contact": "13800000001"
+      },
+      "call_id": "call_00_1GxuhkMUSzXoYW83znox4215",
+      "execution_index": 1,
+      "model_requested_tool": "create_order",
+      "model_requested_args": {
+        "lock_id": "LK459c1f38",
+        "passenger_ids": [
+          "张三"
+        ],
+        "contact": "13800000001"
+      }
+    },
+    {
+      "event": "tool_end",
+      "tool": "create_order",
+      "args": {
+        "lock_id": "LK459c1f38",
+        "passenger_ids": [
+          "张三"
+        ],
+        "contact": "13800000001"
+      },
+      "call_id": "call_00_1GxuhkMUSzXoYW83znox4215",
+      "ok": true,
+      "executed": true,
+      "execution_index": 1,
+      "latency_ms": 4,
+      "result": {
+        "order_id": "ODe95b45f106",
+        "phone": "13800000001",
+        "train_no": "G7301",
+        "date": "2026-10-19",
+        "seat_type": "二等座",
+        "passengers": "[\"张三\"]",
+        "amount": 73.0,
+        "status": "pending",
+        "created_at": "2026-10-18T21:28:51.088707",
+        "lock_id": "LK459c1f38",
+        "idempotent_hit": false
+      }
+    },
+    {
+      "event": "model_start",
+      "model_step": 4
+    },
+    {
+      "event": "model_response",
+      "model_step": 4,
+      "response_model": "deepseek-flash",
+      "usage": {
+        "input_tokens": 2546,
+        "output_tokens": 182,
+        "total_tokens": 2728,
+        "input_token_details": {
+          "cache_read": 2304
+        },
+        "output_token_details": {}
+      },
+      "finish_reason": "stop",
+      "tool_calls": []
+    },
+    {
+      "event": "model_final",
+      "model_step": 4,
+      "text": "订单已创建完成，按你的要求未支付。\n\n| 项目 | 内容 |\n|---|---|\n| 订单号 | ODe95b45f106 |\n| 车次 | G7301（上海 06:00 → 杭州 07:00） |\n| 日期 | 2026-10-19（明天） |\n| 席别 | 二等座 ×1 |\n| 乘客 | 张三 |\n| 联系手机 | 13800000001 |\n| 金额 | ¥73.00 |\n| 状态 | 待支付（pending） |\n| 锁座截止 | 2026-10-18 21:43:49 |\n\n座位已锁定，锁座有效期约 15 分钟，请留意这个时限；如需了解未支付订单的具体处理规则，可以再让我查询政策条款。需要支付时告诉我支付方式即可。"
+    },
+    {
+      "event": "model_end",
+      "model_step": 4
+    }
+  ],
+  "request_count": 4,
+  "requests": [
+    {
+      "id": 1,
+      "created": "2026-10-18T13:28:46.523875+00:00",
+      "status": 200,
+      "category": "response_received",
+      "prompt": 1696,
+      "completion": 139,
+      "model": "deepseek-flash"
+    },
+    {
+      "id": 2,
+      "created": "2026-10-18T13:28:48.462467+00:00",
+      "status": 200,
+      "category": "response_received",
+      "prompt": 2110,
+      "completion": 121,
+      "model": "deepseek-flash"
+    },
+    {
+      "id": 3,
+      "created": "2026-10-18T13:28:49.855759+00:00",
+      "status": 200,
+      "category": "response_received",
+      "prompt": 2335,
+      "completion": 82,
+      "model": "deepseek-flash"
+    },
+    {
+      "id": 4,
+      "created": "2026-10-18T13:28:51.102969+00:00",
+      "status": 200,
+      "category": "response_received",
+      "prompt": 2546,
+      "completion": 182,
+      "model": "deepseek-flash"
+    }
+  ],
+  "known_tokens": {
+    "prompt": 8687,
+    "completion": 524
+  },
+  "usage_complete": true,
+  "database_counts": {
+    "inventory": 2100,
+    "locks": 1,
+    "orders": 1
+  },
+  "database_unchanged": false,
+  "latency_ms": 7752,
+  "max_retries": 0,
+  "actual_fee": null,
+  "judgement": "A运行证据；Agent缺陷检出与恢复由B独立判定"
+}

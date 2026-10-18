@@ -1,0 +1,27 @@
+test_deepseek_readonly_quality (unittest.loader._FailedTest.test_deepseek_readonly_quality) ... ERROR
+test_citation_removed_from_real_result_without_mutating_original (tests.test_fault_injection.FaultDefinitionTests.test_citation_removed_from_real_result_without_mutating_original) ... ok
+test_date_original_and_actual_are_independent (tests.test_fault_injection.FaultDefinitionTests.test_date_original_and_actual_are_independent) ... ok
+test_default_and_config_validation (tests.test_fault_injection.FaultDefinitionTests.test_default_and_config_validation) ... ok
+test_disabled_is_noop_and_runs_do_not_leak (tests.test_fault_injection.FaultDefinitionTests.test_disabled_is_noop_and_runs_do_not_leak) ... ok
+test_invalid_date_fails_explicitly (tests.test_fault_injection.FaultDefinitionTests.test_invalid_date_fails_explicitly) ... ok
+test_multiple_faults_have_fixed_order_and_untriggered_reason (tests.test_fault_injection.FaultDefinitionTests.test_multiple_faults_have_fixed_order_and_untriggered_reason) ... ok
+test_route_means_policy_to_ticket_not_city_swap (tests.test_fault_injection.FaultDefinitionTests.test_route_means_policy_to_ticket_not_city_swap) ... ok
+test_statistics_do_not_invent_agent_judgements (tests.test_fault_injection.FaultDefinitionTests.test_statistics_do_not_invent_agent_judgements) ... ok
+
+======================================================================
+ERROR: test_deepseek_readonly_quality (unittest.loader._FailedTest.test_deepseek_readonly_quality)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: test_deepseek_readonly_quality
+Traceback (most recent call last):
+  File "C:\Users\W\AppData\Roaming\uv\python\cpython-3.12.14-windows-x86_64-none\Lib\unittest\loader.py", line 137, in loadTestsFromName
+    module = __import__(module_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\codexproject\ticket-agent\tests\test_deepseek_readonly_quality.py", line 12, in <module>
+    import test_deepseek_agent as fixtures
+ModuleNotFoundError: No module named 'test_deepseek_agent'
+
+
+----------------------------------------------------------------------
+Ran 9 tests in 0.002s
+
+FAILED (errors=1)
