@@ -12,12 +12,24 @@ import uuid
 import json
 from datetime import datetime, timedelta
 from contextlib import contextmanager
+from contextvars import ContextVar
 
 import sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 import config
 from data.seed import build_db
+_DATABASE_OVERRIDE = ContextVar("ticket_database_override",default=None)
+
+
+@contextmanager
+def database_scope(path):
+    """测试线程的独立DB作用域；默认业务路径不变，不修改全局config。"""
+    token=_DATABASE_OVERRIDE.set(Path(path))
+    try:
+        yield
+    finally:
+        _DATABASE_OVERRIDE.reset(token)
 
 # ---------------- 故障注入（供边界测试与变异测试使用）----------------
 FAULTS = {}   # {"query_tickets": "timeout"}  支持 timeout / error / empty
@@ -47,9 +59,10 @@ def _check_fault(tool_name):
 
 @contextmanager
 def _conn():
-    if not config.DB_PATH.exists():
-        build_db()
-    c = sqlite3.connect(config.DB_PATH)
+    path=_DATABASE_OVERRIDE.get() or config.DB_PATH
+    if not path.exists():
+        build_db(path)
+    c = sqlite3.connect(path)
     c.row_factory = sqlite3.Row
     try:
         c.execute("BEGIN IMMEDIATE")

@@ -33,7 +33,7 @@ def sanitize(value):
         if depth>40:return {"omitted":"maximum audit depth"}
         if isinstance(obj,dict):
             return {str(k):("<redacted>" if str(k).lower() in {"authorization","api_key","access_token","refresh_token","cookie","set-cookie","id_card"}
-                    else ["person#"+hashlib.sha256(str(p).encode()).hexdigest()[:12] for p in v] if str(k) in {"passengers","passenger_ids"} and isinstance(v,list)
+                    else [p if isinstance(p,str) and p.startswith("person#") else "person#"+hashlib.sha256(str(p).encode()).hexdigest()[:12] for p in v] if str(k) in {"passengers","passenger_ids"} and isinstance(v,list)
                     else walk(v,depth+1)) for k,v in obj.items() if str(k).lower() not in {"reasoning_content","chain_of_thought"}}
         if isinstance(obj,(list,tuple)):return [walk(v,depth+1) for v in obj]
         if isinstance(obj,str):return text(obj)
