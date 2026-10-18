@@ -124,6 +124,8 @@ def probe(scenario="same_lock_two", *, mutant=False, workers=None, save=False, t
                 assertion("followup_query_matches_persisted_orders",followup["count"]==len(stored),"follow-up query misses persisted orders",["followup_query"]),
                 assertion("all_requests_reached_barrier",len({r["thread_id"] for r in requests})==workers,"workers did not overlap at start barrier",["requests"])]
         defect=any(c["passed"] is False for c in checks)
+        for check in checks:
+            check["evidence_refs"]=[f"audit:{trace_id}#/"+ref for ref in check["evidence_refs"]]
         if mutant:
             fault.emit("concurrent_duplicate_order",{"orders_per_lock":1,"original_schema_unique_lock_id":True},
                 {"orders_per_lock":dict(counts),"source_database_unchanged":hashlib.sha256(source.read_bytes()).hexdigest()==source_hash},
@@ -142,7 +144,7 @@ def probe(scenario="same_lock_two", *, mutant=False, workers=None, save=False, t
                 "actual_behavior":{"orders":len(stored),"distinct_returned_ids":len(returned),"counts_by_lock":dict(counts)},"assertions":checks,
                 "dimensions":{"injection_applied":True if mutant and scenario!="different_locks" else None,"platform_defect_detected":defect,"agent_anomaly_recognized":None,
                               "agent_recovered":None,"safe_stop":None,"business_correct":not defect},
-                "quality_verdict":"fail" if defect else "pass","test_verdict":"pass" if (defect if mutant else not defect) else "fail",
+                "quality_verdict":"fail" if defect else "pass","test_verdict":"not_applicable" if mutant and scenario=="different_locks" else "pass" if (defect if mutant else not defect) else "fail",
                 "failure_reasons":[c["failure_reason"] for c in checks if c["passed"] is False]},
             "real_api_requests":0,"resources_cleaned":False}
     audit["resources_cleaned"]=not root.exists()

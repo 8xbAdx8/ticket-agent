@@ -19,6 +19,25 @@ def digest(value):
     return hashlib.sha256(json.dumps(value,ensure_ascii=False,sort_keys=True,default=str).encode()).hexdigest()
 
 
+def redact_credentials(value):
+    """公开契约只隐藏凭据，不改正常业务参数或个人字段的原语义。"""
+    import config
+    secrets={v for k,v in os.environ.items() if k.endswith(("_API_KEY","_ACCESS_TOKEN")) and v}
+    if config.API_KEY: secrets.add(config.API_KEY)
+    def walk(obj):
+        if isinstance(obj,dict):
+            return {str(k):("<redacted>" if str(k).lower() in {
+                "authorization","api_key","access_token","refresh_token","cookie","set-cookie"} else walk(v))
+                for k,v in obj.items() if str(k).lower() not in {"reasoning_content","chain_of_thought"}}
+        if isinstance(obj,(list,tuple)):return [walk(v) for v in obj]
+        if isinstance(obj,str):
+            for secret in sorted(secrets,key=len,reverse=True):obj=obj.replace(secret,"<redacted>")
+            obj=re.sub(r"(?i)\bBearer\s+[A-Za-z0-9._~+/=-]+","Bearer <redacted>",obj)
+            obj=re.sub(r'''(?i)(["']?(?:authorization|api_key|access_token|refresh_token)["']?\s*[:=]\s*)["'][^"'\r\n]*["']''',r'\1"<redacted>"',obj)
+        return obj
+    return walk(value)
+
+
 def sanitize(value):
     """仅用于旁证。保留结构，隐藏认证/个人字段；不修改真实工具执行参数。"""
     import config
@@ -39,7 +58,7 @@ def sanitize(value):
         if isinstance(obj,str):return text(obj)
         if obj is None or isinstance(obj,(bool,int,float)):return obj
         return text(str(obj))
-    return walk(value)
+    return walk(redact_credentials(value))
 
 
 def authority_snapshot(path):
@@ -98,10 +117,15 @@ def mutation_events(report, trace_id):
         status={"failed":"error","prepared":"error"}.get(event["status"],event["status"])
         result.append({"mutation_id":IDS[name],"event_id":event.get("event_id",uuid.uuid4().hex),"mutation_name":name,
             "enabled":True,"applicable":False if status=="not_applicable" else None if status=="not_triggered" else True,
-            "status":status,"injection_stage":event["stage"],"target":event.get("target",event.get("mutated",{}).get("name") if isinstance(event.get("mutated"),dict) else None),
+            "status":status,"injection_stage":event["stage"],"target":event.get("target") or {
+                "date_offset":"query_tickets.date","route_error":"tool.name","skip_lock":"lock_seat/create_order",
+                "repeat_call":"backend execution count","infinite_loop":"monitor_seat loop",
+                "no_citation":"search_policy.hits.doc_id","hallucinated_train":"query_tickets.trains",
+                "concurrent_duplicate_order":"isolated orders.lock_id uniqueness"}[name],
             "before":event.get("original"),"after":event.get("mutated"),"reason":event.get("reason"),
-            "related_step":event.get("related_step"),"related_tool_call_id":event.get("call_id"),
-            "timestamp":event.get("timestamp"),"evidence_ref":f"audit:{trace_id}#/fault_report/injection_events/{index}"})
+            "related_step":event.get("related_step") or next((e.get("step") for e in (report or {}).get("executions",[]) if e.get("call_id")==event.get("call_id") and event.get("call_id")),None),
+            "related_tool_call_id":event.get("call_id"),
+            "timestamp":event.get("timestamp") or datetime.now(timezone.utc).isoformat(),"evidence_ref":f"audit:{trace_id}#/fault_report/injection_events/{index}"})
     for name in IDS:
         if name not in enabled:
             result.append({"mutation_id":IDS[name],"event_id":uuid.uuid4().hex,"mutation_name":name,"enabled":False,
@@ -133,7 +157,9 @@ def evaluate(public_trace, report, authority, *, error=None, raw_model_reply=Non
     query_runs=[e for e in actual if e.get("tool")=="query_tickets" and e.get("ok")]
     actual_dates=[e.get("args",{}).get("date") for e in query_runs]
     if expected_date and model_dates:
-        checks.append(assertion("model_original_date_matches_user",model_dates[0]==expected_date,"model argument error before execution",["model_requests","user_conditions"]))
+        legacy=all(m.get("source")=="legacy_provider" for m in model)
+        checks.append(assertion("model_original_date_matches_user",None if legacy else model_dates[0]==expected_date,
+            "Legacy脚本参数已经过Provider变异，不能冒充独立的原模型参数" if legacy else "model argument error before execution",["model_requests","user_conditions"]))
     if expected_date and actual_dates:
         checks.append(assertion("executed_query_date_matches_user",actual_dates[-1]==expected_date,"actual query date differs from user requirement",["executions","user_conditions"]))
     routed=[e for e in actual if any(c.get("id")==e.get("call_id") and c["name"]=="search_policy" for c in calls)]
@@ -144,6 +170,9 @@ def evaluate(public_trace, report, authority, *, error=None, raw_model_reply=Non
     duplicate=[{"call_id":key[0],"tool":key[1],"count":len(items)} for key,items in grouped.items() if key[0] and len(items)>1]
     if calls:
         checks.append(assertion("no_extra_execution_per_model_call",not duplicate,"one model request caused repeated backend execution",["model_requests","executions"]))
+    loop_runs=[e for e in actual if e.get("tool")=="monitor_seat"]
+    if enabled.get("infinite_loop") and len(loop_runs)>1:
+        checks.append(assertion("no_forced_monitor_loop",False,"injected monitor repetitions observed; inspect finite stop reason",["executions"]))
     uncited=[e for e in actual if e["tool"]=="search_policy" and isinstance(e.get("result"),dict) and e["result"].get("hits")
              and any(not h.get("doc_id") for h in e["result"]["hits"])]
     if uncited:checks.append(assertion("retrieved_policy_has_citations",False,"model-visible policy result has missing citation",["executions"]))
@@ -171,9 +200,11 @@ def evaluate(public_trace, report, authority, *, error=None, raw_model_reply=Non
     applied=[e for e in report.get("injection_events",[]) if e["status"]=="applied"]
     return {"case_id":public_trace.get("session_id"),"expected_behavior":"parameters, source truth, routing and order invariants hold",
         "actual_behavior":{"user_requested_date":expected_date,"model_original_dates":model_dates,"actual_query_dates":actual_dates,
-                           "model_tool_requests":len(calls),"python_executions":len(actual),"duplicate_executions":duplicate},
+                           "model_tool_requests":len(calls),"python_executions":len(actual),
+                           "unknown_execution_attempts":sum(e.get("executed") is None for e in executions),"duplicate_executions":duplicate,
+                           "monitor_executions":len(loop_runs),"finish_reason":public_trace.get("finish_reason")},
         "assertions":checks,"hallucination":hall,
-        "dimensions":{"injection_applied":bool(applied) if enabled else None,
+        "dimensions":{"injection_applied":bool(applied) if any(e["status"]!="not_applicable" for e in report.get("injection_events",[])) else None,
                       "platform_defect_detected":defect if actual or hall["findings"] else None,
                       "agent_anomaly_recognized":True if corrected else None,
                       "agent_recovered":True if corrected and business else None,
@@ -194,7 +225,16 @@ def make_audit(trace, fault_run, *, events=(), error=None, save=True, public_tra
            "public_trace":public_trace,"public_trace_sha256":digest(public_trace),"contract_returned":error is None,
            "fault_report":report,"mutation_events":mutation_events(report,trace.trace_id),
            "framework_events":list(events),"authority":authority,"raw_model_reply":raw,"error":error,
+           "token_usage_evidence":{"status":"unknown_or_partial" if error else "reported",
+                                   "reported":None if error and error.get("category")=="token_usage_unknown" else trace.tokens,
+                                   "note":"Mock/SDK桩数值不是实际API用量；失败轮不得据此计算完整费用"},
            "judgement":evaluate(public_trace,report,authority,error=error,raw_model_reply=raw)}
+    audit["judgement"]["case_id"]=trace.trace_id
+    locations={"model_requests":"fault_report/model_requests","executions":"fault_report/executions","user_conditions":"judgement/actual_behavior/user_requested_date",
+               "hallucination":"judgement/hallucination","authority":"authority","authority/orders":"authority/orders"}
+    for check in audit["judgement"]["assertions"]:
+        check["evidence_refs"]=[f"audit:{trace.trace_id}#/"+locations.get(ref,ref) for ref in check["evidence_refs"]]
+    audit["public_trace_hash_scope"]="original public contract before sidecar personal-data masking"
     audit=sanitize(audit)
     if save:save_audit(audit)
     return audit
@@ -230,14 +270,17 @@ def read_audits(directory):
     if not path.exists():return []
     result=[]
     for line in path.read_text(encoding="utf-8").splitlines():
+        if not line.strip():continue
         try:
             record=json.loads(line)
+            if not isinstance(record,dict):raise ValueError("audit must be an object")
             if record.get("full_evidence",{}).get("available"):
                 ref=record["full_evidence"];blob=(directory/ref["path"]).resolve()
                 if not blob.is_relative_to(directory.resolve()):raise ValueError("invalid blob path")
                 data=blob.read_bytes()
                 if hashlib.sha256(data).hexdigest()!=ref["sha256"]:raise ValueError("blob digest mismatch")
                 record=json.loads(data)
+                if not isinstance(record,dict):raise ValueError("audit blob must be an object")
             result.append(record)
         except (ValueError,OSError):
             result.append({"schema_version":"unreadable","judgement":{"quality_verdict":"indeterminate","failure_reasons":["missing/corrupt evidence"]}})
@@ -247,9 +290,20 @@ def read_audits(directory):
 def metrics(audits):
     output={}
     for name in ("injection_applied","platform_defect_detected","agent_anomaly_recognized","agent_recovered","safe_stop","business_correct"):
-        values=[a.get("judgement",{}).get("dimensions",{}).get(name) for a in audits]
+        values=[a.get("judgement",{}).get("dimensions",{}).get(name) if name not in {"platform_defect_detected","agent_anomaly_recognized","agent_recovered"}
+                or a.get("judgement",{}).get("dimensions",{}).get("injection_applied") is True else None for a in audits]
         known=[v for v in values if type(v) is bool]
         output[name]={"numerator":sum(known),"denominator":len(known),"indeterminate_or_not_applicable":len(values)-len(known),
                       "rate":sum(known)/len(known) if known else None}
-    output["note"]="Each denominator includes only determinate rule outcomes; injection-disabled and unknown semantics excluded."
+    labelled=[a for a in audits if type(a.get("test_expectations",{}).get("hallucination_should_detect")) is bool]
+    confusion={k:0 for k in ("true_positive","false_positive","true_negative","false_negative","indeterminate")}
+    for audit in labelled:
+        expected=audit["test_expectations"]["hallucination_should_detect"]
+        actual=audit.get("judgement",{}).get("hallucination",{}).get("hallucination_detected")
+        key="indeterminate" if actual is None else "true_positive" if expected and actual else "false_negative" if expected else "false_positive" if actual else "true_negative"
+        confusion[key]+=1
+    determinate=len(labelled)-confusion["indeterminate"]
+    output["hallucination_labelled_benchmark"]={**confusion,"denominator":determinate,
+        "accuracy":(confusion["true_positive"]+confusion["true_negative"])/determinate if determinate else None}
+    output["note"]="Defect detection/recognition/recovery denominators require actual injection and determinate outcomes; baseline/unknown excluded. Hallucination accuracy requires separate labels."
     return output

@@ -59,3 +59,8 @@ class DiagnosticTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp:
             (Path(temp)/"traces.jsonl").write_text('{"reply":"old"}\n')
             self.assertEqual(read_audits(temp),[])
+
+    def test_malformed_sidecar_is_indeterminate(self):
+        with tempfile.TemporaryDirectory() as temp:
+            (Path(temp)/"audit_runs.jsonl").write_text('[]\nnot-json\n\n',encoding="utf-8")
+            self.assertEqual([r["judgement"]["quality_verdict"] for r in read_audits(temp)],["indeterminate"]*2)

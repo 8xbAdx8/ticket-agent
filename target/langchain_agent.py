@@ -2,6 +2,7 @@
 import copy
 import json
 import time
+from datetime import datetime,timezone
 from dataclasses import dataclass, field
 from typing import Any
 from langchain.agents import create_agent
@@ -162,10 +163,12 @@ class ContractMiddleware(AgentMiddleware):
             if ok and run.config:
                 result = run.result(name,result,call["id"])
             latency = int((time.perf_counter()-started)*1000)
+            confirmed_execution=execution_diagnostic.get("backend_executed") if executed else False
             ctx.trace.record_call(ctx.current_step,name,args,result,ok,latency)
             entry = {"event":"tool_end","tool":name,"args":copy.deepcopy(args),"call_id":call["id"],
-                     "ok":ok,"executed":executed,"execution_index":index,"latency_ms":latency,
-                     "result":copy.deepcopy(result),"parameter_validation":execution_diagnostic.get("validation",{"status":"unknown"}),"step":ctx.current_step+1}
+                     "ok":ok,"executed":confirmed_execution,"execution_index":index,"latency_ms":latency,
+                     "result":copy.deepcopy(result),"parameter_validation":execution_diagnostic.get("validation",{"status":"unknown"}),
+                     "timestamp":datetime.now(timezone.utc).isoformat(),"step":ctx.current_step+1}
             ctx.events.append(entry)
             run.executions.append({**entry,"original_result":original_result})
             if run.config:

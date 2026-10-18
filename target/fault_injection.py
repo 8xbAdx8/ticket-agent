@@ -133,6 +133,7 @@ class FaultRun:
     def save(self, trace, *, error=None):
         import config
         from target.deepseek_runtime import safe_text
+        from target.diagnostics import redact_credentials
         report = self.report(finish_reason=trace.finish_reason,error=error)
         report["user_msg"] = trace.user_msg
         report["agent_reply"] = trace.reply
@@ -142,8 +143,8 @@ class FaultRun:
         path = config.TRACE_DIR / "mutation_runs.jsonl"
         path.parent.mkdir(parents=True,exist_ok=True)
         with path.open("a",encoding="utf-8") as out:
-            out.write(safe_text(json.dumps(report,ensure_ascii=False))+"\n")
-        return json.loads(safe_text(json.dumps(report,ensure_ascii=False)))
+            out.write(safe_text(json.dumps(redact_credentials(report),ensure_ascii=False))+"\n")
+        return json.loads(safe_text(json.dumps(redact_credentials(report),ensure_ascii=False)))
 
 
 def legacy_event(name, original, mutated, **extra):

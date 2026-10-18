@@ -78,6 +78,7 @@ class Agent:
                     raise ValueError("legacy变异只支持Mock")
                 self.provider.mutations = dict(values)
             self.last_fault_report = None
+            self.last_audit_report = None
 
     def _messages(self, session_id):
         if session_id not in self.sessions:
@@ -162,7 +163,7 @@ class Agent:
                 run = ACTIVE_LEGACY_RUN.get()
                 if run:
                     run.executions.append({"tool":name,"args":copy.deepcopy(args),"result":copy.deepcopy(result),"original_result":original_result,
-                        "ok":ok,"call_id":call["id"],"executed":execution_diagnostic.get("backend_executed",True),
+                        "ok":ok,"call_id":call["id"],"executed":execution_diagnostic.get("backend_executed"),
                         "parameter_validation":execution_diagnostic.get("validation",{"status":"unknown"}),"step":step+1})
                 messages.append({
                     "role": "tool",
