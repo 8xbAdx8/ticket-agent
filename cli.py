@@ -17,6 +17,15 @@ from target.agent import Agent
 import config
 
 
+def make_agent(args):
+    return Agent(mutations=json.loads(args.mutations) if args.mutations is not None else None)
+
+
+def print_faults(agent):
+    if agent.last_fault_report:
+        print("[fault injection] " + json.dumps(agent.last_fault_report,ensure_ascii=False))
+
+
 def print_result(r, show_trace=True):
     print(f"[engine] {config.ENGINE}  [provider] {r['provider']}")
     if r["provider"] == "deepseek_live":
@@ -36,7 +45,7 @@ def print_result(r, show_trace=True):
 
 
 def cmd_chat(args):
-    agent = Agent()
+    agent = make_agent(args)
     sid = "cli"
     print(f"出行服务智能助手（{config.PROVIDER} 模式，虚构票务，输入 q 退出）")
     if config.PROVIDER == "deepseek":
@@ -52,21 +61,24 @@ def cmd_chat(args):
         if not msg:
             continue
         print_result(agent.chat(sid, msg), show_trace=not args.quiet)
+        print_faults(agent)
 
 
 def cmd_once(args):
-    agent = Agent()
+    agent = make_agent(args)
     print_result(agent.chat("once", args.text), show_trace=not args.quiet)
+    print_faults(agent)
 
 
 def cmd_batch(args):
     cases = json.loads(Path(args.file).read_text(encoding="utf-8"))
-    agent = Agent()
+    agent = make_agent(args)
     for c in cases:
         r = agent.chat(c.get("session_id", "batch"), c["input"])
         print(f"\n== {c.get('id','')} {c['input']}")
         print(f"   tools: {r['tool_sequence']}  finish: {r['finish_reason']}")
         print(f"   reply: {r['reply'][:120]}")
+        print_faults(agent)
 
 
 def cmd_trace(args):
@@ -91,6 +103,8 @@ def main():
     p2 = sub.add_parser("once"); p2.add_argument("text"); p2.add_argument("--quiet", action="store_true"); p2.set_defaults(func=cmd_once)
     p3 = sub.add_parser("batch"); p3.add_argument("file"); p3.set_defaults(func=cmd_batch)
     p4 = sub.add_parser("trace"); p4.set_defaults(func=cmd_trace)
+    for parser in (p1,p2,p3):
+        parser.add_argument("--mutations",help='显式JSON对象，如 {"date_offset":1}；默认关闭')
     args = ap.parse_args()
     if not args.cmd:
         ap.print_help(); return

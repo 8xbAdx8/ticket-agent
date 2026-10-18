@@ -129,6 +129,23 @@ class LiveFaultPathTests(unittest.TestCase):
         self.assertEqual([e["mutation"] for e in agent.last_fault_report["injection_events"]],
                          ["route_error","date_offset","repeat_call","no_citation"])
 
+    def test_web_checkbox_reaches_executor_and_restore_clears_fault_state(self):
+        from streamlit.testing.v1 import AppTest
+        agent=self.agent([self.response({"content":None,"tool_calls":[self.call("query_tickets",self.query())]}),
+                          self.response({"content":"已查询工具结果。"})])
+        with patch("target.agent.Agent",return_value=agent):
+            app=AppTest.from_file(str(config.BASE_DIR/"web/app.py"),default_timeout=30).run()
+            next(c for c in app.checkbox if c.label=="date_offset").check().run()
+            app.text_input[0].set_value("查今天上海到杭州的高铁")
+            next(b for b in app.button if b.label=="发送").click().run()
+            self.assertEqual(len(app.exception),0)
+            self.assertEqual(app.session_state["last_fault_report"]["injection_events"][0]["mutation"],"date_offset")
+            self.assertEqual(agent.mutations,{"date_offset":1})
+            self.assertTrue(any("实际缺陷注入证据" in h.value for h in app.subheader))
+            next(b for b in app.button if b.label=="恢复正常模式").click().run()
+            self.assertEqual(agent.mutations,{})
+            self.assertIsNone(app.session_state["last_fault_report"])
+
     def test_sandbox_required_rejects_original_db_http_and_unbounded_budget(self):
         for changes in ({},{"DEEPSEEK_SANDBOX_DIR":str(self.folder)},{"DEEPSEEK_MAX_REQUESTS":"0"}):
             with patch.dict(os.environ,{"DEEPSEEK_LIVE_TEST_PROFILE":"full_sandbox",**changes}):

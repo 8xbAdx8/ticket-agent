@@ -176,7 +176,7 @@ class DeepSeekAgentTests(unittest.TestCase):
             app.text_input[0].set_value("锁座后多久支付？")
             next(b for b in app.button if b.label=="发送").click().run()
         self.assertEqual(len(app.exception),0)
-        self.assertTrue(all(c.disabled for c in app.checkbox))
+        self.assertTrue(all(not c.disabled for c in app.checkbox))  # V3.1显式注入现已接入真实执行器。
         self.assertEqual(app.session_state["history"][-1]["provider"],"deepseek_live")
         self.assertTrue(any("DeepSeek Live" in m.value for m in app.markdown))
         self.assertTrue(any("API 报告 Token" in c.value for c in app.caption))

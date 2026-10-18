@@ -151,6 +151,11 @@ class ContractMiddleware(AgentMiddleware):
             ctx.events.append(entry)
             if run.config:
                 run.executions.append({**entry,"original_result":original_result})
+                for event in run.events:
+                    if event.get("call_id") == call["id"] and event["mutation"] in ("date_offset","route_error","skip_lock"):
+                        event["execution"] = {"executed":executed,"ok":ok}
+                        if not executed:
+                            event.update(status="blocked",reason=blocked or "执行器拒绝调用")
             return ToolMessage(content=json.dumps(result,ensure_ascii=False),tool_call_id=call["id"],name=name,
                                status="success" if ok else "error"),ok,blocked
 

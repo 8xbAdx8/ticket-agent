@@ -14,6 +14,7 @@ import config
 from target.agent import Agent
 from target import providers
 from target.deepseek_runtime import VALIDATION_NOTICE
+from target.fault_injection import from_env, STAGES
 from web.presentation import (TOOL_LABELS, escape, turn_cursor, collect_results,
                               ticket_cards, order_card, policy_cards, code_excerpt)
 
@@ -126,7 +127,7 @@ engine_label = ("LangChain Mock" if config.PROVIDER == "mock" else "LangChain Li
     "原生 Python Mock" if config.PROVIDER == "mock" else "原生 Python Live")
 if config.PROVIDER == "deepseek":
     engine_label = "DeepSeek Live · 只读"
-for key, value in (("mutations", {}), ("sid", "web-" + uuid.uuid4().hex[:8]), ("history", []), ("business_results", [])):
+for key, value in (("mutations", from_env()), ("sid", "web-" + uuid.uuid4().hex[:8]), ("history", []), ("business_results", []), ("last_fault_report", None)):
     if key not in st.session_state:
         st.session_state[key] = value
 
@@ -138,25 +139,28 @@ with st.sidebar:
         st.session_state.sid = "web-" + uuid.uuid4().hex[:8]
         st.session_state.history = []
         st.session_state.business_results = []
+        st.session_state.last_fault_report = None
         st.session_state.pop("active_call", None)
     st.caption("工作空间 · 对话 / 历史回放 / 代码导览")
     st.markdown(f'<div class="mode-card"><b>● {escape(engine_label)}</b><small>工具集：{escape(config.LC_TOOLSET if config.ENGINE == "langchain" else "原 8 工具")}</small><small>模型配置：{escape(config.MODEL_NAME)}</small></div>', unsafe_allow_html=True)
     st.caption("全部班次、订单、政策与支付均为虚构模拟。")
-    st.subheader("Mock 变异开关")
+    st.subheader("缺陷注入开关")
     st.caption("人为注入缺陷，只影响本浏览器会话；恢复后清空会话再验收。")
-    if config.ENGINE == "langchain":
-        st.caption("六变异仅在 legacy Mock 模式开放。")
+    st.caption("显式测试模式：注入结果和Agent表现分别记录。默认Live只读，skip_lock/infinite_loop需要全工具沙箱。")
     if st.button("恢复正常模式"):
         for name in providers.MUTATION_NAMES:
             st.session_state["mutation_" + name] = False
         st.session_state.mutations.clear()
     for name in providers.MUTATION_NAMES:
-        enabled = st.checkbox(name, key="mutation_" + name, disabled=config.PROVIDER != "mock" or config.ENGINE != "legacy")
-        if enabled and config.PROVIDER == "mock" and config.ENGINE == "legacy":
+        enabled = st.checkbox(name, value=bool(st.session_state.mutations.get(name)), key="mutation_" + name,
+                              disabled=config.PROVIDER not in ("mock","deepseek"))
+        if enabled:
             st.session_state.mutations[name] = 1 if name == "date_offset" else True
         else:
             st.session_state.mutations.pop(name, None)
     st.write("当前变异：", st.session_state.mutations or "无")
+    if st.session_state.mutations:
+        st.caption("注入阶段："+"；".join(name+" → "+STAGES[name] for name in st.session_state.mutations))
     st.caption("会话 ID：" + st.session_state.sid)
     st.caption("成员 A · 开发交付；真实模型联网验证状态请查交接证据。")
 
@@ -172,13 +176,22 @@ st.info(("当前页面为 Mock 离线规则决策。" if config.PROVIDER == "moc
 ready = True
 if "agent" not in st.session_state:
     try:
-        st.session_state.agent = Agent(providers.MockProvider(st.session_state.mutations)) if config.PROVIDER == "mock" else Agent()
+        st.session_state.agent = Agent(mutations=dict(st.session_state.mutations))
     except Exception as exc:
         ready = False
         st.error(f"初始化失败 ({type(exc).__name__})；检查 Key、依赖与配置。历史回放仍可使用。")
         if config.PROVIDER == "deepseek":
             from target.deepseek_runtime import safe_error
             st.caption("DeepSeek 状态：" + safe_error(exc)["category"])
+if ready:
+    if getattr(st.session_state.agent,"mutations",{}) != dict(st.session_state.mutations):
+        st.session_state.agent.set_mutations(dict(st.session_state.mutations))
+        st.session_state.sid = "web-" + uuid.uuid4().hex[:8]
+        st.session_state.history = []
+        st.session_state.business_results = []
+        st.session_state.last_fault_report = None
+    if config.PROVIDER == "deepseek" and st.session_state.agent.langchain_engine.deepseek_settings.profile == "full_sandbox":
+        st.warning("全工具模拟沙箱：允许显式授权的模拟写操作；不连接真实票务或支付。")
 
 conversation, replay, code = st.tabs(["对话与工具", "历史记录回放", "核心代码导览"])
 with conversation:
@@ -207,11 +220,13 @@ with conversation:
                 try:
                     cursor = turn_cursor(st.session_state.agent, st.session_state.sid)
                     record = st.session_state.agent.chat(st.session_state.sid, user_msg)
+                    st.session_state.last_fault_report = st.session_state.agent.last_fault_report
                     full = collect_results(st.session_state.agent, st.session_state.sid, cursor, record)
                     st.session_state.history.append(record)
                     st.session_state.business_results.append(full)
                     st.session_state.pop("active_call", None)
                 except Exception as exc:
+                    st.session_state.last_fault_report = st.session_state.agent.last_fault_report
                     turn_failed = True
                     st.error(f"执行失败 ({type(exc).__name__})；检查目录写权限与配置。")
                     if config.PROVIDER == "deepseek":
@@ -248,6 +263,14 @@ with conversation:
     with right, st.container(border=True, key="trace_panel"):
         show_trace(st.session_state.history[-1] if st.session_state.history and not turn_failed else None,
                    st.session_state.business_results[-1] if st.session_state.business_results and not turn_failed else None)
+        if st.session_state.last_fault_report:
+            st.subheader("实际缺陷注入证据")
+            report = st.session_state.last_fault_report
+            st.dataframe(pd.DataFrame([{k:e.get(k) for k in ("mutation","stage","status","reason")}
+                                      for e in report["injection_events"]]),hide_index=True)
+            st.caption("applied仅代表注入层实际改变行为；不等于Agent被检出缺陷或恢复成功。")
+            with st.expander("变异前后参数、原始工具结果及执行次数"):
+                st.json(report)
 with replay:
     show_replay()
 with code:
