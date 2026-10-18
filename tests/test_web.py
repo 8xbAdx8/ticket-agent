@@ -67,6 +67,17 @@ class WebTests(unittest.TestCase):
         self.assertTrue(all(r["resources_cleaned"] for r in records))
         self.assertEqual(len(self.app.session_state["history"]),0)
 
+    def test_old_trace_is_not_attached_to_new_audit(self):
+        import json
+        record=self.send("查明天上海到杭州高铁")
+        record=dict(record,user_msg="old record with no audit",session_id="old")
+        with (config.TRACE_DIR/"traces.jsonl").open("a",encoding="utf-8") as out:
+            out.write(json.dumps(record,ensure_ascii=False)+"\n")
+        self.app.run()
+        next(s for s in self.app.selectbox if s.label=="选择回放记录").select(1).run()
+        self.assertEqual(len(self.app.exception),0)
+        self.assertTrue(any("该历史记录未包含此项诊断信息" in i.value for i in self.app.info))
+
 
 if __name__ == "__main__":
     unittest.main()

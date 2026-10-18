@@ -195,7 +195,9 @@ def evaluate(public_trace, report, authority, *, error=None, raw_model_reply=Non
     backend_errors=any(not e.get("ok") for e in executions)
     business=None
     if actual and authority.get("available"):
-        business=not backend_errors and not unbacked and hall["hallucination_detected"] is False and (not expected_date or not actual_dates or actual_dates[-1]==expected_date)
+        business=(not error and public_trace.get("finish_reason")=="stop" and not backend_errors and not unbacked and not uncited
+                  and all(e["tool"]=="search_policy" for e in routed) and all(n<=1 for n in counts.values())
+                  and hall["hallucination_detected"] is False and (not expected_date or not actual_dates or actual_dates[-1]==expected_date))
         if any(e["tool"]=="create_order" for e in actual):business=business and bool(authority["orders"])
     applied=[e for e in report.get("injection_events",[]) if e["status"]=="applied"]
     return {"case_id":public_trace.get("session_id"),"expected_behavior":"parameters, source truth, routing and order invariants hold",
@@ -209,7 +211,7 @@ def evaluate(public_trace, report, authority, *, error=None, raw_model_reply=Non
                       "agent_anomaly_recognized":True if corrected else None,
                       "agent_recovered":True if corrected and business else None,
                       "safe_stop":safe_stop,"business_correct":business},
-        "quality_verdict":"fail" if defect or backend_errors else "indeterminate" if any(c["passed"] is None for c in checks) or not actual else "pass",
+        "quality_verdict":"fail" if error or defect or backend_errors else "indeterminate" if any(c["passed"] is None for c in checks) or not actual else "pass",
         "failure_reasons":[c["failure_reason"] for c in checks if c["passed"] is False],
         "scope":"deterministic tool/database/explicit-claim assertions; unknown semantic recognition/recovery remains null"}
 
@@ -304,6 +306,7 @@ def metrics(audits):
         confusion[key]+=1
     determinate=len(labelled)-confusion["indeterminate"]
     output["hallucination_labelled_benchmark"]={**confusion,"denominator":determinate,
+        "excluded_ambiguous_samples":sum("hallucination_should_detect" in a.get("test_expectations",{}) and a["test_expectations"]["hallucination_should_detect"] is None for a in audits),
         "accuracy":(confusion["true_positive"]+confusion["true_negative"])/determinate if determinate else None}
     output["note"]="Defect detection/recognition/recovery denominators require actual injection and determinate outcomes; baseline/unknown excluded. Hallucination accuracy requires separate labels."
     return output

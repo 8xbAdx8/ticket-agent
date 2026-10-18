@@ -16,7 +16,7 @@ from target.agent import Agent
 from target import providers
 from target.deepseek_runtime import VALIDATION_NOTICE
 from target.fault_injection import from_env, STAGES, MUTATION_NAMES
-from web.audit_view import show_audit, show_audit_replay
+from web.audit_view import show_audit, show_audit_replay, show_linked_audit
 from web.presentation import (TOOL_LABELS, escape, turn_cursor, collect_results,
                               ticket_cards, order_card, policy_cards, code_excerpt)
 
@@ -121,6 +121,7 @@ def show_replay():
                                 format_func=lambda i: f"{i+1}: {records[i]['user_msg'][:40]}")
         st.caption("原始记录回放，不执行新的业务操作，也不恢复旧会话记忆。")
         st.json(records[selected])
+        show_linked_audit(records[selected],config.TRACE_DIR)
 
 
 st.set_page_config(page_title="Ticket Agent · 出行工作空间", page_icon="🎫", layout="wide")

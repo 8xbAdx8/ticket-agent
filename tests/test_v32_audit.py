@@ -85,7 +85,8 @@ class AuditSDKTests(unittest.TestCase):
         agent=self.agent([self.response({"content":None,"tool_calls":[self.call(tool,args)]}),
                           self.response({"content":reply})])
         agent.set_mutations({name:1 if name=="date_offset" else True})
-        message="订今天上海到杭州高铁，乘客张三" if name=="skip_lock" else "请帮我候补监控今天余票" if name=="infinite_loop" else "查今天上海到杭州高铁"
+        message=("订今天上海到杭州高铁，乘客张三" if name=="skip_lock" else "请帮我候补监控今天余票" if name=="infinite_loop"
+                 else "锁座支付政策是什么？" if name in ("route_error","no_citation") else "查今天上海到杭州高铁")
         try: result=agent.chat(name,message)
         except fixtures.DeepSeekError:
             self.assertEqual(name,"skip_lock")
@@ -111,6 +112,8 @@ class AuditSDKTests(unittest.TestCase):
                 self.assertTrue(any(c["result"]=="fail" for c in audit["judgement"]["assertions"]))
                 self.assertTrue(all(e["parameter_validation"]["status"]=="valid" for e in audit["fault_report"]["executions"]))
                 self.assertEqual(audit["judgement"]["case_id"],audit["trace_id"])
+                if name in ("no_citation","route_error","infinite_loop"):
+                    self.assertFalse(audit["judgement"]["dimensions"]["business_correct"])
                 if name=="date_offset":
                     checks={c["assertion"]:c["passed"] for c in audit["judgement"]["assertions"]}
                     self.assertTrue(checks["model_original_date_matches_user"])

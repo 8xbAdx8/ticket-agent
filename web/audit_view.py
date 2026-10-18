@@ -1,6 +1,6 @@
 """只展示保存过的审计事实；不调用模型，也不推测模型内部思考。"""
 import streamlit as st
-from target.diagnostics import read_audits, metrics
+from target.diagnostics import read_audits, metrics, digest
 
 
 LABELS={"injection_applied":"注入成功","platform_defect_detected":"平台检出缺陷",
@@ -40,6 +40,7 @@ def show_audit(record):
 
 
 def show_audit_replay(directory):
+    st.subheader("全部保存的诊断记录（含独立并发测试）")
     records=read_audits(directory)
     if not records:
         show_audit(None)
@@ -50,3 +51,13 @@ def show_audit_replay(directory):
     show_audit(records[chosen])
     with st.expander("当前旁证集合的指标与分母（非 B 正式成绩）"):
         st.json(metrics(records))
+
+
+def show_linked_audit(public_trace,directory):
+    matches=[a for a in read_audits(directory) if a.get("public_trace_sha256")==digest(public_trace)]
+    if len(matches)>1:
+        chosen=st.selectbox("同内容记录有多个诊断 ID，请明确选择",range(len(matches)),
+                           format_func=lambda i:matches[i]["trace_id"])
+        show_audit(matches[chosen])
+    else:
+        show_audit(matches[0] if matches else None)
