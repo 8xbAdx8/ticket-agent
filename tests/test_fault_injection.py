@@ -1,5 +1,5 @@
 import unittest
-from target.fault_injection import FaultRun, normalize
+from target.fault_injection import FaultRun, normalize, summarize
 
 
 class FaultDefinitionTests(unittest.TestCase):
@@ -51,3 +51,14 @@ class FaultDefinitionTests(unittest.TestCase):
         last=run.report()["injection_events"][-1]
         self.assertEqual(last["status"],"not_triggered")
         self.assertTrue(last["reason"])
+
+    def test_statistics_do_not_invent_agent_judgements(self):
+        run=FaultRun({"date_offset":1,"skip_lock":True},"s","offline")
+        run.emit("date_offset","2026-10-18","2026-10-19")
+        run.emit("skip_lock",status="not_applicable",reason="只读模式")
+        stats=summarize([run.report()])
+        self.assertEqual(stats["counts"]["applied"],1)
+        self.assertEqual(stats["counts"]["not_applicable"],1)
+        self.assertEqual(stats["injection_success_rate"],1)
+        self.assertIsNone(stats["agent_defect_detection_rate"])
+        self.assertIsNone(stats["agent_recovery_rate"])

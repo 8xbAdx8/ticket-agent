@@ -128,3 +128,25 @@ def legacy_event(name, original, mutated, **extra):
     run = ACTIVE_LEGACY_RUN.get()
     if run is not None:
         run.emit(name, original, mutated, **extra)
+
+
+def summarize(reports):
+    """按run×变异计数；缺陷检出/恢复只汇总外部明确判定，未知不填0%。"""
+    counts = {k:0 for k in ("requested","applied","failed","blocked","not_triggered","not_applicable")}
+    assessed = {"agent_defect_detected":[],"agent_recovered":[]}
+    for report in reports:
+        for name in report["mutations"]:
+            states = {e["status"] for e in report["injection_events"] if e["mutation"] == name}
+            state = next((s for s in ("failed","blocked","applied","not_applicable","not_triggered") if s in states),"not_triggered")
+            counts["requested"] += 1
+            counts[state] += 1
+        for key in assessed:
+            value = report.get("assessment",{}).get(key)
+            if type(value) is bool:
+                assessed[key].append(value)
+    triggered = counts["applied"]+counts["failed"]+counts["blocked"]
+    return {"counts":counts,"injection_success_rate":counts["applied"]/triggered if triggered else None,
+            "injection_success_denominator":"applied + failed + blocked；未触发/不适用单列",
+            "agent_defect_detection_rate":sum(assessed["agent_defect_detected"])/len(assessed["agent_defect_detected"]) if assessed["agent_defect_detected"] else None,
+            "agent_recovery_rate":sum(assessed["agent_recovered"])/len(assessed["agent_recovered"]) if assessed["agent_recovered"] else None,
+            "explicit_agent_judgements":{k:len(v) for k,v in assessed.items()}}

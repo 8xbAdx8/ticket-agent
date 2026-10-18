@@ -137,7 +137,9 @@ class ContractMiddleware(AgentMiddleware):
                     if ok and name == "lock_seat":
                         ctx.lock_ids.add(result["lock_id"])
             except BackendToolFailure as exc:
-                result,ok = exc.result,False
+                result = exc.result if isinstance(exc.result,dict) and "error" in exc.result else {
+                    "error":"后端报告工具执行失败","result":exc.result}
+                ok = False
             except Exception as exc:
                 result,ok = {"error":f"工具执行失败 ({type(exc).__name__})"},False
             original_result = copy.deepcopy(result)
