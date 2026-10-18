@@ -1,5 +1,33 @@
 # Ticket Agent
 
+## 2026-10-18：V3.2 审计旁证与八种变异（当前版本）
+
+保留 Agent.chat 的十字段及原六变异，新增版本化 `audit_runs.jsonl`、唯一 Trace ID、参数校验与实际执行证据、独立规则判定和 Web 诊断/回放。M7 `hallucinated_train` 在工具可见结果注入假车次；M8 `concurrent_duplicate_order` 使用独立临时影子库和屏障调度，正常数据库约束不改。
+
+本轮真实 API **0 请求、0 新增 Token、0 API 费用**，正式 5/5 账本和历史证据未改。A 完整环境自测 **180 项通过**；复用 B 原断言的隔离结果及分环境跳过数见 [最终回归](docs/evidence/v32/20261018-final/offline/verification.json)。这不是 B 已独立完成 V3.2 正式测试的声明。
+
+[A 开发报告](docs/handoff/v3/A_V3.2_Trace与八种变异开发报告.md) · [B 测试手册](docs/handoff/v3/B_V3.2_Trace与变异测试手册.md) · [C 演示说明](docs/handoff/v3/C_V3.2_演示与验收说明.md) · [八种变异对照](docs/handoff/v3/V3.2_八种变异对照表.md) · [实际证据与分母](docs/evidence/v32/20261018-final/report.json) · [持续记录](docs/v32_development_log.md)。新增 Live M7 表现、B 正式评价和 C 人工验收仍待完成。
+
+```powershell
+# 无 Key、无真实请求；输出目录必须全新
+.\.venv-deepseek\Scripts\python.exe scripts/verify_v32_offline.py --out artifacts/runtime/v32-new-evidence
+```
+
+```mermaid
+flowchart LR
+  A[Agent 原入口] --> M[模型事件]
+  M --> F[显式变异与安全检查]
+  F --> T[原工具及模拟后端]
+  T --> M
+  M --> E[唯一 ID 审计旁证]
+  F --> E
+  T --> E
+  E --> J[独立规则 / 未知状态]
+  J --> W[Web / 回放 / 指标 / 交接]
+```
+
+状态面板分别展示注入、检出、识别、恢复、安全停止及业务结果，不能把故意缺陷的测试符合预期解释成 Agent 已恢复。25 条离线对照记录中 13 条实际注入并检出；幻觉规则 6 条可判定样本符合预期，另 2 条待判定。这些有限样本不是完整 Live 得分。以下章节按原日期保留历史背景，当前状态以上述 V3.2 说明为准。
+
 ## 2026-10-18：V3.1 六种 Live 缺陷注入
 
 六种变异已进入LangChain实际工具执行路径，并分别取得真实DeepSeek注入证据。默认Live仍只读；`skip_lock`和`infinite_loop`需要显式`full_sandbox`、新隔离库和正数测试预算。原Legacy六变异语义保留。跨模式统一配置为`AGENT_MUTATIONS` JSON或`Agent(mutations=...)`，默认关闭。
