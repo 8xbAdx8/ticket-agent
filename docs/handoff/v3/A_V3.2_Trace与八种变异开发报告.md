@@ -96,7 +96,7 @@ judgement 保存 case_id、预期、实际行为、断言结果、失败原因�
 
 ## 实际验证与证据
 
-最终执行源码基线：`222947e`。最终回归数值及源码哈希见证据目录中的 offline/verification.json；A 完整 DeepSeek 环境 unittest 180 项通过。完整命令及分环境跳过、B 原断言复用结果见同文件，不把旧环境跳过项算通过。
+最终执行源码基线：`52cb6d4`。最终回归数值及源码哈希见证据目录中的 offline/verification.json；A 完整 DeepSeek 环境 unittest 180 项通过。完整命令及分环境跳过、B 原断言复用结果见同文件，不把旧环境跳过项算通过。
 
 ```powershell
 .\.venv-deepseek\Scripts\python.exe scripts/verify_v32_offline.py --out artifacts/runtime/v32-new-evidence
@@ -108,7 +108,7 @@ judgement 保存 case_id、预期、实际行为、断言结果、失败原因�
 
 最终 A unittest/pytest 均为 180 项通过（较 V3.1 新增 27 个测试方法），pytest 另有 78 个子断言；V3 环境 122 通过、58 跳过，旧环境 71 通过、109 跳过。B 原判据隔离复用 Legacy101/101、LangChain Mock100/100、原变异55/55、新代码专项44通过/3不适用，B pytest 为101通过/2跳过，以日志原文为准。冒烟10个入口/命令通过，生成32条Mock记录；这些全是本轮离线重跑，不是复用历史成绩。
 
-最终证据：`docs/evidence/v32/20261018-final/`；cases/ 内每例有 audit_runs.jsonl 和必要 blobs；report.json 保存 25 例、8 样本、分母与实际源文件哈希。`docs/evidence/v32/20261018/` 是首轮记录，按当时源码保留：后续修正了无引用和有限停止的业务完成统计，不覆盖旧文件。
+最终证据：`docs/evidence/v32/20261018-negation-fix/`；cases/ 内每例有 audit_runs.jsonl 和必要 blobs；report.json 保存 25 例、8 样本、分母与实际源文件哈希。`docs/evidence/v32/20261018/` 是首轮记录，按当时源码保留：后续修正了无引用和有限停止的业务完成统计；20261018-final是第二轮记录，随后52cb6d4修正否定句及引语作用域。三轮记录分开保留，不覆盖旧文件。
 
 **真实 API 新增 0，真实 Token 新增 0，本轮 API 费用 0；未新增或修改正式 5/5 账本记录。** SDK 桩内的 13/5 等是人工协议用量，不能计入真实费用。V3.1 的 27 次真实调用是历史证据，本轮未重新验证，也未将 M7/M8 算入历史 Live 成绩。
 
@@ -124,6 +124,7 @@ judgement 保存 case_id、预期、实际行为、断言结果、失败原因�
 | 54d3040 | 关联证据测试、凭据脱敏、保守恢复判定 |
 | baeb16e | Web 八开关、诊断与离线证据 runner |
 | 222947e | 业务完成语义与旧 Trace 精确关联修复 |
+| 52cb6d4 | 否定查询的误报修复、逗号分句隔离用户引用与后续肯定陈述；19项定向自测通过后再次完整回归 |
 
 文档/证据的最终提交及推送情况由 `git log -1` 和同目录交付状态记录确定；不能把本文件所在提交 SHA 写成其自身尚未生成的 SHA。持续记录见 `docs/v32_development_log.md`。
 

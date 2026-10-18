@@ -93,7 +93,7 @@ assert mutant["resources_cleaned"]
 from pathlib import Path
 from target.diagnostics import read_audits, metrics
 
-records = read_audits(Path("docs/evidence/v32/20261018-final/cases/sdk-date_offset"))
+records = read_audits(Path("docs/evidence/v32/20261018-negation-fix/cases/sdk-date_offset"))
 audit = records[0]
 print(audit["trace_id"])
 print(audit["mutation_events"])

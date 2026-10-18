@@ -62,9 +62,9 @@ M7 是人为注入工具结果，不能讲成“DeepSeek 自发编造了 G9999�
 
 ## 已保存证据怎么用
 
-`docs/evidence/v32/20261018-final/report.json` 是总索引；cases/ 保存逐例诊断文件及必要大对象。25 条 Agent/后端对照记录、8 条规则样本已实际生成。6 条可判定的幻觉规则样本均符合预期，2 条含糊样本排除；不能把这个数字写成通用模型准确率。
+`docs/evidence/v32/20261018-negation-fix/report.json` 是总索引；cases/ 保存逐例诊断文件及必要大对象。25 条 Agent/后端对照记录、8 条规则样本已实际生成。6 条可判定的幻觉规则样本均符合预期，2 条含糊样本排除；不能把这个数字写成通用模型准确率。
 
-Web 可回放指定目录中的旁证。若只想看交付证据，不要 seed，不要点发送：停止当前演示终端，重新设置 `$env:AGENT_TRACE_DIR="$PWD\docs\evidence\v32\20261018-final\cases\sdk-date_offset"` 后启动 Web，进入历史诊断列表。该目录可能没有原十字段 traces.jsonl，主列表显示暂无记录是正常的，独立诊断列表仍可读。**不要在交付证据目录发送消息或运行并发按钮**；互动演示始终使用上面新建的 artifacts/runtime 目录。
+Web 可回放指定目录中的旁证。若只想看交付证据，不要 seed，不要点发送：停止当前演示终端，重新设置 `$env:AGENT_TRACE_DIR="$PWD\docs\evidence\v32\20261018-negation-fix\cases\sdk-date_offset"` 后启动 Web，进入历史诊断列表。该目录可能没有原十字段 traces.jsonl，主列表显示暂无记录是正常的，独立诊断列表仍可读。**不要在交付证据目录发送消息或运行并发按钮**；互动演示始终使用上面新建的 artifacts/runtime 目录。
 
 验收失败时保留终端输出、完整 Trace、对应 audit_runs.jsonl 和 audit_blobs、Trace ID、操作步骤与截图，不重跑替换失败记录。截图避开认证信息、真实个人信息与私人文件路径。脱敏侧证不含内部思维链，加载动画只是“正在处理”，不能解释为模型的隐藏思考。
 

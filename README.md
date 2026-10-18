@@ -6,9 +6,9 @@
 
 V3.2 的定位是智能体质量保障平台：出行 Agent 是被测对象，故障注入、可审计 Trace、独立断言和可复现证据构成质量验证闭环。A 提供这些开发能力，B 仍负责正式测试方案与质量评价。
 
-本轮真实 API **0 请求、0 新增 Token、0 API 费用**，正式 5/5 账本和历史证据未改。A 完整环境自测 **180 项通过**；复用 B 原断言的隔离结果及分环境跳过数见 [最终回归](docs/evidence/v32/20261018-final/offline/verification.json)。这不是 B 已独立完成 V3.2 正式测试的声明。
+本轮真实 API **0 请求、0 新增 Token、0 API 费用**，正式 5/5 账本和历史证据未改。A 完整环境自测 **180 项通过**；复用 B 原断言的隔离结果及分环境跳过数见 [最终回归](docs/evidence/v32/20261018-negation-fix/offline/verification.json)。这不是 B 已独立完成 V3.2 正式测试的声明。
 
-[A 开发报告](docs/handoff/v3/A_V3.2_Trace与八种变异开发报告.md) · [B 测试手册](docs/handoff/v3/B_V3.2_Trace与变异测试手册.md) · [C 演示说明](docs/handoff/v3/C_V3.2_演示与验收说明.md) · [八种变异对照](docs/handoff/v3/V3.2_八种变异对照表.md) · [实际证据与分母](docs/evidence/v32/20261018-final/report.json) · [持续记录](docs/v32_development_log.md)。新增 Live M7 表现、B 正式评价和 C 人工验收仍待完成。
+[A 开发报告](docs/handoff/v3/A_V3.2_Trace与八种变异开发报告.md) · [B 测试手册](docs/handoff/v3/B_V3.2_Trace与变异测试手册.md) · [C 演示说明](docs/handoff/v3/C_V3.2_演示与验收说明.md) · [八种变异对照](docs/handoff/v3/V3.2_八种变异对照表.md) · [实际证据与分母](docs/evidence/v32/20261018-negation-fix/report.json) · [持续记录](docs/v32_development_log.md)。新增 Live M7 表现、B 正式评价和 C 人工验收仍待完成。
 
 ```powershell
 # 无 Key、无真实请求；输出目录必须全新

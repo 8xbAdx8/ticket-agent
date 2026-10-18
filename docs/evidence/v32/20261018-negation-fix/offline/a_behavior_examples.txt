@@ -1,0 +1,130 @@
+{
+  "mode": "LangChain Mock and offline text validation; not Live",
+  "traces": [
+    {
+      "session_id": "def06",
+      "provider": "langchain_mock",
+      "model": "glm-4-flash",
+      "user_msg": "帮我查明天上海到杭州的高铁",
+      "steps": [
+        {
+          "step": 1,
+          "calls": [
+            {
+              "tool": "query_tickets",
+              "args": {
+                "from_city": "上海",
+                "to_city": "杭州",
+                "date": "2026-10-19",
+                "kind": "高铁",
+                "seat_type": "二等座"
+              },
+              "ok": true,
+              "latency_ms": 19,
+              "result_preview": "{\"trains\": [{\"kind\": \"高铁\", \"train_no\": \"G7303\", \"from_city\": \"上海\", \"to_city\": \"杭州\", \"date\": \"2026-10-19\", \"depart\": \"12:34\", \"arrive\": \"13:34\", \"seat_type\": \"二等座\", \"price\": 73.0, \"seats_left\": 51}, {\"..."
+            }
+          ]
+        }
+      ],
+      "tool_sequence": [
+        "query_tickets"
+      ],
+      "reply": "为您查到以下有余票的班次：G7303 上海→杭州 12:34 开，二等座 ¥73.0，余票 51；G7302 上海→杭州 09:17 开，二等座 ¥73.0，余票 47；G7301 上海→杭州 06:00 开，二等座 ¥73.0，余票 35。",
+      "finish_reason": "stop",
+      "tokens": {
+        "prompt": 0,
+        "completion": 0
+      },
+      "total_latency_ms": 31
+    },
+    {
+      "session_id": "def06",
+      "provider": "langchain_mock",
+      "model": "glm-4-flash",
+      "user_msg": "我要买一张，不要锁座直接给我下单",
+      "steps": [],
+      "tool_sequence": [],
+      "reply": "已了解您的购买意图。当前流程必须先锁座才能下单；本轮未锁座、未下单。您是否同意先锁座？",
+      "finish_reason": "stop",
+      "tokens": {
+        "prompt": 0,
+        "completion": 0
+      },
+      "total_latency_ms": 2
+    },
+    {
+      "session_id": "def06",
+      "provider": "langchain_mock",
+      "model": "glm-4-flash",
+      "user_msg": "好，那就先锁座吧",
+      "steps": [
+        {
+          "step": 1,
+          "calls": [
+            {
+              "tool": "query_tickets",
+              "args": {
+                "from_city": "上海",
+                "to_city": "杭州",
+                "date": "2026-10-19",
+                "kind": "高铁",
+                "seat_type": "二等座"
+              },
+              "ok": true,
+              "latency_ms": 1,
+              "result_preview": "{\"trains\": [{\"kind\": \"高铁\", \"train_no\": \"G7303\", \"from_city\": \"上海\", \"to_city\": \"杭州\", \"date\": \"2026-10-19\", \"depart\": \"12:34\", \"arrive\": \"13:34\", \"seat_type\": \"二等座\", \"price\": 73.0, \"seats_left\": 51}, {\"..."
+            }
+          ]
+        },
+        {
+          "step": 2,
+          "calls": [
+            {
+              "tool": "lock_seat",
+              "args": {
+                "train_no": "G7303",
+                "date": "2026-10-19",
+                "seat_type": "二等座",
+                "passengers": [
+                  "张三"
+                ]
+              },
+              "ok": true,
+              "latency_ms": 2,
+              "result_preview": "{\"lock_id\": \"LK3f4500d8\", \"train_no\": \"G7303\", \"date\": \"2026-10-19\", \"seat_type\": \"二等座\", \"passengers\": [\"张三\"], \"unit_price\": 73.0, \"count\": 1, \"expire_at\": \"2026-10-18T23:27:19.761859\", \"ttl_seconds\":..."
+            }
+          ]
+        }
+      ],
+      "tool_sequence": [
+        "query_tickets",
+        "lock_seat"
+      ],
+      "reply": "已锁座，锁座编号 LK3f4500d8；本轮未下单、未支付。",
+      "finish_reason": "stop",
+      "tokens": {
+        "prompt": 0,
+        "completion": 0
+      },
+      "total_latency_ms": 9
+    }
+  ],
+  "guard_checks": [
+    {
+      "text": "政策规定锁座后需在15分钟内办理支付。",
+      "actual": "ACCEPT"
+    },
+    {
+      "text": "我无法为您办理退票，您可以通过12306官方渠道办理退票。",
+      "actual": "ACCEPT"
+    },
+    {
+      "text": "我可以为您办理退票",
+      "actual": "read_only_capability_violation"
+    },
+    {
+      "text": "已为您办理退票",
+      "actual": "read_only_capability_violation"
+    }
+  ]
+}
