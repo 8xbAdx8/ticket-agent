@@ -1,6 +1,25 @@
 # Ticket Agent
 
-## 2026-10-25：V3.4.1 回答与工具数据一致性（当前修复）
+## 2026-10-26：V3.5 Qwen3.8-Flash 与真实 RAG（当前版本）
+
+已实际调用 `text-embedding-v4`，将15条政策的15个1024维向量持久化到 Chroma；支持 Keyword、Vector、RRF Hybrid、独立检索/回答审计、固定30题和8种隔离 RAG 变异。Qwen3.8-Flash 已完成真实查票 Function Calling 闭环，以及基于真实检索证据的政策回答和无答案拒答。原 Mock、DeepSeek、原八变异及接口契约保留。
+
+真实请求：Embedding **5/8，1122 Token**；生成 **4/4，输入3205/输出413 Token**；费用未知、重试0。生成额度已满，不删除账本或创建别名继续请求。政策工具的 Agent 真正两轮往返、DeepSeek同证据生成、本轮完整语义忠实度仍待验证。Vector 在26条有答案题 Recall@3/MRR 均为1，但4条无答案仍误召回3条；不把检索分数当回答准确率。最终离线390项通过、0失败、0跳过，旧环境兼容结果详见报告。
+
+新机器先安装 `requirements-v35-lock.txt` 到 `.venv-v35`，再双击 [启动_离线模式.cmd](启动_离线模式.cmd)，进入“测试工作台→RAG知识库”。页面指标来自保存的实际证据；新机器未带运行索引时如实显示未建库。旧在线脚本仍是 DeepSeek 入口。
+
+```powershell
+# 以下只做本地检查，不请求模型/Embedding
+.\.venv-v35\Scripts\python.exe scripts/rag.py plan
+.\.venv-v35\Scripts\python.exe scripts/rag.py status
+.\.venv-v35\Scripts\python.exe scripts/live_providers.py --provider bailian --profile v35
+# 输出目录必须全新；阻断外部Python网络的完整离线回归
+.\.venv-v35\Scripts\python.exe scripts/verify_v35_offline.py --out artifacts/runtime/v35-my-review
+```
+
+[A开发报告](docs/handoff/v35/A_V3.5真实RAG开发报告.md) · [B测试与Key配置](docs/handoff/v35/B_V3.5_RAG质量测试手册.md) · [C演示验收](docs/handoff/v35/C_V3.5_RAG演示与验收说明.md) · [质量标准](docs/handoff/v35/V3.5_RAG质量集与判定标准.md) · [API用量与预算](docs/handoff/v35/V3.5真实API用量与预算记录.md) · [证据摘要](docs/evidence/v35/summary.json) · [持续开发记录](docs/v35_development_log.md)。当前**有条件交接**，B正式质量结论另行提供。下方按日期保留历史结果。
+
+## 2026-10-25：V3.4.1 回答与工具数据一致性（历史修复）
 
 新增九字段检查、按车次/日期/路线/席别匹配、用户引用与否定范围、明确错配/无法判定的安全停止。原百炼四处时刻错配已全部离线复现；原回复和V3.4证据未改。新74项专项及完整355项离线回归通过，V3跳过65、V2跳过151，均无失败。**本轮真实请求0、修复后Live未复验**，旧4/4和正式5/5不变。
 
@@ -13,7 +32,7 @@
 
 **一键启动：** 双击根目录 [启动_离线模式.cmd](启动_离线模式.cmd)（完整模拟业务，无需Key）。在线入口及预算见 [启动说明](启动说明.md)：V3.3 旧共享3次额度与 V3.4 独立4次验收额度均已用尽，不删除账本或自动增额。在线发送会计费，原正式5/5与旧手动账本不变。
 
-## 2026-10-25：V3.4 API 审计与真实验收（当前状态）
+## 2026-10-25：V3.4 API 审计与真实验收（历史状态）
 
 DeepSeek、百炼本轮各2次真实请求，都完成query_tickets真实工具协议闭环；DeepSeek本次回答与模拟库一致，**百炼发生车次时刻错配，业务核验失败**。新增保守保护已离线复现，后置修复未追加Live复验。LangSmith合成记录1次上传，经另行授权的额外只读GET核验成功（累计1POST+2GET），不是模型全对话上传。
 

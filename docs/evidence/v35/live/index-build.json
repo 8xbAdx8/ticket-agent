@@ -1,0 +1,78 @@
+{
+  "model": "text-embedding-v4",
+  "dimensions": 1024,
+  "endpoint": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+  "corpus_hash": "bfef71389558e57a11f6d2459d7cc7ef79c1c77c8ff2e60152197e21c18a44ad",
+  "chunk_size": 450,
+  "overlap": 50,
+  "schema": "ticket-policy-index/1",
+  "index_version": "242aa8199c4a8393ded29751",
+  "collection": "policy-242aa8199c4a8393ded29751-8611bbb5",
+  "chunk_count": 15,
+  "document_count": 15,
+  "embedding_origin": "real_api",
+  "embedding_receipts": [
+    {
+      "request_id": "a3894ee717374180ae9ca2d93dc8d791",
+      "origin": "real_api",
+      "model": "text-embedding-v4",
+      "actual_model": "text-embedding-v4",
+      "dimensions": 1024,
+      "tokens": 574,
+      "status": 200,
+      "latency_ms": 2073,
+      "server_request_id": "eb1bd95d-ecce-9c04-a5e9-04bc54c69ec5",
+      "response_sha256": "9a966bde525c9c87667ccf4a1ffe489f13f26d88dbcd90b698973437cd89baeb",
+      "vector_hashes": [
+        "6ab525ad02fcfc5ed8cd463c07d6c595ee872d525ae81d0da71c41fadaf286d0",
+        "98d6f92b1b6f63d52690b4946af9fef48be666efa85c36fa254cfb35033b6940",
+        "8f6471ea1d55ec31eec3a3f9e7aab07c7dd2bfe548593ecd96781160e52a0f02",
+        "1e95536c2a1b04455a0835c745a2ab24f846721d78eaad97fd30d7f06eb513f3",
+        "df928ea1c105bc034fc9451342f2ea28c11566bd0c9d42dfb6e1e302df74d6ff",
+        "6e8ced9bab23af8b08d86fa76091b88b39896b730073286e20489cead94e7539",
+        "69de580ec3762360ff3b38a220b49f2dec01336103f98c558e24e01c17ac54c5",
+        "6959d426a1948ed08c1b818327cf26dfe5856c4285eda11ab873dd17c1858001",
+        "c1bcb32b3a740df91948e56839f275c7caf09e9de6065e72acb8eb3c4e565862",
+        "09b4244562248bb3d364162da2fcb71a6cc54812091b5ce41ca073ae14aaa13b"
+      ]
+    },
+    {
+      "request_id": "2e3e3f53eb5e4493b5353db0a2a62db4",
+      "origin": "real_api",
+      "model": "text-embedding-v4",
+      "actual_model": "text-embedding-v4",
+      "dimensions": 1024,
+      "tokens": 196,
+      "status": 200,
+      "latency_ms": 1642,
+      "server_request_id": "a6eb9b43-3934-9fdf-8bfe-195f1830f2e7",
+      "response_sha256": "f41396806fbf0c15a15f6a6db29116ac9a6b8c80d1139e8b855388fa34521bc1",
+      "vector_hashes": [
+        "d3d30214d5dba44947f955a0430a98b0a31aadad8f2fa900279680db0e213fb8",
+        "28240826c35870d7f94b4e44dc6c7d51bebea8f575a0b7dfd21cdccac417cae6",
+        "1851d7f90d785c04039b474e6aa81e1f3124bd0c0fa14c21fa7aee01f951146f",
+        "f60d3801c0663d7118502e07037b13a56859bb2567150ec61b04c0a8d0fc4d1c",
+        "ccfb9857668cef6e76884e4f10d15e04e4badb122cff52266440f9a1afadc8a9"
+      ]
+    }
+  ],
+  "stored_vector_hashes": {
+    "P01-0000-7e17c7d453fc": "6ab525ad02fcfc5ed8cd463c07d6c595ee872d525ae81d0da71c41fadaf286d0",
+    "P02-0000-ee28e78d13a2": "98d6f92b1b6f63d52690b4946af9fef48be666efa85c36fa254cfb35033b6940",
+    "P03-0000-0e22a8a4248f": "c46c922dc41b047ad3161dcedb270a0585dedb70a849387c33ab8553fe6ceefa",
+    "P04-0000-901a2dd37c20": "7cc16a29d452bae661a6aaea38412cf5b963a7283e2750cb3ee5de56c3500f22",
+    "P05-0000-2ad89d5c523b": "df928ea1c105bc034fc9451342f2ea28c11566bd0c9d42dfb6e1e302df74d6ff",
+    "P06-0000-2705abb94023": "6e8ced9bab23af8b08d86fa76091b88b39896b730073286e20489cead94e7539",
+    "P07-0000-ef524fb2b645": "69de580ec3762360ff3b38a220b49f2dec01336103f98c558e24e01c17ac54c5",
+    "P08-0000-d1134f07d8dc": "6959d426a1948ed08c1b818327cf26dfe5856c4285eda11ab873dd17c1858001",
+    "P09-0000-799e4c5fd057": "c1bcb32b3a740df91948e56839f275c7caf09e9de6065e72acb8eb3c4e565862",
+    "P10-0000-d31bb6d46837": "09b4244562248bb3d364162da2fcb71a6cc54812091b5ce41ca073ae14aaa13b",
+    "P11-0000-589c2e46be21": "d3d30214d5dba44947f955a0430a98b0a31aadad8f2fa900279680db0e213fb8",
+    "P12-0000-3fece7e2c814": "28240826c35870d7f94b4e44dc6c7d51bebea8f575a0b7dfd21cdccac417cae6",
+    "P13-0000-905680b18ce6": "1851d7f90d785c04039b474e6aa81e1f3124bd0c0fa14c21fa7aee01f951146f",
+    "P14-0000-80089e9f49a8": "f60d3801c0663d7118502e07037b13a56859bb2567150ec61b04c0a8d0fc4d1c",
+    "P15-0000-9ab51dd978bf": "9881e06bd7e27b6f62ca679b89420282d9b817f41d2cac96263ada6c3a75eb6a"
+  },
+  "reused": false,
+  "new_embedding_requests": 2
+}

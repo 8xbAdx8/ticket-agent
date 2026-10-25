@@ -1,0 +1,20 @@
+test_api_errors_are_classified_without_retry_or_mock (test_live_providers.LiveProviderTests.test_api_errors_are_classified_without_retry_or_mock) ... ok
+test_bailian_400_error_codes_refine_safe_classification (test_live_providers.LiveProviderTests.test_bailian_400_error_codes_refine_safe_classification) ... ok
+test_budget_three_stops_fourth_before_transport (test_live_providers.LiveProviderTests.test_budget_three_stops_fourth_before_transport) ... ok
+test_default_mock_and_bailian_env_only (test_live_providers.LiveProviderTests.test_default_mock_and_bailian_env_only) ... ok
+test_endpoint_model_and_independent_ledger_fail_closed (test_live_providers.LiveProviderTests.test_endpoint_model_and_independent_ledger_fail_closed) ... ok
+test_missing_key_never_builds_http_client (test_live_providers.LiveProviderTests.test_missing_key_never_builds_http_client) ... ok
+test_only_two_tools_and_real_sdk_tool_result_roundtrip (test_live_providers.LiveProviderTests.test_only_two_tools_and_real_sdk_tool_result_roundtrip) ... ok
+test_policy_sources_and_conversation_context (test_live_providers.LiveProviderTests.test_policy_sources_and_conversation_context) ... ok
+test_sdk_does_not_return_credential_in_reply_or_trace (test_live_providers.LiveProviderTests.test_sdk_does_not_return_credential_in_reply_or_trace) ... ok
+test_shared_initial_budget_limits_both_providers_together (test_live_providers.LiveProviderTests.test_shared_initial_budget_limits_both_providers_together) ... ok
+test_six_write_tools_rejected_before_sending (test_live_providers.LiveProviderTests.test_six_write_tools_rejected_before_sending) ... ok
+test_timeout_and_network_error_are_single_attempt (test_live_providers.LiveProviderTests.test_timeout_and_network_error_are_single_attempt) ... ok
+test_tool_failure_not_disguised_as_success (test_live_providers.LiveProviderTests.test_tool_failure_not_disguised_as_success) ... ok
+test_unavailable_write_call_is_blocked_by_code (test_live_providers.LiveProviderTests.test_unavailable_write_call_is_blocked_by_code) ... ok
+test_unknown_usage_is_explicit_error_and_null_evidence (test_live_providers.LiveProviderTests.test_unknown_usage_is_explicit_error_and_null_evidence) ... ok
+
+----------------------------------------------------------------------
+Ran 15 tests in 2.653s
+
+OK

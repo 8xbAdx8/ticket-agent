@@ -1,0 +1,161 @@
+{
+  "source_sha256": "db36143ec41f74539d0edff488eb945939c27c0b353e292f66ea1c14750cba5c",
+  "new_api_requests": 0,
+  "evaluation_bug": "Negative evidence references in a refusal were incorrectly treated as positive answer citations. Fixed without changing gold labels or original replies.",
+  "records": [
+    {
+      "scenario": "RQ01",
+      "original_model_reply": "根据检索证据，锁座后必须在 **15分钟** 内完成支付。如果过期未支付，系统将自动释放库存（依据 doc_id: P11）。",
+      "prior_assessment": {
+        "allowed_doc_ids": [
+          "P11",
+          "P12",
+          "P15"
+        ],
+        "cited_doc_ids": [
+          "P11"
+        ],
+        "wrong_citations": [],
+        "citation_status": "checked_ids_match",
+        "citation_support": "indeterminate",
+        "faithfulness": "indeterminate",
+        "scope": "Document-ID membership only; does not prove the cited passage supports every claim",
+        "citation_id_precision": 1.0,
+        "fixed_point_checks": [
+          {
+            "point": "15分钟",
+            "mentioned": true,
+            "supported_in_allowed_evidence": true,
+            "status": "supported_fixed_point"
+          },
+          {
+            "point": "过期释放库存",
+            "mentioned": false,
+            "supported_in_allowed_evidence": false,
+            "status": "indeterminate"
+          }
+        ],
+        "supported_fixed_points": 1,
+        "fixed_points": 2,
+        "no_answer_refusal": null,
+        "business_status": "indeterminate",
+        "answer_faithfulness": "indeterminate",
+        "generation_failure": false,
+        "limits": "Literal fixed points and citation IDs do not establish full semantic faithfulness; B reviews unsupported/extra claims."
+      },
+      "assessment": {
+        "allowed_doc_ids": [
+          "P11",
+          "P12",
+          "P15"
+        ],
+        "cited_doc_ids": [
+          "P11"
+        ],
+        "wrong_citations": [],
+        "citation_status": "checked_ids_match",
+        "citation_support": "indeterminate",
+        "faithfulness": "indeterminate",
+        "scope": "Document-ID membership only; does not prove the cited passage supports every claim",
+        "citation_id_precision": 1.0,
+        "negative_evidence_references": [],
+        "fixed_point_checks": [
+          {
+            "point": "15分钟",
+            "mentioned": true,
+            "supported_in_allowed_evidence": true,
+            "status": "supported_fixed_point"
+          },
+          {
+            "point": "过期释放库存",
+            "mentioned": false,
+            "supported_in_allowed_evidence": false,
+            "status": "indeterminate"
+          }
+        ],
+        "supported_fixed_points": 1,
+        "fixed_points": 2,
+        "no_answer_refusal": null,
+        "business_status": "indeterminate",
+        "answer_faithfulness": "indeterminate",
+        "generation_failure": false,
+        "limits": "Literal fixed points and citation IDs do not establish full semantic faithfulness; B reviews unsupported/extra claims."
+      }
+    },
+    {
+      "scenario": "RQ26",
+      "original_model_reply": "无法确认。\n\n提供的检索证据仅包含火车票退票手续费阶梯（doc_id: P01）、报销凭证规定（doc_id: P07）以及机票退改规则（doc_id: P09），均未涉及“票务保险”的理赔金额或赔付比例相关内容。",
+      "prior_assessment": {
+        "allowed_doc_ids": [
+          "P01",
+          "P07",
+          "P09"
+        ],
+        "cited_doc_ids": [
+          "P01",
+          "P07",
+          "P09"
+        ],
+        "wrong_citations": [
+          "P01",
+          "P07",
+          "P09"
+        ],
+        "citation_status": "checked_ids_match",
+        "citation_support": "indeterminate",
+        "faithfulness": "indeterminate",
+        "scope": "Document-ID membership only; does not prove the cited passage supports every claim",
+        "citation_id_precision": 0.0,
+        "fixed_point_checks": [],
+        "supported_fixed_points": 0,
+        "fixed_points": 0,
+        "no_answer_refusal": false,
+        "business_status": "failed",
+        "answer_faithfulness": "indeterminate",
+        "generation_failure": false,
+        "limits": "Literal fixed points and citation IDs do not establish full semantic faithfulness; B reviews unsupported/extra claims."
+      },
+      "assessment": {
+        "allowed_doc_ids": [
+          "P01",
+          "P07",
+          "P09"
+        ],
+        "cited_doc_ids": [
+          "P01",
+          "P07",
+          "P09"
+        ],
+        "wrong_citations": [],
+        "citation_status": "checked_ids_match",
+        "citation_support": "indeterminate",
+        "faithfulness": "indeterminate",
+        "scope": "Document-ID membership only; does not prove the cited passage supports every claim",
+        "citation_id_precision": 1.0,
+        "negative_evidence_references": [
+          "P01",
+          "P07",
+          "P09"
+        ],
+        "fixed_point_checks": [],
+        "supported_fixed_points": 0,
+        "fixed_points": 0,
+        "no_answer_refusal": true,
+        "business_status": "indeterminate",
+        "answer_faithfulness": "indeterminate",
+        "generation_failure": false,
+        "limits": "Literal fixed points and citation IDs do not establish full semantic faithfulness; B reviews unsupported/extra claims."
+      }
+    }
+  ],
+  "summary": {
+    "executed": 2,
+    "generation_failures": 0,
+    "citation_id_precision_mean": 1.0,
+    "no_answer_refusal_rate": 1.0,
+    "business_errors": 0,
+    "faithfulness": "indeterminate",
+    "indeterminate_answers": 2,
+    "scope": "Only actually generated answers, never all retrieval cases or SDK fixtures"
+  }
+}

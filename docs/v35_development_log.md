@@ -50,3 +50,11 @@
 - 界面实际本地浏览确认15文档/15切片、版本ready、Embedding5与生成4，原始截图保留；嵌入式窄窗口侧栏遮挡左侧，未宣称完整响应式视觉通过，建议外部宽窗口。
 - 审查裸Agent/旧启动入口时发现新Qwen默认可能继承旧单账配置。为避免后续手动误用原账，新增真实qwen3.8-flash客户端构造前固定路径/4次上限校验；不满足则在建HTTP客户端前拒绝，离线transport明确隔离。旧显式qwen-plus保持兼容，当前真实账/历史账均不改。
 - scripts/live_providers.py增加显式--profile v35，旧默认profile不自动借用额度。新增预检反例验证别名/旧账不会建客户端或写账；后置修复无剩余生成额度，接下来只重跑离线回归，不追加Live。
+
+## 最终离线验收与交接整理
+
+- 预算入口修复提交d2812b9e058b3f627cac8009c2bc7cc02d47a6f8。实际运行.venv-v35/Scripts/python.exe scripts/verify_v35_offline.py --out artifacts/runtime/v35-final-guards-offline-20261026：390通过、0失败、0跳过；原DeepSeek环境377通过/13跳过、V3环境308通过/82跳过、V2环境212通过/178跳过，均0失败。原smoke、八变异审计矩阵与新增8项RAG变异通过。所有外部Python网络尝试0，模型/Embedding/LangSmith新增请求均0，3815个保护文件未变。
+- 逐文档导出真实API向量并与输入哈希、请求回执、Chroma持久化哈希及数值核对；公开快照real-index-export.json有15切片/1024维，最大差小于1e-6。该导出仅使用已存在缓存，没有再次生成向量。
+- 五份A/B/C/质量标准/预算交接报告及docs/evidence/v35/完整证据写入仓库，README与启动说明更新为V3.5当前状态。B可独立做离线验收和原证据核查；正式追加Live需新授权，不修改旧账。C可回放实际查票与RAG回答，不能把离线变异称作Live攻击成绩。
+- 已知问题保留：无答案误召回、Hybrid未优于Vector、全文语义忠实度无法自动证明、未做DeepSeek同证据新生成/政策工具Agent真实往返、后置代码仅离线复验、嵌入窄视口侧栏遮挡。成员A开发交接状态：有条件交接。
+- 最终本地交付检查对1464个待交付/已跟踪文件核对3个已配置密钥（仅内存精确匹配），发现0；新增JSON/JSONL无原始推理、认证头或真实Key字段；3707个初始保护文件、原正式5/5及V3.4的4/4未变。生成双账按4个request_id逐字段一致，Embedding仍5/8，真实API新增0。公开证据以evidence_index.json逐文件SHA256核验，原始字节由.gitattributes保留。

@@ -1,0 +1,26 @@
+{
+  "schema": "ticket-v35-release-review/1",
+  "checked_at": "2026-10-25T18:16:11.122914+00:00",
+  "source_head": "d2812b9e058b3f627cac8009c2bc7cc02d47a6f8",
+  "scanned_files": 1466,
+  "distinct_configured_secrets_checked": 3,
+  "findings": [],
+  "protected_files": 3707,
+  "changed_original_files": [],
+  "contract_business_old_mutations_and_B_originals_unchanged": true,
+  "A_existing_UI_test_change": "Display strings only; verified exact old.replace(new) equality",
+  "old_dependency_locks_unchanged": true,
+  "generation_ledgers_reconciled": true,
+  "embedding_requests": 5,
+  "generation_requests": 4,
+  "old_ledgers": "byte-identical via initial protection snapshot",
+  "review_real_api_requests": 0,
+  "review_langsmith_requests": 0,
+  "local_only": true,
+  "status": "passed",
+  "limits": [
+    "Exact scan covers configured secrets; it does not prove all possible unknown credentials absent.",
+    "Post-Live safety/UI/scoring changes were only offline validated.",
+    "Public vectors and mock ticket facts are synthetic project data, not real passengers."
+  ]
+}

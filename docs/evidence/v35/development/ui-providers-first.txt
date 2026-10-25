@@ -1,0 +1,17 @@
+test_all_four_models_select_without_initializing_or_network (test_live_provider_ui.LiveProviderUITests.test_all_four_models_select_without_initializing_or_network) ... 2026-10-26 01:41:37.527 WARNING streamlit.runtime.scriptrunner_utils.script_run_context: Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+ok
+test_both_live_modes_available_in_lab_and_rerun_never_calls_agent (test_live_provider_ui.LiveProviderUITests.test_both_live_modes_available_in_lab_and_rerun_never_calls_agent) ... 2026-10-26 01:41:38.143 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+ok
+test_integration_states_do_not_claim_remote_verification (test_live_provider_ui.LiveProviderUITests.test_integration_states_do_not_claim_remote_verification) ... 2026-10-26 01:41:41.247 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+ok
+test_live_providers_have_distinct_memory_and_database_paths (test_live_provider_ui.LiveProviderUITests.test_live_providers_have_distinct_memory_and_database_paths) ... 2026-10-26 01:41:41.654 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+ok
+test_missing_key_blocks_send_no_fallback_and_no_secret_ui_field (test_live_provider_ui.LiveProviderUITests.test_missing_key_blocks_send_no_fallback_and_no_secret_ui_field) ... 2026-10-26 01:41:41.943 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+ok
+test_cli_preflight_missing_and_fake_key_is_offline (test_live_provider_ui.ProviderCommandTests.test_cli_preflight_missing_and_fake_key_is_offline) ... ok
+test_offline_dashboard_excludes_both_live_providers (test_live_provider_ui.ProviderCommandTests.test_offline_dashboard_excludes_both_live_providers) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 5.409s
+
+OK

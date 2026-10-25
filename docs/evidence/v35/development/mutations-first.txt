@@ -1,0 +1,14 @@
+test_normal_policy_not_flagged_and_tests_are_detectable (test_v35_rag_mutations.EvidenceRiskTests.test_normal_policy_not_flagged_and_tests_are_detectable) ... ok
+test_rag_conflicting_doc (test_v35_rag_mutations.MutationTests.test_rag_conflicting_doc) ... ok
+test_rag_embedding_error (test_v35_rag_mutations.MutationTests.test_rag_embedding_error) ... ok
+test_rag_empty_index (test_v35_rag_mutations.MutationTests.test_rag_empty_index) ... ok
+test_rag_low_similarity (test_v35_rag_mutations.MutationTests.test_rag_low_similarity) ... ok
+test_rag_missing_doc (test_v35_rag_mutations.MutationTests.test_rag_missing_doc) ... ok
+test_rag_prompt_injection (test_v35_rag_mutations.MutationTests.test_rag_prompt_injection) ... ok
+test_rag_stale_doc (test_v35_rag_mutations.MutationTests.test_rag_stale_doc) ... ok
+test_rag_wrong_citation (test_v35_rag_mutations.MutationTests.test_rag_wrong_citation) ... ok
+
+----------------------------------------------------------------------
+Ran 9 tests in 2.534s
+
+OK

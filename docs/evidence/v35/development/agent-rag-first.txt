@@ -1,0 +1,9 @@
+test_deepseek_rag_trace_contract (test_v35_agent_rag.AgentRagTests.test_deepseek_rag_trace_contract) ... ok
+test_deepseek_wrong_citation (test_v35_agent_rag.AgentRagTests.test_deepseek_wrong_citation) ... ok
+test_qwen_rag_trace_contract (test_v35_agent_rag.AgentRagTests.test_qwen_rag_trace_contract) ... ok
+test_qwen_wrong_citation (test_v35_agent_rag.AgentRagTests.test_qwen_wrong_citation) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.739s
+
+OK

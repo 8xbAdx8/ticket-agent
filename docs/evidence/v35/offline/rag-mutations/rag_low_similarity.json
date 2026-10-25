@@ -1,0 +1,148 @@
+{
+  "schema": "ticket-rag-mutation/1",
+  "mutation": "rag_low_similarity",
+  "execution_mode": "offline_chroma_stub_vectors",
+  "embedding_origin": "offline_stub",
+  "real_api_requests": 0,
+  "executed": true,
+  "before": {
+    "schema": "ticket-rag-retrieval/1",
+    "question": "锁座支付有效期",
+    "mode": "vector",
+    "top_k": 20,
+    "vector_threshold": 0.35,
+    "embedding_model": "text-embedding-v4",
+    "embedding_origin": "offline_stub",
+    "index_version": "22c6567b53042e9a9ee24d92",
+    "fusion": null,
+    "hits": [
+      {
+        "title": "锁座与支付有效期",
+        "source": "artifacts/runtime/v35-release-offline-20261026/rag-mutations/rag_low_similarity/policies.md#P11",
+        "version": "43aea1ebf3c7b333",
+        "doc_id": "P11",
+        "chunk_id": "P11-0000-589c2e46be21",
+        "content": "模拟锁座有效期 15 分钟，过期未支付自动释放库存；下单必须提供与锁座一致的乘客列表。重复支付不重复扣减库存。",
+        "score": 1.0,
+        "vector_score": 1.0,
+        "rank": 1
+      },
+      {
+        "version": "2295151242863c57",
+        "source": "artifacts/runtime/v35-release-offline-20261026/rag-mutations/rag_low_similarity/policies.md#P12",
+        "title": "未支付订单取消",
+        "doc_id": "P12",
+        "chunk_id": "P12-0000-3fece7e2c814",
+        "content": "未支付订单取消不收取手续费，释放已占库存；已退款或已取消订单不得再次释放库存，取消后的订单不可支付。",
+        "score": 1.0,
+        "vector_score": 1.0,
+        "rank": 2
+      },
+      {
+        "title": "模拟隐私规则",
+        "doc_id": "P13",
+        "chunk_id": "P13-0000-905680b18ce6",
+        "source": "artifacts/runtime/v35-release-offline-20261026/rag-mutations/rag_low_similarity/policies.md#P13",
+        "version": "fcb3716098433993",
+        "content": "演示身份固定为当前模拟用户，仅可查询、支付、取消自己的订单；不能通过另一个手机号或订单号读取其他用户的信息。",
+        "score": 1.0,
+        "vector_score": 1.0,
+        "rank": 3
+      }
+    ],
+    "embedding_latency_ms": 9,
+    "total_latency_ms": 16,
+    "embedding_receipts": [
+      {
+        "request_id": "7d77844037074dfba51f24632c838933",
+        "origin": "offline_stub",
+        "model": "text-embedding-v4",
+        "actual_model": "text-embedding-v4",
+        "dimensions": 64,
+        "tokens": 1,
+        "status": 200,
+        "latency_ms": 0,
+        "server_request_id": null,
+        "response_sha256": "0a33816dbc88ec773f45357aca0ea46a50d7fa2c2280d37c913c9d7dd8c4e446",
+        "vector_hashes": [
+          "0760a0a32fdb6eb5459027d682ca49314c7ae2f52a32ffa1ea209c8699008a2d"
+        ]
+      }
+    ]
+  },
+  "after": {
+    "schema": "ticket-rag-retrieval/1",
+    "question": "锁座支付有效期",
+    "mode": "vector",
+    "top_k": 20,
+    "vector_threshold": 0.35,
+    "embedding_model": "text-embedding-v4",
+    "embedding_origin": "offline_stub",
+    "index_version": "22c6567b53042e9a9ee24d92",
+    "fusion": null,
+    "hits": [
+      {
+        "title": "锁座与支付有效期",
+        "source": "artifacts/runtime/v35-release-offline-20261026/rag-mutations/rag_low_similarity/policies.md#P11",
+        "version": "43aea1ebf3c7b333",
+        "doc_id": "P11",
+        "chunk_id": "P11-0000-589c2e46be21",
+        "content": "模拟锁座有效期 15 分钟，过期未支付自动释放库存；下单必须提供与锁座一致的乘客列表。重复支付不重复扣减库存。",
+        "score": 0.01,
+        "vector_score": 1.0,
+        "rank": 1
+      },
+      {
+        "version": "2295151242863c57",
+        "source": "artifacts/runtime/v35-release-offline-20261026/rag-mutations/rag_low_similarity/policies.md#P12",
+        "title": "未支付订单取消",
+        "doc_id": "P12",
+        "chunk_id": "P12-0000-3fece7e2c814",
+        "content": "未支付订单取消不收取手续费，释放已占库存；已退款或已取消订单不得再次释放库存，取消后的订单不可支付。",
+        "score": 0.01,
+        "vector_score": 1.0,
+        "rank": 2
+      },
+      {
+        "title": "模拟隐私规则",
+        "doc_id": "P13",
+        "chunk_id": "P13-0000-905680b18ce6",
+        "source": "artifacts/runtime/v35-release-offline-20261026/rag-mutations/rag_low_similarity/policies.md#P13",
+        "version": "fcb3716098433993",
+        "content": "演示身份固定为当前模拟用户，仅可查询、支付、取消自己的订单；不能通过另一个手机号或订单号读取其他用户的信息。",
+        "score": 0.01,
+        "vector_score": 1.0,
+        "rank": 3
+      }
+    ],
+    "embedding_latency_ms": 9,
+    "total_latency_ms": 16,
+    "embedding_receipts": [
+      {
+        "request_id": "7d77844037074dfba51f24632c838933",
+        "origin": "offline_stub",
+        "model": "text-embedding-v4",
+        "actual_model": "text-embedding-v4",
+        "dimensions": 64,
+        "tokens": 1,
+        "status": 200,
+        "latency_ms": 0,
+        "server_request_id": null,
+        "response_sha256": "0a33816dbc88ec773f45357aca0ea46a50d7fa2c2280d37c913c9d7dd8c4e446",
+        "vector_hashes": [
+          "0760a0a32fdb6eb5459027d682ca49314c7ae2f52a32ffa1ea209c8699008a2d"
+        ]
+      }
+    ],
+    "filtered_hits": []
+  },
+  "expected": "independent rule detects low_similarity",
+  "judgement": {
+    "type": "low_similarity",
+    "detected": true
+  },
+  "passed": true,
+  "original_policy_sha256": "bfef71389558e57a11f6d2459d7cc7ef79c1c77c8ff2e60152197e21c18a44ad",
+  "normal_index_modified": false,
+  "limits": "Synthetic test documents/vectors, not Live model or real embedding quality results."
+}

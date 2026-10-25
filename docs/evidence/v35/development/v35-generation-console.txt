@@ -1,0 +1,8 @@
+{"model": "qwen3.8-flash", "base_url": "https://dashscope.aliyuncs.com/compatible-mode/v1", "key_configured": true, "tools": ["query_tickets", "search_policy"], "max_retries": 0, "generation_limit": 4, "budget": {"reserved_requests": 0, "limit": 4, "requests": [], "unsettled_ids": []}, "embedding_index_version": "242aa8199c4a8393ded29751"}
+Traceback (most recent call last):
+  File "<project>\scripts\verify_v35_live.py", line 113, in <module>
+    if __name__=='__main__':raise SystemExit(main())
+                                             ^^^^^^
+  File "<project>\scripts\verify_v35_live.py", line 77, in main
+    from langchain_core.tracers.context import tracing_context
+ImportError: cannot import name 'tracing_context' from 'langchain_core.tracers.context' (<project>\.venv-v35\Lib\site-packages\langchain_core\tracers\context.py)

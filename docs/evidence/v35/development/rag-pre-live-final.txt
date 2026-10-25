@@ -1,0 +1,23 @@
+test_corrupt (test_v35_rag.ChromaStoreTests.test_corrupt) ... ok
+test_dimension (test_v35_rag.ChromaStoreTests.test_dimension) ... ok
+test_incremental (test_v35_rag.ChromaStoreTests.test_incremental) ... ok
+test_modes (test_v35_rag.ChromaStoreTests.test_modes) ... ok
+test_persistence (test_v35_rag.ChromaStoreTests.test_persistence) ... ok
+test_chunk_ids_metadata_and_keyword_are_deterministic (test_v35_rag.CompatibilityTests.test_chunk_ids_metadata_and_keyword_are_deterministic) ... ok
+test_fixed_dataset_metrics_and_unknown_faithfulness (test_v35_rag.CompatibilityTests.test_fixed_dataset_metrics_and_unknown_faithfulness) ... ok
+test_qwen_default_and_explicit_legacy_model_are_distinct (test_v35_rag.CompatibilityTests.test_qwen_default_and_explicit_legacy_model_are_distinct) ... ok
+test_v35_four_request_cap_does_not_change_older_profiles (test_v35_rag.CompatibilityTests.test_v35_four_request_cap_does_not_change_older_profiles) ... ok
+test_wrong_citation_is_not_added_to_evidence (test_v35_rag.CompatibilityTests.test_wrong_citation_is_not_added_to_evidence) ... ok
+test_batches_cache_provenance_and_reordered_response (test_v35_rag.EmbeddingTests.test_batches_cache_provenance_and_reordered_response) ... ok
+test_budget_exhaustion_prevents_http_and_cannot_increase_cap (test_v35_rag.EmbeddingTests.test_budget_exhaustion_prevents_http_and_cannot_increase_cap) ... ok
+test_dimension_malformed_response_no_success (test_v35_rag.EmbeddingTests.test_dimension_malformed_response_no_success) ... ok
+test_endpoint_and_input_validation_without_requests (test_v35_rag.EmbeddingTests.test_endpoint_and_input_validation_without_requests) ... ok
+test_failures_consumed_once_no_retry_and_no_key_in_ledger (test_v35_rag.EmbeddingTests.test_failures_consumed_once_no_retry_and_no_key_in_ledger) ... ok
+test_key_missing_and_explicit_network_gate (test_v35_rag.EmbeddingTests.test_key_missing_and_explicit_network_gate) ... ok
+test_timeout_no_retry (test_v35_rag.EmbeddingTests.test_timeout_no_retry) ... ok
+test_unknown_usage_not_zero (test_v35_rag.EmbeddingTests.test_unknown_usage_not_zero) ... ok
+
+----------------------------------------------------------------------
+Ran 18 tests in 1.567s
+
+OK
