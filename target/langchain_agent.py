@@ -149,7 +149,10 @@ class ContractMiddleware(AgentMiddleware):
                     actual_request = request if call == original else request.override(tool_call=call,tool=adapt_tool(name))
                     token=tools.DISPATCH_OBSERVER.set(execution_diagnostic.update)
                     try:
-                        response = handler(actual_request)
+                        from target.rag_service import scope
+                        with scope(trace_id=ctx.trace.trace_id,session_id=ctx.trace.session_id,
+                                   provider=ctx.trace.provider,call_id=call["id"]):
+                            response = handler(actual_request)
                     finally:
                         tools.DISPATCH_OBSERVER.reset(token)
                     try:
@@ -324,6 +327,16 @@ class LangChainAgent:
                     import re
                     if re.search(r"\bP\d+\b",reply):
                         raise DeepSeekError("unavailable_policy_citation")
+            import os
+            if os.getenv("AGENT_RAG_MODE"):
+                from target.rag_service import attach_answer
+                assessment=attach_answer(trace,context.events,reply)
+                if assessment:
+                    final_event=next((e for e in reversed(context.events) if e.get("event")=="model_final"),None)
+                    if final_event is not None:final_event["rag_answer_check"]=assessment
+                    if self.deepseek_settings and assessment["wrong_citations"]:
+                        from target.deepseek_runtime import DeepSeekError
+                        raise DeepSeekError("rag_wrong_citation")
             trace.finish(reply,"stop")
         except (ModelStepLimit,GraphRecursionError) as exc:
             reply = "达到最大执行步数，操作尚未完成；请查看工具轨迹。"

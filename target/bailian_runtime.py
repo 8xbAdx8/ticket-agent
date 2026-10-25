@@ -31,7 +31,8 @@ class Settings(DeepSeekSettings):
                 ledger_path=Path(os.getenv("BAILIAN_BUDGET_PATH", str(cls.ledger_path))))
         except ValueError:
             raise BailianError("invalid_safety_limits") from None
-        if not 1 <= settings.max_requests <= 3 or not 1 <= settings.timeout <= 60 or not 1<=settings.max_model_calls<=4:
+        ceiling=4 if os.getenv("TICKET_API_VALIDATION_PROFILE")=="v35" else 3
+        if not 1 <= settings.max_requests <= ceiling or not 1 <= settings.timeout <= 60 or not 1<=settings.max_model_calls<=4:
             raise BailianError("invalid_safety_limits")
         formal = config.BASE_DIR / "artifacts/runtime/deepseek-budget/requests.db"
         deep = Path(os.getenv("DEEPSEEK_BUDGET_PATH", str(formal)))

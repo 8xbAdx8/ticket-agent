@@ -24,7 +24,7 @@ if PROVIDER=="deepseek":
     MODEL_NAME,BASE_URL=_api["model"],_api["base_url"]
 if PROVIDER == "bailian":
     # No implicit region/account entitlement. Only the Bailian variables select its endpoint/model/key.
-    MODEL_NAME = os.getenv("DASHSCOPE_MODEL", "")
+    MODEL_NAME = os.getenv("DASHSCOPE_MODEL", "qwen3.8-flash")
     BASE_URL = os.getenv("DASHSCOPE_BASE_URL", "")
     API_KEY = os.getenv("DASHSCOPE_API_KEY", "")
 

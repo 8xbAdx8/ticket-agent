@@ -3,6 +3,7 @@ __pycache__/
 .venv/
 .venv-v3/
 .venv-deepseek/
+.venv-v35/
 .env
 .env.*
 !.env.example

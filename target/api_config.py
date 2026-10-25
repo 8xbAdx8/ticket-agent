@@ -4,6 +4,7 @@ from pathlib import Path
 from urllib.parse import urlsplit
 
 NAMES = ("DEEPSEEK_API_KEY","DEEPSEEK_MODEL","DEEPSEEK_BASE_URL","DASHSCOPE_API_KEY","DASHSCOPE_MODEL","DASHSCOPE_BASE_URL",
+         "DASHSCOPE_EMBEDDING_BASE_URL","RAG_EMBEDDING_MODEL","RAG_EMBEDDING_DIMENSIONS",
          "LANGCHAIN_API_KEY","LANGCHAIN_TRACING_V2","LANGCHAIN_PROJECT","LANGCHAIN_ENDPOINT","LANGCHAIN_WORKSPACE_ID",
          "LANGSMITH_API_KEY","LANGSMITH_TRACING","LANGSMITH_PROJECT","LANGSMITH_ENDPOINT","LANGSMITH_WORKSPACE_ID")
 
@@ -55,7 +56,7 @@ def model_config(provider,*,active=False):
         endpoint=os.getenv("DEEPSEEK_BASE_URL",os.getenv("AGENT_BASE_URL","https://api.deepseek.com") if active else "https://api.deepseek.com")
         key_env="DEEPSEEK_API_KEY"
     elif provider=="bailian":
-        model=os.getenv("DASHSCOPE_MODEL",""); endpoint=os.getenv("DASHSCOPE_BASE_URL",""); key_env="DASHSCOPE_API_KEY"
+        model=os.getenv("DASHSCOPE_MODEL","qwen3.8-flash"); endpoint=os.getenv("DASHSCOPE_BASE_URL",""); key_env="DASHSCOPE_API_KEY"
     else: raise ValueError("unknown_api_provider")
     return {"provider":provider,"model":model,"base_url":endpoint,"key_env":key_env,
             "configured":all((os.getenv(key_env,"").strip(),model.strip(),endpoint.strip()))}

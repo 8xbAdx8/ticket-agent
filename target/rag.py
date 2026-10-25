@@ -79,8 +79,14 @@ def vector_search(query, top_k=None):
 
 def search_policy(question):
     """统一入口：返回带 doc_id 的政策片段，回答时必须引用 doc_id。"""
+    import os
+    if os.getenv("AGENT_RAG_MODE"):
+        from target.rag_service import retrieve
+        return retrieve(question,allow_network=os.getenv("RAG_ALLOW_NETWORK")=="1")
     try:
         hits = vector_search(question) if config.USE_VECTOR_RAG else keyword_search(question)
     except Exception:
+        if config.PROVIDER in ("deepseek","bailian"):
+            raise  # A Live vector failure must never masquerade as successful keyword retrieval.
         hits = keyword_search(question)  # 可选向量依赖不可用时保留离线能力
     return {"question": question, "hits": hits, "count": len(hits)}

@@ -1,0 +1,17 @@
+# V3.5 开发记录
+
+## 2026-10-26 基线、授权与依赖
+
+- 实际基线9f4ab1eb3f34242ff6bc0e8c147c0577263d893a，原分支codex/ticket-agent-v341-answer-integrity；仅用户原ZIP未跟踪。新建feat/ticket-agent-v35-qwen38-rag。3707个原始文件哈希在artifacts/runtime/v35-work/protected.json保存，不覆盖历史证据/预算/数据。
+- 本轮任务明确授权Embedding最多8请求、Qwen3.8-Flash最多4请求、重试0，独立V3.5账本；DeepSeek新请求没有包含在授权中。LangSmith关闭。所有业务继续模拟，Live仅query_tickets/search_policy。
+- 官方模型页确认qwen3.8-flash支持Function Calling，但账号地域权限仍需实测；Embedding官方文档确认text-embedding-v4最多10条/批及1024默认维度，支持OpenAI兼容接口。不修改Codex配置。
+- 原环境无Chroma，PyPI当前1.5.9、要求Python>=3.9；另建.venv-v35（Python3.12.14），保留requirements-deepseek-lock.txt全部锁定版本，加chromadb==1.5.9。实际安装成功，旧三个venv不改。安装日志在v35-install.txt；这是依赖网络，不是模型请求。
+- 参考：https://docs.qwencloud.com/developer-guides/getting-started/text-generation-models 、https://help.aliyun.com/zh/model-studio/text-embedding-synchronous-api 、https://pypi.org/project/chromadb/1.5.9/ 。
+
+## 模块一：Embedding、Chroma与兼容检索入口
+
+- 新增target/embeddings.py：独立HTTP客户端、固定8次预算、批量/查询向量、缓存、显式网络许可、零重试、错误分类与未知用量、向量维度/数值/响应索引校验；离线transport始终标offline_stub，与real_api缓存隔离。
+- 新增target/rag_store.py：稳定切片ID、模型/维度/语料/切片参数版本、Chroma持久化、原始API回执与已存向量哈希；显式增量重建，旧集合/manifest保留，启动不调用Embedding。Keyword、Vector、RRF(k=60)Hybrid去重排序，默认vector阈值0.35，不在看过真实评估后调分。
+- 新增target/rag_service.py与scripts/rag.py：兼容search_policy原question/hits/count，独立检索/回答旁证与Trace关联，明确网络开关。target/rag.py默认原Mock行为保留；新Live向量失败不回退关键词。LangChain记录原文与引用ID核验，不宣称ID相符就支持全文。
+- Qwen默认配置迁为qwen3.8-flash；显式旧DASHSCOPE_MODEL仍兼容，不自动回退。V3.5显式profile才允许生成4次，旧profile仍3次、不改旧账。UI显示和独立验收入口后续模块完成。
+- 实际运行python -m unittest discover -s tests -p test_v35_rag.py -v：15通过0失败0跳过，含真实Chroma持久化/增量/维度/损坏、真实httpx+明确离线桩、预算/缓存/异常/密钥不入账。实际生成与Embedding请求均0。旧契约与B正式断言未修改。
