@@ -60,6 +60,7 @@ class Conversation:
     engine: str = "legacy"
     live: bool = False
     live_provider: str = "deepseek"
+    live_model: str | None = None
     case_id: str | None = None
     initial_budget: bool = False
     mutations: dict = field(default_factory=dict)
@@ -95,6 +96,7 @@ class Conversation:
         from target.live_providers import configuration
         cfg=configuration(self.live_provider) if self.live else {}
         model=LIVE_MODEL if self.live_provider=="deepseek" and LIVE_AVAILABLE else cfg.get("model")
+        if self.live and self.live_model:model=self.live_model
         address=LIVE_URL if self.live_provider=="deepseek" and LIVE_AVAILABLE else cfg.get("base_url")
         return dict(DB_PATH=self.root/"tickets.db", TRACE_DIR=self.trace_dir, PROVIDER=self.live_provider if self.live else "mock",
                     ENGINE=self.engine, LC_TOOLSET="read_only" if self.live else "all", USE_HTTP_MOCK=False, USE_VECTOR_RAG=False,
@@ -120,7 +122,8 @@ class Conversation:
             # Keep existing explicit DeepSeek launcher settings for compatibility tests/entry.
             if self.initial_budget or self.live_provider=="bailian":
                 from target.live_providers import isolated_environment
-                env.update(isolated_environment(self.live_provider,self.root))
+                env.update(isolated_environment(self.live_provider,self.root,
+                    profile="v35" if self.live_model=="qwen3.8-flash" else None))
             env["TICKET_CASE_ID"]=self.case_id or "interactive"
         elif self.engine=="langchain" and any(self.mutations.get(k) for k in ("skip_lock","infinite_loop")):
             # Existing sandbox guard, only for the offline Mock test environment.

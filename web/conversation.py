@@ -42,7 +42,8 @@ def user_page():
     sessions=st.session_state.setdefault("user_sessions",[])
     def new_session():
         return Conversation("user",engine=st.session_state["default_engine"],live=st.session_state["default_live"],
-                            live_provider=st.session_state.get("default_provider","deepseek"),initial_budget=True)
+                            live_provider=st.session_state.get("default_provider","deepseek"),
+                            live_model=st.session_state.get("default_live_model"),initial_budget=True)
     signature=(st.session_state["default_engine"],st.session_state["default_live"],st.session_state.get("default_provider","deepseek"))
     if not sessions:
         sessions.append(new_session())
@@ -57,11 +58,11 @@ def user_page():
             st.session_state["user_session_index"]=len(sessions)-1
         index=st.selectbox("历史会话",range(len(sessions)),format_func=lambda i:(sessions[i].history[0]["user_msg"][:18] if sessions[i].history else "新对话")+f" · {i+1}",key="user_session_index")
     session=sessions[index]
-    live_name="Bailian" if session.live_provider=="bailian" else "DeepSeek"
+    live_name="Qwen3.8-Flash" if session.live_provider=="bailian" and session.live_model=="qwen3.8-flash" else session.live_model or "Qwen (兼容旧配置)" if session.live_provider=="bailian" else "DeepSeek"
     header("出行助手","查询模拟余票，了解票务政策。每次回答都以工具结果为依据。",live_name+" Live · 只读" if session.live else "离线 Mock")
-    st.caption("真实模型仅负责理解与工具选择；所有班次、政策、订单和支付均为比赛模拟。本轮新版尚未联网验证。" if session.live else "当前使用离线规则模型，不产生模型 API 费用。支持 8 个模拟工具。")
+    st.caption("真实模型负责理解与工具选择；所有票务数据为模拟。Qwen3.8-Flash已有V3.5真实闭环记录，DeepSeek有历史证据；新会话不等于已验证成功。" if session.live else "当前使用离线规则模型，不产生模型 API 费用。支持 8 个模拟工具。")
     if session.live and session.initial_budget:
-        st.info("本入口初次验证：DeepSeek 与百炼合计最多 3 次模型生成请求，一轮工具闭环通常需 2 次。达到上限即停止；不会自动增加额度或重置账本。")
+        st.info("Qwen3.8-Flash沿用V3.5独立4次总账（本轮已用完）；DeepSeek保留原历史预算。RAG查询Embedding另受8次账本与显式网络开关控制，不自动增额。")
     if not session.history:
         st.markdown('<div class="ta-welcome"><h2>下一段旅程，<br>从一句话开始。</h2><p>告诉我出发地、目的地和日期，或直接咨询退改与支付政策。</p></div>',unsafe_allow_html=True)
         a,b=st.columns(2)

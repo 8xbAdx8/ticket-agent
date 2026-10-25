@@ -22,16 +22,17 @@ def main():
     st.session_state.setdefault("default_engine", config.ENGINE)
     st.session_state.setdefault("theme", "深色")
     with st.sidebar:
-        st.markdown('<div class="ta-brand"><div class="ta-logo">T</div><div><b>Ticket Agent</b><small>智能体质量工作空间 · V3.3</small></div></div>', unsafe_allow_html=True)
-        choices=["Legacy Mock","LangChain Mock","DeepSeek Live","Bailian Live"]
+        st.markdown('<div class="ta-brand"><div class="ta-logo">T</div><div><b>Ticket Agent</b><small>智能体质量工作空间 · V3.5</small></div></div>', unsafe_allow_html=True)
+        choices=["Legacy Mock","LangChain Mock","DeepSeek Live","Qwen3.8-Flash Live"]
         initial=3 if config.PROVIDER=="bailian" else 2 if config.PROVIDER=="deepseek" else 1 if config.ENGINE=="langchain" else 0
         selection=st.selectbox("新会话模型",choices,index=initial,key="provider_selection")
         st.session_state["default_live"]=selection.endswith("Live")
         st.session_state["default_engine"]="legacy" if selection=="Legacy Mock" else "langchain"
-        st.session_state["default_provider"]="bailian" if selection=="Bailian Live" else "deepseek"
+        st.session_state["default_provider"]="bailian" if selection=="Qwen3.8-Flash Live" else "deepseek"
+        st.session_state["default_live_model"]="qwen3.8-flash" if selection=="Qwen3.8-Flash Live" else None
         mode = st.radio("工作空间", ["出行助手", "测试工作台"], key="workspace_mode")
         if mode == "测试工作台":
-            page = st.radio("工作台导航", ["测试总览", "测试实验室", "Trace 分析", "质量分析", "模型对比", "集成中心"], key="workspace_page")
+            page = st.radio("工作台导航", ["测试总览", "测试实验室", "Trace 分析", "质量分析", "模型对比", "RAG 知识库", "集成中心"], key="workspace_page")
         else:
             page = "出行助手"
         st.divider()
@@ -63,7 +64,10 @@ def main():
     elif page == "集成中心":
         from web.integrations import integrations_page
         integrations_page()
-    st.caption("Ticket Agent V3.3 · 票务业务为虚构模拟 · 正式质量评价由 B 提供 · 页面浏览不发起模型请求")
+    elif page == "RAG 知识库":
+        from web.rag_page import rag_page
+        rag_page()
+    st.caption("Ticket Agent V3.5 · 票务业务为虚构模拟 · 正式质量评价由 B 提供 · 页面浏览不发起模型请求")
 
 
 # Serialize rendering with calls because legacy configuration is module-scoped.

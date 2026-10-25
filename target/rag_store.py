@@ -71,8 +71,10 @@ class PolicyIndex:
         return {**identity,'index_version':digest(identity)[:24]},chunks
 
     def client(self):
-        import chromadb
-        from chromadb.config import Settings
+        try:
+            import chromadb
+            from chromadb.config import Settings
+        except ImportError:raise RagError('chromadb_dependency_missing') from None
         return chromadb.PersistentClient(path=str(self.path),settings=Settings(anonymized_telemetry=False,allow_reset=False))
 
     def load(self,*,require_real=False):

@@ -165,6 +165,14 @@ del StoreTests
 
 
 class CompatibilityTests(unittest.TestCase):
+    def test_refusal_can_describe_irrelevant_retrieved_sources(self):
+        from target.rag_quality import answer_metrics
+        case={'expected_doc_ids':[],'allowed_citations':[],'answer_points':[]}
+        hits=[{'doc_id':'P01','content':'退票手续费'}]
+        r=answer_metrics(case,'无法确认。P01仅介绍退票手续费，未涉及保险。',hits)
+        self.assertTrue(r['no_answer_refusal']);self.assertEqual(r['wrong_citations'],[])
+        bad=answer_metrics(case,'无法确认，但保险可赔100元 P01。',hits)
+        self.assertFalse(bad['no_answer_refusal']);self.assertEqual(bad['business_status'],'failed')
     @unittest.skipUnless(importlib.util.find_spec('langsmith') is not None,'optional LangSmith context import only')
     def test_live_acceptance_context_is_available_before_request(self):
         from langsmith import tracing_context

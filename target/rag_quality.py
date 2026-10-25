@@ -36,14 +36,23 @@ def answer_metrics(case,reply,hits):
         grounded=any(norm(point) in norm(h['content']) and h['doc_id'] in case['allowed_citations'] for h in hits)
         points.append({'point':point,'mentioned':asserted,'supported_in_allowed_evidence':grounded,
                        'status':'supported_fixed_point' if asserted and grounded else 'indeterminate'})
-    wrong=[c for c in check['cited_doc_ids'] if c not in case['allowed_citations'] or c not in check['allowed_doc_ids']]
+    # A refusal may cite retrieved documents to explain that they do NOT cover the
+    # question. Those are provenance references, not positive answer citations.
+    negative_refs=set()
+    if not case['expected_doc_ids']:
+        for clause in re.split(r'[。！？\n]',reply):
+            if re.search(r'未(?:涉及|包含|提供)|不(?:涉及|包含)|没有.{0,8}(?:相关|规定|信息)',clause):
+                negative_refs.update(re.findall(r'\bP\d+\b',clause))
+    wrong=[c for c in check['cited_doc_ids'] if c not in check['allowed_doc_ids'] or
+           (c not in case['allowed_citations'] and c not in negative_refs)]
     refusal=bool(re.search(r'无法|不能确认|没有.{0,12}(?:规定|信息|依据|政策)|未.{0,10}(?:规定|涉及|提供)|不包含|无相关',reply))
     no_answer=not case['expected_doc_ids']
     denominator=len(check['cited_doc_ids'])
     return {**check,'wrong_citations':wrong,
             'citation_id_precision':(denominator-len(wrong))/denominator if denominator else None,
-            'fixed_point_checks':points,'supported_fixed_points':sum(p['status']=='supported_fixed_point' for p in points),
-            'fixed_points':len(points),'no_answer_refusal':refusal and not check['cited_doc_ids'] if no_answer else None,
+            'negative_evidence_references':sorted(negative_refs),'fixed_point_checks':points,'supported_fixed_points':sum(p['status']=='supported_fixed_point' for p in points),
+            'fixed_points':len(points),'no_answer_refusal':refusal and not wrong and
+               not re.search(r'\d+\s*(?:元|%|％)',reply) if no_answer else None,
             'business_status':'failed' if wrong else 'indeterminate',
             'answer_faithfulness':'indeterminate','generation_failure':False,
             'limits':'Literal fixed points and citation IDs do not establish full semantic faithfulness; B reviews unsupported/extra claims.'}

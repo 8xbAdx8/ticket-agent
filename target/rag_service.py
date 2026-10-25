@@ -31,6 +31,7 @@ def retrieve(question,mode=None,*,allow_network=False,k=None,threshold=None):
     k=k or int(os.getenv('RAG_TOP_K','3'))
     if not 1<=k<=20:raise ValueError('invalid_top_k')
     started=time.perf_counter();identity=uuid.uuid4().hex
+    evidence=None
     try:
         if mode=='keyword':
             hits=keyword(documents(config.POLICY_PATH),question,k)
@@ -39,11 +40,18 @@ def retrieve(question,mode=None,*,allow_network=False,k=None,threshold=None):
         else:
             evidence=configured_index().retrieve(question,mode,k,float(threshold if threshold is not None else os.getenv('RAG_VECTOR_THRESHOLD','0.35')),
                 allow_network=allow_network,require_real=config.PROVIDER in ('deepseek','bailian'))
+        from target.rag_faults import evidence_risks
+        risks=evidence_risks(evidence['hits'])
+        if risks:
+            from target.rag_store import RagError
+            evidence['risk_findings']=risks
+            raise RagError('rag_evidence_risk')
         record={'schema':'ticket-rag-retrieval/1','retrieval_id':identity,**SCOPE.get(),'question':question,
                 **evidence,'status':'retrieved','business_success':None}
     except Exception as exc:
         record={'schema':'ticket-rag-retrieval/1','retrieval_id':identity,**SCOPE.get(),'question':question,'mode':mode,
                 'status':'failed','error_category':getattr(exc,'category',str(exc) if type(exc).__name__=='RagError' else type(exc).__name__),
+                'retrieval_evidence':evidence,
                 'total_latency_ms':round((time.perf_counter()-started)*1000),'business_success':False}
         save(record);raise
     save(record)

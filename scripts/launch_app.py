@@ -33,6 +33,7 @@ def build_environment(mode, runtime_root, inherited=None):
         STREAMLIT_BROWSER_GATHER_USAGE_STATS="false")
     if mode=="offline":
         env.pop("DEEPSEEK_API_KEY",None)
+        env.update(AGENT_RAG_MODE="",RAG_ALLOW_NETWORK="0")
         env.update(AGENT_PROVIDER="mock",AGENT_ENGINE="legacy",AGENT_LC_TOOLSET="all",AGENT_MODEL="mock-offline",
                    AGENT_BASE_URL="https://api.deepseek.com")
     elif mode=="live":

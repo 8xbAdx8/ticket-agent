@@ -48,8 +48,8 @@ def registry():
         ProviderCapability("LangSmith", True, ls["key_configured"],
             {"user_disabled":"用户主动关闭","not_configured":"未配置","configured_unverified":"已配置但未验证"}.get(ls["state"],"配置错误"),
             "以单次导出回执为准；未自动验证", (), "显式确认后仅导出白名单记录，POST + GET 回读验证；本地审计独立保留"),
-        ProviderCapability("阿里云百炼", True, bailian["configured"], "已配置但未验证" if bailian["configured"] else "未配置",
-            "代码/离线 SDK 桩已验证；本轮真实请求未执行", ("query_tickets","search_policy"), "独立 ChatOpenAI 适配器、地址/模型必填；只读、独立预算、无 Mock 回退")]
+        ProviderCapability("Qwen3.8-Flash Live", True, bailian["configured"], "已配置，单次状态以证据为准" if bailian["configured"] else "未配置",
+            "V3.5已有保存的真实闭环及RAG样本；不代表当前Key实时验证", ("query_tickets","search_policy"), "适配服务：阿里云百炼；模型ID qwen3.8-flash。显式旧模型只作兼容，不回退；独立预算、只读")]
 
 
 def observation_envelope(audit):

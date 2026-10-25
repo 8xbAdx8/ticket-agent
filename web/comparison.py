@@ -66,4 +66,4 @@ def comparison_page(runtime_dirs=()):
         st.warning("历史真实 DeepSeek，仅供只读审阅；不是 V3.3 新验证，不与当前 Mock 延迟合并。V3.1 full_sandbox 历史写操作也不代表默认 Live 已开放。")
         st.caption("来源：" + str(r["path"].relative_to(__import__('config').BASE_DIR)) + " · 实际费用未知。")
         safe_json(r["data"], "historical_live")
-    empty("第二种真实模型：代码已接入，真实验证待执行", "阿里云百炼已有独立适配器和离线桩测试；没有本轮真实成绩，不能生成真实双模型排名。")
+    empty("V3.5 同证据双模型对照尚未执行", "Qwen3.8-Flash已有真实FC与RAG记录，见RAG知识库；DeepSeek仅保留历史证据。未新增DeepSeek请求，不混成双模型排名。")

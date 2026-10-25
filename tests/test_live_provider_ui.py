@@ -41,20 +41,20 @@ class LiveProviderUITests(unittest.TestCase):
     def test_all_four_models_select_without_initializing_or_network(self):
         from web import runtime
         with patch.object(runtime,"Agent") as agent:
-            for label in ("Legacy Mock","LangChain Mock","DeepSeek Live","Bailian Live"):
+            for label in ("Legacy Mock","LangChain Mock","DeepSeek Live","Qwen3.8-Flash Live"):
                 session=self.select(label)
                 self.assertIsNone(session.agent)
                 self.assertFalse(session.root.exists())
             agent.assert_not_called()
 
     def test_live_providers_have_distinct_memory_and_database_paths(self):
-        a=self.select("DeepSeek Live"); b=self.select("Bailian Live")
+        a=self.select("DeepSeek Live"); b=self.select("Qwen3.8-Flash Live")
         self.assertNotEqual(a.sid,b.sid);self.assertNotEqual(a.root,b.root)
         self.assertEqual((a.live_provider,b.live_provider),("deepseek","bailian"))
         self.assertFalse(any(a.history+b.history))
 
     def test_missing_key_blocks_send_no_fallback_and_no_secret_ui_field(self):
-        self.select("Bailian Live")
+        self.select("Qwen3.8-Flash Live")
         self.assertTrue(next(b for b in self.app.button if b.label=="发送").disabled)
         self.assertTrue(any("不会自动切换 Mock" in i.value for i in self.app.info))
         self.assertFalse(any("key" in i.label.lower() for i in self.app.text_input))
@@ -69,10 +69,10 @@ class LiveProviderUITests(unittest.TestCase):
     def test_both_live_modes_available_in_lab_and_rerun_never_calls_agent(self):
         self.nav("测试实验室")
         selector=next(s for s in self.app.selectbox if s.label=="执行模式")
-        self.assertIn("Bailian Live · 只读",selector.options)
+        self.assertIn("Qwen3.8-Flash Live · 只读",selector.options)
         from web import runtime
         with patch.object(runtime,"Agent") as agent:
-            selector.select("Bailian Live · 只读").run()
+            selector.select("Qwen3.8-Flash Live · 只读").run()
             self.app.run()
             agent.assert_not_called()
         self.assertEqual([e.message for e in self.app.exception],[])

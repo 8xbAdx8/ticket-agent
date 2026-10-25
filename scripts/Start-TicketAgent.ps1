@@ -15,7 +15,7 @@ if ($Mode -eq 'live' -and [string]::IsNullOrWhiteSpace($env:DEEPSEEK_API_KEY)) {
     $env:DEEPSEEK_API_KEY = [Environment]::GetEnvironmentVariable('DEEPSEEK_API_KEY', 'User')
 }
 $pythonPath = $null
-foreach ($folder in @('.venv-deepseek', '.venv-v3', '.venv')) {
+foreach ($folder in @('.venv-v35', '.venv-deepseek', '.venv-v3', '.venv')) {
     $candidate = Join-Path $projectRoot "$folder\Scripts\python.exe"
     if (Test-Path -LiteralPath $candidate -PathType Leaf) {
         $pythonPath = $candidate

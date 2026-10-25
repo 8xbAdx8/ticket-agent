@@ -18,10 +18,10 @@ def lab_page():
     config_col, run_col = st.columns([1, 2.35], gap="large")
     with config_col, st.container(border=True):
         st.markdown("### 实验配置")
-        choices = ["Legacy Mock", "LangChain Mock", "DeepSeek Live · 只读", "Bailian Live · 只读"]
+        choices = ["Legacy Mock", "LangChain Mock", "DeepSeek Live · 只读", "Qwen3.8-Flash Live · 只读"]
         selected = st.selectbox("执行模式", choices, key="lab_engine")
         live = "Live" in selected
-        live_provider="bailian" if selected.startswith("Bailian") else "deepseek"
+        live_provider="bailian" if selected.startswith("Qwen") else "deepseek"
         case_id=st.text_input("测试用例 ID",value="interactive-lab",key="lab_case_id")
         engine = "legacy" if selected.startswith("Legacy") else "langchain"
         st.caption("工具集：query_tickets / search_policy" if live else "工具集：8 个本地模拟工具")
@@ -43,7 +43,8 @@ def lab_page():
     signature = (engine, live, live_provider, case_id, tuple(sorted(enabled.items())), max_steps)
     if st.session_state.get("lab_signature") != signature:
         st.session_state["lab_signature"] = signature
-        session = Conversation("lab", engine=engine, live=live, live_provider=live_provider,case_id=case_id,initial_budget=True,mutations=enabled)
+        session = Conversation("lab", engine=engine, live=live, live_provider=live_provider,
+                               live_model="qwen3.8-flash" if live_provider=="bailian" else None,case_id=case_id,initial_budget=True,mutations=enabled)
         st.session_state.setdefault("lab_archives", []).append(session)
         st.session_state["lab_session"] = session
     session = st.session_state["lab_session"]
