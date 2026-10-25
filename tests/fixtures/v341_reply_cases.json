@@ -2821,9 +2821,10 @@
       ],
       "model_output": "G7301 有余票。",
       "assertion": {
-        "status": "indeterminate",
+        "status": "checked_fields_match",
         "finding_fields": [],
-        "indeterminate_reason": "unsupported_or_invalid_value"
+        "indeterminate_reason": null,
+        "scope": "有票 asserts only seats_left > 0, not a numeric count."
       }
     },
     {
@@ -3109,6 +3110,92 @@
           "seats_left"
         ],
         "indeterminate_reason": null
+      }
+    },
+    {
+      "id": "false_symbolic_stock",
+      "kind": "deterministic_offline_fixture",
+      "user_input": "查2026-10-26上海到杭州高铁二等座。",
+      "authority_events": [
+        {
+          "event": "tool_end",
+          "tool": "query_tickets",
+          "ok": true,
+          "executed": true,
+          "call_id": "fixture-call",
+          "args": {
+            "from_city": "上海",
+            "to_city": "杭州",
+            "date": "2026-10-26"
+          },
+          "result": {
+            "trains": [
+              {
+                "train_no": "G7301",
+                "from_city": "上海",
+                "to_city": "杭州",
+                "date": "2026-10-26",
+                "depart": "06:00",
+                "arrive": "07:00",
+                "seat_type": "二等座",
+                "price": 73.0,
+                "seats_left": 0,
+                "kind": "高铁"
+              }
+            ],
+            "count": 1
+          }
+        }
+      ],
+      "model_output": "G7301 有余票。",
+      "assertion": {
+        "status": "failed",
+        "finding_fields": [
+          "seats_left"
+        ],
+        "indeterminate_reason": null
+      }
+    },
+    {
+      "id": "uncertain_stock_quality",
+      "kind": "deterministic_offline_fixture",
+      "user_input": "查2026-10-26上海到杭州高铁二等座。",
+      "authority_events": [
+        {
+          "event": "tool_end",
+          "tool": "query_tickets",
+          "ok": true,
+          "executed": true,
+          "call_id": "fixture-call",
+          "args": {
+            "from_city": "上海",
+            "to_city": "杭州",
+            "date": "2026-10-26"
+          },
+          "result": {
+            "trains": [
+              {
+                "train_no": "G7301",
+                "from_city": "上海",
+                "to_city": "杭州",
+                "date": "2026-10-26",
+                "depart": "06:00",
+                "arrive": "07:00",
+                "seat_type": "二等座",
+                "price": 73.0,
+                "seats_left": 35,
+                "kind": "高铁"
+              }
+            ],
+            "count": 1
+          }
+        }
+      ],
+      "model_output": "G7301 余票：充足。",
+      "assertion": {
+        "status": "indeterminate",
+        "finding_fields": [],
+        "indeterminate_reason": "unsupported_or_invalid_value"
       }
     }
   ]

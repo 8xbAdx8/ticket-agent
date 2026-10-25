@@ -21,3 +21,10 @@
 - 模块一提交8bd3822。新增scripts/verify_v341_offline.py：只接受新runtime子目录，剥离真实Key、禁用本地秘密发现，复用原网络守卫和verify_v33_offline.py完整回归。
 - 每组专项用例导出输入、权威事件、模型输出、预期、实际字段结论、断言结果；历史DeepSeek/百炼分别导出原始来源SHA/Trace/工具/回复/Token/延迟与新检测器的离线重放，明确不是修复后Live。
 - 读取保护范围原件并核对哈希，不重写原预算或Trace；每个输出目录全新，失败输出保留，不复用旧证据目录。
+
+## 完整回归发现与修复
+
+- 验收入口提交68e17ad。执行python scripts/verify_v341_offline.py --out artifacts/runtime/v341-final-20261025：专项72通过、62组断言全对，但完整353项中原test_v32_audit的hallucinated_train子场景失败，smoke因此失败；V3/V2均无失败，历史文件不变、真实请求0。原失败目录保留。
+- 原变异场景模型回复“查到G9999有余票”，工具可见结果由M7故意注入G9999，独立数据库审计应继续检出伪造来源；新检测器不能为此单独豁免变异。实际问题是把“有余票”当成不可识别的精确数量。
+- 修复seats_left支持明确的正库存谓词（>0），不捏造具体张数；权威库存仍必须是整数，0库存会明确失败。“余票充足”等不精确表达保持indeterminate。没有修改变异或原断言。A自建symbolic_stock预期据此改为只检正库存，新增0库存反例及含糊库存反例，不修改B用例。
+- 修改target/reply_consistency.py及A用例；专项74通过0跳过，原test_v32_audit定向回归日志original-audit-fixed.txt。随后新目录重新运行全量回归，不将旧failed报告改成passed。

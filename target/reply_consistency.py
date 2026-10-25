@@ -42,6 +42,7 @@ def normalize(field,value):
     if field in ('price','seats_left'):
         value=re.sub(r'^[¥￥]\s*|\s*(?:元(?:/人)?|张|个座位)$','',value)
         if field=='seats_left' and value in ('售罄','无票','无余票'):return 0
+        if field=='seats_left' and value=='有票':return 'positive_stock'
         if not re.fullmatch(r'\d+(?:\.\d+)?',value):raise ValueError('exact_number_required')
         number=Decimal(value)
         if field=='seats_left':
@@ -65,7 +66,9 @@ def _authority(events):
             values={}
             for f in (*FIELDS,'kind'):
                 if row.get(f) is not None:
-                    try:values[f]=normalize(f,row[f])
+                    try:
+                        value=normalize(f,row[f])
+                        if f!='seats_left' or type(value) is int:values[f]=value
                     except (ValueError,InvalidOperation):pass
             rows.append({'values':values,'source':{'event_index':i,'call_id':e.get('call_id'),'args':e.get('args',{})}})
     return rows,queries
@@ -218,10 +221,12 @@ def check(reply,events):
         sources=[r['source'] for r in selected]
         for f,v in parsed:
             if f not in authority:uncertain(record,'authority_field_missing',field=f);continue
+            matched=(authority[f]>0 if f=='seats_left' and v=='positive_stock' else v==authority[f])
             checks.append({'train_no':train,'identity':{k:authority[k] for k in IDENTITY if k in authority},
-                           'field':f,'claimed':v,'tool_value':authority[f],'matched':v==authority[f],
+                           'field':f,'claimed':v,'tool_value':authority[f],'matched':matched,
+                           'comparison':'greater_than_zero' if f=='seats_left' and v=='positive_stock' else 'equal',
                            'line':record['line'],'authority_sources':sources})
-            if v!=authority[f]:fail(record,f,v,[authority[f]],sources=sources)
+            if not matched:fail(record,f,v,[authority[f]],sources=sources)
     for denial in denials:
         if denial.get('predicate')=='all_available':
             if len(queries)!=1 or any('seats_left' not in r['values'] for r in rows):
