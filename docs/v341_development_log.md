@@ -15,3 +15,9 @@
 - 实际命令：python -m unittest discover -s tests -p test_v341_reply_consistency.py -v。首轮58通过；扩展到67项时1失败（DeepSeek正确原文“均有余票”的范围被过度判为无身份字段）；为明确的全量库存断言增加单查询范围核验后67通过，补充边界后72通过0失败0跳过。日志分别保留specialist-first/second/third/final.txt，不改预期换通过。
 - 实际运行原test_v34_api_audit.py 25通过；旧checked_fields时间计数兼容，train_no身份另计。手工复现曾发现“查询到的班次”被误识别为城市路线，已修复并由DeepSeek原文用例覆盖；主动声称的引号不能冒充用户引用豁免，单独覆盖。
 - 本模块模型请求0，LangSmith请求0，原4/4和正式5/5不变。B须独立评估语言规则误报/漏检及安全停止行为，C不得把历史重放当修复后Live。
+
+## 模块二：可复现证据导出与完整离线门禁
+
+- 模块一提交8bd3822。新增scripts/verify_v341_offline.py：只接受新runtime子目录，剥离真实Key、禁用本地秘密发现，复用原网络守卫和verify_v33_offline.py完整回归。
+- 每组专项用例导出输入、权威事件、模型输出、预期、实际字段结论、断言结果；历史DeepSeek/百炼分别导出原始来源SHA/Trace/工具/回复/Token/延迟与新检测器的离线重放，明确不是修复后Live。
+- 读取保护范围原件并核对哈希，不重写原预算或Trace；每个输出目录全新，失败输出保留，不复用旧证据目录。
