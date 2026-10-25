@@ -1,0 +1,42 @@
+/* Semantic HTML and public container keys; no generated Emotion class names. */
+html,body,[data-testid="stAppViewContainer"],.stApp{background:var(--ta-bg);color:var(--ta-text);font-family:Inter,"Segoe UI","Microsoft YaHei",sans-serif}
+[data-testid="stHeader"]{background:transparent}
+[data-testid="stSidebar"]{background:var(--ta-panel);border-right:1px solid var(--ta-border)}
+[data-testid="stSidebar"]>div:first-child{padding-top:1.7rem}
+.block-container{max-width:1560px;padding:2.2rem 2.7rem 3rem}
+h1,h2,h3,h4,p,label,[data-testid="stMarkdownContainer"]{color:var(--ta-text)}
+h3{font-size:1.05rem!important;font-weight:650!important;letter-spacing:.01em}
+[data-testid="stCaptionContainer"],[data-testid="stCaptionContainer"] p{color:var(--ta-muted)}
+.ta-brand{display:flex;gap:12px;align-items:center;padding:0 0 26px}
+.ta-logo{display:grid;place-items:center;background:var(--ta-accent);color:var(--ta-bg);width:36px;height:36px;border-radius:10px;font-size:22px;font-weight:800}
+.ta-brand b{display:block;font-size:16px}.ta-brand small{font-size:11px;color:var(--ta-muted)}
+.ta-heading{display:flex;align-items:center;justify-content:space-between;gap:20px;margin-bottom:24px}
+.ta-heading h1{font-size:27px;font-weight:680;letter-spacing:-.6px;margin:0;padding:0}
+.ta-heading p{color:var(--ta-muted);font-size:13px;margin:9px 0 0;line-height:1.7}
+.ta-badge,.ta-tag{display:inline-block;white-space:nowrap;border:1px solid var(--ta-border);padding:5px 10px;border-radius:6px;font-size:11px;background:var(--ta-panel)}
+.ta-badge{color:var(--ta-accent)}
+.ta-kpi{background:var(--ta-panel);border:1px solid var(--ta-border);border-radius:11px;padding:18px 19px;min-height:126px;margin:2px 0 15px}
+.ta-kpi span{display:block;color:var(--ta-muted);font-size:12px}.ta-kpi strong{display:block;font-size:29px;font-weight:650;line-height:1.7;letter-spacing:-.6px}.ta-kpi small{color:var(--ta-muted);font-size:11px;line-height:1.5}
+.ta-empty{border:1px dashed var(--ta-border);border-radius:12px;padding:30px;background:var(--ta-panel);margin:10px 0 22px}
+.ta-empty p{color:var(--ta-muted);font-size:13px;line-height:1.8;margin:9px 0 0}
+.ta-welcome{padding:45px 0 32px;max-width:780px}.ta-welcome h2{font-size:35px;line-height:1.55;letter-spacing:-1px;margin:0}.ta-welcome p{color:var(--ta-muted);font-size:15px;line-height:1.9}
+.ta-note{background:var(--ta-panel);border:1px solid var(--ta-border);border-left:3px solid var(--ta-accent);padding:13px 17px;border-radius:8px;font-size:13px;line-height:1.9;margin:12px 0}
+.ta-event{padding:14px 16px;border-left:2px solid var(--ta-accent);background:var(--ta-panel);margin:7px 0;border-radius:0 8px 8px 0}.ta-event small{display:block;color:var(--ta-muted);margin-top:5px;font-size:12px}
+.ticket-card{display:flex;align-items:center;justify-content:space-between;gap:18px;background:var(--ta-panel);border:1px solid var(--ta-border);border-radius:11px;padding:19px 21px;margin:10px 0}
+.ticket-card strong{font-size:18px}.ticket-card .route{text-align:center}.ticket-card .fare{text-align:right}.ticket-card .fare b{font-size:21px}.muted{color:var(--ta-muted);font-size:12px;line-height:1.9}.stock{color:var(--ta-accent);font-size:12px;margin-top:5px}.sold{color:#e19f79;font-size:12px}
+.policy-card,.order-card{border:1px solid var(--ta-border);background:var(--ta-panel);padding:18px 21px;margin:10px 0;border-radius:10px;line-height:1.9}.policy-card p{font-size:14px}.policy-card small{color:var(--ta-muted)}
+.ta-processing{display:flex;align-items:center;gap:10px;color:var(--ta-accent);font-size:13px;padding:12px 0}.ta-processing span{width:14px;height:14px;border:2px solid var(--ta-border);border-top-color:var(--ta-accent);border-radius:50%;animation:ta-spin .8s linear infinite}@keyframes ta-spin{to{transform:rotate(360deg)}}
+[data-testid="stVerticalBlockBorderWrapper"]>div{border-color:var(--ta-border)!important;border-radius:12px}
+.stButton button,.stDownloadButton button{border-radius:8px;border:1px solid var(--ta-border);background:var(--ta-panel);color:var(--ta-text);transition:border-color .12s}
+.stButton button:hover,.stDownloadButton button:hover{border-color:var(--ta-accent);color:var(--ta-accent)}
+button[kind="primary"],.stButton button[kind="primary"]{background:var(--ta-accent);border-color:var(--ta-accent);color:var(--ta-bg)}
+input,textarea,[data-baseweb="select"]>div,[data-baseweb="input"],[data-baseweb="textarea"]{background:var(--ta-panel)!important;color:var(--ta-text)!important;border-color:var(--ta-border)!important}
+[data-testid="stChatMessage"],[data-testid="stExpander"],details{background:var(--ta-panel);border-color:var(--ta-border);color:var(--ta-text)}
+[data-testid="stChatInput"]{background:var(--ta-panel)}
+[data-testid="stCode"],[data-testid="stJson"]{border-radius:8px}
+[data-testid="stDataFrame"],[data-testid="stVegaLiteChart"]{border-radius:9px;overflow:hidden}
+[role="radiogroup"] label p{font-size:13px}
+hr{border-color:var(--ta-border)}a{color:var(--ta-accent)}
+@media(max-width:1100px){.block-container{padding:1.8rem 1.5rem}.ta-kpi{padding:13px;min-height:115px}.ta-kpi strong{font-size:24px}.ta-heading h1{font-size:24px}}
+@media(max-width:700px){.block-container{padding:1.4rem 1rem}.ta-welcome{padding:20px 0}.ta-welcome h2{font-size:26px}.ticket-card{flex-wrap:wrap;padding:14px;gap:14px}.ta-heading{align-items:flex-start}.ta-kpi{min-height:105px}}
+@media(prefers-reduced-motion:reduce){.ta-processing span{animation:none}.stButton button{transition:none}}
