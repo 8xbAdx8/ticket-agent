@@ -40,3 +40,6 @@
 - `web/trace_view.py` 增加按唯一 Trace ID 关联当前 Provider 元数据及 LangSmith 回执，不改变旧 JSON。百炼 400 的 Arrearage/模型/Key 代码进一步分类，拒绝非模型用户域名。
 - `target/deepseek_runtime.safe_text` 复用既有通用凭据脱敏，涵盖新增 Provider/LangSmith 与已加载配置中的凭据，正常业务参数不改。
 - 新增测试后，命令 `python -m unittest discover -s tests -p test_live_provider*.py -v` 22/22；`python -m unittest discover -s tests -p test_observability.py -v` 12/12。日志 `artifacts/runtime/v33-providers-integration-final.txt`、`v33-providers-observability-final.txt`。合计新增 34 项 A 自测，不是 B 正式成绩。
+
+- `7630699` 冻结后完整离线回归通过：256/256；V3 256 项中 59 跳过；V2 256 项中 138 跳过，均 0 失败；smoke 与八变异 25/8 通过，890 文件保护未变。记录在 `artifacts/runtime/v33-providers-final-20261025`，不覆盖。
+- 最后阅读启动说明时发现旧启动器终端仍打印“不限累计”，与新 UI 三次上限不符；仅修正 `scripts/launch_app.py` 提示文案及 Live 页面预算说明，不改旧环境构造/预算数据。7 项新入口和 8 项原启动器测试通过，最终还会重新冻结回归。

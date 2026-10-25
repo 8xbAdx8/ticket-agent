@@ -58,6 +58,8 @@ def user_page():
     live_name="Bailian" if session.live_provider=="bailian" else "DeepSeek"
     header("出行助手","查询模拟余票，了解票务政策。每次回答都以工具结果为依据。",live_name+" Live · 只读" if session.live else "离线 Mock")
     st.caption("真实模型仅负责理解与工具选择；所有班次、政策、订单和支付均为比赛模拟。本轮新版尚未联网验证。" if session.live else "当前使用离线规则模型，不产生模型 API 费用。支持 8 个模拟工具。")
+    if session.live and session.initial_budget:
+        st.info("本入口初次验证：DeepSeek 与百炼合计最多 3 次模型生成请求，一轮工具闭环通常需 2 次。达到上限即停止；不会自动增加额度或重置账本。")
     if not session.history:
         st.markdown('<div class="ta-welcome"><h2>下一段旅程，<br>从一句话开始。</h2><p>告诉我出发地、目的地和日期，或直接咨询退改与支付政策。</p></div>',unsafe_allow_html=True)
         a,b=st.columns(2)

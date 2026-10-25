@@ -165,8 +165,8 @@ def main(argv=None):
         print("\n离线模式：Mock，支持全部八个模拟工具，不调用模型 API。" if args.mode=="offline" else
               "\n在线模式：DeepSeek Live，仅模拟查票和政策咨询。点击网页发送才调用真实模型并产生费用。",flush=True)
         if args.mode=="live":
-            print("累计请求："+("不限次数（手动体验，仍逐次记账）" if not state["request_limit"] else str(state["request_limit"]))+
-                  "；单轮限制和零自动重试保留。正式 5/5 账本不变。",flush=True)
+            print("V3.3 新版模型选择器：DeepSeek/百炼初次合计最多 3 次生成请求，独立记账；"
+                  "一轮工具对话通常需要 2 次。正式 5/5 及旧手动账本不变，零自动重试。",flush=True)
         print("数据库："+state["database"]+"\nTrace："+state["trace_dir"],flush=True)
         prepare_database(env)
         return serve(env,port,open_browser=not args.no_browser)
