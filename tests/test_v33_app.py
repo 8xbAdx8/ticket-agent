@@ -138,3 +138,86 @@ class V33AppTests(unittest.TestCase):
         self.assertGreater(len(self.app.error),0)
         self.assertNotIn('class="ticket-card"',"\n".join(m.value for m in self.app.markdown))
         self.assertNotIn("DO_NOT_PRINT-secret",str(self.app))
+
+    def test_dashboard_current_batch_is_separate_from_b(self):
+        self.send("查明天上海到杭州的高铁")
+        self.nav("测试总览")
+        next(s for s in self.app.selectbox if s.label=="证据批次").select("A 当前隔离实验").run()
+        self.clean()
+        self.assertTrue(any("A 当前隔离实验" in x.value for x in self.app.caption))
+        self.assertTrue(any("不是 B 正式" in x.value for x in self.app.info))
+
+    def test_new_live_ui_missing_key_does_not_construct_model(self):
+        from web.runtime import Conversation
+        session=Conversation("user",engine="langchain",live=True)
+        self.app.session_state["user_sessions"]=[session]
+        with patch("web.conversation.live_ready",return_value=False),patch("web.runtime.Agent") as agent:
+            self.app.run()
+            self.clean()
+            self.assertTrue(self.button("发送").disabled)
+            agent.assert_not_called()
+        self.assertFalse(session.root.exists())
+
+    def test_new_live_ui_uses_real_sdk_with_only_mock_transport(self):
+        import json
+        import os
+        from web.runtime import Conversation
+        try:
+            import httpx
+            from target.deepseek_runtime import Settings,make_model
+            from target.agent import Agent as RealAgent
+            import langchain_deepseek
+        except ImportError:
+            self.skipTest("DeepSeek SDK protocol test requires the DeepSeek environment")
+        session=Conversation("user",engine="langchain",live=True)
+        self.app.session_state["user_sessions"]=[session]
+        session.root.mkdir(parents=True,exist_ok=True)
+        payloads=[]
+        def respond(request):
+            payloads.append(json.loads(request.content))
+            msg={"role":"assistant","content":None,"tool_calls":[{"id":"offline-ui-call","type":"function","function":{"name":"query_tickets","arguments":json.dumps({"from_city":"上海","to_city":"杭州","date":config.today().isoformat(),"kind":"高铁","seat_type":"二等座"},ensure_ascii=False)}}]} if len(payloads)==1 else {"role":"assistant","content":"离线 SDK 桩：查询工具已执行，班次以模拟结果为准。"}
+            return httpx.Response(200,json={"id":"offline-ui-only","object":"chat.completion","created":1,"model":"deepseek-flash","choices":[{"index":0,"message":msg,"finish_reason":"tool_calls" if len(payloads)==1 else "stop"}],"usage":{"prompt_tokens":11,"completion_tokens":7,"total_tokens":18}})
+        with patch.dict(os.environ,{"DEEPSEEK_API_KEY":"offline-v33-placeholder","DEEPSEEK_BUDGET_PATH":str(session.root/"requests.db"),"DEEPSEEK_MAX_REQUESTS":"5","DEEPSEEK_LIVE_TEST_PROFILE":"read_only","DEEPSEEK_THINKING":"disabled"}),patch.multiple(config,PROVIDER="deepseek",API_KEY="offline-v33-placeholder",MODEL_NAME="deepseek-flash",BASE_URL="https://api.deepseek.com"),patch.multiple("web.runtime",LIVE_AVAILABLE=True,LIVE_MODEL="deepseek-flash",LIVE_URL="https://api.deepseek.com",LIVE_KEY="offline-v33-placeholder"),patch("web.runtime.live_ready",return_value=True),patch("web.conversation.live_ready",return_value=True):
+            model=make_model(Settings.from_env(),transport=httpx.MockTransport(respond))
+            try:
+                with patch("web.runtime.Agent",side_effect=lambda **kw:RealAgent(model=model,**kw)):
+                    self.app.run()
+                    next(c for c in self.app.checkbox if c.label.startswith("确认发送真实")).check()
+                    self.send("查今天上海到杭州的高铁")
+                self.assertEqual(len(payloads),2)
+                self.app.run()
+                self.assertEqual(len(payloads),2)
+                self.assertEqual({t["function"]["name"] for t in payloads[0]["tools"]},{"query_tickets","search_policy"})
+                self.assertEqual(session.history[-1]["tool_sequence"],["query_tickets"])
+                self.assertTrue(any(m["role"]=="tool" and m["tool_call_id"]=="offline-ui-call" for m in payloads[1]["messages"]))
+                self.assertNotIn("offline-v33-placeholder",str(self.app))
+            finally:
+                model.root_client.close()
+
+    def test_seven_chat_mutations_reach_actual_legacy_execution(self):
+        self.nav("测试实验室")
+        scenarios={"date_offset":"查明天上海到杭州的高铁","skip_lock":"订明天上海到杭州的高铁",
+            "repeat_call":"查明天上海到杭州的高铁","infinite_loop":"抢明天北京到上海的票",
+            "route_error":"退票手续费怎么算","no_citation":"退票手续费怎么算","hallucinated_train":"查明天上海到杭州的高铁"}
+        for mutation,message in scenarios.items():
+            self.button("恢复正常模式").click().run()
+            next(c for c in self.app.checkbox if c.label==mutation).check().run()
+            next(t for t in self.app.text_input if t.label=="输入消息").set_value(message)
+            self.button("执行测试").click().run()
+            self.clean()
+            session=self.app.session_state["lab_session"]
+            self.assertGreater(len(session.audits),0,mutation)
+            self.assertTrue(any(e.get("mutation")==mutation for e in session.audits[-1].get("fault_report",{}).get("injection_events",[])),mutation)
+
+    def test_langchain_mock_write_mutation_uses_existing_sandbox_guard(self):
+        try:import langchain
+        except ImportError:self.skipTest("LangChain Mock requires framework dependencies")
+        self.nav("测试实验室")
+        next(s for s in self.app.selectbox if s.label=="执行模式").select("LangChain Mock").run()
+        next(c for c in self.app.checkbox if c.label=="skip_lock").check().run()
+        next(t for t in self.app.text_input if t.label=="输入消息").set_value("订明天上海到杭州的高铁")
+        self.button("执行测试").click().run()
+        self.clean()
+        session=self.app.session_state["lab_session"]
+        self.assertTrue((session.root/".ticket-agent-sandbox.json").is_file())
+        self.assertTrue(any(e.get("mutation")=="skip_lock" and e.get("status")=="applied" for e in session.audits[-1]["fault_report"]["injection_events"]))

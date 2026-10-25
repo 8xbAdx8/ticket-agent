@@ -14,7 +14,7 @@ def comparison_page():
         common = sorted(set(aa) & set(bb))
         kpis([("共同执行用例", len(common), "比较交集，不将101与100相加"), ("数据模式", "Mock", "两种引擎，非两个真实大模型"),
             ("执行日期", a["date"], "精确时间未提供"), ("代码版本", a["commit"][:7], "同一 B 被测基线")])
-        selected = st.selectbox("同一用例", common, key="compare_case")
+        selected = st.selectbox("同一用例", common, index=common.index("F01") if "F01" in common else 0, key="compare_case")
         for col, label, row in zip(st.columns(2), ["Legacy Mock", "LangChain Mock"], [aa[selected], bb[selected]]):
             with col, st.container(border=True):
                 st.markdown("### " + label)

@@ -23,9 +23,9 @@ def mutation_matrix():
     selected_cell=selection[0] if selection else None
     defaults=0
     if selected_cell:
-        defaults=next((i for i,r in enumerate(rows) if r["case_id"]==selected_cell.get("case_id") and r["mutation"]==selected_cell.get("mutation")),0)
-    index=st.selectbox("单元格与原始断言详情",range(len(rows)),index=defaults,format_func=lambda i:rows[i]["mutation"]+" / "+rows[i]["case_id"]+" · "+rows[i]["status"])
-    chosen=rows[index]
+        defaults=next((i for i,r in enumerate(grid) if r["case_id"]==selected_cell.get("case_id") and r["mutation"]==selected_cell.get("mutation")),0)
+    index=st.selectbox("单元格与原始断言详情",range(len(grid)),index=defaults,format_func=lambda i:grid[i]["mutation"]+" / "+grid[i]["case_id"]+" · "+grid[i]["status"])
+    chosen=grid[index]
     st.json(chosen)
     st.info("B 本轮提供的是压缩执行摘要；没有包含对应完整 Trace/临时数据库，不能补造参数与权威快照。请由 B 补充关联证据。")
 
@@ -85,7 +85,12 @@ def specialist_topics():
     choice=st.selectbox("AI 专项分类",list(groups))
     st.info(groups[choice])
     from web.evidence import batch
-    candidates=[r for r in batch("legacy")["rows"] if r["id"] in {"T20","T23","T24","X15","X16","M01","M05","R01","R02"}]
+    ids={"回答—行为一致性":{"F04","F05","F06","T24"},"RAG 忠实度":{"R01","R02","R13"},"语言扰动":set(),
+         "长对话记忆":{"M01","M05","M09","M12"},"行为边界":{"X15","X16","X01","X03"},"工具异常与恢复":{"T20","T23","T24"}}
+    candidates=[r for r in batch("legacy")["rows"] if r["id"] in ids[choice]]
+    if not candidates:
+        empty("暂无该专项数据集","分类接口已准备；未执行的测试保持未验证。")
+        return
     st.dataframe([{ "用例":r["id"],"维度":r["dimension"],"状态":r["status"],"工具序列":" → ".join(t for turn in r.get("executed",[]) for t in turn.get("tool_sequence",[]))} for r in candidates],hide_index=True,width="stretch")
     st.caption("这是相关原始用例入口，不是上述六类专项全部完成的证明。")
 

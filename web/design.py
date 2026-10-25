@@ -17,7 +17,7 @@ def theme(name):
     dark = name == "深色"
     tokens = dict(bg="#10141d", panel="#181e2a", raised="#202838", text="#e9edf5", muted="#a6b1c5", border="#2c3547", accent="#64d6b6") if dark else dict(
         bg="#f4f6fa", panel="#ffffff", raised="#eef2f7", text="#1b2638", muted="#586a81", border="#dce3ed", accent="#147d68")
-    css = ":root{" + ";".join("--ta-"+k+":"+v for k,v in tokens.items()) + ";}"
+    css = ":root{" + ";".join("--ta-"+k+":"+v for k,v in tokens.items()) + ";--primary-color:var(--ta-accent);--background-color:var(--ta-bg);--secondary-background-color:var(--ta-panel);--text-color:var(--ta-text);}" 
     st.markdown("<style>"+css+(Path(__file__).with_name("design.css")).read_text(encoding="utf-8")+"</style>", unsafe_allow_html=True)
 
 

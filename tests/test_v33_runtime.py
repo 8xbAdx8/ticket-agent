@@ -34,6 +34,16 @@ class RuntimeTests(unittest.TestCase):
         self.assertEqual(len(c.history),1)
         self.assertEqual(r["tool_sequence"],["query_tickets","lock_seat","create_order"])
 
+    def test_user_provider_does_not_inherit_old_global_test_mutations(self):
+        from target import providers
+        from datetime import timedelta
+        c=self.conversation()
+        with patch.dict(providers.MUTATIONS,{"hallucinated_train":True,"date_offset":1},clear=True):
+            r=c.send("查明天上海到杭州的高铁","fresh-user")
+            self.assertNotIn("G9999",r["reply"])
+            self.assertEqual(r["steps"][0]["calls"][0]["args"]["date"],(config.today()+timedelta(days=1)).isoformat())
+            self.assertTrue(providers.MUTATIONS["hallucinated_train"])
+
     def test_live_preflight_cannot_fall_back_or_call_with_missing_key(self):
         c=self.conversation(live=True,engine="langchain")
         with patch("web.runtime.live_ready",return_value=False),patch("web.runtime.Agent") as agent:

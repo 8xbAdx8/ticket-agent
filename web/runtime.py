@@ -118,7 +118,11 @@ class Conversation:
                     with contextlib.redirect_stdout(io.StringIO()):
                         build_db(config.DB_PATH)
                 if self.agent is None:
-                    self.agent=Agent(engine=self.engine, mutations=dict(self.mutations))
+                    kwargs={"engine":self.engine,"mutations":dict(self.mutations)}
+                    if not self.live and self.engine=="legacy":
+                        from target.providers import MockProvider
+                        kwargs["provider"]=MockProvider(mutations=dict(self.mutations))
+                    self.agent=Agent(**kwargs)
                 cursor=turn_cursor(self.agent,self.sid)
                 record=self.agent.chat(self.sid,message)
                 full=collect_results(self.agent,self.sid,cursor,record)

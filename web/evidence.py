@@ -62,7 +62,26 @@ def batch(engine="legacy"):
     meta = read_json(B_SOURCE / "manifest.json")
     return {"id": "b-"+engine, "title": "B 独立测试 · "+("Legacy Mock" if engine == "legacy" else "LangChain Mock"),
             "owner": "B", "mode": "Mock", "engine": engine, "grain": "正式功能用例", "source": "web/datasets/b_v32_20261020/"+name,
-            "date": meta["execution_date"], "time": None, "commit": meta["code_commit"], "rows": rows, "read_errors": errors}
+            "date": meta["execution_date"], "time": None, "commit": meta["code_commit"], "rows": rows, "read_errors": errors,"seven_dimensions":True}
+
+
+def b_aux_batch(kind):
+    names={"新增代码专项（47 检查）":"newcode_check.json","M8 并发幂等（10 检查）":"m8_idempotent.json","选定变异矩阵（69 组合）":"mutation.json"}
+    name=names[kind];raw=read_json(B_SOURCE/name)
+    mutant=name=="mutation.json"
+    records=raw.get("rows",raw.get("records",[]))
+    rows=[]
+    for i,r in enumerate(records):
+        value=r.get("killed") if mutant else r.get("passed")
+        state="passed" if value is True else "failed" if value is False else "not_applicable"
+        rows.append({"id":r.get("id",r.get("mutation","")+" / "+r.get("case_id",str(i))),
+                     "dimension":r.get("group","并发检查" if name.startswith("m8") else "变异组合"),"status":state,
+                     "checks":[],"executed":[],"note":r.get("detail",""),"original":r})
+    meta=read_json(B_SOURCE/"manifest.json")
+    return {"id":"b-"+name,"title":"B 独立测试 · "+kind,"owner":"B","mode":"Mock / 离线桩",
+            "grain":"变异组合" if mutant else "专项检查（非模型对话）","source":"web/datasets/b_v32_20261020/"+name,
+            "date":meta["execution_date"],"time":None,"commit":meta["code_commit"],"rows":rows,"seven_dimensions":False,
+            "outcome_labels":("已检出","未检出") if mutant else ("通过","失败"),"original_generated":raw.get("generated")}
 
 
 def summary(rows):
@@ -96,8 +115,12 @@ def mutation_rows(include_probe=True):
 
 def mutation_totals():
     rows = mutation_rows(False)
-    return [{"mutation": name, "detected": sum(r["killed"] for r in rows if r["mutation"] == name),
-             "tested": sum(r["mutation"] == name for r in rows)} for name in MUTATIONS]
+    result=[]
+    for name in MUTATIONS:
+        selected=[r for r in rows if r["mutation"]==name]
+        result.append({"mutation":name,"detected":sum(r["killed"] for r in selected) if selected else None,
+                       "tested":len(selected) if selected else None})
+    return result
 
 
 def diff_values(before, after, path="$", missing="<字段缺失>"):
@@ -108,6 +131,30 @@ def diff_values(before, after, path="$", missing="<字段缺失>"):
     return [] if before == after else [{"字段": path, "原始": before, "变异后": after}]
 
 
+def read_audit_records(path):
+    """Resolve only bounded, digest-verified blobs beside the selected audit."""
+    records, errors=read_jsonl(path)
+    resolved=[]
+    for record in records:
+        ref=record.get("full_evidence",{})
+        if ref.get("available"):
+            try:
+                blob=(Path(path).parent/ref["path"]).resolve()
+                if not blob.is_relative_to(Path(path).parent.resolve()) or blob.stat().st_size>4*1024*1024:
+                    raise ValueError()
+                data=blob.read_bytes()
+                if hashlib.sha256(data).hexdigest()!=ref["sha256"]:
+                    raise ValueError()
+                value=json.loads(data)
+                if not isinstance(value,dict):
+                    raise ValueError()
+                record=value
+            except (OSError,ValueError,KeyError,TypeError):
+                record=dict(record,display_warning="完整旁证缺失、越界、超限或哈希不符；仅显示保存摘要，完整内容无法判定")
+        resolved.append(record)
+    return resolved,errors
+
+
 def audit_catalog(runtime_dirs=()):
     catalog = []
     for folder, owner, source_kind in [(AUDIT_SOURCE/"cases", "A", "历史离线自测"), *[(Path(p), "A", "当前工作空间") for p in runtime_dirs]]:
@@ -116,10 +163,28 @@ def audit_catalog(runtime_dirs=()):
         for path in sorted(folder.rglob("audit_runs.jsonl")):
             if path.is_symlink() or not path.resolve().is_relative_to(folder.resolve()):
                 continue
-            records, errors = read_jsonl(path)
+            records, errors = read_audit_records(path)
             for r in records:
                 catalog.append({"record": r, "source": path, "owner": owner, "kind": source_kind, "read_errors": errors})
     return catalog
+
+
+def audit_batch(runtime_dirs=(),historical=False):
+    entries=audit_catalog(() if historical else runtime_dirs)
+    entries=[e for e in entries if e["kind"]==("历史离线自测" if historical else "当前工作空间")]
+    if not historical:
+        entries=[e for e in entries if e["record"].get("provider")!="deepseek_live"]
+    rows=[]
+    for e in entries:
+        r=e["record"];j=r.get("judgement",{})
+        verdict=j.get("test_verdict") or j.get("quality_verdict")
+        state={"pass":"passed","fail":"failed","not_applicable":"not_applicable"}.get(verdict,"indeterminate")
+        rows.append({"id":r.get("trace_id","缺少 ID"),"dimension":"独立审计","status":state,"executed":[],"checks":j.get("assertions",[]),"original":r})
+    report=read_json(AUDIT_SOURCE/"report.json") if historical else {}
+    return {"id":"a-historical" if historical else "a-current","title":"A 历史离线自测" if historical else "A 当前隔离实验",
+            "owner":"A","mode":"离线 Mock / SDK 桩 / 后端" if historical else "本地 Mock / 后端",
+            "engine":"multiple","grain":"审计记录（非 B 正式用例）","source":"docs/evidence/v32/20261018-negation-fix/" if historical else "当前浏览器隔离工作空间",
+            "date":"2026-10-18" if historical else "以各记录实际 timestamp 为准","time":None,"commit":report.get("source_head"),"rows":rows}
 
 
 def historical_live():

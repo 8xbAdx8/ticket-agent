@@ -36,11 +36,13 @@ def timeline_items(audit,public=None):
     for r in fault.get("model_requests",[]):
         result.append({"kind":"模型/规则输出","title":"调用选择 · step "+str(r.get("model_step","未知")),"data":r})
     for e in fault.get("executions",[]):
-        diagnostic=e.get("execution_diagnostic") or {}
+        diagnostic=e.get("parameter_validation") or e.get("execution_diagnostic") or {}
         if diagnostic:
             result.append({"kind":"参数校验旁证","title":e.get("tool","工具"),"data":diagnostic})
         result.append({"kind":"实际执行","title":e.get("tool","工具"),"data":e})
     for e in audit.get("mutation_events",[]):
+        if e.get("status")=="disabled":
+            continue  # Full JSON retains disabled switches without cluttering the timeline.
         result.append({"kind":"变异事件","title":e.get("mutation_name",e.get("mutation_id","变异"))+" · "+str(e.get("status","未知")),"data":e})
     if not fault.get("executions"):
         for step in public.get("steps",[]):
@@ -66,20 +68,26 @@ def show_record(audit,public=None,key="trace"):
     st.caption("Trace ID："+audit.get("trace_id","历史记录未提供该字段")+" · "+str(audit.get("timestamp","精确执行时间未提供")))
     if audit.get("evidence_kind")=="offline_sdk_stub":
         st.warning("这是离线 SDK 桩；provider 字段虽为 deepseek_live，也不代表真实 API 请求。")
+    if audit.get("display_warning"):
+        st.warning(audit["display_warning"])
     tokens=public.get("tokens") or {}
-    is_mock=public.get("provider")=="mock" or audit.get("provider") in ("mock","langchain_mock","backend_concurrency")
-    kpis([("工具执行",len([c for s in public.get("steps",[]) for c in s.get("calls",[])]),"公共 Trace 实际调用数"),
+    is_mock=public.get("provider") in ("mock","langchain_mock") or audit.get("provider") in ("mock","langchain_mock","backend_concurrency")
+    calls=[c for s in public.get("steps",[]) for c in s.get("calls",[])]
+    tool_ms=sum(c["latency_ms"] for c in calls) if calls and all(isinstance(c.get("latency_ms"),(int,float)) for c in calls) else None
+    token_text=lambda value:str(value) if type(value) is int else "未知"
+    kpis([("工具执行",len(calls) if "steps" in public else None,"缺少历史字段时显示未知"),
           ("总耗时",str(public["total_latency_ms"])+" ms" if public.get("total_latency_ms") is not None else None,"不含虚构阶段时间"),
-          ("Token 用量","不适用" if is_mock else str(tokens.get("prompt","未知"))+" / "+str(tokens.get("completion","未知")),"输入 / 输出；桩用量非真实计费"),
+          ("Token 用量","不适用" if is_mock else token_text(tokens.get("prompt"))+" / "+token_text(tokens.get("completion")),"输入 / 输出；桩用量非真实计费"),
           ("结束原因",public.get("finish_reason"),"stop ≠ 业务成功")])
+    st.caption("工具累计耗时："+(str(tool_ms)+" ms" if tool_ms is not None else "未提供")+"；模型分阶段耗时未提供。不用总耗时减工具耗时猜测 API 时间。")
     st.caption("以下按证据类别排列；缺少统一时钟时不推断全局先后或阶段起止，不绘制伪精确瀑布图。展开卡片查看实际字段。")
     if not audit:
         st.info("历史记录未提供模型请求、参数验证与独立审计字段；仅展示公共 Trace 已保存内容。")
-    for i,event in enumerate(timeline_items(audit,public)):
-        with st.expander(f"{i+1:02}  {event['kind']} · {event['title'][:65]}",expanded=event["kind"]=="实际执行"):
-            st.json(sanitize(event["data"]),expanded=1)
     if audit.get("judgement"):
         verdict_cards(audit)
+    for i,event in enumerate(timeline_items(audit,public)):
+        with st.expander(f"{i+1:02}  {event['kind']} · {event['title'][:65]}"):
+            st.json(sanitize(event["data"]),expanded=1)
     events=(audit.get("fault_report") or {}).get("injection_events",[])
     if events:
         panel_title("变异前后对照","只显示保存的 original / mutated，不反推缺失内容。")
@@ -128,9 +136,10 @@ def trace_page(runtime_dirs):
             show_record(audit,records[i],"public_replay")
         return
     entries=[e for e in entries if e["kind"]==scope]
+    entries.sort(key=lambda e:e["record"].get("timestamp", ""))
     if not entries:
         empty("暂无该范围的审计记录","先在测试实验室执行离线案例，或切换到历史离线自测。不会自动重跑。")
         return
-    i=st.selectbox("选择诊断记录（按唯一 Trace ID）",range(len(entries)),format_func=lambda i:str(i+1)+" · "+entries[i]["record"].get("test_case_label",entries[i]["record"].get("scenario",entries[i]["record"].get("public_trace",{}).get("user_msg","记录")))[:42]+" · "+entries[i]["record"].get("trace_id","missing")[:8])
+    i=st.selectbox("选择诊断记录（按唯一 Trace ID）",range(len(entries)),index=len(entries)-1,format_func=lambda i:str(i+1)+" · "+entries[i]["record"].get("test_case_label",entries[i]["record"].get("scenario",entries[i]["record"].get("public_trace",{}).get("user_msg","记录")))[:42]+" · "+entries[i]["record"].get("trace_id","missing")[:8])
     st.caption("来源："+str(entries[i]["source"].relative_to(__import__('config').BASE_DIR))+" · A 自测，不替代 B 正式测试。")
     show_record(entries[i]["record"],key="audit_replay")
