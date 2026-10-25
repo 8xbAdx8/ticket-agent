@@ -1,6 +1,6 @@
 """Independent B batches and A audit results never share an invented total."""
 import streamlit as st
-from web.design import header,kpis,empty,panel_title
+from web.design import header,kpis,empty,panel_title,table
 from web import charts
 from web.evidence import batch,summary,dimension_rows,latency_rows,mutation_totals,verified_manifest,export_rows,read_json,B_SOURCE,audit_batch,b_aux_batch
 
@@ -57,7 +57,7 @@ def dashboard_page(runtime_dirs=()):
     st.warning("已知边界：T04 假车次未检出；R01 政策场景不适用；F15、M12 被其他规则检出，不能算 C5 命中。当前 V3.3 真实模型专项未执行。")
     with st.expander("失败、不适用与未验证用例"):
         rows=[{"用例":r["id"],"维度":r["dimension"],"状态":r["status"],"说明":r.get("note","")} for r in data["rows"] if r["status"]!="passed"]
-        st.dataframe(rows,hide_index=True,width="stretch") if rows else st.caption("本批次没有该类记录；不代表未测试功能已通过。")
+        table(rows,"dashboard_exceptions") if rows else st.caption("本批次没有该类记录；不代表未测试功能已通过。")
     with st.expander("来源校验与当前批次下载"):
         meta,checks=verified_manifest()
         st.json({"metadata":meta,"sha256_match":checks})
@@ -69,5 +69,5 @@ def quality_dimensions():
     data=choose_batch("quality_batch")
     rows=dimension_rows(data["rows"])
     st.altair_chart(charts.dimensions(rows),width="stretch")
-    st.dataframe([{ "维度":r["dimension"],"定义用例":r["defined"],"执行":r["executed"],"通过":r["passed"],"失败":r["failed"],"跳过":r["skipped"],"不适用":r["not_applicable"],"未验证":r["not_verified"],"无法判定":r["indeterminate"]} for r in rows],hide_index=True,width="stretch")
+    table([{ "维度":r["dimension"],"定义用例":r["defined"],"执行":r["executed"],"通过":r["passed"],"失败":r["failed"],"跳过":r["skipped"],"不适用":r["not_applicable"],"未验证":r["not_verified"],"无法判定":r["indeterminate"]} for r in rows],"quality_dimensions")
     st.caption("来源为 B 原始用例及执行记录；没有以代码覆盖率代替测试维度。RAG 15 条是现有政策断言，不代表已完成 RAGAS/DeepEval 忠实度评测。")

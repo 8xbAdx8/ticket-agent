@@ -1,6 +1,6 @@
 """Mutation and specialist analysis preserve their original denominators."""
 import streamlit as st
-from web.design import header,panel_title,kpis,empty
+from web.design import header,panel_title,kpis,empty,table
 from web.evidence import MUTATIONS,mutation_rows,read_json,B_SOURCE,AUDIT_SOURCE,export_rows
 from web import charts
 from web.dashboard import quality_dimensions
@@ -33,7 +33,7 @@ def mutation_matrix():
 def hallucination_topic():
     probe=read_json(B_SOURCE/"probe_m6_m8.json")
     kpis([("选定假车次矩阵","14 / 14","其中 12 条命中 C5"),("额外探测判失败","14 / 16","独立分母；保留原结果"),("真实漏检","T04","G9999 已进入回复"),("不适用","R01","未查票、未触发假车次")])
-    st.dataframe([{ "用例":r["case_id"],"G9999 进入回复":r["G9999_进入回复"],"任意规则检出":r["killed"],"C5 命中":"C5" in r["failed_rules"],"失败规则":", ".join(r["failed_rules"]),"回复片段":r["reply_片段"]} for r in probe["details"]],hide_index=True,width="stretch")
+    table([{ "用例":r["case_id"],"G9999 进入回复":r["G9999_进入回复"],"任意规则检出":r["killed"],"C5 命中":"C5" in r["failed_rules"],"失败规则":", ".join(r["failed_rules"]),"回复片段":r["reply_片段"]} for r in probe["details"]],"hallucination_probe")
     st.caption("T04 未配置 C5；R01 不适用。F15/M12 只触发 C1/R1。B 压缩记录未保存数据库权威列表，不能在此复造。")
     panel_title("A 有独立标注的有限规则样本","与上面的 B 正式用例、变异矩阵分别统计；不是通用语义准确率。")
     report=read_json(AUDIT_SOURCE/"report.json")
@@ -45,7 +45,7 @@ def hallucination_topic():
         key="无法判定" if expected is None or actual is None else "TP" if expected and actual else "FN" if expected else "FP" if actual else "TN"
         counts[key]+=1
     kpis([(k,v,"6 个可判样本；2 个含糊样本单列") for k,v in counts.items()])
-    st.dataframe([{ "样本":r["case_id"],"回复":r["reply"],"标注":r.get("expected_semantic_outcome"),"检测":r["judgement"]["hallucination"].get("hallucination_detected")} for r in samples],hide_index=True,width="stretch")
+    table([{ "样本":r["case_id"],"回复":r["reply"],"标注":r.get("expected_semantic_outcome"),"检测":r["judgement"]["hallucination"].get("hallucination_detected")} for r in samples],"labelled_detector_samples")
     paths=sorted((AUDIT_SOURCE/"cases").glob("*m7-mutant/audit_runs.jsonl"))
     if paths:
         from web.evidence import read_jsonl
@@ -61,14 +61,14 @@ def concurrency_topic():
     data=read_json(B_SOURCE/"m8_idempotent.json")
     st.caption("B 独立后端验证 · 2026-10-20 · Mock · 10 条检查，包含多个断言共享一个场景；不是 10 次模型对话。")
     import json
-    st.dataframe([dict(r,expect=json.dumps(r.get("expect"),ensure_ascii=False),actual=json.dumps(r.get("actual"),ensure_ascii=False)) for r in data["records"]],hide_index=True,width="stretch")
+    table(data["records"],"b_concurrency")
     st.info("B 本轮 JSON 未保存锁座 ID 和全部请求明细；这些字段显示为未提供。下面可独立查看 A 保存的正常/影子库对照，不能冒充 B 原始证据。")
     from web.evidence import read_jsonl
     audits=[]
     for pattern in ("concurrency-normal-same_lock_two","concurrency-mutant-two"):
         records,_=read_jsonl(AUDIT_SOURCE/"cases"/pattern/"audit_runs.jsonl")
         audits.extend(records)
-    st.dataframe([{ "来源":"A 历史离线自测","组别":r.get("mode"),"并发请求":r.get("concurrency",{}).get("workers"),"落库订单":r.get("judgement",{}).get("actual_behavior",{}).get("orders"),"影子库":r.get("database_isolation",{}).get("shadow_only_mutation"),"资源清理":r.get("resources_cleaned")} for r in audits],hide_index=True,width="stretch")
+    table([{ "来源":"A 历史离线自测","组别":r.get("mode"),"并发请求":r.get("concurrency",{}).get("workers"),"落库订单":r.get("judgement",{}).get("actual_behavior",{}).get("orders"),"影子库":r.get("database_isolation",{}).get("shadow_only_mutation"),"资源清理":r.get("resources_cleaned")} for r in audits],"a_concurrency")
     for i,r in enumerate(audits):
         with st.expander("正常组" if r.get("mode")=="normal_backend" else "受控影子库缺陷组"):
             show_record(r,key="concurrency_history_"+str(i))
@@ -91,7 +91,7 @@ def specialist_topics():
     if not candidates:
         empty("暂无该专项数据集","分类接口已准备；未执行的测试保持未验证。")
         return
-    st.dataframe([{ "用例":r["id"],"维度":r["dimension"],"状态":r["status"],"工具序列":" → ".join(t for turn in r.get("executed",[]) for t in turn.get("tool_sequence",[]))} for r in candidates],hide_index=True,width="stretch")
+    table([{ "用例":r["id"],"维度":r["dimension"],"状态":r["status"],"工具序列":" → ".join(t for turn in r.get("executed",[]) for t in turn.get("tool_sequence",[]))} for r in candidates],"specialist_"+choice)
     st.caption("这是相关原始用例入口，不是上述六类专项全部完成的证明。")
 
 

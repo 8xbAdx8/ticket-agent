@@ -46,3 +46,35 @@ def panel_title(title, note=None):
 
 
 PROCESSING = '<div class="ta-processing" role="status" aria-live="polite"><span></span>正在处理请求…</div>'
+
+
+def csv_cell(value):
+    """Prevent spreadsheet formula execution in downloadable evidence text."""
+    value=str(value)
+    return "'"+value if value.lstrip().startswith(("=","+","-","@","\t","\r")) else value
+
+
+def table(rows,key,search=True):
+    """Theme-consistent evidence table. Filter and CSV share the same rows."""
+    import csv
+    import io
+    import json
+    from target.diagnostics import sanitize
+    rows=sanitize(list(rows))
+    if not rows:
+        st.caption("暂无该类记录。")
+        return
+    columns=list(dict.fromkeys(k for r in rows for k in r))
+    text=lambda value:"未知" if value is None else "是" if value is True else "否" if value is False else json.dumps(value,ensure_ascii=False) if isinstance(value,(dict,list)) else str(value)
+    needle=st.text_input("筛选表格内容",key="table_search_"+key) if search and len(rows)>10 else ""
+    visible=[r for r in rows if not needle or needle.lower() in (json.dumps(r,ensure_ascii=False)+" "+" ".join(text(v) for v in r.values())).lower()]
+    labels={"id":"检查编号","name":"检查项目","expect":"期望","actual":"实际","passed":"是否通过","detail":"说明"}
+    headings="".join("<th>"+escape(labels.get(c,c))+"</th>" for c in columns)
+    body="".join("<tr>"+"".join("<td>"+escape(text(r.get(c)))+"</td>" for c in columns)+"</tr>" for r in visible)
+    st.markdown('<div class="ta-table-wrap"><table aria-label="证据数据表"><thead><tr>'+headings+'</tr></thead><tbody>'+body+'</tbody></table></div>',unsafe_allow_html=True)
+    st.caption(f"当前显示 {len(visible)} / {len(rows)} 条；横向空间不足时仅在表格内滚动。")
+    output=io.StringIO(newline="")
+    writer=csv.DictWriter(output,fieldnames=columns)
+    writer.writeheader()
+    writer.writerows([{c:csv_cell(text(r.get(c))) for c in columns} for r in visible])
+    st.download_button("下载当前表格 CSV",("\ufeff"+output.getvalue()).encode("utf-8"),file_name="evidence-table.csv",mime="text/csv",key="table_export_"+key)

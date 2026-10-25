@@ -1,7 +1,7 @@
 """Auditable event viewer; no guessed intermediate stages or internal reasoning."""
 import json
 import streamlit as st
-from web.design import header, kpis, empty, escape, panel_title
+from web.design import header, kpis, empty, escape, panel_title,table
 from web.evidence import audit_catalog, diff_values, export_rows, read_jsonl
 from target.diagnostics import sanitize, digest
 
@@ -102,7 +102,7 @@ def show_record(audit,public=None,key="trace"):
             st.json(sanitize(event.get("mutated")),expanded=1)
         changes=diff_values(sanitize(event.get("original")),sanitize(event.get("mutated")))
         if changes:
-            st.dataframe([{k:json.dumps(v,ensure_ascii=False) if isinstance(v,(dict,list)) else str(v) for k,v in r.items()} for r in changes],hide_index=True,width="stretch")
+            table(changes,key+"_diff")
         else:
             st.caption("没有可比较的字段差异；查看事件状态与原因。")
     with st.expander("完整 JSON 与脱敏导出"):

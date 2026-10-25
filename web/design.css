@@ -50,6 +50,11 @@ input,textarea,[data-baseweb="select"]>div,[data-baseweb="input"],[data-baseweb=
 [data-testid="stJson"] .react-json-view{background:var(--ta-panel)!important;padding:12px;border:1px solid var(--ta-border);border-radius:8px}
 [data-testid="stJson"] .react-json-view *{background-color:transparent!important;color:var(--ta-text)!important;border-color:var(--ta-border)!important}
 [data-testid="stJson"] .react-json-view .string-value{color:var(--ta-accent)!important}
+.ta-table-wrap{width:100%;overflow-x:auto;border:1px solid var(--ta-border);border-radius:9px;background:var(--ta-panel)}
+.ta-table-wrap table{width:100%;border-collapse:collapse;font-size:12px;line-height:1.7;color:var(--ta-text);margin:0}
+.ta-table-wrap th{background:var(--ta-raised);color:var(--ta-muted);font-weight:600;text-align:left;white-space:nowrap;padding:11px 14px;border-bottom:1px solid var(--ta-border)}
+.ta-table-wrap td{padding:10px 14px;border-bottom:1px solid var(--ta-border);min-width:55px;max-width:420px;overflow-wrap:anywhere;vertical-align:top}
+.ta-table-wrap tr:last-child td{border-bottom:0}.ta-table-wrap tbody tr:hover{background:var(--ta-raised)}
 [data-testid="stDataFrame"],[data-testid="stVegaLiteChart"]{border-radius:9px;overflow:hidden}
 [role="radiogroup"] label p{font-size:13px}
 hr{border-color:var(--ta-border)}a{color:var(--ta-accent)}
