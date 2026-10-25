@@ -8,6 +8,7 @@ __pycache__/
 *.db-*
 traces/*.jsonl
 traces/deepseek_live/
+traces/bailian_live/
 artifacts/runtime/
 artifacts/deliverables/
 .pytest_cache/

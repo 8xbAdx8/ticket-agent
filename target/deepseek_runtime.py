@@ -92,7 +92,7 @@ def safe_error(exc):
 
 
 def safe_text(text):
-    secrets = {os.getenv("DEEPSEEK_API_KEY", "")}
+    secrets = {os.getenv("DEEPSEEK_API_KEY", ""), os.getenv("DASHSCOPE_API_KEY", "")}
     if config.PROVIDER == "deepseek":
         secrets.add(config.API_KEY)  # SDK已加载的凭据不能因环境变量随后被清除而失去脱敏。
     output = str(text)
@@ -252,6 +252,8 @@ def guarded_client(settings, *, transport=None):
             raise DeepSeekError("output_token_limit_required")
         if len(request.content) > settings.max_payload_bytes:
             raise DeepSeekError("request_payload_limit")
+        from target.live_providers import reserve_initial_budget
+        reserve_initial_budget()
         request.extensions["ticket_budget_id"] = budget.reserve()
 
     def after(response):

@@ -70,6 +70,7 @@ class ContractMiddleware(AgentMiddleware):
             from target.deepseek_runtime import DeepSeekError
             if sum(ctx.trace.tokens.values()) + ctx.deepseek_settings.max_output_tokens > ctx.deepseek_settings.turn_token_budget:
                 raise DeepSeekError("observed_token_budget_exhausted")
+        model_started = time.perf_counter()
         response = handler(request)
         for m in response.result:
             ctx.fault_run.model_requests.append({"model_step":ctx.model_calls,
@@ -80,6 +81,7 @@ class ContractMiddleware(AgentMiddleware):
                 # 仅保存最终文字、结构化调用和元数据，不保存 reasoning_content。
                 ctx.events.append({"event":"model_response","model_step":ctx.model_calls,
                     "response_model":m.response_metadata.get("model_name"),"usage":usage,
+                    "latency_ms":int((time.perf_counter()-model_started)*1000),
                     "finish_reason":m.response_metadata.get("finish_reason"),
                     "tool_calls":[{"id":c["id"],"name":c["name"],"args":c["args"]} for c in m.tool_calls]})
                 if not m.tool_calls:
@@ -222,8 +224,8 @@ def adapt_tool(name: str) -> StructuredTool:
 
 class LangChainAgent:
     def __init__(self, system_prompt: str, *, provider=None, model=None, tool_names=None, mutations=None):
-        if config.PROVIDER not in ("mock","openai","deepseek"):
-            raise ValueError("AGENT_PROVIDER 只支持 mock/openai/deepseek")
+        if config.PROVIDER not in ("mock","openai","deepseek","bailian"):
+            raise ValueError("AGENT_PROVIDER 只支持 mock/openai/deepseek/bailian")
         if providers.MUTATIONS or getattr(provider,"mutations",{}):
             raise ValueError("六变异目前仅适用于 legacy 模式，请先清除开关")
         if config.LC_TOOLSET not in ("read_only","all"):
@@ -237,10 +239,14 @@ class LangChainAgent:
         self.mutations = normalize(mutations)
         self.last_fault_report = None
         self.last_audit_report = None
+        self.last_live_run = None
+        self.live_runtime = None
         self.deepseek_settings = None
-        if config.PROVIDER == "deepseek":
-            from target.deepseek_runtime import Settings, DeepSeekError
-            self.deepseek_settings = Settings.from_env()
+        if config.PROVIDER in ("deepseek","bailian"):
+            from target import deepseek_runtime, bailian_runtime
+            from target.deepseek_runtime import DeepSeekError
+            self.live_runtime = bailian_runtime if config.PROVIDER == "bailian" else deepseek_runtime
+            self.deepseek_settings = self.live_runtime.Settings.from_env()
             from target.deepseek_runtime import allowed_tools
             expected = "all" if self.deepseek_settings.profile == "full_sandbox" else "read_only"
             if config.LC_TOOLSET != expected or not set(names) <= allowed_tools(self.deepseek_settings) or provider is not None:
@@ -249,16 +255,15 @@ class LangChainAgent:
             self.model = model
         elif config.PROVIDER == "mock":
             self.model = LangChainMockModel(decision_provider=provider or providers.MockProvider(mutations={}))
-        elif config.PROVIDER == "deepseek":
-            from target.deepseek_runtime import make_model
-            self.model = make_model(self.deepseek_settings)
+        elif self.live_runtime:
+            self.model = self.live_runtime.make_model(self.deepseek_settings)
         else:
             if not config.API_KEY:
                 raise ValueError("OpenAI 风格 LangChain Live 需要 AGENT_API_KEY；DeepSeek 使用独立 DEEPSEEK_API_KEY")
             from langchain_openai import ChatOpenAI
             self.model = ChatOpenAI(model=config.MODEL_NAME,api_key=config.API_KEY,base_url=config.BASE_URL,
                                     timeout=30,max_retries=0)
-        self.provider_name = "deepseek_live" if config.PROVIDER == "deepseek" else (
+        self.provider_name = config.PROVIDER+"_live" if self.live_runtime else (
             "langchain_mock" if config.PROVIDER == "mock" else "langchain_live")
         if self.deepseek_settings and self.deepseek_settings.profile == "read_only":
             from target.deepseek_runtime import READ_ONLY_PROMPT
@@ -277,6 +282,7 @@ class LangChainAgent:
 
     def chat(self, session_id: str, message: str, *, save_trace=True) -> dict[str,Any]:
         trace = Trace(session_id,message)
+        self.last_live_run = None
         trace.provider = self.provider_name
         limit = min(config.MAX_STEPS,self.deepseek_settings.max_model_calls) if self.deepseek_settings else config.MAX_STEPS
         context = TurnContext(trace,message,limit,deepseek_settings=self.deepseek_settings,
@@ -321,12 +327,14 @@ class LangChainAgent:
                 error = safe_error(exc)
                 trace.finish("请求未完成；本轮真实 Token 用量可能未知。","stop")
                 self.last_events = context.events
-                if save_trace:
+                if save_trace and config.PROVIDER == "deepseek":
                     save_run_evidence(trace,context.events,error)
                 self.last_fault_report = context.fault_run.save(trace,error=error) if self.mutations and save_trace else (
                     context.fault_run.report(error=error) if self.mutations else None)
                 from target.diagnostics import make_audit
                 self.last_audit_report=make_audit(trace,context.fault_run,events=context.events,error=error,save=save_trace)
+                from target.live_evidence import record_run
+                self.last_live_run = record_run(trace,context.events,error=error,save=save_trace,local_trace_saved=False)
                 # 失败轮可能残留未配对 tool_call，不能污染下一轮协议；历史 JSONL 不删除。
                 try:
                     self.reset(session_id)
@@ -334,7 +342,8 @@ class LangChainAgent:
                     # 不用检查点清理异常覆盖原始脱敏错误。
                     pass
                 # 不把未知用量伪装成契约内的数值 0；失败明细单独保存。
-                raise DeepSeekError(error["category"],error["http_status"]) from None
+                error_type = self.live_runtime.BailianError if config.PROVIDER == "bailian" else DeepSeekError
+                raise error_type(error["category"],error["http_status"]) from None
             reply = f"模型调用未完成 ({type(exc).__name__})，请检查配置或重试。"
             trace.finish(reply,"stop")
             self.graph.update_state(run_config,{"messages":[AIMessage(content=reply)]},as_node="model")
@@ -350,9 +359,12 @@ class LangChainAgent:
         self.last_audit_report=make_audit(trace,context.fault_run,events=context.events,save=save_trace,public_trace=result)
         if save_trace:
             trace.save(record=result)
-            if self.deepseek_settings:
+            if self.deepseek_settings and config.PROVIDER == "deepseek":
                 from target.deepseek_runtime import save_run_evidence
                 save_run_evidence(trace,context.events)
+        if self.deepseek_settings:
+            from target.live_evidence import record_run
+            self.last_live_run = record_run(trace,context.events,public_trace=result,save=save_trace,local_trace_saved=save_trace)
         return result
 
     def reset(self, session_id=None) -> None:

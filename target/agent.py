@@ -38,8 +38,8 @@ SYSTEM_PROMPT = (
 class Agent:
     def __init__(self, provider=None, system_prompt=SYSTEM_PROMPT, *, engine=None, model=None, tool_names=None, mutations=None):
         self.engine = engine or config.ENGINE
-        if config.PROVIDER == "deepseek" and self.engine != "langchain":
-            raise ValueError("DeepSeek 只通过 langchain 引擎接入；请设置 AGENT_ENGINE=langchain")
+        if config.PROVIDER in ("deepseek","bailian") and self.engine != "langchain":
+            raise ValueError("Live Provider 只通过 langchain 引擎接入；请设置 AGENT_ENGINE=langchain")
         if self.engine not in ("legacy", "langchain"):
             raise ValueError("AGENT_ENGINE 只支持 legacy/langchain")
         self.system_prompt = system_prompt
