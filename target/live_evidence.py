@@ -21,6 +21,12 @@ def record_run(trace, events, *, error=None, public_trace=None, save=True, local
     responses=[e for e in events if e.get("event")=="model_response"]
     complete=bool(responses) and all(all(type(e.get("usage",{}).get(k)) is int and e["usage"][k]>=0
                                    for k in ("input_tokens","output_tokens")) for e in responses)
+    attempts=[e for e in events if e.get('event')=='http_request']
+    complete=complete and (not attempts or len(attempts)==len(responses))
+    observed={label:sum(e.get('usage',{}).get(key) for e in responses if type(e.get('usage',{}).get(key)) is int and e['usage'][key]>=0)
+              if any(type(e.get('usage',{}).get(key)) is int and e['usage'][key]>=0 for e in responses) else None
+              for label,key in (('prompt','input_tokens'),('completion','output_tokens'))}
+    known=any(v is not None for v in observed.values())
     tools=[e for e in events if e.get("event")=="tool_end"]
     record=sanitize({"schema":"ticket-live-run/1","trace_id":trace.trace_id,"session_id":trace.session_id,
         "provider":trace.provider,"requested_model":trace.model,
@@ -29,8 +35,8 @@ def record_run(trace, events, *, error=None, public_trace=None, save=True, local
         "requested_at":getattr(trace,"requested_at",None),
         "recorded_at":datetime.now(timezone.utc).isoformat(),"user_msg":trace.user_msg,
         "reply":trace.reply if not error else None,"finish_reason":trace.finish_reason,
-        "total_latency_ms":trace.total_latency_ms,"tokens":trace.tokens if complete and not error else None,
-        "observed_tokens":trace.tokens if responses else None,"token_usage_status":"complete" if complete and not error else "partial" if responses else "unknown",
+        "total_latency_ms":trace.total_latency_ms,"tokens":trace.tokens if complete else None,
+        "observed_tokens":observed if known else None,"token_usage_status":"complete" if complete else "partial" if known else "unknown",
         "agent_completed":error is None and trace.finish_reason=="stop",
         "model_response_received":bool(responses),"tool_execution_success":all(e.get("ok") and e.get("executed") is True for e in tools) if tools else None,
         "business_success":None,"error":error,"local_trace_saved":local_trace_saved,

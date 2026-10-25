@@ -146,3 +146,34 @@ def export_run(record, *, consent=False, trace_dir=None, transport=None):
         except OSError:
             receipt["receipt_saved"]=False
     return receipt
+
+
+def verify_existing(receipt,payload,*,consent=False,transport=None):
+    """One explicitly authorized GET of an accepted run. Never POSTs or retries."""
+    result={"action":"readback_only","remote_verified":False,"remote_status":"not_attempted",
+        "http_requests":0,"upload_attempts":0,"generation_requests":0,"timestamp":datetime.now(timezone.utc).isoformat(),
+        "remote_run_id":receipt.get("remote_run_id"),"local_trace_id":receipt.get("local_trace_id"),
+        "verification_origin":"offline_transport_fixture" if transport is not None else "remote_http"}
+    if not consent:return {**result,"remote_status":"consent_required"}
+    try:
+        key,endpoint,project,_=settings()
+        if not key:return {**result,"remote_status":"not_configured"}
+        if endpoint!=receipt.get("endpoint") or project!=receipt.get("project") or digest(payload)!=receipt.get("payload_sha256"):
+            raise ValueError("original_receipt_and_preview_required")
+        run_id=str(uuid.UUID(receipt["remote_run_id"]))
+        if receipt.get("post_http_status") not in (200,201,202):raise ValueError("accepted_run_required")
+        import httpx
+        headers={"x-api-key":key}; workspace=_setting("LANGCHAIN_WORKSPACE_ID","LANGSMITH_WORKSPACE_ID")
+        if workspace:headers["x-tenant-id"]=workspace
+        with httpx.Client(timeout=5,follow_redirects=False,transport=transport) as client:
+            result["http_requests"]=1
+            response=client.get(endpoint+"/runs/"+run_id,headers=headers)
+            result["get_http_status"]=response.status_code;response.raise_for_status();remote=response.json()
+        if (str(remote.get("id"))!=run_id or remote.get("inputs")!=payload["inputs"] or remote.get("outputs")!=payload["outputs"]
+                or (remote.get("extra") or {}).get("metadata",{}).get("payload_sha256")!=digest(payload)):
+            raise ValueError("remote_readback_mismatch")
+        result.update(remote_status="verified",remote_verified=True,payload_sha256=digest(payload),project=project,endpoint=endpoint)
+    except Exception as exc:
+        from target.deepseek_runtime import safe_error
+        result.update(remote_status="failed",error=safe_error(exc))
+    return sanitize(result)

@@ -314,6 +314,10 @@ class LangChainAgent:
                     raise DeepSeekError("tool_execution_failed")
                 if self.deepseek_settings.profile == "read_only":
                     validate_read_only_reply(reply)
+                    from target.reply_consistency import check
+                    consistency=check(reply,context.events)
+                    context.events.append({"event":"reply_consistency",**consistency})
+                    if consistency["status"]=="failed":raise DeepSeekError("reply_tool_mismatch")
                 if self.mutations.get("no_citation") and any(e["mutation"] == "no_citation" and e["status"] == "applied" for e in context.fault_run.events):
                     import re
                     if re.search(r"\bP\d+\b",reply):

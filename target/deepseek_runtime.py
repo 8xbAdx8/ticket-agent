@@ -279,7 +279,7 @@ def make_model(settings=None, *, transport=None):
     return ChatDeepSeek(model=config.MODEL_NAME,api_key=config.API_KEY,base_url=config.BASE_URL,
         timeout=settings.timeout,max_retries=0,max_tokens=settings.max_output_tokens,
         extra_body={"thinking":{"type":"disabled"}},http_client=client,streaming=False,
-        use_responses_api=False)
+        use_responses_api=False,http_socket_options=())
 
 
 def save_run_evidence(trace, events, error=None):

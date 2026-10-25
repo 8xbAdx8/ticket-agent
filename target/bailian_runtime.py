@@ -121,4 +121,4 @@ def make_model(settings=None, *, transport=None):
     return ChatOpenAI(model=config.MODEL_NAME, api_key=os.environ["DASHSCOPE_API_KEY"].strip(),
         base_url=config.BASE_URL, timeout=settings.timeout, max_retries=0, max_tokens=settings.max_output_tokens,
         streaming=False, use_responses_api=False, http_client=guarded_client(settings,transport=transport),
-        extra_body={"enable_thinking":False} if config.MODEL_NAME.lower().startswith("qwen") else None)
+        extra_body={"enable_thinking":False} if config.MODEL_NAME.lower().startswith("qwen") else None,http_socket_options=())

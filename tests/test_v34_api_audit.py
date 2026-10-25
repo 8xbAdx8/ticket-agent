@@ -177,3 +177,73 @@ class SDKLifecycleTests(unittest.TestCase):
         with self.assertRaises(DeepSeekError):agent.chat('3','你好')
         self.assertEqual(len(f.payloads),2)
         self.assertEqual(snapshot(f.root/'total.db',4)['reserved_requests'],2)
+
+    def test_known_tokens_survive_business_failure(self):
+        f=self.fixture
+        agent=f.agent([f.response({'tool_calls':[f.call('search_policy',{'question':'锁座政策'})]}),f.response({'content':'我可以帮你下单。'})])
+        with self.assertRaises(DeepSeekError):agent.chat('business','锁座政策')
+        record=agent.langchain_engine.last_live_run
+        self.assertEqual(record['tokens'],{'prompt':26,'completion':10})
+        self.assertFalse(record['agent_completed'])
+
+    def test_unknown_usage_does_not_create_observed_zero(self):
+        f=self.fixture;agent=f.agent([f.response({'content':'你好'},usage=False)])
+        with self.assertRaises(DeepSeekError):agent.chat('unknown','你好')
+        self.assertIsNone(agent.langchain_engine.last_live_run['observed_tokens'])
+
+    def test_sdk_preserves_real_http_client_transport_and_proxy_mounts(self):
+        from target import bailian_runtime
+        client=bailian_runtime.guarded_client(bailian_runtime.Settings.from_env())
+        original=client._transport; mounts=dict(client._mounts)
+        with patch.object(bailian_runtime,'guarded_client',return_value=client):model=bailian_runtime.make_model()
+        try:
+            self.assertIs(client._transport,original)
+            self.assertEqual(client._mounts,mounts)
+        finally:model.root_client.close()
+
+
+class ReplyConsistencyTests(unittest.TestCase):
+    def events(self):
+        return [{'event':'tool_end','tool':'query_tickets','ok':True,'result':{'trains':[
+            {'train_no':'G7303','depart':'12:34','arrive':'13:34'},
+            {'train_no':'G7301','depart':'06:00','arrive':'07:00'}]}}]
+
+    def test_captured_bailian_time_swap_is_blocked(self):
+        from target.reply_consistency import check
+        result=check('G7303：06:00 发车，07:00 到达\nG7301：12:34 发车，13:34 到达',self.events())
+        self.assertEqual(result['status'],'failed');self.assertEqual(len(result['findings']),4)
+
+    def test_correct_table_passes_only_checked_fields(self):
+        from target.reply_consistency import check
+        result=check('|车次|出发|到达|\n|G7301|06:00|07:00|\n|G7303|12:34|13:34|',self.events())
+        self.assertEqual(result['status'],'checked_fields_match');self.assertEqual(result['checked_fields'],4)
+
+    def test_absent_claims_are_unverified_not_success(self):
+        from target.reply_consistency import check
+        self.assertEqual(check('车次见工具结果。',self.events())['status'],'not_verified')
+
+    def test_explicit_reverse_field_order_is_supported(self):
+        from target.reply_consistency import check
+        self.assertEqual(check('G7301 到达07:00，出发06:00',self.events())['status'],'checked_fields_match')
+
+
+@unittest.skipUnless('httpx' in globals(),'httpx required')
+class ReadbackTests(unittest.TestCase):
+    def test_accepted_run_readback_uses_one_get_without_post(self):
+        from target.observability import verify_existing
+        from target.diagnostics import digest
+        payload={'inputs':{'user_message':'synthetic'},'outputs':{'reply':'synthetic'},'metadata':{}}
+        receipt={'remote_run_id':'00000000-0000-0000-0000-000000000001','post_http_status':202,
+                 'endpoint':'https://api.smith.langchain.com','project':'fixture','payload_sha256':digest(payload)}
+        methods=[]
+        def respond(request):
+            methods.append(request.method)
+            return httpx.Response(200,json={'id':receipt['remote_run_id'],'inputs':payload['inputs'],'outputs':payload['outputs'],
+                'extra':{'metadata':{'payload_sha256':digest(payload)}}})
+        env={'LANGCHAIN_API_KEY':'fixture','LANGSMITH_API_KEY':'','LANGCHAIN_PROJECT':'fixture','LANGSMITH_PROJECT':'',
+             'LANGCHAIN_ENDPOINT':receipt['endpoint'],'LANGSMITH_ENDPOINT':'','LANGCHAIN_TRACING_V2':'false','LANGSMITH_TRACING':'false'}
+        with patch.dict(os.environ,env):
+            denied=verify_existing(receipt,payload,transport=httpx.MockTransport(respond))
+            self.assertEqual(denied['http_requests'],0)
+            result=verify_existing(receipt,payload,consent=True,transport=httpx.MockTransport(respond))
+        self.assertEqual(methods,['GET']);self.assertTrue(result['remote_verified']);self.assertEqual(result['upload_attempts'],0)

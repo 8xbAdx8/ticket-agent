@@ -163,9 +163,10 @@ def main():
     p=argparse.ArgumentParser(description=__doc__)
     actions=p.add_mutually_exclusive_group()
     actions.add_argument('--run-models',action='store_true');actions.add_argument('--prepare-langsmith',action='store_true');actions.add_argument('--upload-langsmith',action='store_true')
+    actions.add_argument('--readback-langsmith',action='store_true',help='Requires separate user authorization for one additional GET; never reuploads')
     p.add_argument('--offline-report',type=Path);p.add_argument('--preview-sha')
     a=p.parse_args()
-    if a.run_models or a.upload_langsmith:
+    if a.run_models or a.upload_langsmith or a.readback_langsmith:
         if not a.offline_report:raise ValueError('offline_acceptance_required')
         gate(a.offline_report)
     state=prepare()
@@ -176,6 +177,13 @@ def main():
         display({k:{n:r.get(n) for n in ('status','new_requests','connection_verified','tool_calling_verified','business_verified','tokens','error')} for k,r in results.items()})
     elif a.prepare_langsmith:display(synthetic_preview())
     elif a.upload_langsmith:display(upload(a.preview_sha))
+    elif a.readback_langsmith:
+        from target.observability import verify_existing
+        receipt=json.loads((AUTH/'langsmith/result.json').read_text(encoding='utf-8'))
+        preview=json.loads((AUTH/'langsmith/filtered_preview.json').read_text(encoding='utf-8'))
+        claim(AUTH/'langsmith/readback-attempt.json')
+        result=verify_existing(receipt,preview,consent=True)
+        write(AUTH/'langsmith/readback-result.json',result);display(result)
     else:
         write(AUTH/'historical-reconciliation.json',old_reconciliation())
         display(state)
