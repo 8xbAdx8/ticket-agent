@@ -15,3 +15,10 @@
 - 新增target/rag_service.py与scripts/rag.py：兼容search_policy原question/hits/count，独立检索/回答旁证与Trace关联，明确网络开关。target/rag.py默认原Mock行为保留；新Live向量失败不回退关键词。LangChain记录原文与引用ID核验，不宣称ID相符就支持全文。
 - Qwen默认配置迁为qwen3.8-flash；显式旧DASHSCOPE_MODEL仍兼容，不自动回退。V3.5显式profile才允许生成4次，旧profile仍3次、不改旧账。UI显示和独立验收入口后续模块完成。
 - 实际运行python -m unittest discover -s tests -p test_v35_rag.py -v：15通过0失败0跳过，含真实Chroma持久化/增量/维度/损坏、真实httpx+明确离线桩、预算/缓存/异常/密钥不入账。实际生成与Embedding请求均0。旧契约与B正式断言未修改。
+
+## 真实索引与固定质量集
+
+- 模块一提交17889d9。先运行scripts/rag.py plan：15文档/15切片，1024维、每批10，预计索引2请求、30查询3请求，总5/8。原Key仅内存读取，未输出；实际执行scripts/rag.py build --run --out artifacts/runtime/v35-qwen38-rag/authorization-20261026/index-build.json。
+- 真实text-embedding-v4索引建立成功：2请求，15个切片，embedding_origin=real_api；索引版本242aa8199c4a8393ded29751。Chroma保存正文/向量/元数据、API回执和向量哈希，不用桩替代。生成模型请求仍0。
+- 固定cases/rag_quality_v35.json共30问题（26有答案、4无答案），预期doc_id/允许引用/要点先固定后运行；多轮问题显式带上轮用户上下文。八种RAG注入另外隔离执行，不能混同正常真实索引质量。
+- 新增target/rag_quality.py与scripts/rag_eval.py：Recall@3/MRR只统计有答案且执行成功的检索，拒答/引用/回答忠实度另算；全文语义无法证明则indeterminate，不用命中文档代替回答正确。下一步预算内批量真实向量化30问题，不重复向量化原文档。
