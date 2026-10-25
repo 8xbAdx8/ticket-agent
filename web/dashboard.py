@@ -5,25 +5,30 @@ from web import charts
 from web.evidence import batch,summary,dimension_rows,latency_rows,mutation_totals,verified_manifest,export_rows,read_json,B_SOURCE,audit_batch,b_aux_batch
 
 
-def choose_batch(key):
+def choose_batch(key,show_meta=True):
     engine=st.selectbox("当前数据源",["legacy","langchain"],format_func=lambda e:"B 独立测试 · "+("Legacy Mock" if e=="legacy" else "LangChain Mock"),key=key)
     data=batch(engine)
-    st.caption(f"B 独立测试 · Mock · 执行日期 {data['date']}（精确时间未知） · 代码 {data['commit'][:12]} · {data['source']}")
+    if show_meta:
+        st.caption(f"B 独立测试 · Mock · 执行日期 {data['date']}（精确时间未知） · 代码 {data['commit'][:12]} · {data['source']}")
     return data
 
 
 def dashboard_page(runtime_dirs=()):
     header("测试总览","按批次审阅质量，保留失败、未验证与证据边界。","质量工作台")
-    source=st.selectbox("证据批次",["B 独立测试","A 历史离线自测","A 当前隔离实验"],key="dashboard_owner")
+    owner_col,kind_col,batch_col=st.columns([1,1.15,1.25])
+    with owner_col:
+        source=st.selectbox("证据批次",["B 独立测试","A 历史离线自测","A 当前隔离实验"],key="dashboard_owner")
     if source=="B 独立测试":
-        kind=st.selectbox("B 结果类型",["正式功能用例","新增代码专项（47 检查）","M8 并发幂等（10 检查）","选定变异矩阵（69 组合）"],key="dashboard_kind")
+        with kind_col:
+            kind=st.selectbox("B 结果类型",["正式功能用例","新增代码专项（47 检查）","M8 并发幂等（10 检查）","选定变异矩阵（69 组合）"],key="dashboard_kind")
         if kind=="正式功能用例":
-            data=choose_batch("dashboard_batch")
+            with batch_col:
+                data=choose_batch("dashboard_batch",show_meta=False)
         else:
             data=b_aux_batch(kind)
-            st.caption(data["title"]+" · "+data["mode"]+" · B 报告执行日期 "+data["date"]+" · 代码 "+data["commit"][:12]+" · "+data["source"])
             if data["original_generated"]:
                 st.caption("原文件 generated="+data["original_generated"]+"；不将此旧标记冒充精确执行时间。专项使用离线桩，0 次真实 API 请求。")
+        st.caption(data["title"]+" · "+data["mode"]+" · 执行日期 "+data["date"]+"（精确时间未知） · 代码 "+data["commit"][:12]+" · "+data["source"])
     else:
         data=audit_batch(runtime_dirs,historical=source=="A 历史离线自测")
         st.caption(data["title"]+" · "+data["mode"]+" · "+data["date"]+" · "+data["source"])
