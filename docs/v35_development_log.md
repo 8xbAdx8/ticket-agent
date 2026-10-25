@@ -26,3 +26,9 @@
 - 质量集与指标提交0563d4e后实际执行scripts/rag_eval.py --run --out artifacts/runtime/v35-qwen38-rag/authorization-20261026/retrieval-evaluation：真实Embedding新增3次，累计5/8。Vector在26有答案问题Recall@3=1、MRR=1；Keyword及Hybrid Recall@3=0.980769、MRR=0.923077。4条无答案问题误召回率Keyword/Hybrid为1、Vector为0.75，作为实际风险保留，不改阈值/答案追分。
 - 新增scripts/verify_v35_live.py固定一次性验收入口：最多2次query_tickets真实Agent、1次预取证据政策生成、1次无答案生成，总4；只用新V3.5双账，不开放其他工具。普通预检不生成，二次--run被attempt文件拒绝；HTTP错误停止后续生成，无自动重试。
 - 在线生成前原test_live_providers.py离线SDK15通过；补充默认新模型/显式旧模型、仅V3.5上限4及固定指标/未知忠实度测试，确保新模型不替换DeepSeek、不靠旧Qwen结果冒充新验证。
+
+## 真实Qwen闭环与接续
+
+- 冻结07f36ff后实际--run：qwen3.8-flash两次HTTP200，实际query_tickets闭环成功，Trace185e0fd83d424db2ae6985b776512feb；车次/日期2026-10-27/时刻/价格/余票正确，后置字段检查无错配。请求ID eb51aabf68ea4d30bd277789dd17c330、a33b72af55d84c538fdb67bf6ac7027e；输入1963/输出318。
+- 脚本完成FC后，错误地从langchain_core.tracers.context导入tracing_context，ImportError导致尚未尝试两个直接RAG生成。保存原控制台错误、原attempt、原FC Trace与2/4账本，不删除/重跑。
+- 修复为项目实际使用的langsmith.tracing_context，并将导入提前到任何请求前，新增本地导入验证。只读已有provider_runs重建function-calling-recovery.json（标明来源SHA），新增严格resume-rag-only：必须已验证FC、账本恰2次且仅一次接续，不执行FC，仍共享原4次账本，不新建别名预算。剩余两请求不是重试。

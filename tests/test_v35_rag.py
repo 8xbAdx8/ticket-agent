@@ -165,6 +165,10 @@ del StoreTests
 
 
 class CompatibilityTests(unittest.TestCase):
+    @unittest.skipUnless(importlib.util.find_spec('langsmith') is not None,'optional LangSmith context import only')
+    def test_live_acceptance_context_is_available_before_request(self):
+        from langsmith import tracing_context
+        self.assertTrue(callable(tracing_context))
     def test_qwen_default_and_explicit_legacy_model_are_distinct(self):
         from target.api_config import model_config
         with patch.dict(os.environ,{},clear=False):

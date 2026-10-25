@@ -22,7 +22,10 @@ def write(path,value):
 
 
 def main():
-    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--run',action='store_true');a=p.parse_args()
+    p=argparse.ArgumentParser(description=__doc__)
+    action=p.add_mutually_exclusive_group();action.add_argument('--run',action='store_true')
+    action.add_argument('--resume-rag-only',action='store_true',help='Resume the two unattempted RAG cases from saved FC evidence; never replay FC')
+    a=p.parse_args()
     from target.api_config import bootstrap
     bootstrap(ROOT)
     from web.runtime import scoped
@@ -30,6 +33,8 @@ def main():
     from target.request_accounting import snapshot,CoordinatedBudget,capture
     from target.deepseek_runtime import safe_error
     from target.rag_service import configured_index
+    from langchain_core.messages import HumanMessage,SystemMessage
+    from langsmith import tracing_context
     import config
     env={'TICKET_API_VALIDATION_PROFILE':'v35','DASHSCOPE_MODEL':'qwen3.8-flash','BAILIAN_MAX_REQUESTS':'4',
          'BAILIAN_MAX_MODEL_CALLS':'2','BAILIAN_BUDGET_PATH':str(AUTH/'generation.db'),
@@ -46,12 +51,20 @@ def main():
                    'tools':['query_tickets','search_policy'],'max_retries':0,'generation_limit':4,
                    'budget':snapshot(AUTH/'generation-total.db',4),'embedding_index_version':state['index_version']}
         print(json.dumps(preflight,ensure_ascii=False),flush=True)
-        if not a.run:return 0
+        if not a.run and not a.resume_rag_only:return 0
         marker=AUTH/'generation-attempt.json'
-        write(marker,{'source_sha':subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip(),
-                      'authorized_generation_limit':4,'retry_allowed':False})
+        if a.resume_rag_only:
+            recovery=json.loads((AUTH/'function-calling-recovery.json').read_text(encoding='utf-8'))
+            if not marker.exists() or snapshot(AUTH/'generation-total.db',4)['reserved_requests']!=2:
+                raise ValueError('exact_two_recorded_fc_requests_required')
+            if not recovery.get('function_calling_verified'):raise ValueError('verified_fc_recovery_required')
+            write(AUTH/'rag-resume-attempt.json',{'remaining_generation_cap':2,'replay_fc':False})
+        else:
+            write(marker,{'source_sha':subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip(),
+                          'authorized_generation_limit':4,'retry_allowed':False})
         records=[];stop=False;agent=None
         try:
+            if a.resume_rag_only:raise StopIteration()
             from data.seed import build_db
             from target.agent import Agent
             if config.DB_PATH.exists():raise ValueError('fresh_function_calling_database_required')
@@ -59,10 +72,12 @@ def main():
             agent=Agent();result=agent.chat('v35-qwen-fc-'+uuid.uuid4().hex[:10],
               '查明天上海到杭州的高铁二等座，请列出有余票车次及其时刻、票价、余票，以本次工具查询为依据。')
             error=None
+        except StopIteration:
+            result=recovery.get('public_trace');error=None
         except Exception as exc:
             result=None;error=safe_error(exc)
             stop=error['category'] not in ('reply_tool_mismatch','reply_data_indeterminate')
-        evidence=agent.langchain_engine.last_live_run if agent is not None else None
+        evidence=agent.langchain_engine.last_live_run if agent is not None else recovery.get('live_evidence') if a.resume_rag_only else None
         events=(evidence or {}).get('events',[]);tool_events=[e for e in events if e.get('event')=='tool_end']
         final=next((e for e in events if e.get('event')=='model_final'),{})
         protocol=bool(any(e.get('tool')=='query_tickets' and e.get('executed') and e.get('ok') for e in tool_events)
@@ -70,11 +85,10 @@ def main():
         records.append({'scenario':'function_calling','function_calling_verified':protocol,'public_trace':result,
                         'live_evidence':evidence,'original_model_reply':final.get('text'),'error':error,
                         'business_success':None,'post_guard_triggered':bool(error and error['category'].startswith('reply_'))})
+        if not a.resume_rag_only:write(AUTH/'function-calling-result.json',records[0])
         evaluation=json.loads((AUTH/'retrieval-evaluation/report.json').read_text(encoding='utf-8'))
         quality=json.loads((ROOT/'cases/rag_quality_v35.json').read_text(encoding='utf-8'))['cases']
         from target.rag_quality import answer_metrics,query_text,generation_summary
-        from langchain_core.messages import HumanMessage,SystemMessage
-        from langchain_core.tracers.context import tracing_context
         from target.bailian_runtime import make_model
         for case_id in ('RQ01','RQ26'):
             if stop:
