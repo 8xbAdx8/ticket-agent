@@ -86,6 +86,23 @@ class AccountingTests(unittest.TestCase):
 
 
 class ConfigTests(unittest.TestCase):
+    def test_live_gate_refuses_unverified_or_unmatched_offline_evidence(self):
+        from scripts.verify_v34_live import gate
+        with tempfile.TemporaryDirectory() as tmp:
+            path=Path(tmp)/'report.json';path.write_text(json.dumps({'status':'failed','real_api_requests':0,'tested_source_head':'not-current'}))
+            with self.assertRaisesRegex(ValueError,'matching_frozen'):gate(path)
+
+    def test_authorization_plan_is_fixed_two_two_four(self):
+        from target.live_providers import isolated_environment
+        import config
+        with patch.dict(os.environ,{'TICKET_API_VALIDATION_PROFILE':'v34'}):
+            a=isolated_environment('deepseek',config.BASE_DIR/'artifacts/runtime/v34-test-case')
+            b=isolated_environment('bailian',config.BASE_DIR/'artifacts/runtime/v34-test-case-b')
+        self.assertEqual(a['TICKET_TOTAL_REQUEST_LIMIT'],'4')
+        self.assertEqual((a['DEEPSEEK_MAX_REQUESTS'],b['BAILIAN_MAX_REQUESTS']),('2','2'))
+        self.assertEqual(a['TICKET_INITIAL_LIVE_BUDGET'],b['TICKET_INITIAL_LIVE_BUDGET'])
+        self.assertNotEqual(a['DEEPSEEK_BUDGET_PATH'],b['BAILIAN_BUDGET_PATH'])
+
     def test_environment_wins_over_protected_file_and_no_interpolation(self):
         from target.api_config import bootstrap
         with tempfile.TemporaryDirectory() as tmp:

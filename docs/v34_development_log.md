@@ -13,5 +13,12 @@
 - DeepSeek/百炼 HTTP 客户端接入共同记账，保留代理/证书默认行为和零重试；真实请求/响应事件关联框架 model_step 与 Trace ID。SDK解析/工具/下一轮失败不抹掉已收到的响应。
 - 新增 `target/api_config.py`：进程（含显式空）优先于受保护项目.env，再到Windows用户变量；离线守卫禁止发现真实本地Key。统一模型配置和安全Endpoint摘要，提供.env.example，忽略真实env/密钥文件。
 - `provider_runs.jsonl` 区分完整Token与observed partial；接口十字段/五字段不改。LangSmith synthetic记录明确命名，自动框架Tracing保持关闭。
-- 首轮14项测试出现旧简化schema缺status及测试SQLite连接未关闭两个错误；修正只读兼容和测试closing，原失败日志保留。第三轮14/14通过；原DeepSeek运行时测试15/15通过。命令：`python -m unittest discover -s tests -p test_v34_api_audit.py -v`、`-p test_deepseek_runtime.py`，全部离线。
+- 首轮14项测试出现旧简化schema缺status及测试SQLite连接未关闭两个错误；修正只读兼容和测试closing，原失败日志保留。第三轮14/14通过；原DeepSeek运行时测试11/11通过。命令：`python -m unittest discover -s tests -p test_v34_api_audit.py -v`、`-p test_deepseek_runtime.py`，全部离线。
 - 正式账本5/5、旧共享与Provider账本均未修改。实现提交与后续验收见git log和最终报告。
+
+## 2026-10-25 固定授权验收入口
+
+- 预算/配置模块提交 `6d46a93`。新增 `scripts/verify_v34_live.py`，固定新授权目录；DeepSeek2、百炼2、总4，Provider每轮最多2个模型步骤，失败/中断后attempt标记禁止重跑。执行前必须有匹配当前冻结源码SHA的完整离线报告。
+- 预检仅本地检查与初始化新账本空schema；合成LangSmith预览和上传分成两个动作，必须用已检查payload摘要，另有一次上传标记。没有借用模型请求来验证LangSmith。
+- 用户自行设置用户环境后，在实际用户权限下只读布尔检查均已配置。受限沙箱HKCU视图不同；在线验收使用已授权的实际用户环境，依旧不打印Key或前缀。
+- 原始请求账本快照和哈希保留。16项新增确定性测试通过后，执行全量离线回归，随后才允许实际受控验收。
