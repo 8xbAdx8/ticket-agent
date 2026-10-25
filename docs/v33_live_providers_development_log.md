@@ -16,3 +16,11 @@
 - 修改 `config.py`、`target/agent.py`、`target/langchain_agent.py` 接入 bailian，保留 Mock 和 DeepSeek 路径；`target/deepseek_runtime.py` 仅加新入口可选的总预算预留与百炼秘密脱敏。`.gitignore` 增加百炼 Trace 目录。
 - 新增 `tests/test_live_providers.py`，命令 `.venv-deepseek/Scripts/python.exe -m unittest discover -s tests -p test_live_providers.py -v`，实际 14/14 通过。证据暂存 `artifacts/runtime/v33-providers-core-first.txt`。真实 SDK + MockTransport，不是真实 API 验证。
 - 本阶段真实模型请求 0；本轮在线条件与后续命令仍待完成。B/C 需要分别验收当前百炼与历史 DeepSeek，不共享成绩。实现提交 SHA 见后续交付表和 git log。
+
+## 2026-10-25 LangSmith 显式导出
+
+- 运行时提交 `73ea353`。新增 `target/observability.py`，使用官方 REST `/runs` 创建完成记录并 GET 原 ID 回读；已安装 SDK 支持自动批处理，故本项目为明确统计/零重试选择直接 httpx，不启用框架全量 callback。
+- 两道开关：环境显式启用 + 每次导出 consent。上传前展示范围，仅本轮只读消息/结果及元数据；过滤未知字段、秘密值、认证头、手机号/邮箱/身份证格式及 reasoning_content，不传完整会话、订单或旁证全文。任意姓名等自由文本无法保证自动识别，仍须人工检查。
+- 远端回执与公共 Agent/本地审计分离，POST 接受不等于已验证，只有 GET 内容/ID/摘要匹配才 verified；失败不改变原模型结果。不发送后台请求或自动重试。
+- 命令 `.venv-deepseek/Scripts/python.exe -m unittest discover -s tests -p test_observability.py -v`，11/11 通过，证据 `artifacts/runtime/v33-providers-observability-first.txt`。全部使用 MockTransport，真实 LangSmith 上报 0，不标远端验证成功。
+- B/C 影响：可选新导出接口，不变更十字段或正式判定；用户未显式配置/确认时仍完整本地运行。
