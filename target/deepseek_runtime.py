@@ -225,7 +225,8 @@ def guarded_client(settings, *, transport=None):
         raise DeepSeekError("dependency_missing")
     for name in ("httpx","httpcore"):
         logging.getLogger(name).setLevel(logging.WARNING)
-    budget = RequestBudget(settings)
+    from target.request_accounting import budget_for, reserve, settle, client_class
+    budget = budget_for(settings,"deepseek")
 
     def before(request):
         if request.url.scheme != "https" or request.url.host != "api.deepseek.com" or request.url.port not in (None,443):
@@ -247,26 +248,24 @@ def guarded_client(settings, *, transport=None):
             raise DeepSeekError("output_token_limit_required")
         if len(request.content) > settings.max_payload_bytes:
             raise DeepSeekError("request_payload_limit")
-        from target.live_providers import reserve_initial_budget
-        reserve_initial_budget()
-        request.extensions["ticket_budget_id"] = budget.reserve()
+        reserve(request,budget,"deepseek",body)
 
     def after(response):
         identity = response.request.extensions.get("ticket_budget_id")
         if identity is None:
             return
-        response.read()
+        try:response.read()
+        except Exception:
+            settle(response,"response_body_unknown",{});raise
         try:
             body = response.json()
         except (ValueError, TypeError):
             body = {}
         if not isinstance(body,dict):
             body = {}
-        budget.record(identity,status=response.status_code,
-                      category="response_received" if response.is_success else ERRORS.get(response.status_code,"http_error"),
-                      usage=body.get("usage"),model=body.get("model"))
+        settle(response,"response_received" if response.is_success else ERRORS.get(response.status_code,"http_error"),body)
 
-    return httpx.Client(timeout=settings.timeout,follow_redirects=False,transport=transport,
+    return client_class()(timeout=settings.timeout,follow_redirects=False,transport=transport,
                         event_hooks={"request":[before],"response":[after]})
 
 

@@ -8,7 +8,7 @@ from pathlib import Path
 from urllib.parse import urlsplit
 import config
 from target.deepseek_runtime import Settings as DeepSeekSettings, RequestBudget, DeepSeekError, ERRORS
-from target.live_providers import READ_ONLY, reserve_initial_budget
+from target.live_providers import READ_ONLY
 
 
 class BailianError(DeepSeekError):
@@ -27,10 +27,11 @@ class Settings(DeepSeekSettings):
         try:
             settings = cls(timeout=float(os.getenv("BAILIAN_TIMEOUT", "20")),
                 max_requests=int(os.getenv("BAILIAN_MAX_REQUESTS", "3")),
+                max_model_calls=int(os.getenv("BAILIAN_MAX_MODEL_CALLS","3")),
                 ledger_path=Path(os.getenv("BAILIAN_BUDGET_PATH", str(cls.ledger_path))))
         except ValueError:
             raise BailianError("invalid_safety_limits") from None
-        if not 1 <= settings.max_requests <= 3 or not 1 <= settings.timeout <= 60:
+        if not 1 <= settings.max_requests <= 3 or not 1 <= settings.timeout <= 60 or not 1<=settings.max_model_calls<=4:
             raise BailianError("invalid_safety_limits")
         formal = config.BASE_DIR / "artifacts/runtime/deepseek-budget/requests.db"
         deep = Path(os.getenv("DEEPSEEK_BUDGET_PATH", str(formal)))
@@ -40,7 +41,8 @@ class Settings(DeepSeekSettings):
 
 
 def endpoint():
-    url = urlsplit(config.BASE_URL)
+    try:url=urlsplit(config.BASE_URL);port=url.port
+    except ValueError:raise BailianError("invalid_api_address") from None
     # Accept official regional/workspace HTTPS endpoints, not arbitrary hosts or coding-plan endpoints.
     host = url.hostname or ""
     valid = host in {"dashscope.aliyuncs.com","dashscope-intl.aliyuncs.com","dashscope-us.aliyuncs.com","cn-hongkong.dashscope.aliyuncs.com"} or bool(
@@ -65,7 +67,8 @@ def validate_configuration():
 def guarded_client(settings, *, transport=None):
     import httpx
     address = endpoint()
-    budget = RequestBudget(settings)
+    from target.request_accounting import budget_for,reserve,settle,client_class
+    budget = budget_for(settings,"bailian")
     for name in ("httpx", "httpcore", "openai"):
         logging.getLogger(name).setLevel(logging.WARNING)
 
@@ -84,13 +87,14 @@ def guarded_client(settings, *, transport=None):
             raise BailianError("request_configuration_rejected")
         if len(request.content) > settings.max_payload_bytes:
             raise BailianError("request_payload_limit")
-        reserve_initial_budget()
-        request.extensions["ticket_budget_id"] = budget.reserve()
+        reserve(request,budget,"bailian",body)
 
     def after(response):
         identity = response.request.extensions.get("ticket_budget_id")
         if identity is None: return
-        response.read()
+        try:response.read()
+        except Exception:
+            settle(response,"response_body_unknown",{});raise
         try: body = response.json()
         except ValueError: body = {}
         if not isinstance(body,dict): body = {}
@@ -102,12 +106,11 @@ def guarded_client(settings, *, transport=None):
         if any(s in code for s in ("arrearage", "insufficient", "balance")): category = "insufficient_balance"
         elif any(s in code for s in ("modelnotfound","invalidmodel","invalidparameter.model")): category = "model_not_found"
         elif "invalidapikey" in code: category = "authentication_failed"
-        budget.record(identity,status=response.status_code,category="response_received" if response.is_success else category,
-                      usage=body.get("usage"),model=body.get("model"))
+        settle(response,"response_received" if response.is_success else category,body)
         if not response.is_success:
             raise BailianError(category,response.status_code)
 
-    return httpx.Client(timeout=settings.timeout, follow_redirects=False, transport=transport,
+    return client_class()(timeout=settings.timeout, follow_redirects=False, transport=transport,
                         event_hooks={"request":[before],"response":[after]})
 
 

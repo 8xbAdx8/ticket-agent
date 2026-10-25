@@ -72,7 +72,9 @@ class ContractMiddleware(AgentMiddleware):
             if sum(ctx.trace.tokens.values()) + ctx.deepseek_settings.max_output_tokens > ctx.deepseek_settings.turn_token_budget:
                 raise DeepSeekError("observed_token_budget_exhausted")
         model_started = time.perf_counter()
-        response = handler(request)
+        from target.request_accounting import capture
+        with capture(ctx.events,ctx.trace.trace_id,ctx.model_calls):
+            response = handler(request)
         for m in response.result:
             ctx.fault_run.model_requests.append({"model_step":ctx.model_calls,
                 "tool_calls":copy.deepcopy(m.tool_calls),"final_text":m.text if not m.tool_calls else None})
@@ -81,6 +83,7 @@ class ContractMiddleware(AgentMiddleware):
                 from target.deepseek_runtime import DeepSeekError, safe_text
                 # 仅保存最终文字、结构化调用和元数据，不保存 reasoning_content。
                 ctx.events.append({"event":"model_response","model_step":ctx.model_calls,
+                    "request_id":next((e.get("request_id") for e in reversed(ctx.events) if e.get("event")=="http_response" and e.get("model_step")==ctx.model_calls),None),
                     "response_model":m.response_metadata.get("model_name") or m.response_metadata.get("model"),"usage":usage,
                     "latency_ms":int((time.perf_counter()-model_started)*1000),
                     "finish_reason":m.response_metadata.get("finish_reason"),

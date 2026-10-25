@@ -4,6 +4,11 @@ __pycache__/
 .venv-v3/
 .venv-deepseek/
 .env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
 *.db
 *.db-*
 traces/*.jsonl

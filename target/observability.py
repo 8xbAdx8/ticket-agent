@@ -17,10 +17,8 @@ UPLOAD_SCOPE = ("本轮用户输入、固定只读系统提示、最终回复、
 
 
 def _setting(old, new, default=""):
-    left, right = os.getenv(old, "").strip(), os.getenv(new, "").strip()
-    if left and right and left != right:
-        raise ValueError("conflicting_langsmith_configuration")
-    return left or right or default
+    from target.api_config import alias
+    return alias(old,new,default)
 
 
 def settings():
@@ -112,7 +110,7 @@ def export_run(record, *, consent=False, trace_dir=None, transport=None):
             receipt.update(remote_run_id=run_id,project=project,endpoint=endpoint,payload_sha256=digest(payload))
             end=datetime.now(timezone.utc)
             start=end-timedelta(milliseconds=record.get("total_latency_ms") or 0)
-            body={"id":run_id,"name":"Ticket Agent filtered Live run","run_type":"chain",
+            body={"id":run_id,"name":"Ticket Agent synthetic observability check" if record.get("mode")=="synthetic" else "Ticket Agent filtered Live run","run_type":"chain",
                 "session_name":project,"start_time":start.isoformat(),"end_time":end.isoformat(),
                 "inputs":payload["inputs"],"outputs":payload["outputs"],
                 "extra":{"metadata":{**payload["metadata"],"payload_sha256":digest(payload)}}}

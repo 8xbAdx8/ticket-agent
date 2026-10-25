@@ -20,6 +20,7 @@ SCENARIOS={"text":"请用一句话说明你是模拟出行咨询助手，不要�
 def main(argv=None):
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--provider",choices=("deepseek","bailian"),required=True)
+    parser.add_argument("--profile",choices=("v33","v34"),default="v33")
     action=parser.add_mutually_exclusive_group()
     action.add_argument("--run",action="store_true",help="Explicitly send real model requests, within the initial total-three ceiling")
     action.add_argument("--serve",action="store_true",help="Start localhost; opening a page does not generate")
@@ -31,6 +32,9 @@ def main(argv=None):
     parser.add_argument("--port",type=int,default=8503)
     parser.add_argument("--no-browser",action="store_true")
     args=parser.parse_args(argv)
+    from target.api_config import bootstrap
+    bootstrap(ROOT)
+    if args.profile=="v34":os.environ["TICKET_API_VALIDATION_PROFILE"]="v34"
     from target.live_providers import configuration,isolated_environment
     from target.deepseek_runtime import RequestBudget,Settings,safe_error
     from target.diagnostics import sanitize
@@ -51,7 +55,7 @@ def main(argv=None):
         state=sanitize(configuration(args.provider))
         state.update(engine="langchain",tools=["query_tickets","search_policy"],max_retries=0,
             provider_budget=RequestBudget(settings).snapshot(),
-            initial_total_budget=RequestBudget(Settings(max_requests=3,ledger_path=Path(env["TICKET_INITIAL_LIVE_BUDGET"]))).snapshot(),
+            initial_total_budget=RequestBudget(Settings(max_requests=int(env["TICKET_TOTAL_REQUEST_LIMIT"]),ledger_path=Path(env["TICKET_INITIAL_LIVE_BUDGET"]))).snapshot(),
             model_requests_this_command=0)
         from target.observability import configuration_status,UPLOAD_SCOPE
         state["langsmith"]=configuration_status()
@@ -61,7 +65,7 @@ def main(argv=None):
             print("LangSmith 导出需要环境显式启用、有效配置及 --confirm-upload。没有发送模型请求。")
             return 2
         if args.upload_langsmith: print("已确认上传范围："+UPLOAD_SCOPE,flush=True)
-        if state["initial_total_budget"]["reserved_requests"]>=3 or state["provider_budget"]["reserved_requests"]>=settings.max_requests:
+        if state["initial_total_budget"]["reserved_requests"]>=state["initial_total_budget"]["limit"] or state["provider_budget"]["reserved_requests"]>=settings.max_requests:
             print("初次验证预算已耗尽；停止，不重置账本、不增加额度。")
             return 2
         if args.serve:

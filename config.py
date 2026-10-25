@@ -5,6 +5,8 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent
+from target.api_config import bootstrap
+bootstrap(BASE_DIR)
 PROVIDER = os.getenv("AGENT_PROVIDER", "mock")      # mock | openai | deepseek | bailian
 DB_PATH = Path(os.getenv("AGENT_DB_PATH", str(BASE_DIR / "data" / "tickets.db")))
 POLICY_PATH = BASE_DIR / "data" / "policies.md"
@@ -16,6 +18,10 @@ MODEL_NAME = os.getenv("AGENT_MODEL", "deepseek-flash" if PROVIDER == "deepseek"
 BASE_URL = os.getenv("AGENT_BASE_URL", "https://api.deepseek.com" if PROVIDER == "deepseek" else "https://open.bigmodel.cn/api/paas/v4")
 # DeepSeek 只有一个密钥来源；AGENT_API_KEY 继续专用于旧 openai Provider。
 API_KEY = os.getenv("DEEPSEEK_API_KEY" if PROVIDER == "deepseek" else "AGENT_API_KEY", "")
+if PROVIDER=="deepseek":
+    from target.api_config import model_config
+    _api=model_config(PROVIDER,active=True)
+    MODEL_NAME,BASE_URL=_api["model"],_api["base_url"]
 if PROVIDER == "bailian":
     # No implicit region/account entitlement. Only the Bailian variables select its endpoint/model/key.
     MODEL_NAME = os.getenv("DASHSCOPE_MODEL", "")
