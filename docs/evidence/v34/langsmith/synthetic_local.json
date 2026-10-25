@@ -1,0 +1,15 @@
+{
+  "trace_id": "synthetic-ecd2d2755ed347b8aecf428a2d0979b8",
+  "provider": "synthetic",
+  "mode": "synthetic",
+  "git_sha": "dc1e2895d8303f2df84ed9e0e16d77982797dbd9",
+  "case_id": "v34-langsmith-synthetic",
+  "user_msg": "合成测试：查询虚构出行信息。",
+  "reply": "这是合成观测测试，不是模型执行结果。",
+  "tokens": null,
+  "total_latency_ms": 0,
+  "finish_reason": "synthetic",
+  "local_trace_saved": false,
+  "local_sidecar_saved": true,
+  "events": []
+}

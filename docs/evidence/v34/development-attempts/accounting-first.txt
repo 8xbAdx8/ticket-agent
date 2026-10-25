@@ -1,0 +1,59 @@
+test_concurrent_providers_never_exceed_four_and_ids_match (test_v34_api_audit.AccountingTests.test_concurrent_providers_never_exceed_four_and_ids_match) ... ok
+test_legacy_ledger_is_rejected_without_rewrite (test_v34_api_audit.AccountingTests.test_legacy_ledger_is_rejected_without_rewrite) ... ERROR
+test_legacy_ledger_is_rejected_without_rewrite (test_v34_api_audit.AccountingTests.test_legacy_ledger_is_rejected_without_rewrite) ... ERROR
+test_policy_cannot_be_silently_raised (test_v34_api_audit.AccountingTests.test_policy_cannot_be_silently_raised) ... ok
+test_process_exit_keeps_recoverable_identity_and_does_not_refund (test_v34_api_audit.AccountingTests.test_process_exit_keeps_recoverable_identity_and_does_not_refund) ... ok
+test_provider_limit_does_not_leak_total_reservation (test_v34_api_audit.AccountingTests.test_provider_limit_does_not_leak_total_reservation) ... ok
+test_same_uuid_atomic_pair_and_idempotent_settlement (test_v34_api_audit.AccountingTests.test_same_uuid_atomic_pair_and_idempotent_settlement) ... ok
+test_snapshot_missing_is_readonly (test_v34_api_audit.AccountingTests.test_snapshot_missing_is_readonly) ... ok
+test_unknown_tokens_are_null_and_pending_survives_restart (test_v34_api_audit.AccountingTests.test_unknown_tokens_are_null_and_pending_survives_restart) ... ok
+test_endpoint_summary_never_exposes_url_secret (test_v34_api_audit.ConfigTests.test_endpoint_summary_never_exposes_url_secret) ... ok
+test_environment_wins_over_protected_file_and_no_interpolation (test_v34_api_audit.ConfigTests.test_environment_wins_over_protected_file_and_no_interpolation) ... ok
+test_offline_guard_never_discovers_local_keys (test_v34_api_audit.ConfigTests.test_offline_guard_never_discovers_local_keys) ... ok
+test_budget_blocks_before_network_without_phantom_total_row (test_v34_api_audit.SDKLifecycleTests.test_budget_blocks_before_network_without_phantom_total_row) ... ok
+test_first_200_survives_second_timeout_and_partial_tokens (test_v34_api_audit.SDKLifecycleTests.test_first_200_survives_second_timeout_and_partial_tokens) ... ok
+test_real_sdk_roundtrip_links_calls_and_does_not_retry (test_v34_api_audit.SDKLifecycleTests.test_real_sdk_roundtrip_links_calls_and_does_not_retry) ... ok
+
+======================================================================
+ERROR: test_legacy_ledger_is_rejected_without_rewrite (test_v34_api_audit.AccountingTests.test_legacy_ledger_is_rejected_without_rewrite)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<project>\tests\test_v34_api_audit.py", line 58, in test_legacy_ledger_is_rejected_without_rewrite
+    self.assertTrue(snapshot(path,3)['historical_unlinked'])
+                    ^^^^^^^^^^^^^^^^
+  File "<project>\target\request_accounting.py", line 120, in snapshot
+    "unsettled_ids":[r.get("request_id",f"legacy-row:{r['id']}") for r in rows if r["status"] is None],
+                                                                                  ~^^^^^^^^^^
+KeyError: 'status'
+
+======================================================================
+ERROR: test_legacy_ledger_is_rejected_without_rewrite (test_v34_api_audit.AccountingTests.test_legacy_ledger_is_rejected_without_rewrite)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<user>\AppData\Roaming\uv\python\cpython-3.12.14-windows-x86_64-none\Lib\shutil.py", line 633, in _rmtree_unsafe
+    os.unlink(fullname)
+PermissionError: [WinError 32] 另一个程序正在使用此文件，进程无法访问。: '<user>\\AppData\\Local\\Temp\\tmppsvomw8_\\total.db'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "<project>\tests\test_v34_api_audit.py", line 24, in tearDown
+    def tearDown(self):self.tmp.cleanup()
+                       ^^^^^^^^^^^^^^^^^^
+  File "<user>\AppData\Roaming\uv\python\cpython-3.12.14-windows-x86_64-none\Lib\tempfile.py", line 954, in cleanup
+    self._rmtree(self.name, ignore_errors=self._ignore_cleanup_errors)
+  File "<user>\AppData\Roaming\uv\python\cpython-3.12.14-windows-x86_64-none\Lib\tempfile.py", line 934, in _rmtree
+    _shutil.rmtree(name, onexc=onexc)
+  File "<user>\AppData\Roaming\uv\python\cpython-3.12.14-windows-x86_64-none\Lib\shutil.py", line 781, in rmtree
+    return _rmtree_unsafe(path, onexc)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<user>\AppData\Roaming\uv\python\cpython-3.12.14-windows-x86_64-none\Lib\shutil.py", line 635, in _rmtree_unsafe
+    onexc(os.unlink, fullname, err)
+  File "<user>\AppData\Roaming\uv\python\cpython-3.12.14-windows-x86_64-none\Lib\tempfile.py", line 909, in onexc
+    _os.unlink(path)
+PermissionError: [WinError 32] 另一个程序正在使用此文件，进程无法访问。: '<user>\\AppData\\Local\\Temp\\tmppsvomw8_\\total.db'
+
+----------------------------------------------------------------------
+Ran 14 tests in 1.090s
+
+FAILED (errors=2)

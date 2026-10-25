@@ -1,0 +1,1 @@
+{"mode": "offline", "provider": "mock", "engine": "legacy", "toolset": "all", "api_key_configured": false, "database": "artifacts\\runtime\\launcher\\offline\\2026-10-25\\tickets.db", "trace_dir": "artifacts\\runtime\\launcher\\offline\\2026-10-25\\traces", "model_requests_sent": 0, "status": "passed"}

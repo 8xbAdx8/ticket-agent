@@ -1,0 +1,25 @@
+{
+  "inputs": {
+    "user_message": "合成测试：查询虚构出行信息。",
+    "system_prompt": "你是只读的模拟出行咨询助手。当前只支持 query_tickets 查询虚构余票和 search_policy 检索政策。\n不得执行、承诺或主动邀请锁座、候补、下单、支付、取消或订单查询；即使用户要求，也应明确说明能力边界。\n可以说“当前仅支持模拟查票和政策咨询”。政策中可以解释锁座/支付规则，但不代表你能办理。\n具体班次、价格和库存必须来自 query_tickets；政策必须来自 search_policy，注明实际返回的 doc_id。\n相对日期先换算成 YYYY-MM-DD；明确切换高铁/机票时重置不兼容席别，未指定条件时继承上下文，含糊时澄清。\n区分目标席别售罄、存在余票、没有匹配班次；未查询其他席别时不能断言其有票。\n工具失败时如实说明，不得编造结果或声称业务成功。不要展示内部推理内容。"
+  },
+  "outputs": {
+    "reply": "这是合成观测测试，不是模型执行结果。",
+    "models": [],
+    "tools": [],
+    "finish_reason": "synthetic",
+    "tokens": null,
+    "error": null
+  },
+  "metadata": {
+    "trace_id": "synthetic-ecd2d2755ed347b8aecf428a2d0979b8",
+    "provider": "synthetic",
+    "requested_model": null,
+    "actual_models": null,
+    "mode": "synthetic",
+    "case_id": "v34-langsmith-synthetic",
+    "git_sha": "dc1e2895d8303f2df84ed9e0e16d77982797dbd9",
+    "public_trace_sha256": null,
+    "total_latency_ms": 0
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "source": "artifacts/runtime/v33-live-providers/deepseek/requests.db",
+  "source_file_sha256": "01914e5e1ee4bf32cb7906af0ecad286b3283aae89a25de081bab7360765d568",
+  "consistent_sqlite_backup": true,
+  "rows": [
+    {
+      "id": 1,
+      "created": "2026-10-25T08:23:43.431675+00:00",
+      "status": 200,
+      "category": "response_received",
+      "prompt": 764,
+      "completion": 113,
+      "model": "deepseek-flash"
+    },
+    {
+      "id": 2,
+      "created": "2026-10-25T08:23:45.521357+00:00",
+      "status": 200,
+      "category": "response_received",
+      "prompt": 1152,
+      "completion": 172,
+      "model": "deepseek-flash"
+    }
+  ],
+  "read_only_copy": true
+}

@@ -1,0 +1,16 @@
+{
+  "action": "readback_only",
+  "remote_verified": true,
+  "remote_status": "verified",
+  "http_requests": 1,
+  "upload_attempts": 0,
+  "generation_requests": 0,
+  "timestamp": "2026-10-25T09:42:25.790031+00:00",
+  "remote_run_id": "52006b2b-acb1-4b8f-bfb1-51cea7ac409b",
+  "local_trace_id": "synthetic-ecd2d2755ed347b8aecf428a2d0979b8",
+  "verification_origin": "remote_http",
+  "get_http_status": 200,
+  "payload_sha256": "5b06cbc1e4b13a9bde21efd1a46292173e165541bde15cc46f2bbe8ce46bb698",
+  "project": "ticket-agent-v33-review",
+  "endpoint": "https://api.smith.langchain.com"
+}

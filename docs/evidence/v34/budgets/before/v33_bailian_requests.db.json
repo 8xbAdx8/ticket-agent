@@ -1,0 +1,17 @@
+{
+  "source": "artifacts/runtime/v33-live-providers/bailian/requests.db",
+  "source_file_sha256": "0bbe0e37f64d8da04e6947e3e213f8dc34ce32c711a9f7bbe2ba4b42916de7fc",
+  "consistent_sqlite_backup": true,
+  "rows": [
+    {
+      "id": 1,
+      "created": "2026-10-25T08:37:14.749651+00:00",
+      "status": 200,
+      "category": "response_received",
+      "prompt": 671,
+      "completion": 96,
+      "model": "qwen-plus"
+    }
+  ],
+  "read_only_copy": true
+}

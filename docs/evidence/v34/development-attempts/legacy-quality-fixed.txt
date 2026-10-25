@@ -1,0 +1,34 @@
+test_all_http_categories_fail_closed_without_retry_or_success_trace (test_deepseek_readonly_quality.ReadOnlyQualityTests.test_all_http_categories_fail_closed_without_retry_or_success_trace) ... ok
+test_cli_failure_has_exit_two_null_tokens_and_no_fake_normal_record (test_deepseek_readonly_quality.ReadOnlyQualityTests.test_cli_failure_has_exit_two_null_tokens_and_no_fake_normal_record) ... ok
+test_cli_success_status_is_historical_and_not_full_live_acceptance (test_deepseek_readonly_quality.ReadOnlyQualityTests.test_cli_success_status_is_historical_and_not_full_live_acceptance) ... ok
+test_exhausted_budget_never_enters_mock_transport (test_deepseek_readonly_quality.ReadOnlyQualityTests.test_exhausted_budget_never_enters_mock_transport) ... ok
+test_failure_does_not_pollute_followup_protocol_or_other_session (test_deepseek_readonly_quality.ReadOnlyQualityTests.test_failure_does_not_pollute_followup_protocol_or_other_session) ... ok
+test_false_backend_flag_and_model_false_success_are_not_hidden (test_deepseek_readonly_quality.ReadOnlyQualityTests.test_false_backend_flag_and_model_false_success_are_not_hidden) ... ok
+test_invitation_is_rejected_and_raw_final_is_preserved_not_rewritten (test_deepseek_readonly_quality.ReadOnlyQualityTests.test_invitation_is_rejected_and_raw_final_is_preserved_not_rewritten) ... ok
+test_malformed_tool_call_is_auditable_and_never_executes (test_deepseek_readonly_quality.ReadOnlyQualityTests.test_malformed_tool_call_is_auditable_and_never_executes) ... ok
+test_policy_rules_and_readonly_disclosure_are_not_misclassified (test_deepseek_readonly_quality.ReadOnlyQualityTests.test_policy_rules_and_readonly_disclosure_are_not_misclassified) ... ok
+test_readonly_prompt_and_unmodified_legitimate_reply (test_deepseek_readonly_quality.ReadOnlyQualityTests.test_readonly_prompt_and_unmodified_legitimate_reply) ... ok
+test_save_trace_false_does_not_create_failure_or_success_files (test_deepseek_readonly_quality.ReadOnlyQualityTests.test_save_trace_false_does_not_create_failure_or_success_files) ... ok
+test_timeout_and_connection_failure_do_not_retry_or_refund_reservation (test_deepseek_readonly_quality.ReadOnlyQualityTests.test_timeout_and_connection_failure_do_not_retry_or_refund_reservation) ... ok
+test_unknown_second_usage_keeps_real_calls_and_only_observed_tokens (test_deepseek_readonly_quality.ReadOnlyQualityTests.test_unknown_second_usage_keeps_real_calls_and_only_observed_tokens) ... ok
+test_web_readonly_options_and_error_do_not_show_model_false_success (test_deepseek_readonly_quality.ReadOnlyQualityTests.test_web_readonly_options_and_error_do_not_show_model_false_success) ... 2026-10-25 17:11:23.960 WARNING streamlit.runtime.scriptrunner_utils.script_run_context: Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+ok
+
+----------------------------------------------------------------------
+Ran 14 tests in 2.677s
+
+OK
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录

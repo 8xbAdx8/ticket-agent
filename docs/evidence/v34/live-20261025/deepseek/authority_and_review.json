@@ -1,0 +1,61 @@
+{
+  "assessment": {
+    "provider": "deepseek",
+    "trace_id": "4effd0cdd8ae4d60a386b5e86f7f3996",
+    "protocol_verified": true,
+    "tool_results_match_readonly_database": true,
+    "business_verified": true,
+    "review_scope": "A review of this one fixed query: dates, route, train/time/price/stock against tool rows; not B formal grading",
+    "time_consistency": {
+      "status": "checked_fields_match",
+      "checked_fields": 6,
+      "findings": [],
+      "scope": "Explicit per-train departure/arrival only; not full semantic evaluation"
+    },
+    "business_state_counts": {
+      "orders": 0,
+      "locks": 0
+    },
+    "postfix_live_retested": false,
+    "original_evidence_unchanged": true,
+    "note": "Captured Live source dc1e289. Later guard/proxy/usage fixes have offline validation only."
+  },
+  "authority": [
+    {
+      "kind": "高铁",
+      "train_no": "G7303",
+      "from_city": "上海",
+      "to_city": "杭州",
+      "date": "2026-10-26",
+      "depart": "12:34",
+      "arrive": "13:34",
+      "seat_type": "二等座",
+      "price": 73.0,
+      "seats_left": 51
+    },
+    {
+      "kind": "高铁",
+      "train_no": "G7302",
+      "from_city": "上海",
+      "to_city": "杭州",
+      "date": "2026-10-26",
+      "depart": "09:17",
+      "arrive": "10:17",
+      "seat_type": "二等座",
+      "price": 73.0,
+      "seats_left": 47
+    },
+    {
+      "kind": "高铁",
+      "train_no": "G7301",
+      "from_city": "上海",
+      "to_city": "杭州",
+      "date": "2026-10-26",
+      "depart": "06:00",
+      "arrive": "07:00",
+      "seat_type": "二等座",
+      "price": 73.0,
+      "seats_left": 35
+    }
+  ]
+}

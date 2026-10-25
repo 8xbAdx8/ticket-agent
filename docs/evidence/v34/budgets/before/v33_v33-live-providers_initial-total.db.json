@@ -1,0 +1,35 @@
+{
+  "source": "artifacts/runtime/v33-live-providers/initial-total.db",
+  "source_file_sha256": "bed5e18f7e9f732bbd452cd4f5dab09edc8a57ba23527c0ef7f1ed373311040c",
+  "consistent_sqlite_backup": true,
+  "rows": [
+    {
+      "id": 1,
+      "created": "2026-10-25T08:23:43.431675+00:00",
+      "status": null,
+      "category": "reserved_outcome_unknown",
+      "prompt": null,
+      "completion": null,
+      "model": null
+    },
+    {
+      "id": 2,
+      "created": "2026-10-25T08:23:45.515433+00:00",
+      "status": null,
+      "category": "reserved_outcome_unknown",
+      "prompt": null,
+      "completion": null,
+      "model": null
+    },
+    {
+      "id": 3,
+      "created": "2026-10-25T08:37:14.733968+00:00",
+      "status": null,
+      "category": "reserved_outcome_unknown",
+      "prompt": null,
+      "completion": null,
+      "model": null
+    }
+  ],
+  "read_only_copy": true
+}

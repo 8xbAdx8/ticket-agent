@@ -1,0 +1,8 @@
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+{"status": "passed", "real_api_requests": 0, "agent_and_backend_records": 25, "labelled_detector_samples": 8, "failures": []}

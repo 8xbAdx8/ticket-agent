@@ -1,0 +1,167 @@
+{
+  "schema": "ticket-api-audit/v3.4",
+  "date": "2026-10-25",
+  "recovery_sha": "b4a7fa02126a12991caacc99702cc5ccf242dded",
+  "live_tested_sha": "dc1e2895d8303f2df84ed9e0e16d77982797dbd9",
+  "final_offline_tested_sha": "af2a2d54824f91ed901ee8b9eec49816f567727f",
+  "providers": {
+    "deepseek": {
+      "configured": true,
+      "model": [
+        "deepseek-flash"
+      ],
+      "endpoint": "https://api.deepseek.com",
+      "connection_verified": true,
+      "tool_calling_verified": true,
+      "business_verified": true,
+      "generation_requests": 2,
+      "tokens": {
+        "prompt": 1942,
+        "completion": 304
+      },
+      "cost": null,
+      "cost_basis": "No authoritative invoice/account pricing evidence",
+      "latency_ms": 3818,
+      "trace_id": "4effd0cdd8ae4d60a386b5e86f7f3996",
+      "live_source_sha": "dc1e2895d8303f2df84ed9e0e16d77982797dbd9",
+      "evidence": "docs/evidence/v34/live-20261025/deepseek",
+      "finding": [],
+      "postfix_live_retested": false
+    },
+    "bailian": {
+      "configured": true,
+      "model": [
+        "qwen-plus"
+      ],
+      "endpoint": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+      "connection_verified": true,
+      "tool_calling_verified": true,
+      "business_verified": false,
+      "generation_requests": 2,
+      "tokens": {
+        "prompt": 1756,
+        "completion": 288
+      },
+      "cost": null,
+      "cost_basis": "No authoritative invoice/account pricing evidence",
+      "latency_ms": 8415,
+      "trace_id": "7f83f6a0165a46fd8791e74ff7f84558",
+      "live_source_sha": "dc1e2895d8303f2df84ed9e0e16d77982797dbd9",
+      "evidence": "docs/evidence/v34/live-20261025/bailian",
+      "finding": [
+        {
+          "train_no": "G7303",
+          "field": "depart",
+          "claimed": "06:00",
+          "tool_value": "12:34"
+        },
+        {
+          "train_no": "G7303",
+          "field": "arrive",
+          "claimed": "07:00",
+          "tool_value": "13:34"
+        },
+        {
+          "train_no": "G7301",
+          "field": "depart",
+          "claimed": "12:34",
+          "tool_value": "06:00"
+        },
+        {
+          "train_no": "G7301",
+          "field": "arrive",
+          "claimed": "13:34",
+          "tool_value": "07:00"
+        }
+      ],
+      "postfix_live_retested": false
+    }
+  },
+  "total_new_generation_requests": 4,
+  "total_tokens": {
+    "prompt": 3698,
+    "completion": 592
+  },
+  "actual_cost": null,
+  "cost_status": "unknown",
+  "automatic_model_retries": 0,
+  "new_write_tools_executed": 0,
+  "budget": {
+    "new_shared_used": 4,
+    "new_shared_limit": 4,
+    "per_provider_used": {
+      "deepseek": 2,
+      "bailian": 2
+    },
+    "per_provider_limit": 2,
+    "current_ledgers_match": true,
+    "current_unknown": 0,
+    "old_formal": "unchanged 5/5",
+    "old_shared_unknown": 3,
+    "historical_unknown_released": 0
+  },
+  "langsmith": {
+    "configured": true,
+    "synthetic_only": true,
+    "upload_attempts": 1,
+    "http_requests": 3,
+    "post_status": 202,
+    "first_get_status": 404,
+    "latest_get_status": 200,
+    "langsmith_verified": true,
+    "remote_run_id": "52006b2b-acb1-4b8f-bfb1-51cea7ac409b",
+    "project": "ticket-agent-v33-review",
+    "extra_readback_authorized": true,
+    "evidence": "docs/evidence/v34/langsmith",
+    "scope": "One synthetic record, not full model conversation uploads"
+  },
+  "offline": {
+    "status": "passed",
+    "scope": "A offline regression, not B official 100 cases",
+    "real_keys_removed_from_children": true,
+    "non_loopback_python_network_blocked": true,
+    "blocked_network_attempts": 0,
+    "new_deepseek_api_requests": 0,
+    "production_budget_and_live_evidence_unchanged": true,
+    "checked_file_count": 361,
+    "runs": [
+      {
+        "name": "deepseek_unit",
+        "exit_code": 0,
+        "tests": 281,
+        "skipped": 0,
+        "log": "deepseek_unit.txt"
+      },
+      {
+        "name": "v3_unit",
+        "exit_code": 0,
+        "tests": 281,
+        "skipped": 59,
+        "log": "v3_unit.txt"
+      },
+      {
+        "name": "v2_unit",
+        "exit_code": 0,
+        "tests": 281,
+        "skipped": 145,
+        "log": "v2_unit.txt"
+      },
+      {
+        "name": "mock_smoke",
+        "exit_code": 0,
+        "tests": null,
+        "skipped": 0,
+        "log": "mock_smoke.txt"
+      }
+    ]
+  },
+  "old_files_unchanged": true,
+  "handoff": "conditional",
+  "not_verified": [
+    "postfix Live revalidation: no generation budget remains",
+    "Live RAG/multi-turn/abnormal matrix",
+    "full semantic correctness beyond inspected query",
+    "B formal V3.4 regression",
+    "C final acceptance"
+  ]
+}

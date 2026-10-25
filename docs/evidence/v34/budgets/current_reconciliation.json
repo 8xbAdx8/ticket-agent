@@ -1,0 +1,150 @@
+{
+  "matched_by_request_id": true,
+  "shared": {
+    "reserved_requests": 4,
+    "limit": 4,
+    "requests": [
+      {
+        "id": 1,
+        "request_id": "192a7d22f2524ee5ac98c97a69e264f3",
+        "provider": "deepseek",
+        "created": "2026-10-25T09:15:28.994812+00:00",
+        "status": 200,
+        "category": "response_received",
+        "prompt": 777,
+        "completion": 113,
+        "model": "deepseek-flash",
+        "phase": "settled",
+        "trace_id": "4effd0cdd8ae4d60a386b5e86f7f3996",
+        "request_summary": "{\"model\": \"deepseek-flash\", \"message_roles\": [\"system\", \"user\"], \"returned_tool_call_ids\": []}",
+        "settled_at": "2026-10-25T09:15:30.941660+00:00"
+      },
+      {
+        "id": 2,
+        "request_id": "4ed42d1159d54e82a3c700b45cbf2d85",
+        "provider": "deepseek",
+        "created": "2026-10-25T09:15:30.960902+00:00",
+        "status": 200,
+        "category": "response_received",
+        "prompt": 1165,
+        "completion": 191,
+        "model": "deepseek-flash",
+        "phase": "settled",
+        "trace_id": "4effd0cdd8ae4d60a386b5e86f7f3996",
+        "request_summary": "{\"model\": \"deepseek-flash\", \"message_roles\": [\"system\", \"user\", \"assistant\", \"tool\"], \"returned_tool_call_ids\": [\"call_00_uSDOjLN9HUbvxfeE3HfP1420\"]}",
+        "settled_at": "2026-10-25T09:15:32.771810+00:00"
+      },
+      {
+        "id": 3,
+        "request_id": "ed868516995a42479898a85ea76acc3e",
+        "provider": "bailian",
+        "created": "2026-10-25T09:15:32.900754+00:00",
+        "status": 200,
+        "category": "response_received",
+        "prompt": 677,
+        "completion": 96,
+        "model": "qwen-plus",
+        "phase": "settled",
+        "trace_id": "7f83f6a0165a46fd8791e74ff7f84558",
+        "request_summary": "{\"model\": \"qwen-plus\", \"message_roles\": [\"system\", \"user\"], \"returned_tool_call_ids\": []}",
+        "settled_at": "2026-10-25T09:15:36.439580+00:00"
+      },
+      {
+        "id": 4,
+        "request_id": "7b91bb68bd3c4ff0831b9ab2a173d4eb",
+        "provider": "bailian",
+        "created": "2026-10-25T09:15:36.450949+00:00",
+        "status": 200,
+        "category": "response_received",
+        "prompt": 1079,
+        "completion": 192,
+        "model": "qwen-plus",
+        "phase": "settled",
+        "trace_id": "7f83f6a0165a46fd8791e74ff7f84558",
+        "request_summary": "{\"model\": \"qwen-plus\", \"message_roles\": [\"system\", \"user\", \"assistant\", \"tool\"], \"returned_tool_call_ids\": [\"call_f3c6101b2ef44676afee02\"]}",
+        "settled_at": "2026-10-25T09:15:41.300720+00:00"
+      }
+    ],
+    "unsettled_ids": [],
+    "historical_unlinked": false
+  },
+  "providers": {
+    "deepseek": {
+      "reserved_requests": 2,
+      "limit": 2,
+      "requests": [
+        {
+          "id": 1,
+          "request_id": "192a7d22f2524ee5ac98c97a69e264f3",
+          "provider": "deepseek",
+          "created": "2026-10-25T09:15:28.994812+00:00",
+          "status": 200,
+          "category": "response_received",
+          "prompt": 777,
+          "completion": 113,
+          "model": "deepseek-flash",
+          "phase": "settled",
+          "trace_id": "4effd0cdd8ae4d60a386b5e86f7f3996",
+          "request_summary": "{\"model\": \"deepseek-flash\", \"message_roles\": [\"system\", \"user\"], \"returned_tool_call_ids\": []}",
+          "settled_at": "2026-10-25T09:15:30.941660+00:00"
+        },
+        {
+          "id": 2,
+          "request_id": "4ed42d1159d54e82a3c700b45cbf2d85",
+          "provider": "deepseek",
+          "created": "2026-10-25T09:15:30.960902+00:00",
+          "status": 200,
+          "category": "response_received",
+          "prompt": 1165,
+          "completion": 191,
+          "model": "deepseek-flash",
+          "phase": "settled",
+          "trace_id": "4effd0cdd8ae4d60a386b5e86f7f3996",
+          "request_summary": "{\"model\": \"deepseek-flash\", \"message_roles\": [\"system\", \"user\", \"assistant\", \"tool\"], \"returned_tool_call_ids\": [\"call_00_uSDOjLN9HUbvxfeE3HfP1420\"]}",
+          "settled_at": "2026-10-25T09:15:32.771810+00:00"
+        }
+      ],
+      "unsettled_ids": [],
+      "historical_unlinked": false
+    },
+    "bailian": {
+      "reserved_requests": 2,
+      "limit": 2,
+      "requests": [
+        {
+          "id": 1,
+          "request_id": "ed868516995a42479898a85ea76acc3e",
+          "provider": "bailian",
+          "created": "2026-10-25T09:15:32.900754+00:00",
+          "status": 200,
+          "category": "response_received",
+          "prompt": 677,
+          "completion": 96,
+          "model": "qwen-plus",
+          "phase": "settled",
+          "trace_id": "7f83f6a0165a46fd8791e74ff7f84558",
+          "request_summary": "{\"model\": \"qwen-plus\", \"message_roles\": [\"system\", \"user\"], \"returned_tool_call_ids\": []}",
+          "settled_at": "2026-10-25T09:15:36.439580+00:00"
+        },
+        {
+          "id": 2,
+          "request_id": "7b91bb68bd3c4ff0831b9ab2a173d4eb",
+          "provider": "bailian",
+          "created": "2026-10-25T09:15:36.450949+00:00",
+          "status": 200,
+          "category": "response_received",
+          "prompt": 1079,
+          "completion": 192,
+          "model": "qwen-plus",
+          "phase": "settled",
+          "trace_id": "7f83f6a0165a46fd8791e74ff7f84558",
+          "request_summary": "{\"model\": \"qwen-plus\", \"message_roles\": [\"system\", \"user\", \"assistant\", \"tool\"], \"returned_tool_call_ids\": [\"call_f3c6101b2ef44676afee02\"]}",
+          "settled_at": "2026-10-25T09:15:41.300720+00:00"
+        }
+      ],
+      "unsettled_ids": [],
+      "historical_unlinked": false
+    }
+  },
+  "unknown_new_requests": 0
+}

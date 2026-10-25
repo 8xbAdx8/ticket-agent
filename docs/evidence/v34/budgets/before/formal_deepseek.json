@@ -1,0 +1,53 @@
+{
+  "source": "artifacts/runtime/deepseek-budget/requests.db",
+  "source_file_sha256": "71fe87c135e5668e63f3c39a8f5be3df9ad1170531a21ddaf5fe9f6040d0f8cb",
+  "consistent_sqlite_backup": true,
+  "rows": [
+    {
+      "id": 1,
+      "created": "2026-10-15T16:12:26.534136+00:00",
+      "status": 200,
+      "category": "response_received",
+      "prompt": 8,
+      "completion": 1,
+      "model": "deepseek-flash"
+    },
+    {
+      "id": 2,
+      "created": "2026-10-15T16:12:29.454554+00:00",
+      "status": 200,
+      "category": "response_received",
+      "prompt": 1017,
+      "completion": 136,
+      "model": "deepseek-flash"
+    },
+    {
+      "id": 3,
+      "created": "2026-10-15T16:12:32.146493+00:00",
+      "status": 200,
+      "category": "response_received",
+      "prompt": 1428,
+      "completion": 201,
+      "model": "deepseek-flash"
+    },
+    {
+      "id": 4,
+      "created": "2026-10-15T16:12:34.389497+00:00",
+      "status": 200,
+      "category": "response_received",
+      "prompt": 1011,
+      "completion": 53,
+      "model": "deepseek-flash"
+    },
+    {
+      "id": 5,
+      "created": "2026-10-15T16:12:35.657586+00:00",
+      "status": 200,
+      "category": "response_received",
+      "prompt": 1332,
+      "completion": 172,
+      "model": "deepseek-flash"
+    }
+  ],
+  "read_only_copy": true
+}

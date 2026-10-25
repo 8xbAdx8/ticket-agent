@@ -1,0 +1,90 @@
+{
+  "shared": {
+    "reserved_requests": 3,
+    "limit": 3,
+    "requests": [
+      {
+        "id": 1,
+        "created": "2026-10-25T08:23:43.431675+00:00",
+        "status": null,
+        "category": "reserved_outcome_unknown",
+        "prompt": null,
+        "completion": null,
+        "model": null
+      },
+      {
+        "id": 2,
+        "created": "2026-10-25T08:23:45.515433+00:00",
+        "status": null,
+        "category": "reserved_outcome_unknown",
+        "prompt": null,
+        "completion": null,
+        "model": null
+      },
+      {
+        "id": 3,
+        "created": "2026-10-25T08:37:14.733968+00:00",
+        "status": null,
+        "category": "reserved_outcome_unknown",
+        "prompt": null,
+        "completion": null,
+        "model": null
+      }
+    ],
+    "unsettled_ids": [
+      "legacy-row:1",
+      "legacy-row:2",
+      "legacy-row:3"
+    ],
+    "historical_unlinked": true
+  },
+  "providers": {
+    "deepseek": {
+      "reserved_requests": 2,
+      "limit": 3,
+      "requests": [
+        {
+          "id": 1,
+          "created": "2026-10-25T08:23:43.431675+00:00",
+          "status": 200,
+          "category": "response_received",
+          "prompt": 764,
+          "completion": 113,
+          "model": "deepseek-flash"
+        },
+        {
+          "id": 2,
+          "created": "2026-10-25T08:23:45.521357+00:00",
+          "status": 200,
+          "category": "response_received",
+          "prompt": 1152,
+          "completion": 172,
+          "model": "deepseek-flash"
+        }
+      ],
+      "unsettled_ids": [],
+      "historical_unlinked": true
+    },
+    "bailian": {
+      "reserved_requests": 1,
+      "limit": 3,
+      "requests": [
+        {
+          "id": 1,
+          "created": "2026-10-25T08:37:14.749651+00:00",
+          "status": 200,
+          "category": "response_received",
+          "prompt": 671,
+          "completion": 96,
+          "model": "qwen-plus"
+        }
+      ],
+      "unsettled_ids": [],
+      "historical_unlinked": true
+    }
+  },
+  "provider_total": 3,
+  "identity_linkage_verified": false,
+  "historical_unknowns_released": 0,
+  "conclusion": "No shared request IDs; matching counts/timestamps do not prove per-request identity. Original ledgers unchanged."
+}
