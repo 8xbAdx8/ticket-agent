@@ -68,6 +68,15 @@ def validate_configuration():
 def guarded_client(settings, *, transport=None):
     import httpx
     address = endpoint()
+    if config.MODEL_NAME=="qwen3.8-flash" and transport is None:
+        # All application entry points share the already-authorized V3.5 ledger.
+        # A naked Agent()/old launcher must not spend from a historical ledger.
+        from target.embeddings import AUTH
+        shared=os.getenv("TICKET_INITIAL_LIVE_BUDGET","")
+        if (settings.ledger_path.resolve()!=(AUTH/"generation.db").resolve() or settings.max_requests!=4
+                or not shared or Path(shared).resolve()!=(AUTH/"generation-total.db").resolve()
+                or os.getenv("TICKET_TOTAL_REQUEST_LIMIT")!="4"):
+            raise BailianError("v35_fixed_generation_budget_required")
     from target.request_accounting import budget_for,reserve,settle,client_class
     budget = budget_for(settings,"bailian")
     for name in ("httpx", "httpcore", "openai"):

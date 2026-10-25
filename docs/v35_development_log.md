@@ -43,3 +43,10 @@
 - 网页模型选项改为Qwen3.8-Flash Live，临时选择qwen3.8-flash并使用V3.5既有4次账本；不以旧环境qwen-plus冒充。显式旧配置仍兼容旧CLI。DeepSeek入口保留旧预算，本轮无新增DeepSeek额度，不混双模型成绩。
 - 同步web/runtime.py、app.py、conversation.py、laboratory.py、integrations.py、comparison.py，修正过时“未接入”状态；服务名阿里云百炼仅作底层适配说明。原A的test_live_provider_ui.py仅更新标签字符串以符合本次改名，7项通过，未改B正式断言/原件。新增RAG页面测试1通过，页面载入/关键词操作Embedding请求0。
 - 启动器优先.venv-v35，仍兼容旧venv；离线启动清除新RAG网络环境残留。新依赖完整冻结为requirements-v35-lock.txt，pip check无冲突，原锁文件与旧环境保持不变。
+
+## 最终入口审查
+
+- bf03b3d完整离线389通过，原DeepSeek/V3/V2分别跳过13/82/177且无失败，8种RAG实验全部检出；回归新增真实请求0，保护3722文件未变。真实向量导出逐文本哈希对应5条API账和Chroma数值误差，未生成新向量。
+- 界面实际本地浏览确认15文档/15切片、版本ready、Embedding5与生成4，原始截图保留；嵌入式窄窗口侧栏遮挡左侧，未宣称完整响应式视觉通过，建议外部宽窗口。
+- 审查裸Agent/旧启动入口时发现新Qwen默认可能继承旧单账配置。为避免后续手动误用原账，新增真实qwen3.8-flash客户端构造前固定路径/4次上限校验；不满足则在建HTTP客户端前拒绝，离线transport明确隔离。旧显式qwen-plus保持兼容，当前真实账/历史账均不改。
+- scripts/live_providers.py增加显式--profile v35，旧默认profile不自动借用额度。新增预检反例验证别名/旧账不会建客户端或写账；后置修复无剩余生成额度，接下来只重跑离线回归，不追加Live。

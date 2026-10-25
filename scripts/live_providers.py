@@ -20,7 +20,7 @@ SCENARIOS={"text":"请用一句话说明你是模拟出行咨询助手，不要�
 def main(argv=None):
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--provider",choices=("deepseek","bailian"),required=True)
-    parser.add_argument("--profile",choices=("v33","v34"),default="v33")
+    parser.add_argument("--profile",choices=("v33","v34","v35"),default="v33")
     action=parser.add_mutually_exclusive_group()
     action.add_argument("--run",action="store_true",help="Explicitly send real model requests, within the initial total-three ceiling")
     action.add_argument("--serve",action="store_true",help="Start localhost; opening a page does not generate")
@@ -35,6 +35,7 @@ def main(argv=None):
     from target.api_config import bootstrap
     bootstrap(ROOT)
     if args.profile=="v34":os.environ["TICKET_API_VALIDATION_PROFILE"]="v34"
+    if args.profile=="v35":os.environ["TICKET_API_VALIDATION_PROFILE"]="v35"
     from target.live_providers import configuration,isolated_environment
     from target.deepseek_runtime import RequestBudget,Settings,safe_error
     from target.diagnostics import sanitize

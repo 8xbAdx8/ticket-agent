@@ -165,6 +165,17 @@ del StoreTests
 
 
 class CompatibilityTests(unittest.TestCase):
+    @unittest.skipUnless(HTTP,'httpx only; no outbound calls')
+    def test_real_qwen_entry_rejects_old_or_alias_ledger_before_client(self):
+        import config
+        from target import bailian_runtime
+        with tempfile.TemporaryDirectory() as folder,patch.dict(os.environ,{'TICKET_INITIAL_LIVE_BUDGET':''}),\
+             patch.multiple(config,MODEL_NAME='qwen3.8-flash',BASE_URL='https://dashscope.aliyuncs.com/compatible-mode/v1'),\
+             patch('httpx.Client') as client:
+            with self.assertRaisesRegex(Exception,'v35_fixed_generation_budget_required'):
+                bailian_runtime.guarded_client(replace(bailian_runtime.Settings(),ledger_path=Path(folder)/'old.db'))
+            client.assert_not_called()
+            self.assertFalse((Path(folder)/'old.db').exists())
     def test_refusal_can_describe_irrelevant_retrieved_sources(self):
         from target.rag_quality import answer_metrics
         case={'expected_doc_ids':[],'allowed_citations':[],'answer_points':[]}
