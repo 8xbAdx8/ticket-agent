@@ -22,3 +22,7 @@
 - 真实text-embedding-v4索引建立成功：2请求，15个切片，embedding_origin=real_api；索引版本242aa8199c4a8393ded29751。Chroma保存正文/向量/元数据、API回执和向量哈希，不用桩替代。生成模型请求仍0。
 - 固定cases/rag_quality_v35.json共30问题（26有答案、4无答案），预期doc_id/允许引用/要点先固定后运行；多轮问题显式带上轮用户上下文。八种RAG注入另外隔离执行，不能混同正常真实索引质量。
 - 新增target/rag_quality.py与scripts/rag_eval.py：Recall@3/MRR只统计有答案且执行成功的检索，拒答/引用/回答忠实度另算；全文语义无法证明则indeterminate，不用命中文档代替回答正确。下一步预算内批量真实向量化30问题，不重复向量化原文档。
+
+- 质量集与指标提交0563d4e后实际执行scripts/rag_eval.py --run --out artifacts/runtime/v35-qwen38-rag/authorization-20261026/retrieval-evaluation：真实Embedding新增3次，累计5/8。Vector在26有答案问题Recall@3=1、MRR=1；Keyword及Hybrid Recall@3=0.980769、MRR=0.923077。4条无答案问题误召回率Keyword/Hybrid为1、Vector为0.75，作为实际风险保留，不改阈值/答案追分。
+- 新增scripts/verify_v35_live.py固定一次性验收入口：最多2次query_tickets真实Agent、1次预取证据政策生成、1次无答案生成，总4；只用新V3.5双账，不开放其他工具。普通预检不生成，二次--run被attempt文件拒绝；HTTP错误停止后续生成，无自动重试。
+- 在线生成前原test_live_providers.py离线SDK15通过；补充默认新模型/显式旧模型、仅V3.5上限4及固定指标/未知忠实度测试，确保新模型不替换DeepSeek、不靠旧Qwen结果冒充新验证。

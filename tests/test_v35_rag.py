@@ -165,6 +165,33 @@ del StoreTests
 
 
 class CompatibilityTests(unittest.TestCase):
+    def test_qwen_default_and_explicit_legacy_model_are_distinct(self):
+        from target.api_config import model_config
+        with patch.dict(os.environ,{},clear=False):
+            os.environ.pop('DASHSCOPE_MODEL',None)
+            self.assertEqual(model_config('bailian')['model'],'qwen3.8-flash')
+            os.environ['DASHSCOPE_MODEL']='qwen-plus'
+            self.assertEqual(model_config('bailian')['model'],'qwen-plus')
+
+    def test_v35_four_request_cap_does_not_change_older_profiles(self):
+        from target.bailian_runtime import Settings
+        with patch.dict(os.environ,{'BAILIAN_MAX_REQUESTS':'4','TICKET_API_VALIDATION_PROFILE':'v35'}):
+            self.assertEqual(Settings.from_env().max_requests,4)
+            os.environ['TICKET_API_VALIDATION_PROFILE']='v34'
+            with self.assertRaisesRegex(Exception,'invalid_safety_limits'):Settings.from_env()
+
+    def test_fixed_dataset_metrics_and_unknown_faithfulness(self):
+        from target.rag_store import ROOT
+        from target.rag_quality import retrieval_metrics,answer_metrics,query_text
+        cases=json.loads((ROOT/'cases/rag_quality_v35.json').read_text(encoding='utf-8'))['cases']
+        self.assertEqual(len(cases),30)
+        c=cases[0];hits=[{'doc_id':'P11','content':'模拟锁座有效期15分钟，过期释放库存'}]
+        metric=retrieval_metrics([c],{c['id']:{'hits':hits}},3)
+        self.assertEqual(metric['recall_at_k'],1);self.assertEqual(metric['mrr'],1)
+        a=answer_metrics(c,'15分钟 P99',hits)
+        self.assertEqual(a['business_status'],'failed');self.assertEqual(a['answer_faithfulness'],'indeterminate')
+        self.assertIn('锁座',query_text(cases[28]))
+
     def test_chunk_ids_metadata_and_keyword_are_deterministic(self):
         from target.rag_store import ROOT
         chunks=documents(ROOT/'data/policies.md');self.assertEqual(len(chunks),15)
