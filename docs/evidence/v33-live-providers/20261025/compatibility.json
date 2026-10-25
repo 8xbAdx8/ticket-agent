@@ -1,0 +1,35 @@
+{
+  "scope": "A offline compatibility review; B formal evaluation not rerun",
+  "recovery_sha": "be3efcf934b292db5f51cadf3b48a9074a5f3b69",
+  "tested_source_head": "a405fb6e7195333bb6f5340af68a4077b0292f3f",
+  "original_snapshot_files": 831,
+  "intentional_source_changes": [
+    "target/agent.py",
+    "target/deepseek_runtime.py",
+    "target/langchain_agent.py"
+  ],
+  "unexpected_original_changes": [],
+  "original_non_source_files_unchanged": 828,
+  "unchanged_contract_business_mutation_dependencies": true,
+  "formal_deepseek_budget": "5/5",
+  "formal_deepseek_ledger_sha256": "71fe87c135e5668e63f3c39a8f5be3df9ad1170531a21ddaf5fe9f6040d0f8cb",
+  "versions": {
+    "streamlit": "1.65.0",
+    "langchain": "1.4.5",
+    "langchain-openai": "1.7.1",
+    "langchain-deepseek": "1.1.1",
+    "langgraph": "1.2.15",
+    "langsmith": "0.14.8",
+    "httpx": "0.28.1"
+  },
+  "public_contract": "ten top-level / five tool-call fields preserved; existing Live typed-error behavior retained",
+  "real_generation_requests": {
+    "deepseek": 0,
+    "bailian": 0
+  },
+  "real_langsmith_uploads": 0,
+  "new_model_cost": 0,
+  "cost_basis": "No model generation requests",
+  "actual_live_tokens": null,
+  "historical_live_results": "preserved, not counted as current validation"
+}

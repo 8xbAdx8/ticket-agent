@@ -1,0 +1,13 @@
+test_budget_inspection_is_read_only (test_launcher.LauncherTests.test_budget_inspection_is_read_only) ... ok
+test_busy_port_is_not_killed_or_reused (test_launcher.LauncherTests.test_busy_port_is_not_killed_or_reused) ... ok
+test_existing_database_is_not_seeded_or_reset (test_launcher.LauncherTests.test_existing_database_is_not_seeded_or_reset) ... ok
+test_fake_key_preflight_never_connects_or_creates_files (test_launcher.LauncherTests.test_fake_key_preflight_never_connects_or_creates_files) ... ok
+test_live_uses_own_ledger_and_read_only_without_changing_source (test_launcher.LauncherTests.test_live_uses_own_ledger_and_read_only_without_changing_source) ... ok
+test_manual_default_and_mode_data_isolation (test_launcher.LauncherTests.test_manual_default_and_mode_data_isolation) ... ok
+test_missing_key_preflight_stops_without_prompt (test_launcher.LauncherTests.test_missing_key_preflight_stops_without_prompt) ... ok
+test_offline_rejects_inherited_live_and_mutation_settings (test_launcher.LauncherTests.test_offline_rejects_inherited_live_and_mutation_settings) ... ok
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.018s
+
+OK

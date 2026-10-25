@@ -1,0 +1,32 @@
+{
+  "scope": "Actual localhost browser, credentials removed, non-loopback Python network blocked",
+  "reviewed": true,
+  "source_commit": "a405fb6e7195333bb6f5340af68a4077b0292f3f",
+  "model_api_requests": 0,
+  "langsmith_requests": 0,
+  "screenshots": [
+    {
+      "file": "screenshots/bailian-missing-key-and-consent.jpg",
+      "width": 1600,
+      "height": 1000,
+      "sha256": "a648368dbd6799709fae01b966e64dd1662a4d1294f8d392b7dcff5853c4940b"
+    },
+    {
+      "file": "screenshots/integrations-offline.jpg",
+      "width": 1600,
+      "height": 1000,
+      "sha256": "0112e1453110856db3598a3f0ba3536a18e033d30995e90c5d8e9f7b487212ec"
+    }
+  ],
+  "checks": [
+    "four selectable providers",
+    "Bailian missing configuration disables send",
+    "LangSmith upload scope and unconfigured state visible",
+    "integration implemented versus unverified clearly separated"
+  ],
+  "not_verified": [
+    "actual Provider/remote success",
+    "new per-model quality scores",
+    "remote account access"
+  ]
+}

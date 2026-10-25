@@ -1,0 +1,40 @@
+{
+  "status": "passed",
+  "timestamp": "2026-10-25T08:08:09.327505+00:00",
+  "scanned_changed_text_files": 78,
+  "environment_credentials_compared": 1,
+  "findings": [],
+  "tracked_secret_files": [],
+  "key_presence_in_current_process": {
+    "DEEPSEEK_API_KEY": true,
+    "DASHSCOPE_API_KEY": false,
+    "LANGCHAIN_API_KEY": false,
+    "LANGSMITH_API_KEY": false
+  },
+  "initial_budget_states": {
+    "initial-total.db": {
+      "exists": false,
+      "reserved": 0,
+      "limit": 3
+    },
+    "deepseek/requests.db": {
+      "exists": false,
+      "reserved": 0,
+      "limit": 3
+    },
+    "bailian/requests.db": {
+      "exists": false,
+      "reserved": 0,
+      "limit": 3
+    }
+  },
+  "formal_budget_unchanged": true,
+  "real_model_requests": 0,
+  "langsmith_http_requests": 0,
+  "limitations": [
+    "Pattern/exact-value scan is not a full security audit",
+    "Free text PII still requires human preview",
+    "No credential validity, balance, account permission or remote connectivity verified"
+  ],
+  "final_scan_at": "2026-10-25T08:11:50.740735+00:00"
+}

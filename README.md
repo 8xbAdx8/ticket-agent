@@ -1,14 +1,29 @@
 # Ticket Agent
 
-**一键启动：** 双击根目录 [启动_离线模式.cmd](启动_离线模式.cmd)（完整模拟业务，无需Key）或 [启动_在线模式.cmd](启动_在线模式.cmd)（DeepSeek真实模型，两个只读工具）。会自动打开浏览器；缺Key时可在本地终端隐藏输入，按Ctrl+C停止。在线发送会计费，默认沿用已授权的手动不限累计次数配置、使用独立账本；原正式5/5账本不变。详见 [启动说明](启动说明.md)。
+**一键启动：** 双击根目录 [启动_离线模式.cmd](启动_离线模式.cmd)（完整模拟业务，无需Key）或 [启动_在线模式.cmd](启动_在线模式.cmd)（DeepSeek，两个只读工具）。在线发送会计费；新版模型选择器初次验证受两个 Provider 合计 **3 次生成请求**限制，原正式5/5与旧手动账本不变。百炼和可选 LangSmith 使用下列新入口。详见 [启动说明](启动说明.md)。
 
-## 2026-10-25：V3.3 双工作空间与质量可视化（当前版本）
+## 2026-10-25：V3.3 多模型与可选 LangSmith（当前增量）
+
+已实际实现百炼 ChatOpenAI 兼容适配器、四模型选择、隔离会话/预算、真实运行元数据和显式过滤 LangSmith POST/GET 核验。原 Agent/工具契约、Mock 和八变异保留。当前 **代码与离线测试通过，本轮真实 API/远端上传均 0**；不能把配置存在或 SDK 桩当 Live 成功。
+
+```powershell
+# 默认仅本地预检，无真实请求；百炼须配置 DASHSCOPE_API_KEY/BASE_URL/MODEL
+.\.venv-deepseek\Scripts\python.exe scripts/live_providers.py --provider bailian
+# 配置完整后启动 localhost，仍不会自动生成
+.\.venv-deepseek\Scripts\python.exe scripts/live_providers.py --provider bailian --serve --port 8503
+```
+
+真实验证必须由用户显式执行 --run，初次两 Provider 合计最多三次，一轮工具闭环通常需两次；不自动增加预算、重试或回退 Mock。LangSmith 默认关闭，还需每次范围确认；原本地 Trace 始终保留。
+
+[A 多模型报告](docs/handoff/v3/A_V3.3_真实多模型接入报告.md) · [B 配置与测试手册](docs/handoff/v3/B_V3.3_多模型测试手册.md) · [C 演示说明](docs/handoff/v3/C_V3.3_多模型演示说明.md) · [实施架构](docs/architecture/V3.3_Provider与LangSmith架构.md)。
+
+## 2026-10-25：V3.3 双工作空间与质量可视化（此前交付）
 
 默认 `web/app.py` 已升级：出行助手 + 测试总览、实验室、Trace 分析、质量分析、模型对比、集成中心。支持深浅主题、实际工具卡片、常见模拟操作确认、独立用户/实验数据库、八变异、原始/变异对照、JSON 搜索与脱敏导出。旧界面作为 `web/legacy_app.py` 保留兼容。
 
 图表分别展示 B 的 V3.2 独立 Mock 结果、A 历史离线自测与当前隔离实验，不把 101、100、69、45、10 相加。T04 漏检、R01 不适用和 F15/M12 非 C5 命中继续保留；没有虚构历史趋势、第二个真实模型成绩或精确阶段耗时。
 
-本轮不发送模型 API / LangSmith 请求。新增 UI 自测、三环境回归、原八变异证据与启动预检见 [离线验证](docs/evidence/v33/20261025/report.json)；实际截图见 [视觉验收记录](docs/evidence/v33/20261025/视觉验收记录.md)。新版 Live 尚未联网回归，默认仍只开放查票/政策两个工具。LangGraph 已有 create_agent/InMemorySaver 基础；自定义图、持久化恢复、LangSmith 上报和百炼尚未集成。
+此前 UI 交付未发送模型 API / LangSmith 请求。其新增自测、三环境回归与启动预检见 [原离线验证](docs/evidence/v33/20261025/report.json)；截图见 [原视觉验收记录](docs/evidence/v33/20261025/视觉验收记录.md)。LangGraph 自定义图、持久化恢复尚未实现；百炼与 LangSmith 后续实际接入状态以上方当前增量报告为准。
 
 [A 开发报告](docs/handoff/v3/A_V3.3_UI重构开发报告.md) · [B 前端验收手册](docs/handoff/v3/B_V3.3_前端与数据展示验收手册.md) · [C 演示说明](docs/handoff/v3/C_V3.3_演示说明.md) · [未来集成设计](docs/architecture/V3.3_未来框架与模型集成设计.md)。
 
