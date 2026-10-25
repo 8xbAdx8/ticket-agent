@@ -27,6 +27,11 @@ def head():
     return subprocess.run(['git','rev-parse','HEAD'],cwd=ROOT,capture_output=True,text=True,check=True).stdout.strip()
 
 
+def display(value):
+    from target.diagnostics import sanitize
+    print(json.dumps(sanitize(value),ensure_ascii=False))
+
+
 def gate(path):
     report=json.loads(Path(path).read_text(encoding='utf-8'))
     if (report.get('status')!='passed' or report.get('real_api_requests')!=0 or report.get('blocked_network_attempts')!=0
@@ -168,12 +173,12 @@ def main():
     if a.run_models:
         results={provider:run_provider(provider,state['providers'][provider]) for provider in ('deepseek','bailian')}
         write(AUTH/'models-result.json',results)
-        print(json.dumps({k:{n:r.get(n) for n in ('status','new_requests','connection_verified','tool_calling_verified','business_verified','tokens','error')} for k,r in results.items()},ensure_ascii=False))
-    elif a.prepare_langsmith:print(json.dumps(synthetic_preview(),ensure_ascii=False))
-    elif a.upload_langsmith:print(json.dumps(upload(a.preview_sha),ensure_ascii=False))
+        display({k:{n:r.get(n) for n in ('status','new_requests','connection_verified','tool_calling_verified','business_verified','tokens','error')} for k,r in results.items()})
+    elif a.prepare_langsmith:display(synthetic_preview())
+    elif a.upload_langsmith:display(upload(a.preview_sha))
     else:
         write(AUTH/'historical-reconciliation.json',old_reconciliation())
-        print(json.dumps(state,ensure_ascii=False))
+        display(state)
 
 
 if __name__=='__main__':main()

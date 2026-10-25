@@ -86,6 +86,11 @@ class AccountingTests(unittest.TestCase):
 
 
 class ConfigTests(unittest.TestCase):
+    def test_preflight_redacts_key_accidentally_used_as_model(self):
+        from target.api_config import status
+        with patch.dict(os.environ,{'DEEPSEEK_API_KEY':'private-fixture-model','DEEPSEEK_MODEL':'private-fixture-model'}):
+            self.assertNotIn('private-fixture-model',json.dumps(status('deepseek')))
+
     def test_live_gate_refuses_unverified_or_unmatched_offline_evidence(self):
         from scripts.verify_v34_live import gate
         with tempfile.TemporaryDirectory() as tmp:

@@ -73,5 +73,6 @@ def safe_endpoint(value):
 def status(provider):
     row=model_config(provider,active=os.getenv("AGENT_PROVIDER")==provider)
     row["base_url"]=safe_endpoint(row["base_url"])
-    return {**row,"state":"configured_unverified" if row["configured"] else "not_configured",
-            "connection_verified":None,"tool_calling_verified":None,"business_verified":None}
+    from target.diagnostics import redact_credentials
+    return redact_credentials({**row,"state":"configured_unverified" if row["configured"] else "not_configured",
+            "connection_verified":None,"tool_calling_verified":None,"business_verified":None})

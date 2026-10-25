@@ -162,7 +162,7 @@ def client_class():
                 if entry:
                     from target.deepseek_runtime import safe_error
                     budget,identity,uid,provider=entry; category=safe_error(exc)["category"]
-                    if not request.extensions.get("ticket_response_settled"):
+                    if not request.extensions.get("ticket_response_settled") and isinstance(budget,CoordinatedBudget):
                         budget.record(identity,category=category+"_outcome_unknown")
                     emit({"event":"http_error","request_id":uid,"provider":provider,"error":safe_error(exc)})
                 raise
