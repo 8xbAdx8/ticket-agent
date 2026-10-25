@@ -33,3 +33,10 @@
 - LangSmith 导出前显示过滤后的实际内容和范围，独立按钮才上传，local/remote 状态分别保存；协议使用 REST POST + GET，无后台批量/重试。导入/换页/切模型不联网。
 - 原 V3.3 34 项自测重新通过（`artifacts/runtime/v33-providers-ui-first.txt`）；新增 `tests/test_live_provider_ui.py` 的 6 项模型选择/缺 Key/隔离/重绘/CLI 预检测试通过（`artifacts/runtime/v33-providers-new-ui-first.txt`）。命令均 `python -m unittest discover -s tests -p 对应文件 -v`；API 0、LangSmith 上报 0。
 - 同步收紧百炼官方域名范围（不允许任意用户 OSS 域名）、分类 400 余额/模型错误；Qwen 请求显式关闭思考模式，其他模型的协议支持仍须真实验证。记录真实请求起始时间，并允许失败时导出已保存的本地 sidecar，仍不改公共契约。
+
+## 2026-10-25 联调边界修复
+
+- 前端/命令模块提交 `3a94ec0`。发现旧离线批次只排除 DeepSeek，新增百炼后会混入；改 `web/evidence.py` 排除全部 `_live`，新增断言验证两个真实 Provider 均不计入离线成绩。
+- `web/trace_view.py` 增加按唯一 Trace ID 关联当前 Provider 元数据及 LangSmith 回执，不改变旧 JSON。百炼 400 的 Arrearage/模型/Key 代码进一步分类，拒绝非模型用户域名。
+- `target/deepseek_runtime.safe_text` 复用既有通用凭据脱敏，涵盖新增 Provider/LangSmith 与已加载配置中的凭据，正常业务参数不改。
+- 新增测试后，命令 `python -m unittest discover -s tests -p test_live_provider*.py -v` 22/22；`python -m unittest discover -s tests -p test_observability.py -v` 12/12。日志 `artifacts/runtime/v33-providers-integration-final.txt`、`v33-providers-observability-final.txt`。合计新增 34 项 A 自测，不是 B 正式成绩。

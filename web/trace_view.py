@@ -143,3 +143,14 @@ def trace_page(runtime_dirs):
     i=st.selectbox("选择诊断记录（按唯一 Trace ID）",range(len(entries)),index=len(entries)-1,format_func=lambda i:str(i+1)+" · "+entries[i]["record"].get("test_case_label",entries[i]["record"].get("scenario",entries[i]["record"].get("public_trace",{}).get("user_msg","记录")))[:42]+" · "+entries[i]["record"].get("trace_id","missing")[:8])
     st.caption("来源："+str(entries[i]["source"].relative_to(__import__('config').BASE_DIR))+" · A 自测，不替代 B 正式测试。")
     show_record(entries[i]["record"],key="audit_replay")
+    source_dir=entries[i]["source"].parent
+    trace_id=entries[i]["record"].get("trace_id")
+    for filename,title,id_field in (("provider_runs.jsonl","当前 Live 模型元数据（独立旁证）","trace_id"),
+                                    ("langsmith_exports.jsonl","LangSmith 独立上报回执","local_trace_id")):
+        path=source_dir/filename
+        if path.is_file():
+            records,_=read_jsonl(path)
+            matched=[r for r in records if r.get(id_field)==trace_id]
+            if matched:
+                with st.expander(title):
+                    safe_json(matched,"live_sidecar_"+filename)

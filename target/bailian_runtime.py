@@ -101,6 +101,7 @@ def guarded_client(settings, *, transport=None):
         code = str((body.get("error") or {}).get("code", "")).lower() if isinstance(body.get("error"),dict) else ""
         if any(s in code for s in ("arrearage", "insufficient", "balance")): category = "insufficient_balance"
         elif any(s in code for s in ("modelnotfound","invalidmodel","invalidparameter.model")): category = "model_not_found"
+        elif "invalidapikey" in code: category = "authentication_failed"
         budget.record(identity,status=response.status_code,category="response_received" if response.is_success else category,
                       usage=body.get("usage"),model=body.get("model"))
         if not response.is_success:

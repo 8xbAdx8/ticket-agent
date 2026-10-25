@@ -105,6 +105,18 @@ class ObservabilityTests(unittest.TestCase):
         result=export_run(self.record,consent=True,transport=httpx.MockTransport(self.forbidden))
         self.assertEqual(result["remote_status"],"local_trace_required")
 
+    def test_failed_business_can_export_saved_sidecar_without_claiming_public_trace(self):
+        self.record.update(local_trace_saved=False,local_sidecar_saved=True,error={"category":"tool_execution_failed"})
+        posted={}
+        def respond(request):
+            if request.method=="POST": posted.update(json.loads(request.content)); return httpx.Response(201,json={})
+            return httpx.Response(200,json=posted)
+        receipt=export_run(self.record,consent=True,transport=httpx.MockTransport(respond))
+        self.assertTrue(receipt["remote_verified"])
+        self.assertFalse(receipt["local_trace_saved"])
+        self.assertTrue(receipt["local_sidecar_saved"])
+
+
     def test_endpoint_and_alias_configuration_errors_never_send(self):
         for value in ("http://api.smith.langchain.com","https://secret@api.smith.langchain.com","https://api.smith.langchain.com?secret=x"):
             with patch.dict(os.environ,{"LANGCHAIN_ENDPOINT":value}):

@@ -173,7 +173,7 @@ def audit_batch(runtime_dirs=(),historical=False):
     entries=audit_catalog(() if historical else runtime_dirs)
     entries=[e for e in entries if e["kind"]==("历史离线自测" if historical else "当前工作空间")]
     if not historical:
-        entries=[e for e in entries if e["record"].get("provider")!="deepseek_live"]
+        entries=[e for e in entries if not str(e["record"].get("provider","")).endswith("_live")]
     rows=[]
     for e in entries:
         r=e["record"];j=r.get("judgement",{})

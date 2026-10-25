@@ -83,6 +83,7 @@ class LiveProviderTests(unittest.TestCase):
     def test_endpoint_model_and_independent_ledger_fail_closed(self):
         for address in ("http://dashscope.aliyuncs.com/compatible-mode/v1","https://dashscope.aliyuncs.com.evil.invalid/compatible-mode/v1",
                         "https://secret@dashscope.aliyuncs.com/compatible-mode/v1","https://coding.dashscope.aliyuncs.com/v1",
+                        "https://attacker.oss-cn-beijing.aliyuncs.com/compatible-mode/v1",
                         "https://dashscope.aliyuncs.com/compatible-mode/v1?key=x"):
             with patch.object(config,"BASE_URL",address),self.assertRaises(DeepSeekError): bailian.validate_configuration()
         with patch.object(config,"MODEL_NAME",""),self.assertRaisesRegex(DeepSeekError,"missing_DASHSCOPE_MODEL"): bailian.validate_configuration()
@@ -137,6 +138,12 @@ class LiveProviderTests(unittest.TestCase):
                 before=len(self.payloads); agent=self.agent([exc])
                 with self.assertRaisesRegex(DeepSeekError,name): agent.chat(name,"查票")
                 self.assertEqual(len(self.payloads),before+1)
+
+    def test_bailian_400_error_codes_refine_safe_classification(self):
+        for code,category in (("Arrearage","insufficient_balance"),("InvalidParameter.Model","model_not_found"),("InvalidApiKey","authentication_failed")):
+            with patch.dict(os.environ,{"BAILIAN_BUDGET_PATH":str(self.root/(code+".db"))}):
+                agent=self.agent([(400,{"error":{"code":code,"message":"not retained"}})])
+                with self.assertRaisesRegex(DeepSeekError,category): agent.chat(code,"你好")
 
     def test_unknown_usage_is_explicit_error_and_null_evidence(self):
         agent=self.agent([self.response({"content":"普通文本"},usage=False)])

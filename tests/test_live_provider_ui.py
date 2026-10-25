@@ -80,6 +80,14 @@ class LiveProviderUITests(unittest.TestCase):
 
 
 class ProviderCommandTests(unittest.TestCase):
+    def test_offline_dashboard_excludes_both_live_providers(self):
+        from web.evidence import audit_batch
+        entries=[{"kind":"当前工作空间","record":{"provider":p,"trace_id":p,"judgement":{"test_verdict":"pass"}}}
+                 for p in ("legacy_mock","langchain_mock","deepseek_live","bailian_live")]
+        with patch("web.evidence.audit_catalog",return_value=entries):
+            report=audit_batch()
+        self.assertEqual([r["id"] for r in report["rows"]],["legacy_mock","langchain_mock"])
+
     def test_cli_preflight_missing_and_fake_key_is_offline(self):
         root=config.BASE_DIR/"artifacts/runtime"
         root.mkdir(parents=True,exist_ok=True)
