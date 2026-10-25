@@ -46,8 +46,12 @@ def scoped(values, environment=None):
                     os.environ[name] = value
 
 
-def live_ready():
-    return LIVE_AVAILABLE and bool(os.getenv("DEEPSEEK_API_KEY", "").strip()) and os.getenv("TICKET_WEB_OFFLINE_ONLY") != "1"
+def live_ready(provider=None):
+    if os.getenv("TICKET_WEB_OFFLINE_ONLY") == "1": return False
+    if provider is None:
+        return LIVE_AVAILABLE and bool(os.getenv("DEEPSEEK_API_KEY", "").strip())
+    from target.live_providers import configuration
+    return bool(configuration(provider)["configured"])
 
 
 @dataclass
@@ -55,6 +59,9 @@ class Conversation:
     mode: str
     engine: str = "legacy"
     live: bool = False
+    live_provider: str = "deepseek"
+    case_id: str | None = None
+    initial_budget: bool = False
     mutations: dict = field(default_factory=dict)
     root: Path | None = None
     sid: str = field(default_factory=lambda: "web-"+uuid.uuid4().hex[:12])
@@ -64,6 +71,7 @@ class Conversation:
     agent: object = None
     error: dict | None = None
     receipts: dict = field(default_factory=dict)
+    remote_receipts: list = field(default_factory=list)
 
     def __post_init__(self):
         if self.mode not in ("user", "lab"):
@@ -72,6 +80,8 @@ class Conversation:
             raise ValueError("普通用户模式不能注入变异")
         if self.live and self.engine != "langchain":
             raise ValueError("Live requires LangChain")
+        if self.live and self.live_provider not in ("deepseek","bailian"):
+            raise ValueError("Unknown Live provider")
         self.root = Path(self.root) if self.root else ROOT/"artifacts/runtime/v33"/self.mode/self.sid
         base=(ROOT/"artifacts/runtime").resolve()
         if not self.root.resolve().is_relative_to(base) or self.root.resolve()==base:
@@ -82,15 +92,19 @@ class Conversation:
         return self.root/"traces"
 
     def _values(self):
-        return dict(DB_PATH=self.root/"tickets.db", TRACE_DIR=self.trace_dir, PROVIDER="deepseek" if self.live else "mock",
+        from target.live_providers import configuration
+        cfg=configuration(self.live_provider) if self.live else {}
+        model=LIVE_MODEL if self.live_provider=="deepseek" and LIVE_AVAILABLE else cfg.get("model")
+        address=LIVE_URL if self.live_provider=="deepseek" and LIVE_AVAILABLE else cfg.get("base_url")
+        return dict(DB_PATH=self.root/"tickets.db", TRACE_DIR=self.trace_dir, PROVIDER=self.live_provider if self.live else "mock",
                     ENGINE=self.engine, LC_TOOLSET="read_only" if self.live else "all", USE_HTTP_MOCK=False, USE_VECTOR_RAG=False,
-                    MODEL_NAME=LIVE_MODEL if self.live else "langchain-mock" if self.engine=="langchain" else "mock-offline",
-                    BASE_URL=LIVE_URL if self.live else "https://api.deepseek.com", API_KEY=LIVE_KEY if self.live else "")
+                    MODEL_NAME=model if self.live else "langchain-mock" if self.engine=="langchain" else "mock-offline",
+                    BASE_URL=address if self.live else "https://api.deepseek.com", API_KEY=os.getenv(cfg["key_env"],"") if self.live else "")
 
     def send(self, message, request_id):
         if request_id in self.receipts:
             return self.receipts[request_id]
-        if self.live and not live_ready():
+        if self.live and not live_ready(self.live_provider):
             raise ValueError("Live 未配置或本轮已禁止联网；没有发送请求")
         if not isinstance(message, str) or not message.strip():
             raise ValueError("消息不能为空")
@@ -102,6 +116,12 @@ class Conversation:
         if self.live:
             # Preserve the launcher's real budget path and limits. Never enable live writes.
             env["DEEPSEEK_LIVE_TEST_PROFILE"]="read_only"
+            # New provider selector gets separate ledgers and a shared initial-three ceiling.
+            # Keep existing explicit DeepSeek launcher settings for compatibility tests/entry.
+            if self.initial_budget or self.live_provider=="bailian":
+                from target.live_providers import isolated_environment
+                env.update(isolated_environment(self.live_provider,self.root))
+            env["TICKET_CASE_ID"]=self.case_id or "interactive"
         elif self.engine=="langchain" and any(self.mutations.get(k) for k in ("skip_lock","infinite_loop")):
             # Existing sandbox guard, only for the offline Mock test environment.
             env.update(DEEPSEEK_LIVE_TEST_PROFILE="full_sandbox", DEEPSEEK_SANDBOX_DIR=str(self.root),
@@ -137,6 +157,14 @@ class Conversation:
                 if self.agent and self.agent.last_audit_report:
                     self.audits.append(self.agent.last_audit_report)
                 raise
+
+    def export_last(self, *, consent=False, transport=None):
+        if not self.agent or not self.agent.langchain_engine or not self.agent.langchain_engine.last_live_run:
+            raise ValueError("No saved Live run available")
+        from target.observability import export_run
+        receipt=export_run(self.agent.langchain_engine.last_live_run,consent=consent,trace_dir=self.trace_dir,transport=transport)
+        self.remote_receipts.append(receipt)
+        return receipt
 
     def concurrency(self, scenario="same_lock_two"):
         if self.mode != "lab":

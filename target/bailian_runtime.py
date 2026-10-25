@@ -2,6 +2,7 @@
 import json
 import logging
 import os
+import re
 from dataclasses import dataclass
 from pathlib import Path
 from urllib.parse import urlsplit
@@ -42,7 +43,8 @@ def endpoint():
     url = urlsplit(config.BASE_URL)
     # Accept official regional/workspace HTTPS endpoints, not arbitrary hosts or coding-plan endpoints.
     host = url.hostname or ""
-    valid = (host == "dashscope.aliyuncs.com" or host.endswith(".aliyuncs.com"))
+    valid = host in {"dashscope.aliyuncs.com","dashscope-intl.aliyuncs.com","dashscope-us.aliyuncs.com","cn-hongkong.dashscope.aliyuncs.com"} or bool(
+        re.fullmatch(r"[a-z0-9-]+\.[a-z]{2}-[a-z0-9-]+\.maas\.aliyuncs\.com",host))
     if (url.scheme != "https" or not valid or url.username or url.password or url.port not in (None, 443)
             or url.query or url.fragment or url.path.rstrip("/") != "/compatible-mode/v1"
             or any(x in host for x in ("coding.", "token-plan."))):
@@ -98,6 +100,7 @@ def guarded_client(settings, *, transport=None):
         # Some accounts report Arrearage as HTTP 400, not 402. Inspect only the code, never save body.
         code = str((body.get("error") or {}).get("code", "")).lower() if isinstance(body.get("error"),dict) else ""
         if any(s in code for s in ("arrearage", "insufficient", "balance")): category = "insufficient_balance"
+        elif any(s in code for s in ("modelnotfound","invalidmodel","invalidparameter.model")): category = "model_not_found"
         budget.record(identity,status=response.status_code,category="response_received" if response.is_success else category,
                       usage=body.get("usage"),model=body.get("model"))
         if not response.is_success:
@@ -113,4 +116,5 @@ def make_model(settings=None, *, transport=None):
     from langchain_openai import ChatOpenAI
     return ChatOpenAI(model=config.MODEL_NAME, api_key=os.environ["DASHSCOPE_API_KEY"].strip(),
         base_url=config.BASE_URL, timeout=settings.timeout, max_retries=0, max_tokens=settings.max_output_tokens,
-        streaming=False, use_responses_api=False, http_client=guarded_client(settings,transport=transport))
+        streaming=False, use_responses_api=False, http_client=guarded_client(settings,transport=transport),
+        extra_body={"enable_thinking":False} if config.MODEL_NAME.lower().startswith("qwen") else None)

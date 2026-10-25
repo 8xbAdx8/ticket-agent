@@ -24,3 +24,12 @@
 - 远端回执与公共 Agent/本地审计分离，POST 接受不等于已验证，只有 GET 内容/ID/摘要匹配才 verified；失败不改变原模型结果。不发送后台请求或自动重试。
 - 命令 `.venv-deepseek/Scripts/python.exe -m unittest discover -s tests -p test_observability.py -v`，11/11 通过，证据 `artifacts/runtime/v33-providers-observability-first.txt`。全部使用 MockTransport，真实 LangSmith 上报 0，不标远端验证成功。
 - B/C 影响：可选新导出接口，不变更十字段或正式判定；用户未显式配置/确认时仍完整本地运行。
+
+## 2026-10-25 命令入口与前端接线
+
+- LangSmith 模块提交 `6ec4642`。新增 `scripts/live_providers.py`：默认只预检，`--serve` 只启动 localhost，必须显式 `--run` 才生成。初次两个 Provider 合计最多 3 次；一次工具闭环通常占 2 次。没有执行任何 `--run`。
+- `web/app.py`、`web/runtime.py`、`web/conversation.py`、`web/laboratory.py`：四模型选择，新 Provider 新建会话/库；新 Live UI 使用独立账本和共用初次三次上限；测试 case ID 入独立旁证。已有启动脚本不修改。
+- `web/integrations.py` 和 `web/comparison.py`：显示百炼已实现/真实未验证；LangSmith 的未配置、关闭、已配置未验证和实际回执分别呈现；可查看当前两 Provider 的独立原始记录，未生成成绩排名。
+- LangSmith 导出前显示过滤后的实际内容和范围，独立按钮才上传，local/remote 状态分别保存；协议使用 REST POST + GET，无后台批量/重试。导入/换页/切模型不联网。
+- 原 V3.3 34 项自测重新通过（`artifacts/runtime/v33-providers-ui-first.txt`）；新增 `tests/test_live_provider_ui.py` 的 6 项模型选择/缺 Key/隔离/重绘/CLI 预检测试通过（`artifacts/runtime/v33-providers-new-ui-first.txt`）。命令均 `python -m unittest discover -s tests -p 对应文件 -v`；API 0、LangSmith 上报 0。
+- 同步收紧百炼官方域名范围（不允许任意用户 OSS 域名）、分类 400 余额/模型错误；Qwen 请求显式关闭思考模式，其他模型的协议支持仍须真实验证。记录真实请求起始时间，并允许失败时导出已保存的本地 sidecar，仍不改公共契约。

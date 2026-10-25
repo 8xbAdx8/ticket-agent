@@ -38,16 +38,26 @@ def execute(session, message, request_id):
 
 def user_page():
     sessions=st.session_state.setdefault("user_sessions",[])
+    def new_session():
+        return Conversation("user",engine=st.session_state["default_engine"],live=st.session_state["default_live"],
+                            live_provider=st.session_state.get("default_provider","deepseek"),initial_budget=True)
+    signature=(st.session_state["default_engine"],st.session_state["default_live"],st.session_state.get("default_provider","deepseek"))
     if not sessions:
-        sessions.append(Conversation("user",engine=st.session_state["default_engine"],live=st.session_state["default_live"]))
+        sessions.append(new_session())
+        st.session_state["user_provider_signature"]=signature
+    elif st.session_state.get("user_provider_signature")!=signature:
+        sessions.append(new_session())
+        st.session_state["user_session_index"]=len(sessions)-1
+        st.session_state["user_provider_signature"]=signature
     with st.sidebar:
         if st.button("新建会话",width="stretch"):
-            sessions.append(Conversation("user",engine=st.session_state["default_engine"],live=st.session_state["default_live"]))
+            sessions.append(new_session())
             st.session_state["user_session_index"]=len(sessions)-1
         index=st.selectbox("历史会话",range(len(sessions)),format_func=lambda i:(sessions[i].history[0]["user_msg"][:18] if sessions[i].history else "新对话")+f" · {i+1}",key="user_session_index")
     session=sessions[index]
-    header("出行助手","查询模拟余票，了解票务政策。每次回答都以工具结果为依据。","DeepSeek Live · 只读" if session.live else "离线 Mock")
-    st.caption("真实 DeepSeek 仅负责理解与工具选择；所有班次、政策、订单和支付均为比赛模拟。" if session.live else "当前使用离线规则模型，不产生模型 API 费用。支持 8 个模拟工具。")
+    live_name="Bailian" if session.live_provider=="bailian" else "DeepSeek"
+    header("出行助手","查询模拟余票，了解票务政策。每次回答都以工具结果为依据。",live_name+" Live · 只读" if session.live else "离线 Mock")
+    st.caption("真实模型仅负责理解与工具选择；所有班次、政策、订单和支付均为比赛模拟。本轮新版尚未联网验证。" if session.live else "当前使用离线规则模型，不产生模型 API 费用。支持 8 个模拟工具。")
     if not session.history:
         st.markdown('<div class="ta-welcome"><h2>下一段旅程，<br>从一句话开始。</h2><p>告诉我出发地、目的地和日期，或直接咨询退改与支付政策。</p></div>',unsafe_allow_html=True)
         a,b=st.columns(2)
@@ -70,12 +80,14 @@ def user_page():
             st.caption(f"结束原因 {record['finish_reason']} · {record['total_latency_ms']} ms；stop 仅表示循环结束。")
         if any(not c["ok"] for s in record["steps"] for c in s["calls"]):
             st.warning("本轮存在失败的工具调用，请在工作台保存执行证据。")
+    if session.live:
+        show_remote_export(session)
     with st.form("user_compose"):
         message=st.text_input("输入消息",key="user_message",placeholder="例如：查明天上海到杭州的高铁二等座")
-        allow_live=st.checkbox("确认发送真实 DeepSeek 请求（会产生 API 费用）",key="user_allow_live") if session.live else False
-        send=st.form_submit_button("发送",type="primary",disabled=session.live and not live_ready())
-    if session.live and not live_ready():
-        st.info("DeepSeek 未配置或本次为离线验收。可查看历史证据；不会自动切换 Mock。")
+        allow_live=st.checkbox("确认发送真实 "+live_name+" 请求（会产生 API 费用）",key="user_allow_live") if session.live else False
+        send=st.form_submit_button("发送",type="primary",disabled=session.live and not live_ready(session.live_provider))
+    if session.live and not live_ready(session.live_provider):
+        st.info(live_name+" 未配置完整或本次为离线验收。可查看历史证据；不会自动切换 Mock。")
     if send and message.strip():
         if session.live and not allow_live:
             st.warning("请先确认真实请求费用；尚未调用模型。")
@@ -106,3 +118,19 @@ def user_page():
             if no.button("放弃本次操作",width="stretch"):
                 st.session_state.pop("pending_operation",None)
                 st.rerun()
+
+
+def show_remote_export(session):
+    from target.observability import configuration_status,UPLOAD_SCOPE,export_payload
+    state=configuration_status()
+    with st.expander("LangSmith 可选远端追踪"):
+        st.caption("状态："+state["state"]+"；打开本区域不会上传。")
+        st.write(UPLOAD_SCOPE)
+        run=session.agent.langchain_engine.last_live_run if session.agent and session.agent.langchain_engine else None
+        if run:
+            st.json(export_payload(run),expanded=False)
+            agree=st.checkbox("我已检查脱敏内容，允许将以上本轮记录发送至 LangSmith",key="remote_consent_"+session.sid)
+            if st.button("导出本轮并验证远端",disabled=not agree or not state["enabled"],key="remote_export_"+session.sid):
+                session.export_last(consent=True)
+        if session.remote_receipts:
+            st.json(session.remote_receipts[-1])

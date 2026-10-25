@@ -88,9 +88,11 @@ def export_payload(record):
 def export_run(record, *, consent=False, trace_dir=None, transport=None):
     """Returns a separate receipt. Never edits record or the Agent's public business result."""
     receipt={"local_trace_id":record.get("trace_id"),"local_trace_saved":record.get("local_trace_saved",False),
+             "local_sidecar_saved":record.get("local_sidecar_saved",False),
              "provider":record.get("provider"),
              "remote_status":"not_attempted","remote_verified":False,"http_requests":0,
              "generation_requests":0,"timestamp":datetime.now(timezone.utc).isoformat()}
+    receipt["verification_origin"]="offline_transport_fixture" if transport is not None else "remote_http"
     try:
         key, endpoint, project, enabled=settings()
         if not enabled:
@@ -99,7 +101,7 @@ def export_run(record, *, consent=False, trace_dir=None, transport=None):
             receipt["remote_status"]="consent_required"
         elif not key:
             receipt["remote_status"]="not_configured"
-        elif not record.get("local_trace_saved"):
+        elif not (record.get("local_trace_saved") or record.get("local_sidecar_saved")):
             receipt["remote_status"]="local_trace_required"
         else:
             payload=export_payload(record)

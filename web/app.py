@@ -6,9 +6,8 @@ from pathlib import Path
 
 BASE = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(BASE))
-# No external telemetry from this UI, even if enabled in the parent shell.
-os.environ["LANGSMITH_TRACING"] = "false"
-os.environ["LANGCHAIN_TRACING_V2"] = "false"
+# LangChain invocation is always inside tracing_context(enabled=False).
+# LangSmith export is a separate consented action, never an automatic callback.
 import streamlit as st
 import config
 from web.design import theme
@@ -19,11 +18,17 @@ from web.runtime import CALL_LOCK
 def main():
     st.set_page_config(page_title="Ticket Agent · 质量工作空间", page_icon=":material/travel_explore:", layout="wide", initial_sidebar_state="expanded")
     st.set_option("client.toolbarMode","minimal")
-    st.session_state.setdefault("default_live", config.PROVIDER == "deepseek")
+    st.session_state.setdefault("default_live", config.PROVIDER in ("deepseek","bailian"))
     st.session_state.setdefault("default_engine", config.ENGINE)
     st.session_state.setdefault("theme", "深色")
     with st.sidebar:
         st.markdown('<div class="ta-brand"><div class="ta-logo">T</div><div><b>Ticket Agent</b><small>智能体质量工作空间 · V3.3</small></div></div>', unsafe_allow_html=True)
+        choices=["Legacy Mock","LangChain Mock","DeepSeek Live","Bailian Live"]
+        initial=3 if config.PROVIDER=="bailian" else 2 if config.PROVIDER=="deepseek" else 1 if config.ENGINE=="langchain" else 0
+        selection=st.selectbox("新会话模型",choices,index=initial,key="provider_selection")
+        st.session_state["default_live"]=selection.endswith("Live")
+        st.session_state["default_engine"]="legacy" if selection=="Legacy Mock" else "langchain"
+        st.session_state["default_provider"]="bailian" if selection=="Bailian Live" else "deepseek"
         mode = st.radio("工作空间", ["出行助手", "测试工作台"], key="workspace_mode")
         if mode == "测试工作台":
             page = st.radio("工作台导航", ["测试总览", "测试实验室", "Trace 分析", "质量分析", "模型对比", "集成中心"], key="workspace_page")
@@ -31,7 +36,7 @@ def main():
             page = "出行助手"
         st.divider()
         selected_theme = st.radio("外观", ["深色", "浅色"], horizontal=True, key="theme")
-        st.caption("启动模型：" + ("DeepSeek Live · 只读" if config.PROVIDER == "deepseek" else "LangChain Mock" if config.ENGINE == "langchain" else "Legacy Mock"))
+        st.caption("新会话模型："+selection+(" · 两工具只读" if selection.endswith("Live") else ""))
         st.caption("用户与实验会话、模拟库、Trace 分离。B 测试快照只读。")
     theme(selected_theme)
     if page == "出行助手":
@@ -53,7 +58,8 @@ def main():
         quality_page()
     elif page == "模型对比":
         from web.comparison import comparison_page
-        comparison_page()
+        sessions=st.session_state.get("user_sessions",[])+st.session_state.get("lab_archives",[])
+        comparison_page([s.trace_dir for s in sessions])
     elif page == "集成中心":
         from web.integrations import integrations_page
         integrations_page()

@@ -7,7 +7,7 @@ import config
 from web.design import header, empty
 from web.runtime import Conversation, live_ready, LIVE_AVAILABLE, scoped
 from web.evidence import MUTATIONS, cases
-from web.conversation import execute, show_business
+from web.conversation import execute, show_business, show_remote_export
 from web.trace_view import show_record
 
 DESCRIPTIONS = dict(zip(MUTATIONS, ("M1 · 日期偏移一天", "M2 · 跳过锁座下单", "M3 · 重复派发工具", "M4 · 有限监控重入", "M5 · 政策误路由", "M6 · 删除政策引用", "M7 · 注入假车次 G9999", "M8 · 影子库并发重复订单")))
@@ -18,9 +18,11 @@ def lab_page():
     config_col, run_col = st.columns([1, 2.35], gap="large")
     with config_col, st.container(border=True):
         st.markdown("### 实验配置")
-        choices = ["Legacy Mock", "LangChain Mock"] + (["DeepSeek Live · 只读"] if LIVE_AVAILABLE else [])
+        choices = ["Legacy Mock", "LangChain Mock", "DeepSeek Live · 只读", "Bailian Live · 只读"]
         selected = st.selectbox("执行模式", choices, key="lab_engine")
-        live = selected.startswith("DeepSeek")
+        live = "Live" in selected
+        live_provider="bailian" if selected.startswith("Bailian") else "deepseek"
+        case_id=st.text_input("测试用例 ID",value="interactive-lab",key="lab_case_id")
         engine = "legacy" if selected.startswith("Legacy") else "langchain"
         st.caption("工具集：query_tickets / search_policy" if live else "工具集：8 个本地模拟工具")
         st.markdown("**八种缺陷注入**")
@@ -38,10 +40,10 @@ def lab_page():
         max_steps = st.number_input("最大模型步骤", min_value=1, max_value=8, value=8, step=1, disabled=live,
             help="仅离线实验；Live 沿用现有单轮安全限制")
         scenario = st.selectbox("并发场景", ["same_lock_two", "same_lock_many", "same_request_retry", "different_locks", "expired_lock", "worker_failure", "query_after_retry"])
-    signature = (engine, live, tuple(sorted(enabled.items())), max_steps)
+    signature = (engine, live, live_provider, case_id, tuple(sorted(enabled.items())), max_steps)
     if st.session_state.get("lab_signature") != signature:
         st.session_state["lab_signature"] = signature
-        session = Conversation("lab", engine=engine, live=live, mutations=enabled)
+        session = Conversation("lab", engine=engine, live=live, live_provider=live_provider,case_id=case_id,initial_budget=True,mutations=enabled)
         st.session_state.setdefault("lab_archives", []).append(session)
         st.session_state["lab_session"] = session
     session = st.session_state["lab_session"]
@@ -61,8 +63,8 @@ def lab_page():
             message = messages.get(preset, "")
         with st.form("lab_submit"):
             text = st.text_input("输入消息", value=message, key="lab_message_"+preset)
-            live_confirm = st.checkbox("确认真实 DeepSeek 请求与费用", key="lab_allow_live") if live else False
-            send = st.form_submit_button("执行测试", type="primary", disabled=bool(enabled.get("concurrent_duplicate_order")) or live and not live_ready())
+            live_confirm = st.checkbox("确认真实模型请求与费用", key="lab_allow_live") if live else False
+            send = st.form_submit_button("执行测试", type="primary", disabled=bool(enabled.get("concurrent_duplicate_order")) or live and not live_ready(live_provider))
         if send and text.strip():
             if live and not live_confirm:
                 st.warning("尚未确认在线请求，未调用模型。")
@@ -78,6 +80,8 @@ def lab_page():
             st.success("实际对照已保存；0 次模型 API 请求。")
         if session.error:
             st.error("上次执行失败：" + session.error["category"] + "；未自动重试，也没有把旧结果作为新结果。")
+        if live:
+            show_remote_export(session)
         if session.history and not session.error:
             record = session.history[-1]
             with st.chat_message("user", avatar=":material/person:"):

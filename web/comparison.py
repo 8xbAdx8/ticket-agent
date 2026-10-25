@@ -4,9 +4,37 @@ from web.evidence import batch, historical_live
 from web.trace_view import safe_json
 
 
-def comparison_page():
+def comparison_page(runtime_dirs=()):
     header("模型与引擎对比", "先确认相同用例，再比较可核对的行为。", "已有证据")
-    mode = st.radio("对比范围", ["Legacy / LangChain Mock", "历史 DeepSeek 证据"], horizontal=True)
+    mode = st.radio("对比范围", ["Legacy / LangChain Mock", "历史 DeepSeek 证据", "当前多模型 Live"], horizontal=True)
+    if mode=="当前多模型 Live":
+        from pathlib import Path
+        import config
+        from web.evidence import read_jsonl
+        roots=list(runtime_dirs)+list((config.BASE_DIR/"artifacts/runtime/v33-live-providers").glob("*/traces"))
+        rows=[]
+        for root in roots[:100]:
+            path=Path(root)/"provider_runs.jsonl"
+            if path.is_file():
+                records,_=read_jsonl(path)
+                rows.extend({"source":str(path.relative_to(config.BASE_DIR)),"run":r} for r in records if r.get("mode")=="live")
+        if not rows:
+            empty("暂无本轮多模型 Live 记录","请先获授权，使用独立命令或页面实际运行；不会借用历史 DeepSeek 或 Mock 代替。")
+            return
+        left,right=st.columns(2)
+        for col,provider in ((left,"deepseek_live"),(right,"bailian_live")):
+            with col:
+                st.markdown("### "+provider)
+                subset=[r for r in rows if r["run"].get("provider")==provider]
+                if not subset:
+                    st.info("该 Provider 本轮暂无记录。")
+                    continue
+                index=st.selectbox("选择独立运行",range(len(subset)),format_func=lambda i:str(subset[i]["run"].get("case_id"))+" · "+str(subset[i]["run"].get("requested_at")),key="live_compare_"+provider)
+                item=subset[index]
+                st.caption("来源："+item["source"]+"；完整参数、结果、模型及 Git SHA 见 JSON。")
+                safe_json(item["run"],"live_compare_json_"+provider)
+        st.caption("同一 case ID 仍须核对输入、日期、工具集及配置一致；这只是原始记录对照，未自动判定正确率/费用。")
+        return
     if mode.startswith("Legacy"):
         a, b = batch("legacy"), batch("langchain")
         aa = {r["id"]: r for r in a["rows"] if r["status"] in ("passed", "failed")}
@@ -38,4 +66,4 @@ def comparison_page():
         st.warning("历史真实 DeepSeek，仅供只读审阅；不是 V3.3 新验证，不与当前 Mock 延迟合并。V3.1 full_sandbox 历史写操作也不代表默认 Live 已开放。")
         st.caption("来源：" + str(r["path"].relative_to(__import__('config').BASE_DIR)) + " · 实际费用未知。")
         safe_json(r["data"], "historical_live")
-    empty("第二种真实大模型：待集成", "阿里云百炼尚无适配器和真实成绩，无法进行真实双模型排名。")
+    empty("第二种真实模型：代码已接入，真实验证待执行", "阿里云百炼已有独立适配器和离线桩测试；没有本轮真实成绩，不能生成真实双模型排名。")
