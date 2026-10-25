@@ -41,11 +41,21 @@ def ticket_cards(result):
     cards = []
     for t in result.get("trains", [])[:20]:
         stock = t.get("seats_left")
-        label = f"余票 {stock} 张" if isinstance(stock, (int, float)) and stock > 0 else "已售罄"
+        label = (f"余票 {stock} 张" if stock > 0 else "已售罄") if type(stock) in (int, float) else "余票未提供"
+        duration = "车程未提供"
+        try:
+            from datetime import datetime
+            depart=datetime.strptime(t["depart"],"%H:%M")
+            arrive=datetime.strptime(t["arrive"],"%H:%M")
+            minutes=int((arrive-depart).total_seconds()/60)%1440
+            duration=f"{minutes//60}小时{minutes%60:02}分 · 按工具时间计算"
+        except (ValueError,TypeError,KeyError):
+            pass
+        price="票价未提供" if t.get("price") is None else "¥"+str(t["price"])
         cards.append(f'''<div class="ticket-card">
-          <div><strong>{escape(t.get('train_no', ''))}</strong><div class="muted">{escape(t.get('seat_type', ''))} · {escape(t.get('date', ''))}</div></div>
-          <div class="route"><b>{escape(t.get('depart', ''))} <span>→</span> {escape(t.get('arrive', ''))}</b><div class="muted">{escape(t.get('from_city', ''))} → {escape(t.get('to_city', ''))}</div></div>
-          <div class="price"><strong>¥{escape(t.get('price', ''))}</strong><div class="stock">{escape(label)}</div></div></div>''')
+          <div><strong>{escape(t.get('train_no') or '车次未提供')}</strong><div class="muted">{escape(t.get('seat_type') or '席别未提供')} · {escape(t.get('date') or '日期未提供')}</div><small class="muted">来源：query_tickets · 虚构票务</small></div>
+          <div class="route"><b>{escape(t.get('depart') or '—')} <span>→</span> {escape(t.get('arrive') or '—')}</b><div class="muted">{escape(t.get('from_city') or '—')} → {escape(t.get('to_city') or '—')}</div><div class="muted">{escape(duration)}</div></div>
+          <div class="fare"><b>{escape(price)}</b><div class="stock">{escape(label)}</div></div></div>''')
     return "".join(cards)
 
 
@@ -53,7 +63,7 @@ def order_card(result):
     status = STATUS_LABELS.get(result.get("status"), result.get("status", "未知"))
     details = " · ".join(str(result[k]) for k in ("train_no", "date", "seat_type") if k in result)
     money = f"<div class='order-money'>订单金额 <strong>¥{escape(result['amount'])}</strong></div>" if "amount" in result else ""
-    refund = f"<p>手续费 ¥{escape(result['fee'])} · 退款 ¥{escape(result.get('refund', 0))}</p>" if "fee" in result else ""
+    refund = f"<p>手续费 ¥{escape(result['fee'])} · 退款 {escape('¥'+str(result['refund']) if result.get('refund') is not None else '未提供')}</p>" if "fee" in result else ""
     duplicate = "<p>订单已支付，本次没有重复扣款。</p>" if result.get("duplicate_pay") else ""
     return f'''<div class="order-card"><div class="order-top">模拟订单 <span>{escape(status)}</span></div>
       <strong>{escape(details)}</strong><div class="muted">订单号 {escape(result.get('order_id', ''))}</div>{money}{refund}{duplicate}</div>'''
