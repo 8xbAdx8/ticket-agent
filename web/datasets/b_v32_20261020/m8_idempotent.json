@@ -1,0 +1,86 @@
+{
+  "records": [
+    {
+      "id": "M8-1",
+      "name": "订单总数 = 1",
+      "expect": 1,
+      "actual": 1,
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "id": "M8-2",
+      "name": "lock_id 唯一（不重复占）",
+      "expect": 1,
+      "actual": 1,
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "id": "M8-3",
+      "name": "order_id 无重复",
+      "expect": 1,
+      "actual": 1,
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "id": "M8-4",
+      "name": "两个线程都拿到返回（不丢响应）",
+      "expect": 2,
+      "actual": 2,
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "id": "M8-5",
+      "name": "订单总数 = 1（4 并发）",
+      "expect": 1,
+      "actual": 1,
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "id": "M8-6",
+      "name": "不同锁各成 1 单 = 2",
+      "expect": 2,
+      "actual": 2,
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "id": "M8-7",
+      "name": "过期锁不生成订单 = 0",
+      "expect": 0,
+      "actual": 0,
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "id": "M8-8",
+      "name": "过期锁如实报错（不静默成功）",
+      "expect": true,
+      "actual": true,
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "id": "M8-9",
+      "name": "orders.lock_id 有 UNIQUE 约束",
+      "expect": true,
+      "actual": true,
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "id": "M8-10",
+      "name": "拆除约束后产生多单（证明断言有牙齿）",
+      "expect": true,
+      "actual": true,
+      "passed": true,
+      "detail": ""
+    }
+  ],
+  "total": 10,
+  "passed": 10
+}
