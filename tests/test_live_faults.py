@@ -1,3 +1,5 @@
+# Original V3.2 Streamlit-specific assertions retained against legacy_app.py.
+# V3.3 default entry has separate test_v33_app.py coverage.
 """真实SDK/真实框架/真实模拟后端，HTTP响应为确定性桩；不计Live成绩。"""
 import json
 import os
@@ -134,7 +136,7 @@ class LiveFaultPathTests(unittest.TestCase):
         agent=self.agent([self.response({"content":None,"tool_calls":[self.call("query_tickets",self.query())]}),
                           self.response({"content":"已查询工具结果。"})])
         with patch("target.agent.Agent",return_value=agent):
-            app=AppTest.from_file(str(config.BASE_DIR/"web/app.py"),default_timeout=30).run()
+            app=AppTest.from_file(str(config.BASE_DIR/"web/legacy_app.py"),default_timeout=30).run()
             next(c for c in app.checkbox if c.label=="date_offset").check().run()
             app.text_input[0].set_value("查今天上海到杭州的高铁")
             next(b for b in app.button if b.label=="发送").click().run()

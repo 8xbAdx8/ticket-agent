@@ -1,3 +1,5 @@
+# V3.3: preserve original V3.2 UI assertions against the explicit compatibility entry.
+# New default app coverage lives in test_v33_app.py.
 import unittest
 import tempfile
 from pathlib import Path
@@ -13,7 +15,7 @@ class WebTests(unittest.TestCase):
         config.DB_PATH = Path(self.tmp.name) / "test.db"
         config.TRACE_DIR = Path(self.tmp.name) / "trace"
         build_db()
-        self.app = AppTest.from_file(str(config.BASE_DIR / "web" / "app.py"), default_timeout=20).run()
+        self.app = AppTest.from_file(str(config.BASE_DIR / "web" / "legacy_app.py"), default_timeout=20).run()
 
     def tearDown(self):
         config.DB_PATH, config.TRACE_DIR = self.db, self.trace

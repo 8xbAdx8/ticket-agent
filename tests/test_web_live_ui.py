@@ -1,3 +1,5 @@
+# V3.3: preserve original V3.2 UI assertions against the explicit compatibility entry.
+# New default app coverage lives in test_v33_app.py.
 """成员 A 前端自测：卡片与业务事实一致，回放/交互不重复执行。"""
 import json
 import tempfile
@@ -28,7 +30,7 @@ class LiveUIBase:
             PROVIDER="mock", USE_HTTP_MOCK=False, USE_VECTOR_RAG=False, MAX_STEPS=8)
         self.settings.start()
         build_db()
-        self.app = AppTest.from_file(str(config.BASE_DIR/"web/app.py"), default_timeout=30).run()
+        self.app = AppTest.from_file(str(config.BASE_DIR/"web/legacy_app.py"), default_timeout=30).run()
         self.assertEqual(len(self.app.exception), 0)
 
     def tearDown(self):
@@ -130,7 +132,7 @@ class PresentationSafetyTests(unittest.TestCase):
             record = {"session_id": "old", "user_msg": "旧记录", "tool_sequence": [], "finish_reason": "stop"}
             (folder/"traces.jsonl").write_text(json.dumps(record), encoding="utf-8")
             with patch.object(config, "TRACE_DIR", folder), patch("target.agent.Agent", side_effect=ValueError("test-only unavailable provider")):
-                app = AppTest.from_file(str(config.BASE_DIR/"web/app.py"),default_timeout=20).run()
+                app = AppTest.from_file(str(config.BASE_DIR/"web/legacy_app.py"),default_timeout=20).run()
             self.assertEqual(len(app.exception), 0)
             self.assertTrue(next(b for b in app.button if b.label=="发送").disabled)
             self.assertTrue(any(s.label=="选择回放记录" for s in app.selectbox))

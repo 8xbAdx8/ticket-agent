@@ -1,3 +1,5 @@
+# Original V3.2 Streamlit-specific assertions retained against legacy_app.py.
+# V3.3 default entry has separate test_v33_app.py coverage.
 """只读冻结前的 A 确定性 SDK 桩；绝不发真实 API 或修改 B 判定器。"""
 import contextlib
 import io
@@ -170,7 +172,7 @@ class ReadOnlyQualityTests(unittest.TestCase):
         raw="我可以帮您下单并支付。"
         agent=self.agent([self.response({"content":raw})])
         with patch("target.agent.Agent",return_value=agent):
-            app=AppTest.from_file(str(config.BASE_DIR/"web/app.py"),default_timeout=30).run()
+            app=AppTest.from_file(str(config.BASE_DIR/"web/legacy_app.py"),default_timeout=30).run()
             self.assertTrue(any("其余六个工具未开放 Live" in item.value for item in app.info))
             self.assertNotIn("支付",app.selectbox[0].options)
             app.text_input[0].set_value("当前支持哪些功能？")

@@ -1,3 +1,5 @@
+# Original V3.2 Streamlit-specific assertions retained against legacy_app.py.
+# V3.3 default entry has separate test_v33_app.py coverage.
 """真实 ChatDeepSeek SDK + httpx 桩的离线验证；不是真实 API 成绩。"""
 import json
 import os
@@ -172,7 +174,7 @@ class DeepSeekAgentTests(unittest.TestCase):
         agent = self.agent([self.response({"content":None,"tool_calls":[self.call("search_policy",{"question":"锁座支付有效期"})]}),
                             self.response({"content":"[离线SDK桩] 15 分钟，来源 P11。"})])
         with patch("target.agent.Agent",return_value=agent):
-            app = AppTest.from_file(str(config.BASE_DIR/"web/app.py"),default_timeout=30).run()
+            app = AppTest.from_file(str(config.BASE_DIR/"web/legacy_app.py"),default_timeout=30).run()
             app.text_input[0].set_value("锁座后多久支付？")
             next(b for b in app.button if b.label=="发送").click().run()
         self.assertEqual(len(app.exception),0)
@@ -185,7 +187,7 @@ class DeepSeekAgentTests(unittest.TestCase):
     def test_streamlit_missing_key_is_clear_and_does_not_fall_back(self):
         from streamlit.testing.v1 import AppTest
         with patch.object(config,"API_KEY",""):
-            app = AppTest.from_file(str(config.BASE_DIR/"web/app.py"),default_timeout=30).run()
+            app = AppTest.from_file(str(config.BASE_DIR/"web/legacy_app.py"),default_timeout=30).run()
         self.assertEqual(len(app.exception),0)
         self.assertTrue(next(b for b in app.button if b.label=="发送").disabled)
         self.assertTrue(any("missing_DEEPSEEK_API_KEY" in c.value for c in app.caption))

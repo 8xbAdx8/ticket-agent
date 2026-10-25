@@ -19,3 +19,17 @@
 - T04 保留漏检；R01 标不适用；F15/M12 保留非 C5 检出；空分母不生成百分比。
 - 变异、模型语义恢复与业务正确分别展示；读取历史数据不执行新模型请求。
 - 此模块验证结果和提交 SHA 见后续条目。
+
+- 验证：`python -m unittest discover -s tests -p test_v33_evidence.py -v`，4/4 通过；提交 `3ac5d04`。
+
+## 2026-10-25 会话服务、Trace 与数据页面
+
+- `web/runtime.py` 将用户/实验配置、数据库、Agent 记忆及 Trace 分离；锁内恢复原模块配置，不修改 target。重复提交 ID 返回原回执；默认 Live 强制两工具只读并保留原预算配置。用户界面确认仅是附加层，原后端授权仍是执行依据。
+- `web/conversation.py` 展示真实工具卡片和模拟操作确认；`web/presentation.py` 对缺失票价/余票显示未提供，车程只按工具已有时间计算。
+- `web/trace_view.py` 展示实际模型选择、参数校验、执行、变异前后、原 JSON、字段搜索与脱敏导出。缺阶段起止时不绘制瀑布；聚类视图明确不表示全局时序。
+- 验证：`python -m unittest discover -s tests -p test_v33_runtime.py -v`，5/5 通过；提交 `198c4a2`。
+- `web/charts.py`、`web/dashboard.py`、`web/quality.py` 提供七维度、状态分布、耗时散点、检出分布、八变异矩阵、幻觉与并发专题。无充分可比批次时不制造趋势。提交 `d9c2162`。
+- `web/comparison.py`、`web/integrations.py`：按共同用例比较两个 Mock 引擎，历史 Live 单列；已有 create_agent/LangGraph/InMemorySaver 如实声明，LangSmith 上报关闭，百炼只有预留配置接口。提交 `bbab70f`。
+- 第一次新版 AppTest 10 项中 1 项失败：UI 操作确认未识别以“订明天”开头的短句。补充 UI 确认分类；原业务授权未修改。M8 表格异构布尔/数字列改为文本呈现，消除 Arrow 类型警告。原始失败日志保留在隔离工作目录。
+- 第二次新版 AppTest 10/10；合并 V3.3 模块自测共 21/21。命令 `python -m unittest discover -s tests -p test_v33*.py -v`。
+- B/C 影响：新前端最终入口和导航正在联调；原十字段及工具五字段不变，B 原断言不修改。
