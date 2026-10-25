@@ -319,6 +319,7 @@ class LangChainAgent:
                     final_event=next((e for e in reversed(context.events) if e.get("event")=="model_final"),None)
                     if final_event is not None:final_event["reply_consistency"]=consistency
                     if consistency["status"]=="failed":raise DeepSeekError("reply_tool_mismatch")
+                    if consistency["status"]=="indeterminate":raise DeepSeekError("reply_data_indeterminate")
                 if self.mutations.get("no_citation") and any(e["mutation"] == "no_citation" and e["status"] == "applied" for e in context.fault_run.events):
                     import re
                     if re.search(r"\bP\d+\b",reply):

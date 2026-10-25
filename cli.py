@@ -117,12 +117,14 @@ def main():
     try:
         args.func(args)
     except Exception as exc:
-        if config.PROVIDER != "deepseek":
+        if config.PROVIDER not in ("deepseek", "bailian"):
             raise
         from target.deepseek_runtime import safe_error
         error = safe_error(exc)
-        print(json.dumps({"provider":"deepseek_live","status":"failed","error":error,
-                          "tokens":None,"note":"本轮未返回正常契约记录；未自动重试。检查 deepseek_runs.jsonl 的 tool_attempts/model_final；错误后会话记忆清空，重新查询须提供完整条件。"},ensure_ascii=False))
+        from target.reply_consistency import failure_notice
+        note=failure_notice(error["category"]) or "本轮未返回正常契约记录；未自动重试。"
+        print(json.dumps({"provider":config.PROVIDER+"_live","status":"failed","error":error,
+                          "tokens":None,"note":note+" 检查 provider_runs.jsonl 的原 model_final 与字段证据；错误后会话记忆清空，重新查询须提供完整条件。"},ensure_ascii=False))
         raise SystemExit(2) from None
 
 

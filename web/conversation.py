@@ -31,7 +31,9 @@ def execute(session, message, request_id):
     try:
         session.send(message,request_id)
     except Exception:
-        st.error("请求未完成；未自动重试。"+(" 错误类别："+session.error["category"] if session.error else "请核对模式与输入。"))
+        from target.reply_consistency import failure_notice
+        notice=failure_notice(session.error["category"]) if session.error else None
+        st.error((notice or "请求未完成；未自动重试。")+(" 错误类别："+session.error["category"] if session.error else "请核对模式与输入。"))
     finally:
         processing.empty()
 
