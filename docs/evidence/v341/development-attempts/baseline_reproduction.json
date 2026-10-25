@@ -1,0 +1,51 @@
+[
+  {
+    "provider": "deepseek",
+    "source_sha256": "742c76e646d1e4460200efbca49c2f7bfa3313c23a9d9adf0bc4cc117496b2bf",
+    "original_trace_id": "4effd0cdd8ae4d60a386b5e86f7f3996",
+    "original_reply": "明天（2026-10-26）上海→杭州的高铁二等座，以下为查询到的班次（均有余票）：\n\n| 车次 | 出发 | 到达 | 二等座票价 | 余票 |\n|---|---|---|---|---|\n| G7301 | 06:00 | 07:00 | ¥73 | 35 张 |\n| G7302 | 09:17 | 10:17 | ¥73 | 47 张 |\n| G7303 | 12:34 | 13:34 | ¥73 | 51 张 |\n\n共 3 个班次，三个班次二等座均有余票。以上信息均来自本次查票结果，属于虚构的模拟数据。\n\n提示：当前我仅支持模拟查票和政策咨询，不能锁座、候补、下单或支付。需要我帮你查其他席别，或者其他日期的班次吗？",
+    "v34_detector": {
+      "status": "checked_fields_match",
+      "checked_fields": 6,
+      "findings": [],
+      "scope": "Explicit per-train departure/arrival only; not full semantic evaluation"
+    }
+  },
+  {
+    "provider": "bailian",
+    "source_sha256": "5bbb69e7627e9877583e1a39de8daf762ddb405ad782968e312682946801f984",
+    "original_trace_id": "7f83f6a0165a46fd8791e74ff7f84558",
+    "original_reply": "根据查询结果，2026-10-26（明天）上海到杭州的高铁二等座有余票的车次如下：\n\n- **G7303**：06:00 发车，07:00 到达，余票 51 张，票价 73.0 元  \n- **G7302**：09:17 发车，10:17 到达，余票 47 张，票价 73.0 元  \n- **G7301**：12:34 发车，13:34 到达，余票 35 张，票价 73.0 元  \n\n以上信息均来自实时模拟余票数据。当前仅支持模拟查票和政策咨询，不提供锁座、下单或支付服务。",
+    "v34_detector": {
+      "status": "failed",
+      "checked_fields": 6,
+      "findings": [
+        {
+          "train_no": "G7303",
+          "field": "depart",
+          "claimed": "06:00",
+          "tool_value": "12:34"
+        },
+        {
+          "train_no": "G7303",
+          "field": "arrive",
+          "claimed": "07:00",
+          "tool_value": "13:34"
+        },
+        {
+          "train_no": "G7301",
+          "field": "depart",
+          "claimed": "12:34",
+          "tool_value": "06:00"
+        },
+        {
+          "train_no": "G7301",
+          "field": "arrive",
+          "claimed": "13:34",
+          "tool_value": "07:00"
+        }
+      ],
+      "scope": "Explicit per-train departure/arrival only; not full semantic evaluation"
+    }
+  }
+]

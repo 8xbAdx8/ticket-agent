@@ -1,0 +1,24 @@
+test_legacy_baseline_mutant_restore_and_unique_ids (test_v32_audit.AuditCompatibilityTests.test_legacy_baseline_mutant_restore_and_unique_ids) ... ok
+test_public_trace_credentials_only_redaction (test_v32_audit.AuditCompatibilityTests.test_public_trace_credentials_only_redaction) ... ok
+test_actual_corrective_query_required_for_recovery (test_v32_audit.AuditSDKTests.test_actual_corrective_query_required_for_recovery) ... ok
+test_invalid_parameter_does_not_claim_backend_executed (test_v32_audit.AuditSDKTests.test_invalid_parameter_does_not_claim_backend_executed) ... ok
+test_model_original_wrong_date_separated_from_injector (test_v32_audit.AuditSDKTests.test_model_original_wrong_date_separated_from_injector) ... ok
+test_no_citation_reject_preserves_raw_public_reply (test_v32_audit.AuditSDKTests.test_no_citation_reject_preserves_raw_public_reply) ... ok
+test_self_claim_without_corrective_action_is_unknown (test_v32_audit.AuditSDKTests.test_self_claim_without_corrective_action_is_unknown) ... ok
+test_seven_mutations_have_linked_actual_evidence (test_v32_audit.AuditSDKTests.test_seven_mutations_have_linked_actual_evidence) ... ok
+test_unknown_token_usage_explicit_in_audit (test_v32_audit.AuditSDKTests.test_unknown_token_usage_explicit_in_audit) ... ok
+
+----------------------------------------------------------------------
+Ran 9 tests in 1.182s
+
+OK
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录

@@ -1,0 +1,1953 @@
+[
+  {
+    "provider": "deepseek",
+    "source": "docs/evidence/v34/live-20261025/deepseek/original_result.json",
+    "source_sha256": "742c76e646d1e4460200efbca49c2f7bfa3313c23a9d9adf0bc4cc117496b2bf",
+    "trace_id": "4effd0cdd8ae4d60a386b5e86f7f3996",
+    "live_source_sha": "dc1e2895d8303f2df84ed9e0e16d77982797dbd9",
+    "model": [
+      "deepseek-flash"
+    ],
+    "user_input": "查明天上海到杭州的高铁二等座，请列出有余票的车次；以工具结果为依据。",
+    "original_reply": "明天（2026-10-26）上海→杭州的高铁二等座，以下为查询到的班次（均有余票）：\n\n| 车次 | 出发 | 到达 | 二等座票价 | 余票 |\n|---|---|---|---|---|\n| G7301 | 06:00 | 07:00 | ¥73 | 35 张 |\n| G7302 | 09:17 | 10:17 | ¥73 | 47 张 |\n| G7303 | 12:34 | 13:34 | ¥73 | 51 张 |\n\n共 3 个班次，三个班次二等座均有余票。以上信息均来自本次查票结果，属于虚构的模拟数据。\n\n提示：当前我仅支持模拟查票和政策咨询，不能锁座、候补、下单或支付。需要我帮你查其他席别，或者其他日期的班次吗？",
+    "tool_calling_verified": true,
+    "tool_executed": true,
+    "actual_tools": [
+      {
+        "tool": "query_tickets",
+        "args": {
+          "from_city": "上海",
+          "to_city": "杭州",
+          "date": "2026-10-26",
+          "seat_type": "二等座",
+          "kind": "高铁"
+        },
+        "result": {
+          "trains": [
+            {
+              "kind": "高铁",
+              "train_no": "G7303",
+              "from_city": "上海",
+              "to_city": "杭州",
+              "date": "2026-10-26",
+              "depart": "12:34",
+              "arrive": "13:34",
+              "seat_type": "二等座",
+              "price": 73.0,
+              "seats_left": 51
+            },
+            {
+              "kind": "高铁",
+              "train_no": "G7302",
+              "from_city": "上海",
+              "to_city": "杭州",
+              "date": "2026-10-26",
+              "depart": "09:17",
+              "arrive": "10:17",
+              "seat_type": "二等座",
+              "price": 73.0,
+              "seats_left": 47
+            },
+            {
+              "kind": "高铁",
+              "train_no": "G7301",
+              "from_city": "上海",
+              "to_city": "杭州",
+              "date": "2026-10-26",
+              "depart": "06:00",
+              "arrive": "07:00",
+              "seat_type": "二等座",
+              "price": 73.0,
+              "seats_left": 35
+            }
+          ],
+          "count": 3
+        }
+      }
+    ],
+    "historical_business_verified": true,
+    "original_live_guard": null,
+    "original_live_guard_triggered": false,
+    "v341_offline_replay": {
+      "schema": "reply-consistency/2",
+      "status": "checked_fields_match",
+      "verdict": "consistent_for_checked_fields",
+      "checked_fields": 26,
+      "identity_checks": 3,
+      "findings": [],
+      "field_checks": [
+        {
+          "train_no": "G7301",
+          "identity": {
+            "train_no": "G7301",
+            "date": "2026-10-26",
+            "from_city": "上海",
+            "to_city": "杭州",
+            "seat_type": "二等座",
+            "kind": "高铁"
+          },
+          "field": "train_no",
+          "claimed": "G7301",
+          "tool_value": "G7301",
+          "matched": true,
+          "comparison": "equal",
+          "line": 5,
+          "authority_sources": [
+            {
+              "event_index": 6,
+              "call_id": "call_00_uSDOjLN9HUbvxfeE3HfP1420",
+              "args": {
+                "from_city": "上海",
+                "to_city": "杭州",
+                "date": "2026-10-26",
+                "seat_type": "二等座",
+                "kind": "高铁"
+              }
+            }
+          ]
+        },
+        {
+          "train_no": "G7301",
+          "identity": {
+            "train_no": "G7301",
+            "date": "2026-10-26",
+            "from_city": "上海",
+            "to_city": "杭州",
+            "seat_type": "二等座",
+            "kind": "高铁"
+          },
+          "field": "depart",
+          "claimed": "06:00",
+          "tool_value": "06:00",
+          "matched": true,
+          "comparison": "equal",
+          "line": 5,
+          "authority_sources": [
+            {
+              "event_index": 6,
+              "call_id": "call_00_uSDOjLN9HUbvxfeE3HfP1420",
+              "args": {
+                "from_city": "上海",
+                "to_city": "杭州",
+                "date": "2026-10-26",
+                "seat_type": "二等座",
+                "kind": "高铁"
+              }
+            }
+          ]
+        },
+        {
+          "train_no": "G7301",
+          "identity": {
+            "train_no": "G7301",
+            "date": "2026-10-26",
+            "from_city": "上海",
+            "to_city": "杭州",
+            "seat_type": "二等座",
+            "kind": "高铁"
+          },
+          "field": "arrive",
+          "claimed": "07:00",
+          "tool_value": "07:00",
+          "matched": true,
+          "comparison": "equal",
+          "line": 5,
+          "authority_sources": [
+            {
+              "event_index": 6,
+              "call_id": "call_00_uSDOjLN9HUbvxfeE3HfP1420",
+              "args": {
+                "from_city": "上海",
+                "to_city": "杭州",
+                "date": "2026-10-26",
+                "seat_type": "二等座",
+                "kind": "高铁"
+              }
+            }
+          ]
+        },
+        {
+          "train_no": "G7301",
+          "identity": {
+            "train_no": "G7301",
+            "date": "2026-10-26",
+            "from_city": "上海",
+            "to_city": "杭州",
+            "seat_type": "二等座",
+            "kind": "高铁"
+          },
+          "field": "price",
+          "claimed": "73",
+          "tool_value": "73",
+          "matched": true,
+          "comparison": "equal",
+          "line": 5,
+          "authority_sources": [
+            {
+              "event_index": 6,
+              "call_id": "call_00_uSDOjLN9HUbvxfeE3HfP1420",
+              "args": {
+                "from_city": "上海",
+                "to_city": "杭州",
+                "date": "2026-10-26",
+                "seat_type": "二等座",
+                "kind": "高铁"
+              }
+            }
+          ]
+        },
+        {
+          "train_no": "G7301",
+          "identity": {
+            "train_no": "G7301",
+            "date": "2026-10-26",
+            "from_city": "上海",
+            "to_city": "杭州",
+            "seat_type": "二等座",
+            "kind": "高铁"
+          },
+          "field": "seats_left",
+          "claimed": 35,
+          "tool_value": 35,
+          "matched": true,
+          "comparison": "equal",
+          "line": 5,
+          "authority_sources": [
+            {
+              "event_index": 6,
+              "call_id": "call_00_uSDOjLN9HUbvxfeE3HfP1420",
+              "args": {
+                "from_city": "上海",
+                "to_city": "杭州",
+                "date": "2026-10-26",
+                "seat_type": "二等座",
+                "kind": "高铁"
+              }
+            }
+          ]
+        },
+        {
+          "train_no": "G7301",
+          "identity": {
+            "train_no": "G7301",
+            "date": "2026-10-26",
+            "from_city": "上海",
+            "to_city": "杭州",
+            "seat_type": "二等座",
+            "kind": "高铁"
+          },
+          "field": "date",
+          "claimed": "2026-10-26",
+          "tool_value": "2026-10-26",
+          "matched": true,
+          "comparison": "equal",
+          "line": 5,
+          "authority_sources": [
+            {
+              "event_index": 6,
+              "call_id": "call_00_uSDOjLN9HUbvxfeE3HfP1420",
+              "args": {
+                "from_city": "上海",
+                "to_city": "杭州",
+                "date": "2026-10-26",
+                "seat_type": "二等座",
+                "kind": "高铁"
+              }
+            }
+          ]
+        },
+        {
+          "train_no": "G7301",
+          "identity": {
+            "train_no": "G7301",
+            "date": "2026-10-26",
+            "from_city": "上海",
+            "to_city": "杭州",
+            "seat_type": "二等座",
+            "kind": "高铁"
+          },
+          "field": "from_city",
+          "claimed": "上海",
+          "tool_value": "上海",
+          "matched": true,
+          "comparison": "equal",
+          "line": 5,
+          "authority_sources": [
+            {
+              "event_index": 6,
+              "call_id": "call_00_uSDOjLN9HUbvxfeE3HfP1420",
+              "args": {
+                "from_city": "上海",
+                "to_city": "杭州",
+                "date": "2026-10-26",
+                "seat_type": "二等座",
+                "kind": "高铁"
+              }
+            }
+          ]
+        },
+        {
+          "train_no": "G7301",
+          "identity": {
+            "train_no": "G7301",
+            "date": "2026-10-26",
+            "from_city": "上海",
+            "to_city": "杭州",
+            "seat_type": "二等座",
+            "kind": "高铁"
+          },
+          "field": "to_city",
+          "claimed": "杭州",
+          "tool_value": "杭州",
+          "matched": true,
+          "comparison": "equal",
+          "line": 5,
+          "authority_sources": [
+            {
+              "event_index": 6,
+              "call_id": "call_00_uSDOjLN9HUbvxfeE3HfP1420",
+              "args": {
+                "from_city": "上海",
+                "to_city": "杭州",
+                "date": "2026-10-26",
+                "seat_type": "二等座",
+                "kind": "高铁"
+              }
+            }
+          ]
+        },
+        {
+          "train_no": "G7301",
+          "identity": {
+            "train_no": "G7301",
+            "date": "2026-10-26",
+            "from_city": "上海",
+            "to_city": "杭州",
+            "seat_type": "二等座",
+            "kind": "高铁"
+          },
+          "field": "seat_type",
+          "claimed": "二等座",
+          "tool_value": "二等座",
+          "matched": true,
+          "comparison": "equal",
+          "line": 5,
+          "authority_sources": [
+            {
+              "event_index": 6,
+              "call_id": "call_00_uSDOjLN9HUbvxfeE3HfP1420",
+              "args": {
+                "from_city": "上海",
+                "to_city": "杭州",
+                "date": "2026-10-26",
+                "seat_type": "二等座",
+                "kind": "高铁"
+              }
+            }
+          ]
+        },
+        {
+          "train_no": "G7302",
+          "identity": {
+            "train_no": "G7302",
+            "date": "2026-10-26",
+            "from_city": "上海",
+            "to_city": "杭州",
+            "seat_type": "二等座",
+            "kind": "高铁"
+          },
+          "field": "train_no",
+          "claimed": "G7302",
+          "tool_value": "G7302",
+          "matched": true,
+          "comparison": "equal",
+          "line": 6,
+          "authority_sources": [
+            {
+              "event_index": 6,
+              "call_id": "call_00_uSDOjLN9HUbvxfeE3HfP1420",
+              "args": {
+                "from_city": "上海",
+                "to_city": "杭州",
+                "date": "2026-10-26",
+                "seat_type": "二等座",
+                "kind": "高铁"
+              }
+            }
+          ]
+        },
+        {
+          "train_no": "G7302",
+          "identity": {
+            "train_no": "G7302",
+            "date": "2026-10-26",
+            "from_city": "上海",
+            "to_city": "杭州",
+            "seat_type": "二等座",
+            "kind": "高铁"
+          },
+          "field": "depart",
+          "claimed": "09:17",
+          "tool_value": "09:17",
+          "matched": true,
+          "comparison": "equal",
+          "line": 6,
+          "authority_sources": [
+            {
+              "event_index": 6,
+              "call_id": "call_00_uSDOjLN9HUbvxfeE3HfP1420",
+              "args": {
+                "from_city": "上海",
+                "to_city": "杭州",
+                "date": "2026-10-26",
+                "seat_type": "二等座",
+                "kind": "高铁"
+              }
+            }
+          ]
+        },
+        {
+          "train_no": "G7302",
+          "identity": {
+            "train_no": "G7302",
+            "date": "2026-10-26",
+            "from_city": "上海",
+            "to_city": "杭州",
+            "seat_type": "二等座",
+            "kind": "高铁"
+          },
+          "field": "arrive",
+          "claimed": "10:17",
+          "tool_value": "10:17",
+          "matched": true,
+          "comparison": "equal",
+          "line": 6,
+          "authority_sources": [
+            {
+              "event_index": 6,
+              "call_id": "call_00_uSDOjLN9HUbvxfeE3HfP1420",
+              "args": {
+                "from_city": "上海",
+                "to_city": "杭州",
+                "date": "2026-10-26",
+                "seat_type": "二等座",
+                "kind": "高铁"
+              }
+            }
+          ]
+        },
+        {
+          "train_no": "G7302",
+          "identity": {
+            "train_no": "G7302",
+            "date": "2026-10-26",
+            "from_city": "上海",
+            "to_city": "杭州",
+            "seat_type": "二等座",
+            "kind": "高铁"
+          },
+          "field": "price",
+          "claimed": "73",
+          "tool_value": "73",
+          "matched": true,
+          "comparison": "equal",
+          "line": 6,
+          "authority_sources": [
+            {
+              "event_index": 6,
+              "call_id": "call_00_uSDOjLN9HUbvxfeE3HfP1420",
+              "args": {
+                "from_city": "上海",
+                "to_city": "杭州",
+                "date": "2026-10-26",
+                "seat_type": "二等座",
+                "kind": "高铁"
+              }
+            }
+          ]
+        },
+        {
+          "train_no": "G7302",
+          "identity": {
+            "train_no": "G7302",
+            "date": "2026-10-26",
+            "from_city": "上海",
+            "to_city": "杭州",
+            "seat_type": "二等座",
+            "kind": "高铁"
+          },
+          "field": "seats_left",
+          "claimed": 47,
+          "tool_value": 47,
+          "matched": true,
+          "comparison": "equal",
+          "line": 6,
+          "authority_sources": [
+            {
+              "event_index": 6,
+              "call_id": "call_00_uSDOjLN9HUbvxfeE3HfP1420",
+              "args": {
+                "from_city": "上海",
+                "to_city": "杭州",
+                "date": "2026-10-26",
+                "seat_type": "二等座",
+                "kind": "高铁"
+              }
+            }
+          ]
+        },
+        {
+          "train_no": "G7302",
+          "identity": {
+            "train_no": "G7302",
+            "date": "2026-10-26",
+            "from_city": "上海",
+            "to_city": "杭州",
+            "seat_type": "二等座",
+            "kind": "高铁"
+          },
+          "field": "date",
+          "claimed": "2026-10-26",
+          "tool_value": "2026-10-26",
+          "matched": true,
+          "comparison": "equal",
+          "line": 6,
+          "authority_sources": [
+            {
+              "event_index": 6,
+              "call_id": "call_00_uSDOjLN9HUbvxfeE3HfP1420",
+              "args": {
+                "from_city": "上海",
+                "to_city": "杭州",
+                "date": "2026-10-26",
+                "seat_type": "二等座",
+                "kind": "高铁"
+              }
+            }
+          ]
+        },
+        {
+          "train_no": "G7302",
+          "identity": {
+            "train_no": "G7302",
+            "date": "2026-10-26",
+            "from_city": "上海",
+            "to_city": "杭州",
+            "seat_type": "二等座",
+            "kind": "高铁"
+          },
+          "field": "from_city",
+          "claimed": "上海",
+          "tool_value": "上海",
+          "matched": true,
+          "comparison": "equal",
+          "line": 6,
+          "authority_sources": [
+            {
+              "event_index": 6,
+              "call_id": "call_00_uSDOjLN9HUbvxfeE3HfP1420",
+              "args": {
+                "from_city": "上海",
+                "to_city": "杭州",
+                "date": "2026-10-26",
+                "seat_type": "二等座",
+                "kind": "高铁"
+              }
+            }
+          ]
+        },
+        {
+          "train_no": "G7302",
+          "identity": {
+            "train_no": "G7302",
+            "date": "2026-10-26",
+            "from_city": "上海",
+            "to_city": "杭州",
+            "seat_type": "二等座",
+            "kind": "高铁"
+          },
+          "field": "to_city",
+          "claimed": "杭州",
+          "tool_value": "杭州",
+          "matched": true,
+          "comparison": "equal",
+          "line": 6,
+          "authority_sources": [
+            {
+              "event_index": 6,
+              "call_id": "call_00_uSDOjLN9HUbvxfeE3HfP1420",
+              "args": {
+                "from_city": "上海",
+                "to_city": "杭州",
+                "date": "2026-10-26",
+                "seat_type": "二等座",
+                "kind": "高铁"
+              }
+            }
+          ]
+        },
+        {
+          "train_no": "G7302",
+          "identity": {
+            "train_no": "G7302",
+            "date": "2026-10-26",
+            "from_city": "上海",
+            "to_city": "杭州",
+            "seat_type": "二等座",
+            "kind": "高铁"
+          },
+          "field": "seat_type",
+          "claimed": "二等座",
+          "tool_value": "二等座",
+          "matched": true,
+          "comparison": "equal",
+          "line": 6,
+          "authority_sources": [
+            {
+              "event_index": 6,
+              "call_id": "call_00_uSDOjLN9HUbvxfeE3HfP1420",
+              "args": {
+                "from_city": "上海",
+                "to_city": "杭州",
+                "date": "2026-10-26",
+                "seat_type": "二等座",
+                "kind": "高铁"
+              }
+            }
+          ]
+        },
+        {
+          "train_no": "G7303",
+          "identity": {
+            "train_no": "G7303",
+            "date": "2026-10-26",
+            "from_city": "上海",
+            "to_city": "杭州",
+            "seat_type": "二等座",
+            "kind": "高铁"
+          },
+          "field": "train_no",
+          "claimed": "G7303",
+          "tool_value": "G7303",
+          "matched": true,
+          "comparison": "equal",
+          "line": 7,
+          "authority_sources": [
+            {
+              "event_index": 6,
+              "call_id": "call_00_uSDOjLN9HUbvxfeE3HfP1420",
+              "args": {
+                "from_city": "上海",
+                "to_city": "杭州",
+                "date": "2026-10-26",
+                "seat_type": "二等座",
+                "kind": "高铁"
+              }
+            }
+          ]
+        },
+        {
+          "train_no": "G7303",
+          "identity": {
+            "train_no": "G7303",
+            "date": "2026-10-26",
+            "from_city": "上海",
+            "to_city": "杭州",
+            "seat_type": "二等座",
+            "kind": "高铁"
+          },
+          "field": "depart",
+          "claimed": "12:34",
+          "tool_value": "12:34",
+          "matched": true,
+          "comparison": "equal",
+          "line": 7,
+          "authority_sources": [
+            {
+              "event_index": 6,
+              "call_id": "call_00_uSDOjLN9HUbvxfeE3HfP1420",
+              "args": {
+                "from_city": "上海",
+                "to_city": "杭州",
+                "date": "2026-10-26",
+                "seat_type": "二等座",
+                "kind": "高铁"
+              }
+            }
+          ]
+        },
+        {
+          "train_no": "G7303",
+          "identity": {
+            "train_no": "G7303",
+            "date": "2026-10-26",
+            "from_city": "上海",
+            "to_city": "杭州",
+            "seat_type": "二等座",
+            "kind": "高铁"
+          },
+          "field": "arrive",
+          "claimed": "13:34",
+          "tool_value": "13:34",
+          "matched": true,
+          "comparison": "equal",
+          "line": 7,
+          "authority_sources": [
+            {
+              "event_index": 6,
+              "call_id": "call_00_uSDOjLN9HUbvxfeE3HfP1420",
+              "args": {
+                "from_city": "上海",
+                "to_city": "杭州",
+                "date": "2026-10-26",
+                "seat_type": "二等座",
+                "kind": "高铁"
+              }
+            }
+          ]
+        },
+        {
+          "train_no": "G7303",
+          "identity": {
+            "train_no": "G7303",
+            "date": "2026-10-26",
+            "from_city": "上海",
+            "to_city": "杭州",
+            "seat_type": "二等座",
+            "kind": "高铁"
+          },
+          "field": "price",
+          "claimed": "73",
+          "tool_value": "73",
+          "matched": true,
+          "comparison": "equal",
+          "line": 7,
+          "authority_sources": [
+            {
+              "event_index": 6,
+              "call_id": "call_00_uSDOjLN9HUbvxfeE3HfP1420",
+              "args": {
+                "from_city": "上海",
+                "to_city": "杭州",
+                "date": "2026-10-26",
+                "seat_type": "二等座",
+                "kind": "高铁"
+              }
+            }
+          ]
+        },
+        {
+          "train_no": "G7303",
+          "identity": {
+            "train_no": "G7303",
+            "date": "2026-10-26",
+            "from_city": "上海",
+            "to_city": "杭州",
+            "seat_type": "二等座",
+            "kind": "高铁"
+          },
+          "field": "seats_left",
+          "claimed": 51,
+          "tool_value": 51,
+          "matched": true,
+          "comparison": "equal",
+          "line": 7,
+          "authority_sources": [
+            {
+              "event_index": 6,
+              "call_id": "call_00_uSDOjLN9HUbvxfeE3HfP1420",
+              "args": {
+                "from_city": "上海",
+                "to_city": "杭州",
+                "date": "2026-10-26",
+                "seat_type": "二等座",
+                "kind": "高铁"
+              }
+            }
+          ]
+        },
+        {
+          "train_no": "G7303",
+          "identity": {
+            "train_no": "G7303",
+            "date": "2026-10-26",
+            "from_city": "上海",
+            "to_city": "杭州",
+            "seat_type": "二等座",
+            "kind": "高铁"
+          },
+          "field": "date",
+          "claimed": "2026-10-26",
+          "tool_value": "2026-10-26",
+          "matched": true,
+          "comparison": "equal",
+          "line": 7,
+          "authority_sources": [
+            {
+              "event_index": 6,
+              "call_id": "call_00_uSDOjLN9HUbvxfeE3HfP1420",
+              "args": {
+                "from_city": "上海",
+                "to_city": "杭州",
+                "date": "2026-10-26",
+                "seat_type": "二等座",
+                "kind": "高铁"
+              }
+            }
+          ]
+        },
+        {
+          "train_no": "G7303",
+          "identity": {
+            "train_no": "G7303",
+            "date": "2026-10-26",
+            "from_city": "上海",
+            "to_city": "杭州",
+            "seat_type": "二等座",
+            "kind": "高铁"
+          },
+          "field": "from_city",
+          "claimed": "上海",
+          "tool_value": "上海",
+          "matched": true,
+          "comparison": "equal",
+          "line": 7,
+          "authority_sources": [
+            {
+              "event_index": 6,
+              "call_id": "call_00_uSDOjLN9HUbvxfeE3HfP1420",
+              "args": {
+                "from_city": "上海",
+                "to_city": "杭州",
+                "date": "2026-10-26",
+                "seat_type": "二等座",
+                "kind": "高铁"
+              }
+            }
+          ]
+        },
+        {
+          "train_no": "G7303",
+          "identity": {
+            "train_no": "G7303",
+            "date": "2026-10-26",
+            "from_city": "上海",
+            "to_city": "杭州",
+            "seat_type": "二等座",
+            "kind": "高铁"
+          },
+          "field": "to_city",
+          "claimed": "杭州",
+          "tool_value": "杭州",
+          "matched": true,
+          "comparison": "equal",
+          "line": 7,
+          "authority_sources": [
+            {
+              "event_index": 6,
+              "call_id": "call_00_uSDOjLN9HUbvxfeE3HfP1420",
+              "args": {
+                "from_city": "上海",
+                "to_city": "杭州",
+                "date": "2026-10-26",
+                "seat_type": "二等座",
+                "kind": "高铁"
+              }
+            }
+          ]
+        },
+        {
+          "train_no": "G7303",
+          "identity": {
+            "train_no": "G7303",
+            "date": "2026-10-26",
+            "from_city": "上海",
+            "to_city": "杭州",
+            "seat_type": "二等座",
+            "kind": "高铁"
+          },
+          "field": "seat_type",
+          "claimed": "二等座",
+          "tool_value": "二等座",
+          "matched": true,
+          "comparison": "equal",
+          "line": 7,
+          "authority_sources": [
+            {
+              "event_index": 6,
+              "call_id": "call_00_uSDOjLN9HUbvxfeE3HfP1420",
+              "args": {
+                "from_city": "上海",
+                "to_city": "杭州",
+                "date": "2026-10-26",
+                "seat_type": "二等座",
+                "kind": "高铁"
+              }
+            }
+          ]
+        },
+        {
+          "field": "seats_left",
+          "claimed": "all_available",
+          "matched": true,
+          "line": 1
+        },
+        {
+          "field": "seats_left",
+          "claimed": "all_available",
+          "matched": true,
+          "line": 9
+        }
+      ],
+      "indeterminate": [],
+      "ignored": [],
+      "authority_queries": [
+        {
+          "event_index": 6,
+          "rows": 3,
+          "call_id": "call_00_uSDOjLN9HUbvxfeE3HfP1420",
+          "args": {
+            "from_city": "上海",
+            "to_city": "杭州",
+            "date": "2026-10-26",
+            "seat_type": "二等座",
+            "kind": "高铁"
+          }
+        }
+      ],
+      "scope": "Explicit ticket fields in labelled prose/tables; not full natural-language or business accuracy"
+    },
+    "tokens": {
+      "prompt": 1942,
+      "completion": 304
+    },
+    "latency_ms": 3818,
+    "cost": null,
+    "new_live_requests": 0,
+    "postfix_live_retested": false,
+    "scope": "One saved Live query per provider; no general accuracy estimate"
+  },
+  {
+    "provider": "bailian",
+    "source": "docs/evidence/v34/live-20261025/bailian/original_result.json",
+    "source_sha256": "5bbb69e7627e9877583e1a39de8daf762ddb405ad782968e312682946801f984",
+    "trace_id": "7f83f6a0165a46fd8791e74ff7f84558",
+    "live_source_sha": "dc1e2895d8303f2df84ed9e0e16d77982797dbd9",
+    "model": [
+      "qwen-plus"
+    ],
+    "user_input": "查明天上海到杭州的高铁二等座，请列出有余票的车次；以工具结果为依据。",
+    "original_reply": "根据查询结果，2026-10-26（明天）上海到杭州的高铁二等座有余票的车次如下：\n\n- **G7303**：06:00 发车，07:00 到达，余票 51 张，票价 73.0 元  \n- **G7302**：09:17 发车，10:17 到达，余票 47 张，票价 73.0 元  \n- **G7301**：12:34 发车，13:34 到达，余票 35 张，票价 73.0 元  \n\n以上信息均来自实时模拟余票数据。当前仅支持模拟查票和政策咨询，不提供锁座、下单或支付服务。",
+    "tool_calling_verified": true,
+    "tool_executed": true,
+    "actual_tools": [
+      {
+        "tool": "query_tickets",
+        "args": {
+          "date": "2026-10-26",
+          "from_city": "上海",
+          "to_city": "杭州",
+          "kind": "高铁",
+          "seat_type": "二等座"
+        },
+        "result": {
+          "trains": [
+            {
+              "kind": "高铁",
+              "train_no": "G7303",
+              "from_city": "上海",
+              "to_city": "杭州",
+              "date": "2026-10-26",
+              "depart": "12:34",
+              "arrive": "13:34",
+              "seat_type": "二等座",
+              "price": 73.0,
+              "seats_left": 51
+            },
+            {
+              "kind": "高铁",
+              "train_no": "G7302",
+              "from_city": "上海",
+              "to_city": "杭州",
+              "date": "2026-10-26",
+              "depart": "09:17",
+              "arrive": "10:17",
+              "seat_type": "二等座",
+              "price": 73.0,
+              "seats_left": 47
+            },
+            {
+              "kind": "高铁",
+              "train_no": "G7301",
+              "from_city": "上海",
+              "to_city": "杭州",
+              "date": "2026-10-26",
+              "depart": "06:00",
+              "arrive": "07:00",
+              "seat_type": "二等座",
+              "price": 73.0,
+              "seats_left": 35
+            }
+          ],
+          "count": 3
+        }
+      }
+    ],
+    "historical_business_verified": false,
+    "original_live_guard": null,
+    "original_live_guard_triggered": false,
+    "v341_offline_replay": {
+      "schema": "reply-consistency/2",
+      "status": "failed",
+      "verdict": "inconsistent",
+      "checked_fields": 24,
+      "identity_checks": 3,
+      "findings": [
+        {
+          "train_no": "G7303",
+          "field": "depart",
+          "claimed": "06:00",
+          "tool_value": "12:34",
+          "tool_values": [
+            "12:34"
+          ],
+          "error_type": "departure_time_mismatch",
+          "line": 3,
+          "text": "- **G7303**：06:00 发车，07:00 到达，余票 51 张，票价 73.0 元  ",
+          "authority_sources": [
+            {
+              "event_index": 6,
+              "call_id": "call_f3c6101b2ef44676afee02",
+              "args": {
+                "date": "2026-10-26",
+                "from_city": "上海",
+                "to_city": "杭州",
+                "kind": "高铁",
+                "seat_type": "二等座"
+              }
+            }
+          ]
+        },
+        {
+          "train_no": "G7303",
+          "field": "arrive",
+          "claimed": "07:00",
+          "tool_value": "13:34",
+          "tool_values": [
+            "13:34"
+          ],
+          "error_type": "arrival_time_mismatch",
+          "line": 3,
+          "text": "- **G7303**：06:00 发车，07:00 到达，余票 51 张，票价 73.0 元  ",
+          "authority_sources": [
+            {
+              "event_index": 6,
+              "call_id": "call_f3c6101b2ef44676afee02",
+              "args": {
+                "date": "2026-10-26",
+                "from_city": "上海",
+                "to_city": "杭州",
+                "kind": "高铁",
+                "seat_type": "二等座"
+              }
+            }
+          ]
+        },
+        {
+          "train_no": "G7301",
+          "field": "depart",
+          "claimed": "12:34",
+          "tool_value": "06:00",
+          "tool_values": [
+            "06:00"
+          ],
+          "error_type": "departure_time_mismatch",
+          "line": 5,
+          "text": "- **G7301**：12:34 发车，13:34 到达，余票 35 张，票价 73.0 元  ",
+          "authority_sources": [
+            {
+              "event_index": 6,
+              "call_id": "call_f3c6101b2ef44676afee02",
+              "args": {
+                "date": "2026-10-26",
+                "from_city": "上海",
+                "to_city": "杭州",
+                "kind": "高铁",
+                "seat_type": "二等座"
+              }
+            }
+          ]
+        },
+        {
+          "train_no": "G7301",
+          "field": "arrive",
+          "claimed": "13:34",
+          "tool_value": "07:00",
+          "tool_values": [
+            "07:00"
+          ],
+          "error_type": "arrival_time_mismatch",
+          "line": 5,
+          "text": "- **G7301**：12:34 发车，13:34 到达，余票 35 张，票价 73.0 元  ",
+          "authority_sources": [
+            {
+              "event_index": 6,
+              "call_id": "call_f3c6101b2ef44676afee02",
+              "args": {
+                "date": "2026-10-26",
+                "from_city": "上海",
+                "to_city": "杭州",
+                "kind": "高铁",
+                "seat_type": "二等座"
+              }
+            }
+          ]
+        }
+      ],
+      "field_checks": [
+        {
+          "train_no": "G7303",
+          "identity": {
+            "train_no": "G7303",
+            "date": "2026-10-26",
+            "from_city": "上海",
+            "to_city": "杭州",
+            "seat_type": "二等座",
+            "kind": "高铁"
+          },
+          "field": "train_no",
+          "claimed": "G7303",
+          "tool_value": "G7303",
+          "matched": true,
+          "comparison": "equal",
+          "line": 3,
+          "authority_sources": [
+            {
+              "event_index": 6,
+              "call_id": "call_f3c6101b2ef44676afee02",
+              "args": {
+                "date": "2026-10-26",
+                "from_city": "上海",
+                "to_city": "杭州",
+                "kind": "高铁",
+                "seat_type": "二等座"
+              }
+            }
+          ]
+        },
+        {
+          "train_no": "G7303",
+          "identity": {
+            "train_no": "G7303",
+            "date": "2026-10-26",
+            "from_city": "上海",
+            "to_city": "杭州",
+            "seat_type": "二等座",
+            "kind": "高铁"
+          },
+          "field": "depart",
+          "claimed": "06:00",
+          "tool_value": "12:34",
+          "matched": false,
+          "comparison": "equal",
+          "line": 3,
+          "authority_sources": [
+            {
+              "event_index": 6,
+              "call_id": "call_f3c6101b2ef44676afee02",
+              "args": {
+                "date": "2026-10-26",
+                "from_city": "上海",
+                "to_city": "杭州",
+                "kind": "高铁",
+                "seat_type": "二等座"
+              }
+            }
+          ]
+        },
+        {
+          "train_no": "G7303",
+          "identity": {
+            "train_no": "G7303",
+            "date": "2026-10-26",
+            "from_city": "上海",
+            "to_city": "杭州",
+            "seat_type": "二等座",
+            "kind": "高铁"
+          },
+          "field": "arrive",
+          "claimed": "07:00",
+          "tool_value": "13:34",
+          "matched": false,
+          "comparison": "equal",
+          "line": 3,
+          "authority_sources": [
+            {
+              "event_index": 6,
+              "call_id": "call_f3c6101b2ef44676afee02",
+              "args": {
+                "date": "2026-10-26",
+                "from_city": "上海",
+                "to_city": "杭州",
+                "kind": "高铁",
+                "seat_type": "二等座"
+              }
+            }
+          ]
+        },
+        {
+          "train_no": "G7303",
+          "identity": {
+            "train_no": "G7303",
+            "date": "2026-10-26",
+            "from_city": "上海",
+            "to_city": "杭州",
+            "seat_type": "二等座",
+            "kind": "高铁"
+          },
+          "field": "price",
+          "claimed": "73",
+          "tool_value": "73",
+          "matched": true,
+          "comparison": "equal",
+          "line": 3,
+          "authority_sources": [
+            {
+              "event_index": 6,
+              "call_id": "call_f3c6101b2ef44676afee02",
+              "args": {
+                "date": "2026-10-26",
+                "from_city": "上海",
+                "to_city": "杭州",
+                "kind": "高铁",
+                "seat_type": "二等座"
+              }
+            }
+          ]
+        },
+        {
+          "train_no": "G7303",
+          "identity": {
+            "train_no": "G7303",
+            "date": "2026-10-26",
+            "from_city": "上海",
+            "to_city": "杭州",
+            "seat_type": "二等座",
+            "kind": "高铁"
+          },
+          "field": "seats_left",
+          "claimed": 51,
+          "tool_value": 51,
+          "matched": true,
+          "comparison": "equal",
+          "line": 3,
+          "authority_sources": [
+            {
+              "event_index": 6,
+              "call_id": "call_f3c6101b2ef44676afee02",
+              "args": {
+                "date": "2026-10-26",
+                "from_city": "上海",
+                "to_city": "杭州",
+                "kind": "高铁",
+                "seat_type": "二等座"
+              }
+            }
+          ]
+        },
+        {
+          "train_no": "G7303",
+          "identity": {
+            "train_no": "G7303",
+            "date": "2026-10-26",
+            "from_city": "上海",
+            "to_city": "杭州",
+            "seat_type": "二等座",
+            "kind": "高铁"
+          },
+          "field": "date",
+          "claimed": "2026-10-26",
+          "tool_value": "2026-10-26",
+          "matched": true,
+          "comparison": "equal",
+          "line": 3,
+          "authority_sources": [
+            {
+              "event_index": 6,
+              "call_id": "call_f3c6101b2ef44676afee02",
+              "args": {
+                "date": "2026-10-26",
+                "from_city": "上海",
+                "to_city": "杭州",
+                "kind": "高铁",
+                "seat_type": "二等座"
+              }
+            }
+          ]
+        },
+        {
+          "train_no": "G7303",
+          "identity": {
+            "train_no": "G7303",
+            "date": "2026-10-26",
+            "from_city": "上海",
+            "to_city": "杭州",
+            "seat_type": "二等座",
+            "kind": "高铁"
+          },
+          "field": "seat_type",
+          "claimed": "二等座",
+          "tool_value": "二等座",
+          "matched": true,
+          "comparison": "equal",
+          "line": 3,
+          "authority_sources": [
+            {
+              "event_index": 6,
+              "call_id": "call_f3c6101b2ef44676afee02",
+              "args": {
+                "date": "2026-10-26",
+                "from_city": "上海",
+                "to_city": "杭州",
+                "kind": "高铁",
+                "seat_type": "二等座"
+              }
+            }
+          ]
+        },
+        {
+          "train_no": "G7303",
+          "identity": {
+            "train_no": "G7303",
+            "date": "2026-10-26",
+            "from_city": "上海",
+            "to_city": "杭州",
+            "seat_type": "二等座",
+            "kind": "高铁"
+          },
+          "field": "from_city",
+          "claimed": "上海",
+          "tool_value": "上海",
+          "matched": true,
+          "comparison": "equal",
+          "line": 3,
+          "authority_sources": [
+            {
+              "event_index": 6,
+              "call_id": "call_f3c6101b2ef44676afee02",
+              "args": {
+                "date": "2026-10-26",
+                "from_city": "上海",
+                "to_city": "杭州",
+                "kind": "高铁",
+                "seat_type": "二等座"
+              }
+            }
+          ]
+        },
+        {
+          "train_no": "G7303",
+          "identity": {
+            "train_no": "G7303",
+            "date": "2026-10-26",
+            "from_city": "上海",
+            "to_city": "杭州",
+            "seat_type": "二等座",
+            "kind": "高铁"
+          },
+          "field": "to_city",
+          "claimed": "杭州",
+          "tool_value": "杭州",
+          "matched": true,
+          "comparison": "equal",
+          "line": 3,
+          "authority_sources": [
+            {
+              "event_index": 6,
+              "call_id": "call_f3c6101b2ef44676afee02",
+              "args": {
+                "date": "2026-10-26",
+                "from_city": "上海",
+                "to_city": "杭州",
+                "kind": "高铁",
+                "seat_type": "二等座"
+              }
+            }
+          ]
+        },
+        {
+          "train_no": "G7302",
+          "identity": {
+            "train_no": "G7302",
+            "date": "2026-10-26",
+            "from_city": "上海",
+            "to_city": "杭州",
+            "seat_type": "二等座",
+            "kind": "高铁"
+          },
+          "field": "train_no",
+          "claimed": "G7302",
+          "tool_value": "G7302",
+          "matched": true,
+          "comparison": "equal",
+          "line": 4,
+          "authority_sources": [
+            {
+              "event_index": 6,
+              "call_id": "call_f3c6101b2ef44676afee02",
+              "args": {
+                "date": "2026-10-26",
+                "from_city": "上海",
+                "to_city": "杭州",
+                "kind": "高铁",
+                "seat_type": "二等座"
+              }
+            }
+          ]
+        },
+        {
+          "train_no": "G7302",
+          "identity": {
+            "train_no": "G7302",
+            "date": "2026-10-26",
+            "from_city": "上海",
+            "to_city": "杭州",
+            "seat_type": "二等座",
+            "kind": "高铁"
+          },
+          "field": "depart",
+          "claimed": "09:17",
+          "tool_value": "09:17",
+          "matched": true,
+          "comparison": "equal",
+          "line": 4,
+          "authority_sources": [
+            {
+              "event_index": 6,
+              "call_id": "call_f3c6101b2ef44676afee02",
+              "args": {
+                "date": "2026-10-26",
+                "from_city": "上海",
+                "to_city": "杭州",
+                "kind": "高铁",
+                "seat_type": "二等座"
+              }
+            }
+          ]
+        },
+        {
+          "train_no": "G7302",
+          "identity": {
+            "train_no": "G7302",
+            "date": "2026-10-26",
+            "from_city": "上海",
+            "to_city": "杭州",
+            "seat_type": "二等座",
+            "kind": "高铁"
+          },
+          "field": "arrive",
+          "claimed": "10:17",
+          "tool_value": "10:17",
+          "matched": true,
+          "comparison": "equal",
+          "line": 4,
+          "authority_sources": [
+            {
+              "event_index": 6,
+              "call_id": "call_f3c6101b2ef44676afee02",
+              "args": {
+                "date": "2026-10-26",
+                "from_city": "上海",
+                "to_city": "杭州",
+                "kind": "高铁",
+                "seat_type": "二等座"
+              }
+            }
+          ]
+        },
+        {
+          "train_no": "G7302",
+          "identity": {
+            "train_no": "G7302",
+            "date": "2026-10-26",
+            "from_city": "上海",
+            "to_city": "杭州",
+            "seat_type": "二等座",
+            "kind": "高铁"
+          },
+          "field": "price",
+          "claimed": "73",
+          "tool_value": "73",
+          "matched": true,
+          "comparison": "equal",
+          "line": 4,
+          "authority_sources": [
+            {
+              "event_index": 6,
+              "call_id": "call_f3c6101b2ef44676afee02",
+              "args": {
+                "date": "2026-10-26",
+                "from_city": "上海",
+                "to_city": "杭州",
+                "kind": "高铁",
+                "seat_type": "二等座"
+              }
+            }
+          ]
+        },
+        {
+          "train_no": "G7302",
+          "identity": {
+            "train_no": "G7302",
+            "date": "2026-10-26",
+            "from_city": "上海",
+            "to_city": "杭州",
+            "seat_type": "二等座",
+            "kind": "高铁"
+          },
+          "field": "seats_left",
+          "claimed": 47,
+          "tool_value": 47,
+          "matched": true,
+          "comparison": "equal",
+          "line": 4,
+          "authority_sources": [
+            {
+              "event_index": 6,
+              "call_id": "call_f3c6101b2ef44676afee02",
+              "args": {
+                "date": "2026-10-26",
+                "from_city": "上海",
+                "to_city": "杭州",
+                "kind": "高铁",
+                "seat_type": "二等座"
+              }
+            }
+          ]
+        },
+        {
+          "train_no": "G7302",
+          "identity": {
+            "train_no": "G7302",
+            "date": "2026-10-26",
+            "from_city": "上海",
+            "to_city": "杭州",
+            "seat_type": "二等座",
+            "kind": "高铁"
+          },
+          "field": "date",
+          "claimed": "2026-10-26",
+          "tool_value": "2026-10-26",
+          "matched": true,
+          "comparison": "equal",
+          "line": 4,
+          "authority_sources": [
+            {
+              "event_index": 6,
+              "call_id": "call_f3c6101b2ef44676afee02",
+              "args": {
+                "date": "2026-10-26",
+                "from_city": "上海",
+                "to_city": "杭州",
+                "kind": "高铁",
+                "seat_type": "二等座"
+              }
+            }
+          ]
+        },
+        {
+          "train_no": "G7302",
+          "identity": {
+            "train_no": "G7302",
+            "date": "2026-10-26",
+            "from_city": "上海",
+            "to_city": "杭州",
+            "seat_type": "二等座",
+            "kind": "高铁"
+          },
+          "field": "seat_type",
+          "claimed": "二等座",
+          "tool_value": "二等座",
+          "matched": true,
+          "comparison": "equal",
+          "line": 4,
+          "authority_sources": [
+            {
+              "event_index": 6,
+              "call_id": "call_f3c6101b2ef44676afee02",
+              "args": {
+                "date": "2026-10-26",
+                "from_city": "上海",
+                "to_city": "杭州",
+                "kind": "高铁",
+                "seat_type": "二等座"
+              }
+            }
+          ]
+        },
+        {
+          "train_no": "G7302",
+          "identity": {
+            "train_no": "G7302",
+            "date": "2026-10-26",
+            "from_city": "上海",
+            "to_city": "杭州",
+            "seat_type": "二等座",
+            "kind": "高铁"
+          },
+          "field": "from_city",
+          "claimed": "上海",
+          "tool_value": "上海",
+          "matched": true,
+          "comparison": "equal",
+          "line": 4,
+          "authority_sources": [
+            {
+              "event_index": 6,
+              "call_id": "call_f3c6101b2ef44676afee02",
+              "args": {
+                "date": "2026-10-26",
+                "from_city": "上海",
+                "to_city": "杭州",
+                "kind": "高铁",
+                "seat_type": "二等座"
+              }
+            }
+          ]
+        },
+        {
+          "train_no": "G7302",
+          "identity": {
+            "train_no": "G7302",
+            "date": "2026-10-26",
+            "from_city": "上海",
+            "to_city": "杭州",
+            "seat_type": "二等座",
+            "kind": "高铁"
+          },
+          "field": "to_city",
+          "claimed": "杭州",
+          "tool_value": "杭州",
+          "matched": true,
+          "comparison": "equal",
+          "line": 4,
+          "authority_sources": [
+            {
+              "event_index": 6,
+              "call_id": "call_f3c6101b2ef44676afee02",
+              "args": {
+                "date": "2026-10-26",
+                "from_city": "上海",
+                "to_city": "杭州",
+                "kind": "高铁",
+                "seat_type": "二等座"
+              }
+            }
+          ]
+        },
+        {
+          "train_no": "G7301",
+          "identity": {
+            "train_no": "G7301",
+            "date": "2026-10-26",
+            "from_city": "上海",
+            "to_city": "杭州",
+            "seat_type": "二等座",
+            "kind": "高铁"
+          },
+          "field": "train_no",
+          "claimed": "G7301",
+          "tool_value": "G7301",
+          "matched": true,
+          "comparison": "equal",
+          "line": 5,
+          "authority_sources": [
+            {
+              "event_index": 6,
+              "call_id": "call_f3c6101b2ef44676afee02",
+              "args": {
+                "date": "2026-10-26",
+                "from_city": "上海",
+                "to_city": "杭州",
+                "kind": "高铁",
+                "seat_type": "二等座"
+              }
+            }
+          ]
+        },
+        {
+          "train_no": "G7301",
+          "identity": {
+            "train_no": "G7301",
+            "date": "2026-10-26",
+            "from_city": "上海",
+            "to_city": "杭州",
+            "seat_type": "二等座",
+            "kind": "高铁"
+          },
+          "field": "depart",
+          "claimed": "12:34",
+          "tool_value": "06:00",
+          "matched": false,
+          "comparison": "equal",
+          "line": 5,
+          "authority_sources": [
+            {
+              "event_index": 6,
+              "call_id": "call_f3c6101b2ef44676afee02",
+              "args": {
+                "date": "2026-10-26",
+                "from_city": "上海",
+                "to_city": "杭州",
+                "kind": "高铁",
+                "seat_type": "二等座"
+              }
+            }
+          ]
+        },
+        {
+          "train_no": "G7301",
+          "identity": {
+            "train_no": "G7301",
+            "date": "2026-10-26",
+            "from_city": "上海",
+            "to_city": "杭州",
+            "seat_type": "二等座",
+            "kind": "高铁"
+          },
+          "field": "arrive",
+          "claimed": "13:34",
+          "tool_value": "07:00",
+          "matched": false,
+          "comparison": "equal",
+          "line": 5,
+          "authority_sources": [
+            {
+              "event_index": 6,
+              "call_id": "call_f3c6101b2ef44676afee02",
+              "args": {
+                "date": "2026-10-26",
+                "from_city": "上海",
+                "to_city": "杭州",
+                "kind": "高铁",
+                "seat_type": "二等座"
+              }
+            }
+          ]
+        },
+        {
+          "train_no": "G7301",
+          "identity": {
+            "train_no": "G7301",
+            "date": "2026-10-26",
+            "from_city": "上海",
+            "to_city": "杭州",
+            "seat_type": "二等座",
+            "kind": "高铁"
+          },
+          "field": "price",
+          "claimed": "73",
+          "tool_value": "73",
+          "matched": true,
+          "comparison": "equal",
+          "line": 5,
+          "authority_sources": [
+            {
+              "event_index": 6,
+              "call_id": "call_f3c6101b2ef44676afee02",
+              "args": {
+                "date": "2026-10-26",
+                "from_city": "上海",
+                "to_city": "杭州",
+                "kind": "高铁",
+                "seat_type": "二等座"
+              }
+            }
+          ]
+        },
+        {
+          "train_no": "G7301",
+          "identity": {
+            "train_no": "G7301",
+            "date": "2026-10-26",
+            "from_city": "上海",
+            "to_city": "杭州",
+            "seat_type": "二等座",
+            "kind": "高铁"
+          },
+          "field": "seats_left",
+          "claimed": 35,
+          "tool_value": 35,
+          "matched": true,
+          "comparison": "equal",
+          "line": 5,
+          "authority_sources": [
+            {
+              "event_index": 6,
+              "call_id": "call_f3c6101b2ef44676afee02",
+              "args": {
+                "date": "2026-10-26",
+                "from_city": "上海",
+                "to_city": "杭州",
+                "kind": "高铁",
+                "seat_type": "二等座"
+              }
+            }
+          ]
+        },
+        {
+          "train_no": "G7301",
+          "identity": {
+            "train_no": "G7301",
+            "date": "2026-10-26",
+            "from_city": "上海",
+            "to_city": "杭州",
+            "seat_type": "二等座",
+            "kind": "高铁"
+          },
+          "field": "date",
+          "claimed": "2026-10-26",
+          "tool_value": "2026-10-26",
+          "matched": true,
+          "comparison": "equal",
+          "line": 5,
+          "authority_sources": [
+            {
+              "event_index": 6,
+              "call_id": "call_f3c6101b2ef44676afee02",
+              "args": {
+                "date": "2026-10-26",
+                "from_city": "上海",
+                "to_city": "杭州",
+                "kind": "高铁",
+                "seat_type": "二等座"
+              }
+            }
+          ]
+        },
+        {
+          "train_no": "G7301",
+          "identity": {
+            "train_no": "G7301",
+            "date": "2026-10-26",
+            "from_city": "上海",
+            "to_city": "杭州",
+            "seat_type": "二等座",
+            "kind": "高铁"
+          },
+          "field": "seat_type",
+          "claimed": "二等座",
+          "tool_value": "二等座",
+          "matched": true,
+          "comparison": "equal",
+          "line": 5,
+          "authority_sources": [
+            {
+              "event_index": 6,
+              "call_id": "call_f3c6101b2ef44676afee02",
+              "args": {
+                "date": "2026-10-26",
+                "from_city": "上海",
+                "to_city": "杭州",
+                "kind": "高铁",
+                "seat_type": "二等座"
+              }
+            }
+          ]
+        },
+        {
+          "train_no": "G7301",
+          "identity": {
+            "train_no": "G7301",
+            "date": "2026-10-26",
+            "from_city": "上海",
+            "to_city": "杭州",
+            "seat_type": "二等座",
+            "kind": "高铁"
+          },
+          "field": "from_city",
+          "claimed": "上海",
+          "tool_value": "上海",
+          "matched": true,
+          "comparison": "equal",
+          "line": 5,
+          "authority_sources": [
+            {
+              "event_index": 6,
+              "call_id": "call_f3c6101b2ef44676afee02",
+              "args": {
+                "date": "2026-10-26",
+                "from_city": "上海",
+                "to_city": "杭州",
+                "kind": "高铁",
+                "seat_type": "二等座"
+              }
+            }
+          ]
+        },
+        {
+          "train_no": "G7301",
+          "identity": {
+            "train_no": "G7301",
+            "date": "2026-10-26",
+            "from_city": "上海",
+            "to_city": "杭州",
+            "seat_type": "二等座",
+            "kind": "高铁"
+          },
+          "field": "to_city",
+          "claimed": "杭州",
+          "tool_value": "杭州",
+          "matched": true,
+          "comparison": "equal",
+          "line": 5,
+          "authority_sources": [
+            {
+              "event_index": 6,
+              "call_id": "call_f3c6101b2ef44676afee02",
+              "args": {
+                "date": "2026-10-26",
+                "from_city": "上海",
+                "to_city": "杭州",
+                "kind": "高铁",
+                "seat_type": "二等座"
+              }
+            }
+          ]
+        }
+      ],
+      "indeterminate": [],
+      "ignored": [
+        {
+          "line": 1,
+          "text": "根据查询结果，2026-10-26（明天）上海到杭州的高铁二等座有余票的车次如下：",
+          "reason": "list_availability_qualifier"
+        }
+      ],
+      "authority_queries": [
+        {
+          "event_index": 6,
+          "rows": 3,
+          "call_id": "call_f3c6101b2ef44676afee02",
+          "args": {
+            "date": "2026-10-26",
+            "from_city": "上海",
+            "to_city": "杭州",
+            "kind": "高铁",
+            "seat_type": "二等座"
+          }
+        }
+      ],
+      "scope": "Explicit ticket fields in labelled prose/tables; not full natural-language or business accuracy"
+    },
+    "tokens": {
+      "prompt": 1756,
+      "completion": 288
+    },
+    "latency_ms": 8415,
+    "cost": null,
+    "new_live_requests": 0,
+    "postfix_live_retested": false,
+    "scope": "One saved Live query per provider; no general accuracy estimate"
+  }
+]

@@ -1,0 +1,53 @@
+{
+  "id": "malformed_authority",
+  "kind": "deterministic_offline_fixture",
+  "user_input": "查2026-10-26上海到杭州高铁二等座。",
+  "authority_events": [
+    {
+      "event": "tool_end",
+      "tool": "query_tickets",
+      "ok": true,
+      "executed": true,
+      "call_id": "fixture-call",
+      "args": {
+        "from_city": "上海",
+        "to_city": "杭州",
+        "date": "2026-10-26"
+      },
+      "result": {
+        "trains": [
+          "malformed"
+        ],
+        "count": 1
+      }
+    }
+  ],
+  "model_output": "G7301 出发06:00。",
+  "assertion": {
+    "status": "indeterminate",
+    "finding_fields": [],
+    "indeterminate_reason": "no_successful_authority"
+  },
+  "actual": {
+    "schema": "reply-consistency/2",
+    "status": "indeterminate",
+    "verdict": "indeterminate",
+    "checked_fields": 0,
+    "identity_checks": 0,
+    "findings": [],
+    "field_checks": [],
+    "indeterminate": [
+      {
+        "line": 1,
+        "text": "G7301 出发06:00。",
+        "reason": "no_successful_authority"
+      }
+    ],
+    "ignored": [],
+    "authority_queries": [],
+    "scope": "Explicit ticket fields in labelled prose/tables; not full natural-language or business accuracy"
+  },
+  "assertion_passed": true,
+  "new_model_requests": 0,
+  "scope": "A deterministic regression; not B formal grading or post-fix Live"
+}

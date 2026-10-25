@@ -1,2 +1,3 @@
 # Preserve the byte hashes of the new audited evidence on every platform.
 docs/evidence/v34/** -text whitespace=cr-at-eol
+docs/evidence/v341/** -text whitespace=cr-at-eol

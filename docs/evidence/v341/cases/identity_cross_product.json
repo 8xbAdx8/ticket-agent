@@ -1,0 +1,143 @@
+{
+  "id": "identity_cross_product",
+  "kind": "deterministic_offline_fixture",
+  "user_input": "查2026-10-26上海到杭州高铁二等座。",
+  "authority_events": [
+    {
+      "event": "tool_end",
+      "tool": "query_tickets",
+      "ok": true,
+      "executed": true,
+      "call_id": "fixture-call",
+      "args": {
+        "from_city": "上海",
+        "to_city": "杭州",
+        "date": "2026-10-26"
+      },
+      "result": {
+        "trains": [
+          {
+            "train_no": "G7301",
+            "from_city": "上海",
+            "to_city": "杭州",
+            "date": "2026-10-26",
+            "depart": "06:00",
+            "arrive": "07:00",
+            "seat_type": "二等座",
+            "price": 73.0,
+            "seats_left": 35,
+            "kind": "高铁"
+          },
+          {
+            "train_no": "G7301",
+            "from_city": "上海",
+            "to_city": "杭州",
+            "date": "2026-10-27",
+            "depart": "06:00",
+            "arrive": "07:00",
+            "seat_type": "一等座",
+            "price": 120.0,
+            "seats_left": 5,
+            "kind": "高铁"
+          }
+        ],
+        "count": 2
+      }
+    }
+  ],
+  "model_output": "G7301 日期2026-10-26，席别一等座，票价120元。",
+  "assertion": {
+    "status": "failed",
+    "finding_fields": [
+      "identity"
+    ],
+    "indeterminate_reason": null
+  },
+  "actual": {
+    "schema": "reply-consistency/2",
+    "status": "failed",
+    "verdict": "inconsistent",
+    "checked_fields": 0,
+    "identity_checks": 0,
+    "findings": [
+      {
+        "train_no": "G7301",
+        "field": "identity",
+        "claimed": {
+          "train_no": "G7301",
+          "date": "2026-10-26",
+          "seat_type": "一等座"
+        },
+        "tool_value": null,
+        "tool_values": [
+          {
+            "train_no": "G7301",
+            "from_city": "上海",
+            "to_city": "杭州",
+            "date": "2026-10-26",
+            "depart": "06:00",
+            "arrive": "07:00",
+            "seat_type": "二等座",
+            "price": "73",
+            "seats_left": 35,
+            "kind": "高铁"
+          },
+          {
+            "train_no": "G7301",
+            "from_city": "上海",
+            "to_city": "杭州",
+            "date": "2026-10-27",
+            "depart": "06:00",
+            "arrive": "07:00",
+            "seat_type": "一等座",
+            "price": "1.2E+2",
+            "seats_left": 5,
+            "kind": "高铁"
+          }
+        ],
+        "error_type": "record_identity_mismatch",
+        "line": 1,
+        "text": "G7301 日期2026-10-26，席别一等座，票价120元。",
+        "authority_sources": [
+          {
+            "event_index": 0,
+            "call_id": "fixture-call",
+            "args": {
+              "from_city": "上海",
+              "to_city": "杭州",
+              "date": "2026-10-26"
+            }
+          },
+          {
+            "event_index": 0,
+            "call_id": "fixture-call",
+            "args": {
+              "from_city": "上海",
+              "to_city": "杭州",
+              "date": "2026-10-26"
+            }
+          }
+        ]
+      }
+    ],
+    "field_checks": [],
+    "indeterminate": [],
+    "ignored": [],
+    "authority_queries": [
+      {
+        "event_index": 0,
+        "rows": 2,
+        "call_id": "fixture-call",
+        "args": {
+          "from_city": "上海",
+          "to_city": "杭州",
+          "date": "2026-10-26"
+        }
+      }
+    ],
+    "scope": "Explicit ticket fields in labelled prose/tables; not full natural-language or business accuracy"
+  },
+  "assertion_passed": true,
+  "new_model_requests": 0,
+  "scope": "A deterministic regression; not B formal grading or post-fix Live"
+}

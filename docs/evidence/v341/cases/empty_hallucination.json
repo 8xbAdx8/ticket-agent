@@ -1,0 +1,81 @@
+{
+  "id": "empty_hallucination",
+  "kind": "deterministic_offline_fixture",
+  "user_input": "查2026-10-26上海到杭州高铁二等座。",
+  "authority_events": [
+    {
+      "event": "tool_end",
+      "tool": "query_tickets",
+      "ok": true,
+      "executed": true,
+      "call_id": "fixture-call",
+      "args": {
+        "from_city": "上海",
+        "to_city": "杭州",
+        "date": "2026-10-26"
+      },
+      "result": {
+        "trains": [],
+        "count": 0
+      }
+    }
+  ],
+  "model_output": "G7301 出发06:00。",
+  "assertion": {
+    "status": "failed",
+    "finding_fields": [
+      "train_no"
+    ],
+    "indeterminate_reason": null
+  },
+  "actual": {
+    "schema": "reply-consistency/2",
+    "status": "failed",
+    "verdict": "inconsistent",
+    "checked_fields": 0,
+    "identity_checks": 0,
+    "findings": [
+      {
+        "train_no": "G7301",
+        "field": "train_no",
+        "claimed": "G7301",
+        "tool_value": null,
+        "tool_values": [],
+        "error_type": "unreturned_train",
+        "line": 1,
+        "text": "G7301 出发06:00。",
+        "authority_sources": [
+          {
+            "event_index": 0,
+            "rows": 0,
+            "call_id": "fixture-call",
+            "args": {
+              "from_city": "上海",
+              "to_city": "杭州",
+              "date": "2026-10-26"
+            }
+          }
+        ]
+      }
+    ],
+    "field_checks": [],
+    "indeterminate": [],
+    "ignored": [],
+    "authority_queries": [
+      {
+        "event_index": 0,
+        "rows": 0,
+        "call_id": "fixture-call",
+        "args": {
+          "from_city": "上海",
+          "to_city": "杭州",
+          "date": "2026-10-26"
+        }
+      }
+    ],
+    "scope": "Explicit ticket fields in labelled prose/tables; not full natural-language or business accuracy"
+  },
+  "assertion_passed": true,
+  "new_model_requests": 0,
+  "scope": "A deterministic regression; not B formal grading or post-fix Live"
+}

@@ -1,0 +1,454 @@
+{
+  "schema": "ticket-v341-offline/1",
+  "timestamp": "2026-10-25T13:32:43.522070+00:00",
+  "tested_source_head": "9bd3c29049bb6de920e80283e3a9a4e361155470",
+  "status": "passed",
+  "runs": [
+    {
+      "name": "specialist",
+      "exit_code": 0,
+      "collected": 74,
+      "skipped": 0,
+      "log": "specialist.txt"
+    },
+    {
+      "name": "existing_full_regression",
+      "exit_code": 0,
+      "collected": null,
+      "skipped": 0,
+      "log": "existing_full_regression.txt"
+    }
+  ],
+  "field_cases": 64,
+  "field_assertions_passed": 64,
+  "field_case_results": [
+    {
+      "case_id": "history_deepseek",
+      "assertion_passed": true,
+      "detector_status": "checked_fields_match"
+    },
+    {
+      "case_id": "history_bailian",
+      "assertion_passed": true,
+      "detector_status": "failed"
+    },
+    {
+      "case_id": "all_nine_fields",
+      "assertion_passed": true,
+      "detector_status": "checked_fields_match"
+    },
+    {
+      "case_id": "nonpositional_reverse",
+      "assertion_passed": true,
+      "detector_status": "checked_fields_match"
+    },
+    {
+      "case_id": "wrong_depart",
+      "assertion_passed": true,
+      "detector_status": "failed"
+    },
+    {
+      "case_id": "wrong_arrive",
+      "assertion_passed": true,
+      "detector_status": "failed"
+    },
+    {
+      "case_id": "wrong_date",
+      "assertion_passed": true,
+      "detector_status": "failed"
+    },
+    {
+      "case_id": "wrong_from",
+      "assertion_passed": true,
+      "detector_status": "failed"
+    },
+    {
+      "case_id": "wrong_to",
+      "assertion_passed": true,
+      "detector_status": "failed"
+    },
+    {
+      "case_id": "wrong_seat",
+      "assertion_passed": true,
+      "detector_status": "failed"
+    },
+    {
+      "case_id": "wrong_price",
+      "assertion_passed": true,
+      "detector_status": "failed"
+    },
+    {
+      "case_id": "wrong_stock",
+      "assertion_passed": true,
+      "detector_status": "failed"
+    },
+    {
+      "case_id": "invented_train",
+      "assertion_passed": true,
+      "detector_status": "failed"
+    },
+    {
+      "case_id": "quote_user_only",
+      "assertion_passed": true,
+      "detector_status": "not_verified"
+    },
+    {
+      "case_id": "quote_then_assert",
+      "assertion_passed": true,
+      "detector_status": "failed"
+    },
+    {
+      "case_id": "blockquote",
+      "assertion_passed": true,
+      "detector_status": "not_verified"
+    },
+    {
+      "case_id": "negative_unknown",
+      "assertion_passed": true,
+      "detector_status": "not_verified"
+    },
+    {
+      "case_id": "negative_time",
+      "assertion_passed": true,
+      "detector_status": "not_verified"
+    },
+    {
+      "case_id": "hypothesis",
+      "assertion_passed": true,
+      "detector_status": "indeterminate"
+    },
+    {
+      "case_id": "question",
+      "assertion_passed": true,
+      "detector_status": "indeterminate"
+    },
+    {
+      "case_id": "unscoped_stock",
+      "assertion_passed": true,
+      "detector_status": "indeterminate"
+    },
+    {
+      "case_id": "two_train_scope",
+      "assertion_passed": true,
+      "detector_status": "indeterminate"
+    },
+    {
+      "case_id": "empty_truth",
+      "assertion_passed": true,
+      "detector_status": "checked_fields_match"
+    },
+    {
+      "case_id": "empty_hallucination",
+      "assertion_passed": true,
+      "detector_status": "failed"
+    },
+    {
+      "case_id": "false_empty",
+      "assertion_passed": true,
+      "detector_status": "failed"
+    },
+    {
+      "case_id": "no_authority",
+      "assertion_passed": true,
+      "detector_status": "indeterminate"
+    },
+    {
+      "case_id": "failed_tool_not_authority",
+      "assertion_passed": true,
+      "detector_status": "indeterminate"
+    },
+    {
+      "case_id": "unexecuted_tool_not_authority",
+      "assertion_passed": true,
+      "detector_status": "indeterminate"
+    },
+    {
+      "case_id": "multiseat_specific",
+      "assertion_passed": true,
+      "detector_status": "checked_fields_match"
+    },
+    {
+      "case_id": "multiseat_missing_identity",
+      "assertion_passed": true,
+      "detector_status": "indeterminate"
+    },
+    {
+      "case_id": "multidate_specific",
+      "assertion_passed": true,
+      "detector_status": "checked_fields_match"
+    },
+    {
+      "case_id": "multidate_missing_identity",
+      "assertion_passed": true,
+      "detector_status": "indeterminate"
+    },
+    {
+      "case_id": "identity_cross_product",
+      "assertion_passed": true,
+      "detector_status": "failed"
+    },
+    {
+      "case_id": "conflicting_snapshots",
+      "assertion_passed": true,
+      "detector_status": "indeterminate"
+    },
+    {
+      "case_id": "duplicate_same_snapshot",
+      "assertion_passed": true,
+      "detector_status": "checked_fields_match"
+    },
+    {
+      "case_id": "missing_authority_field",
+      "assertion_passed": true,
+      "detector_status": "indeterminate"
+    },
+    {
+      "case_id": "ambiguous_table_value",
+      "assertion_passed": true,
+      "detector_status": "indeterminate"
+    },
+    {
+      "case_id": "approximate_price",
+      "assertion_passed": true,
+      "detector_status": "indeterminate"
+    },
+    {
+      "case_id": "time_normalization",
+      "assertion_passed": true,
+      "detector_status": "checked_fields_match"
+    },
+    {
+      "case_id": "date_chinese",
+      "assertion_passed": true,
+      "detector_status": "checked_fields_match"
+    },
+    {
+      "case_id": "multiline_prose",
+      "assertion_passed": true,
+      "detector_status": "checked_fields_match"
+    },
+    {
+      "case_id": "missing_claims",
+      "assertion_passed": true,
+      "detector_status": "not_verified"
+    },
+    {
+      "case_id": "legacy_tool_event",
+      "assertion_passed": true,
+      "detector_status": "checked_fields_match"
+    },
+    {
+      "case_id": "public_preview_is_not_authority",
+      "assertion_passed": true,
+      "detector_status": "indeterminate"
+    },
+    {
+      "case_id": "correspondence_swap",
+      "assertion_passed": true,
+      "detector_status": "failed"
+    },
+    {
+      "case_id": "sold_out_table",
+      "assertion_passed": true,
+      "detector_status": "checked_fields_match"
+    },
+    {
+      "case_id": "quoted_then_real_same_line",
+      "assertion_passed": true,
+      "detector_status": "checked_fields_match"
+    },
+    {
+      "case_id": "bad_time_format",
+      "assertion_passed": true,
+      "detector_status": "indeterminate"
+    },
+    {
+      "case_id": "unquoted_user_reference",
+      "assertion_passed": true,
+      "detector_status": "not_verified"
+    },
+    {
+      "case_id": "affirmative_quoted_ghost",
+      "assertion_passed": true,
+      "detector_status": "failed"
+    },
+    {
+      "case_id": "unattributed_quote",
+      "assertion_passed": true,
+      "detector_status": "indeterminate"
+    },
+    {
+      "case_id": "negative_then_ghost",
+      "assertion_passed": true,
+      "detector_status": "failed"
+    },
+    {
+      "case_id": "negative_then_positive_comma",
+      "assertion_passed": true,
+      "detector_status": "checked_fields_match"
+    },
+    {
+      "case_id": "false_sold_out_prose",
+      "assertion_passed": true,
+      "detector_status": "failed"
+    },
+    {
+      "case_id": "symbolic_stock",
+      "assertion_passed": true,
+      "detector_status": "checked_fields_match"
+    },
+    {
+      "case_id": "asserted_numeric_stock",
+      "assertion_passed": true,
+      "detector_status": "checked_fields_match"
+    },
+    {
+      "case_id": "malformed_authority",
+      "assertion_passed": true,
+      "detector_status": "indeterminate"
+    },
+    {
+      "case_id": "unsupported_time_prose",
+      "assertion_passed": true,
+      "detector_status": "indeterminate"
+    },
+    {
+      "case_id": "relative_date_unsupported",
+      "assertion_passed": true,
+      "detector_status": "indeterminate"
+    },
+    {
+      "case_id": "negative_price",
+      "assertion_passed": true,
+      "detector_status": "indeterminate"
+    },
+    {
+      "case_id": "availability_all_positive",
+      "assertion_passed": true,
+      "detector_status": "checked_fields_match"
+    },
+    {
+      "case_id": "availability_all_false",
+      "assertion_passed": true,
+      "detector_status": "failed"
+    },
+    {
+      "case_id": "false_symbolic_stock",
+      "assertion_passed": true,
+      "detector_status": "failed"
+    },
+    {
+      "case_id": "uncertain_stock_quality",
+      "assertion_passed": true,
+      "detector_status": "indeterminate"
+    }
+  ],
+  "full_regression": {
+    "status": "passed",
+    "tested_source_head": "9bd3c29049bb6de920e80283e3a9a4e361155470",
+    "timestamp": "2026-10-25T13:32:42.346903+00:00",
+    "scope": "A offline validation; not B V3.3 formal acceptance or new Live evidence",
+    "credentials_removed_from_children": true,
+    "external_python_network_blocked": true,
+    "blocked_network_attempts": 0,
+    "real_api_requests": 0,
+    "real_api_tokens": null,
+    "new_api_cost": 0,
+    "cost_basis": "No remote generation requests",
+    "protected_files": 1069,
+    "protected_files_unchanged": true,
+    "changed_original_files": [],
+    "runs": [
+      {
+        "name": "all_environments",
+        "exit_code": 0,
+        "expected_exit_code": 0,
+        "passed": true
+      },
+      {
+        "name": "v32_audit_matrix",
+        "exit_code": 0,
+        "expected_exit_code": 0,
+        "passed": true
+      },
+      {
+        "name": "offline_preflight",
+        "exit_code": 0,
+        "expected_exit_code": 0,
+        "passed": true
+      },
+      {
+        "name": "live_missing_key_preflight",
+        "exit_code": 2,
+        "expected_exit_code": 2,
+        "passed": true
+      },
+      {
+        "name": "live_fake_key_preflight",
+        "exit_code": 0,
+        "expected_exit_code": 0,
+        "passed": true
+      }
+    ],
+    "environment_regression": {
+      "status": "passed",
+      "scope": "A offline regression, not B official 100 cases",
+      "real_keys_removed_from_children": true,
+      "non_loopback_python_network_blocked": true,
+      "blocked_network_attempts": 0,
+      "new_deepseek_api_requests": 0,
+      "production_budget_and_live_evidence_unchanged": true,
+      "checked_file_count": 361,
+      "runs": [
+        {
+          "name": "deepseek_unit",
+          "exit_code": 0,
+          "tests": 355,
+          "skipped": 0,
+          "log": "deepseek_unit.txt"
+        },
+        {
+          "name": "v3_unit",
+          "exit_code": 0,
+          "tests": 355,
+          "skipped": 65,
+          "log": "v3_unit.txt"
+        },
+        {
+          "name": "v2_unit",
+          "exit_code": 0,
+          "tests": 355,
+          "skipped": 151,
+          "log": "v2_unit.txt"
+        },
+        {
+          "name": "mock_smoke",
+          "exit_code": 0,
+          "tests": null,
+          "skipped": 0,
+          "log": "mock_smoke.txt"
+        }
+      ]
+    },
+    "audit_matrix_records": 25,
+    "labelled_detector_samples": 8,
+    "limits": [
+      "Fake Key preflight is not credential or account validation",
+      "SDK stubs are not Live runs",
+      "B raw assertions and evidence not executed or changed",
+      "Browser screenshots are recorded separately"
+    ]
+  },
+  "protected_files": 3589,
+  "changed_original_files": [],
+  "real_model_requests": 0,
+  "langsmith_requests": 0,
+  "blocked_network_attempts": 0,
+  "postfix_live_retested": false,
+  "historical_source_files_unchanged": true,
+  "limits": [
+    "Offline assertions are A self-tests, not B official results.",
+    "Field consistency is not general natural-language accuracy.",
+    "The historical Live samples were produced before this fix."
+  ]
+}

@@ -1,0 +1,106 @@
+{
+  "id": "bad_time_format",
+  "kind": "deterministic_offline_fixture",
+  "user_input": "查2026-10-26上海到杭州高铁二等座。",
+  "authority_events": [
+    {
+      "event": "tool_end",
+      "tool": "query_tickets",
+      "ok": true,
+      "executed": true,
+      "call_id": "fixture-call",
+      "args": {
+        "from_city": "上海",
+        "to_city": "杭州",
+        "date": "2026-10-26"
+      },
+      "result": {
+        "trains": [
+          {
+            "train_no": "G7301",
+            "from_city": "上海",
+            "to_city": "杭州",
+            "date": "2026-10-26",
+            "depart": "06:00",
+            "arrive": "07:00",
+            "seat_type": "二等座",
+            "price": 73.0,
+            "seats_left": 35,
+            "kind": "高铁"
+          }
+        ],
+        "count": 1
+      }
+    }
+  ],
+  "model_output": "|车次|出发|\n|G7301|25:99|",
+  "assertion": {
+    "status": "indeterminate",
+    "finding_fields": [],
+    "indeterminate_reason": "unsupported_or_invalid_value"
+  },
+  "actual": {
+    "schema": "reply-consistency/2",
+    "status": "indeterminate",
+    "verdict": "indeterminate",
+    "checked_fields": 0,
+    "identity_checks": 1,
+    "findings": [],
+    "field_checks": [
+      {
+        "train_no": "G7301",
+        "identity": {
+          "train_no": "G7301",
+          "date": "2026-10-26",
+          "from_city": "上海",
+          "to_city": "杭州",
+          "seat_type": "二等座",
+          "kind": "高铁"
+        },
+        "field": "train_no",
+        "claimed": "G7301",
+        "tool_value": "G7301",
+        "matched": true,
+        "comparison": "equal",
+        "line": 2,
+        "authority_sources": [
+          {
+            "event_index": 0,
+            "call_id": "fixture-call",
+            "args": {
+              "from_city": "上海",
+              "to_city": "杭州",
+              "date": "2026-10-26"
+            }
+          }
+        ]
+      }
+    ],
+    "indeterminate": [
+      {
+        "line": 2,
+        "text": "|G7301|25:99|",
+        "reason": "unsupported_or_invalid_value",
+        "field": "depart",
+        "claimed": "25:99"
+      }
+    ],
+    "ignored": [],
+    "authority_queries": [
+      {
+        "event_index": 0,
+        "rows": 1,
+        "call_id": "fixture-call",
+        "args": {
+          "from_city": "上海",
+          "to_city": "杭州",
+          "date": "2026-10-26"
+        }
+      }
+    ],
+    "scope": "Explicit ticket fields in labelled prose/tables; not full natural-language or business accuracy"
+  },
+  "assertion_passed": true,
+  "new_model_requests": 0,
+  "scope": "A deterministic regression; not B formal grading or post-fix Live"
+}
