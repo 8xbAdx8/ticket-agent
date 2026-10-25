@@ -1,0 +1,398 @@
+{
+  "status": "passed",
+  "real_api_requests": 0,
+  "real_tokens": 0,
+  "api_cost": 0,
+  "sdk_token_values": "synthetic fixture usage, excluded from real token/cost totals",
+  "agent_and_backend_records": 25,
+  "labelled_detector_samples": 8,
+  "case_verdicts": {
+    "sdk-date_offset": "pass",
+    "sdk-route_error": "pass",
+    "sdk-no_citation": "pass",
+    "sdk-repeat_call": "pass",
+    "sdk-hallucinated_train": "pass",
+    "sdk-infinite_loop": "pass",
+    "sdk-skip_lock": "pass",
+    "legacy-m7-baseline": "pass",
+    "legacy-m7-mutant": "pass",
+    "legacy-m7-restored": "pass",
+    "langchain-m7-baseline": "pass",
+    "langchain-m7-mutant": "pass",
+    "langchain-m7-restored": "pass",
+    "concurrency-normal-same_lock_two": "pass",
+    "concurrency-normal-same_lock_many": "pass",
+    "concurrency-normal-same_request_retry": "pass",
+    "concurrency-normal-different_locks": "pass",
+    "concurrency-normal-expired_lock": "pass",
+    "concurrency-normal-worker_failure": "pass",
+    "concurrency-normal-query_after_retry": "pass",
+    "concurrency-mutant-two": "pass",
+    "concurrency-mutant-many-1": "pass",
+    "concurrency-mutant-many-2": "pass",
+    "concurrency-mutant-many-3": "pass",
+    "concurrency-mutant-different-locks": "pass"
+  },
+  "metrics": {
+    "injection_applied": {
+      "numerator": 13,
+      "denominator": 13,
+      "indeterminate_or_not_applicable": 12,
+      "rate": 1.0
+    },
+    "platform_defect_detected": {
+      "numerator": 13,
+      "denominator": 13,
+      "indeterminate_or_not_applicable": 12,
+      "rate": 1.0
+    },
+    "agent_anomaly_recognized": {
+      "numerator": 0,
+      "denominator": 0,
+      "indeterminate_or_not_applicable": 25,
+      "rate": null
+    },
+    "agent_recovered": {
+      "numerator": 0,
+      "denominator": 0,
+      "indeterminate_or_not_applicable": 25,
+      "rate": null
+    },
+    "safe_stop": {
+      "numerator": 2,
+      "denominator": 13,
+      "indeterminate_or_not_applicable": 12,
+      "rate": 0.15384615384615385
+    },
+    "business_correct": {
+      "numerator": 13,
+      "denominator": 25,
+      "indeterminate_or_not_applicable": 0,
+      "rate": 0.52
+    },
+    "hallucination_labelled_benchmark": {
+      "true_positive": 0,
+      "false_positive": 0,
+      "true_negative": 0,
+      "false_negative": 0,
+      "indeterminate": 0,
+      "denominator": 0,
+      "excluded_ambiguous_samples": 0,
+      "accuracy": null
+    },
+    "note": "Defect detection/recognition/recovery denominators require actual injection and determinate outcomes; baseline/unknown excluded. Hallucination accuracy requires separate labels."
+  },
+  "labelled_metrics": {
+    "true_positive": 3,
+    "false_positive": 0,
+    "true_negative": 3,
+    "false_negative": 0,
+    "indeterminate": 0,
+    "denominator": 6,
+    "excluded_ambiguous_samples": 2,
+    "accuracy": 1.0
+  },
+  "labelled_samples": [
+    {
+      "case_id": "invented",
+      "reply": "查到G9999有余票",
+      "test_expectations": {
+        "hallucination_should_detect": true
+      },
+      "judgement": {
+        "hallucination": {
+          "status": "detected",
+          "hallucination_detected": true,
+          "findings": [
+            {
+              "train": "G9999",
+              "classification": "unsupported_claim",
+              "fragment": "查到G9999有余票",
+              "in_authority": false,
+              "mentioned_by_user": true,
+              "basis": "compare explicit assertion with authoritative trains and original valid query results"
+            }
+          ],
+          "limits": "finite statement rules; no general semantic accuracy claim"
+        }
+      },
+      "expected_semantic_outcome": true,
+      "test_verdict": "pass"
+    },
+    {
+      "case_id": "valid",
+      "reply": "G7301有余票",
+      "test_expectations": {
+        "hallucination_should_detect": false
+      },
+      "judgement": {
+        "hallucination": {
+          "status": "clear",
+          "hallucination_detected": false,
+          "findings": [
+            {
+              "train": "G7301",
+              "classification": "supported_claim",
+              "fragment": "G7301有余票",
+              "in_authority": true,
+              "mentioned_by_user": false,
+              "basis": "compare explicit assertion with authoritative trains and original valid query results"
+            }
+          ],
+          "limits": "finite statement rules; no general semantic accuracy claim"
+        }
+      },
+      "expected_semantic_outcome": false,
+      "test_verdict": "pass"
+    },
+    {
+      "case_id": "user-quote",
+      "reply": "你输入的G9999，请确认",
+      "test_expectations": {
+        "hallucination_should_detect": false
+      },
+      "judgement": {
+        "hallucination": {
+          "status": "clear",
+          "hallucination_detected": false,
+          "findings": [
+            {
+              "train": "G9999",
+              "classification": "user_quote",
+              "fragment": "你输入的G9999",
+              "in_authority": false,
+              "mentioned_by_user": true,
+              "basis": "compare explicit assertion with authoritative trains and original valid query results"
+            }
+          ],
+          "limits": "finite statement rules; no general semantic accuracy claim"
+        }
+      },
+      "expected_semantic_outcome": false,
+      "test_verdict": "pass"
+    },
+    {
+      "case_id": "negation",
+      "reply": "G9999不存在。没有查到G9999。查询不到G9999",
+      "test_expectations": {
+        "hallucination_should_detect": false
+      },
+      "judgement": {
+        "hallucination": {
+          "status": "clear",
+          "hallucination_detected": false,
+          "findings": [
+            {
+              "train": "G9999",
+              "classification": "negated",
+              "fragment": "G9999不存在",
+              "in_authority": false,
+              "mentioned_by_user": true,
+              "basis": "compare explicit assertion with authoritative trains and original valid query results"
+            },
+            {
+              "train": "G9999",
+              "classification": "negated",
+              "fragment": "没有查到G9999",
+              "in_authority": false,
+              "mentioned_by_user": true,
+              "basis": "compare explicit assertion with authoritative trains and original valid query results"
+            },
+            {
+              "train": "G9999",
+              "classification": "negated",
+              "fragment": "查询不到G9999",
+              "in_authority": false,
+              "mentioned_by_user": true,
+              "basis": "compare explicit assertion with authoritative trains and original valid query results"
+            }
+          ],
+          "limits": "finite statement rules; no general semantic accuracy claim"
+        }
+      },
+      "expected_semantic_outcome": false,
+      "test_verdict": "pass"
+    },
+    {
+      "case_id": "quoted-then-affirmed",
+      "reply": "引用用户原话G9999，查到G9999有票",
+      "test_expectations": {
+        "hallucination_should_detect": true
+      },
+      "judgement": {
+        "hallucination": {
+          "status": "detected",
+          "hallucination_detected": true,
+          "findings": [
+            {
+              "train": "G9999",
+              "classification": "user_quote",
+              "fragment": "引用用户原话G9999",
+              "in_authority": false,
+              "mentioned_by_user": true,
+              "basis": "compare explicit assertion with authoritative trains and original valid query results"
+            },
+            {
+              "train": "G9999",
+              "classification": "unsupported_claim",
+              "fragment": "查到G9999有票",
+              "in_authority": false,
+              "mentioned_by_user": true,
+              "basis": "compare explicit assertion with authoritative trains and original valid query results"
+            }
+          ],
+          "limits": "finite statement rules; no general semantic accuracy claim"
+        }
+      },
+      "expected_semantic_outcome": true,
+      "test_verdict": "pass"
+    },
+    {
+      "case_id": "user-number-affirmed",
+      "reply": "G9999有余票",
+      "test_expectations": {
+        "hallucination_should_detect": true
+      },
+      "judgement": {
+        "hallucination": {
+          "status": "detected",
+          "hallucination_detected": true,
+          "findings": [
+            {
+              "train": "G9999",
+              "classification": "unsupported_claim",
+              "fragment": "G9999有余票",
+              "in_authority": false,
+              "mentioned_by_user": true,
+              "basis": "compare explicit assertion with authoritative trains and original valid query results"
+            }
+          ],
+          "limits": "finite statement rules; no general semantic accuracy claim"
+        }
+      },
+      "expected_semantic_outcome": true,
+      "test_verdict": "pass"
+    },
+    {
+      "case_id": "ambiguous",
+      "reply": "也许G9999",
+      "test_expectations": {
+        "hallucination_should_detect": null
+      },
+      "judgement": {
+        "hallucination": {
+          "status": "indeterminate",
+          "hallucination_detected": null,
+          "findings": [
+            {
+              "train": "G9999",
+              "classification": "indeterminate",
+              "fragment": "也许G9999",
+              "in_authority": false,
+              "mentioned_by_user": true,
+              "basis": "compare explicit assertion with authoritative trains and original valid query results"
+            }
+          ],
+          "limits": "finite statement rules; no general semantic accuracy claim"
+        }
+      },
+      "expected_semantic_outcome": null,
+      "test_verdict": "pass"
+    },
+    {
+      "case_id": "hypothetical",
+      "reply": "例如G9999有票",
+      "test_expectations": {
+        "hallucination_should_detect": null
+      },
+      "judgement": {
+        "hallucination": {
+          "status": "indeterminate",
+          "hallucination_detected": null,
+          "findings": [
+            {
+              "train": "G9999",
+              "classification": "indeterminate",
+              "fragment": "例如G9999有票",
+              "in_authority": false,
+              "mentioned_by_user": true,
+              "basis": "compare explicit assertion with authoritative trains and original valid query results"
+            }
+          ],
+          "limits": "finite statement rules; no general semantic accuracy claim"
+        }
+      },
+      "expected_semantic_outcome": null,
+      "test_verdict": "pass"
+    }
+  ],
+  "failures": [],
+  "source_sha256": {
+    "target/agent.py": "06efc03dbc1a8d77327f7f0ddaac00d29a717f8162727abfd8a65b27046c17ed",
+    "target/concurrency_probe.py": "06bbad7f935996e960d0bf933d87a78ea0dfc9ea04852e517928a52058ad0123",
+    "target/deepseek_runtime.py": "4e730aa080df69c58a97b8bfe36a5906c2b0986e75bd16dc8caf7dec10425912",
+    "target/diagnostics.py": "42067362d3e5ebd57b86aa641e69e33f4a73ef2b235cd1503af2a97827f8692a",
+    "target/fault_injection.py": "d1b7910bb2c219e53befc3d350ffde731678737b64b30328e3f4b659121f8f36",
+    "target/langchain_agent.py": "281f2a4863936010415369fe63d0a38f6b760067da1755a1e4ea54b7ae0390c0",
+    "target/langchain_model.py": "429c78e66ffd1f64eb49dfb6f3ce17568c2f7b66416a01c22ae9f0cde11a0608",
+    "target/mock_api.py": "18f810e942536affbde0095df84c8cdf7dd30149827ab0febcd8620c9ebd39e5",
+    "target/mock_core.py": "53929d544aba413db462970d0a9336bfecf78016226ed6238154c365ee5ea0d5",
+    "target/providers.py": "fb88b4db8e67813cf7a7df0fb885dc606495a91e15886b70127ec58a3db9bae6",
+    "target/rag.py": "afa75847e568b31dfca42d73bc4e5be3f02e742e22326e431c2eaeff74beb827",
+    "target/tools.py": "c470abc506ad29851c1a67f1db0e1f37bacc492c49fc0bdff3f3ef6296c1b6b9",
+    "target/trace.py": "fb8f89a91776b6f306726c2b2263146fbe33603fe6c645ba738698f031da3466",
+    "target/write_authorization.py": "e84caa65fa17fd2db709339868fcfe60c94f6c3f5828ddeccbb3b93cb86677ea",
+    "target/__init__.py": "4bf3d2f36aecf165b1673c8883c2a18f743e98f3a398a1d6f4fb4301a377a39c",
+    "web/app.py": "c834e20c4fd7138bfa2c0173aeadaa1d123d50c882e0a16ac8abb946636af855",
+    "web/audit_view.py": "c64c06d2ef5875b5203642a989032b8f8aeeb4ff62f3772cefab2e174d8f7ade",
+    "web/charts.py": "16109549b0539d148f2e40063a9f579a440ce63854854999bee8158163591b8e",
+    "web/comparison.py": "cb9f6bb8a7eea88b330663ac2e2e80fdefe440b1e8174b7d857f420a7584097b",
+    "web/conversation.py": "ed1d710553c0b570d0b09e369bbb69e5ceb0daa0652b3cbaee39f7354954d207",
+    "web/dashboard.py": "0229a1f567d4286c4a38b698a3f053920c672fbcae7132b8e9782a84c43d444c",
+    "web/design.py": "c7a7b8af233a97669c539462537db5f03126e12f5f9c6dca9f5461a01e2b3465",
+    "web/evidence.py": "6aea852d02905ad3b9881b06411a1b799f25ce4fcf02a2daa513d8ba31fe1939",
+    "web/integrations.py": "6d5ea28d5be770fb06d62fb7ecaf3179aa102d8ce3ff507d8d5ff9d125a7a8d7",
+    "web/laboratory.py": "82b0cea3c60ebf55ccd0724f0a7607ab4fb6e8f839969f034ddc65f4f304f693",
+    "web/legacy_app.py": "00e67d24bfb3fb57ff4f2bc9b534f59336baabb90a3d5d09cb72fab1fc5f4cc8",
+    "web/presentation.py": "90d6f9cea60f4d9089b918be12b75881e4ce8d150e83f8abcc372246377a1bf2",
+    "web/quality.py": "68cf1c766dfd85ec3e9f6a21d9bbe0e634f52b2ff2c80157f1988cfe8fdb710f",
+    "web/runtime.py": "d2060cefe69082bea2a3b3a9d4636bad02c29d36f6bfcd7a3f5f370c0024783f",
+    "web/trace_view.py": "29a333b5bcc416e54c601f7e356bdb22d5510bd2245afd4c3bd14638430fc6c1",
+    "tests/test_agent.py": "1687d3d1ff5fed26d0a17c8f68f714c79bb4528cbe4ca8d60bfbaa51305e61b5",
+    "tests/test_concurrency_probe.py": "6d146b48221e8e4fd528a5c8d96c5d7df3127740db68677bdc30fb08917113af",
+    "tests/test_core.py": "c6a73841510f89d1dc27ec9848286b6a751267b299b045439f4dcf97bb310e3c",
+    "tests/test_deepseek_agent.py": "baffe8042b46f584ab0bd11cd2862788af2a2bd0b158ccb91c63aa71c62075cf",
+    "tests/test_deepseek_api_check.py": "32e4da06c86a7ada2e83de34ea5aab6c3443fdfdc9c3e8713f8ec8b0eb6f88d4",
+    "tests/test_deepseek_readonly_quality.py": "344fc7fc3ea18c522c5da8943f834d2e7ba33d8b1145fe0d62d501de65138db7",
+    "tests/test_deepseek_runtime.py": "8a36b8b29272a44e885e00ed5450c3d7df2152000690c962320b40f00c155f96",
+    "tests/test_diagnostics.py": "31bead5c4fb97457359a5b63c0518ba443730a3ebd884ed4b77b8751e1324a6a",
+    "tests/test_fault_injection.py": "cf3f1f5573efcc74839966d57f8c8f1c2bfe4c0ce1d634fe930e9094b2d78a53",
+    "tests/test_langchain_agent.py": "134adc5db65f428c5ea5a302eca5ef153702cf8c02ecf288fea70f398d028455",
+    "tests/test_langchain_live_adapter.py": "cc5898759973275d6bc9eb4b8a6becfd167726dc4febc09d4c014935a4b03e16",
+    "tests/test_langchain_orders.py": "0bb07cabdecf5afd1c2193866e5f0656dff0605effa3fe37d7844a0069f3dc7f",
+    "tests/test_launcher.py": "4f2fbad8f619604f0e1c7693aea9d8a4a44e4ff47e8df12cf1de4f4d93c46699",
+    "tests/test_live_faults.py": "d63e762703830079f2caac0e02e5f28252e247551b46130a984ba9a8fbf70cf1",
+    "tests/test_minimal_deepseek.py": "f5b82f79a22291050e68066e9e029c7545fb1aae7c39c15201e3751c6796fae0",
+    "tests/test_provider.py": "fa916162f9d20deb5ad6deb272e0d6f0072481de99108e89d6c2e5b6a0994b57",
+    "tests/test_v2_defects.py": "65fbcafe943f9ee91fc4ac9639357a831e9f7b98d77dfe20427f306cfd262ea1",
+    "tests/test_v2_provider.py": "75ba03aaf278771382f97e11637001cadb61be36055000a032f26040b6a0edee",
+    "tests/test_v32_audit.py": "82e829b6689b97de93e42208221fbfb92c0576bfeb90ed363e5dce688fa7e3a0",
+    "tests/test_v33_app.py": "90efc3efd67b4cafdb650197a2fd916e0143d09f438495ed41b21d4d77bf7099",
+    "tests/test_v33_design.py": "e6dce89bda9cd1c083a5f081502b71ea9b0c45720d72071ac1097d1ec2b4ab0d",
+    "tests/test_v33_evidence.py": "3edaf070de2da3cdd6a606a8f89078f509a8b911165400da0575c3117db7b79f",
+    "tests/test_v33_observation.py": "7f427e7c4514e3347eaab43aa2e598b2399a93d580e6fa1d5e3670542e15175a",
+    "tests/test_v33_runtime.py": "00a27c3d1c22b07a0dbe2fb7859f7929773a59028dba06b86ffc3a4cf2958bd6",
+    "tests/test_v3_def06_def07.py": "3840cf23d40aa70389289c3ab789a4d8960f0dd404bbef9aec42d251338d42d3",
+    "tests/test_web.py": "746988e357628a26cc18d06fe5c1aed9a14eaa2f582b9644d69157c63b3f66c1",
+    "tests/test_web_live_ui.py": "8c5cbc02a15a003af0c516495438b81f002380b785d0643773fdd1563b5876c8"
+  },
+  "source_head": "c462ed50a015a9a09b136fd156d8d35cb6a34a54",
+  "source_manifest_note": "HEAD plus exact working source hashes; do not infer all source was already committed",
+  "concurrency_resources_cleaned": true,
+  "limits": [
+    "No new real-model result",
+    "Unknown semantic recognition/recovery excluded from rates",
+    "Labelled sample accuracy describes only this tiny deterministic set",
+    "SQLite native writes serialize"
+  ]
+}

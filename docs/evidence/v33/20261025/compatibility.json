@@ -1,0 +1,17 @@
+{
+  "original_files": 831,
+  "changed_original_files": [],
+  "formal_budget_reserved": 5,
+  "formal_budget_limit": 5,
+  "formal_ledger_sha256": "71fe87c135e5668e63f3c39a8f5be3df9ad1170531a21ddaf5fe9f6040d0f8cb",
+  "python": "3.12.14",
+  "dependencies": {
+    "streamlit": "1.65.0",
+    "altair": "6.3.0",
+    "langchain": "1.4.5",
+    "langgraph": "1.2.15",
+    "langchain-deepseek": "1.1.1",
+    "langsmith": "0.14.8"
+  },
+  "backend_diff_from_recovery": []
+}

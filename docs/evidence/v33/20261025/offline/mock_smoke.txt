@@ -1,0 +1,1 @@
+{"status": "passed", "commands": 10, "mock_trace_count": 32, "protected_files_unchanged": true, "evidence_dir": "artifacts/runtime/v33-release-check-20261025/regression/mock_smoke/verification.json"}

@@ -1,0 +1,159 @@
+{
+  "date": "2026-10-25",
+  "capture_method": "Actual localhost UI in Codex in-app browser, native JPEG bytes; no image generation or pixel editing",
+  "implementation_commit": "7b97a5c03aeb8e17e1bc3e10a102aef1d34f36c9",
+  "final_dashboard_layout_commit": "c462ed50a015a9a09b136fd156d8d35cb6a34a54",
+  "real_api_requests": 0,
+  "screenshots": [
+    {
+      "file": "screenshots/01-user-home-dark-1920.jpg",
+      "width": 1920,
+      "height": 1080,
+      "format": "JPEG",
+      "sha256": "de599996abdd0d008c3edfe70692d39deca0ef05dd189bb6d762285e9e0fec19",
+      "captured_at_utc": "2026-10-25T06:50:45.159101+00:00"
+    },
+    {
+      "file": "screenshots/02-query-results-dark-1920.jpg",
+      "width": 1920,
+      "height": 1080,
+      "format": "JPEG",
+      "sha256": "950fa1d9d0a8fc4bb7a65a32a5d0308448a1ef51ec1f11ff4a676c96d9d00863",
+      "captured_at_utc": "2026-10-25T06:50:58.483197+00:00"
+    },
+    {
+      "file": "screenshots/02b-policy-results-dark-1920.jpg",
+      "width": 1920,
+      "height": 1080,
+      "format": "JPEG",
+      "sha256": "6e292933a633c4b04b1e4f8e7429815f65f222a92b2a4db27d6ec7dbc01565cc",
+      "captured_at_utc": "2026-10-25T06:24:36.596910+00:00"
+    },
+    {
+      "file": "screenshots/03-dashboard-dark-1920.jpg",
+      "width": 1920,
+      "height": 1080,
+      "format": "JPEG",
+      "sha256": "fca30cde543d3d90bba6d28c093bcc8d02b23a951025906418d2a9dfa7d4e4d5",
+      "captured_at_utc": "2026-10-25T06:50:57.567715+00:00"
+    },
+    {
+      "file": "screenshots/04-laboratory-dark-1920.jpg",
+      "width": 1920,
+      "height": 1080,
+      "format": "JPEG",
+      "sha256": "317be5050d7d412e810cc41c3ff8390dc61b69588907411992e8494ae2170df8",
+      "captured_at_utc": "2026-10-25T06:50:59.504205+00:00"
+    },
+    {
+      "file": "screenshots/05-trace-timeline-dark-1920.jpg",
+      "width": 1920,
+      "height": 1080,
+      "format": "JPEG",
+      "sha256": "46cdc4b1d8ca6dff83a3e7c9cc8e353db08b6e1a5ccde8f983bcc7744fb7a87e",
+      "captured_at_utc": "2026-10-25T06:24:55.263770+00:00"
+    },
+    {
+      "file": "screenshots/06-mutation-heatmap-dark-1920.jpg",
+      "width": 1920,
+      "height": 1080,
+      "format": "JPEG",
+      "sha256": "fac904231953d38bdbc40866e10ec92a335d787a4ac0fad0ad97e918189f0dcb",
+      "captured_at_utc": "2026-10-25T06:52:37.064046+00:00"
+    },
+    {
+      "file": "screenshots/06b-hallucination-probe-dark-1920.jpg",
+      "width": 1920,
+      "height": 1080,
+      "format": "JPEG",
+      "sha256": "5b4dbf6eeb89c39c37ef80d37eb640e3de837afcd0a6fe458146a7b1bbdded87",
+      "captured_at_utc": "2026-10-25T06:43:24.966470+00:00"
+    },
+    {
+      "file": "screenshots/07-model-comparison-dark-1920.jpg",
+      "width": 1920,
+      "height": 1080,
+      "format": "JPEG",
+      "sha256": "953ade295449804f337b2d79596de143ae14e60a10aca2354d416de90ca7fc6a",
+      "captured_at_utc": "2026-10-25T06:43:03.621895+00:00"
+    },
+    {
+      "file": "screenshots/08-integration-center-dark-1920.jpg",
+      "width": 1920,
+      "height": 1080,
+      "format": "JPEG",
+      "sha256": "84cb565e2b51e939c254ce746d5b21882fb63e23e02383d0bd4043f21d1c0aa5",
+      "captured_at_utc": "2026-10-25T06:43:04.324912+00:00"
+    },
+    {
+      "file": "screenshots/09-quality-light-1920.jpg",
+      "width": 1920,
+      "height": 1080,
+      "format": "JPEG",
+      "sha256": "c98caf46290cc840f412cac1656b052de4996a2663b58d547b1825dba55e3d41",
+      "captured_at_utc": "2026-10-25T06:44:03.866390+00:00"
+    },
+    {
+      "file": "screenshots/10-quality-light-1366.jpg",
+      "width": 1366,
+      "height": 768,
+      "format": "JPEG",
+      "sha256": "cae99b1216616d23410219a2322535167f453f46aa4c64bc0e637895a473d9d5",
+      "captured_at_utc": "2026-10-25T06:44:03.972769+00:00"
+    },
+    {
+      "file": "screenshots/11-quality-dark-1024.jpg",
+      "width": 1024,
+      "height": 768,
+      "format": "JPEG",
+      "sha256": "0d6fff6a4c33b89d2d6c917c31b9206c525edca987c185ae5559dd18af11bf78",
+      "captured_at_utc": "2026-10-25T06:44:35.051963+00:00"
+    }
+  ],
+  "all_final_screenshots_visually_reviewed": true,
+  "viewports": [
+    {
+      "width": 1920,
+      "height": 1080,
+      "horizontal_page_overflow": false
+    },
+    {
+      "width": 1366,
+      "height": 768,
+      "horizontal_page_overflow": false
+    },
+    {
+      "width": 1024,
+      "height": 768,
+      "horizontal_page_overflow": false
+    }
+  ],
+  "theme_colors_observed": {
+    "light_background": "rgb(244, 246, 250)",
+    "light_table": "rgb(255, 255, 255)",
+    "dark_table": "rgb(24, 30, 42)",
+    "dark_table_text": "rgb(233, 237, 245)"
+  },
+  "interactions_verified": [
+    "normal Mock query and policy cards",
+    "workspace navigation",
+    "M7 actual legacy execution",
+    "timeline and parameter validation",
+    "independent verdict cards",
+    "heatmap click selects actual cell",
+    "T04 missed drilldown",
+    "JSON search and actual sanitized download with ten public fields",
+    "old public trace has no false audit association",
+    "historical offline audit playback",
+    "two Mock engines common 98-case comparison",
+    "future integrations correctly unconfigured or not implemented",
+    "dark/light and three viewport sizes"
+  ],
+  "limitations": [
+    "Native browser capture uses compressed JPEG, not lossless PNG",
+    "Long pages require vertical scrolling; tables scroll internally",
+    "Early chart/widget loading captures were replaced after actual SVG and control hydration",
+    "Browser console retains intentional old-preview shutdown disconnect messages; final server health/log checked separately",
+    "C manual final acceptance and new Live validation remain pending"
+  ]
+}

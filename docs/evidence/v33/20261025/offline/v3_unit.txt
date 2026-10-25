@@ -1,0 +1,328 @@
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+已生成 2100 条虚构余票记录
+test_errors_dates_and_sessions (test_agent.AgentTests.test_errors_dates_and_sessions) ... ok
+test_monitor_seat_and_flight (test_agent.AgentTests.test_monitor_seat_and_flight) ... ok
+test_multiturn_and_trace_contract (test_agent.AgentTests.test_multiturn_and_trace_contract) ... ok
+test_six_injected_mutations (test_agent.AgentTests.test_six_injected_mutations) ... ok
+test_all_seven_normal_scenarios (test_concurrency_probe.ConcurrentOrderTests.test_all_seven_normal_scenarios) ... ok
+test_bounds_and_invalid_scenarios_rejected (test_concurrency_probe.ConcurrentOrderTests.test_bounds_and_invalid_scenarios_rejected) ... ok
+test_different_locks_do_not_get_global_idempotency_key (test_concurrency_probe.ConcurrentOrderTests.test_different_locks_do_not_get_global_idempotency_key) ... ok
+test_multiple_request_mutation_repeatable_without_sleeps (test_concurrency_probe.ConcurrentOrderTests.test_multiple_request_mutation_repeatable_without_sleeps) ... ok
+test_two_request_mutation_is_detected (test_concurrency_probe.ConcurrentOrderTests.test_two_request_mutation_is_detected) ... ok
+test_authorization_and_passenger_match (test_core.CoreTests.test_authorization_and_passenger_match) ... ok
+test_order_idempotency_refund_and_inventory (test_core.CoreTests.test_order_idempotency_refund_and_inventory) ... ok
+test_pending_cancel_and_expiration (test_core.CoreTests.test_pending_cancel_and_expiration) ... ok
+test_schema_fault_and_monitor_seat (test_core.CoreTests.test_schema_fault_and_monitor_seat) ... ok
+test_http_error_is_not_retried_and_never_leaks_secret_or_body (test_deepseek_agent.DeepSeekAgentTests.test_http_error_is_not_retried_and_never_leaks_secret_or_body) ... skipped 'DeepSeek SDK 仅安装于独立 .venv-deepseek 环境'
+test_live_write_expansion_is_rejected_and_model_cannot_pay (test_deepseek_agent.DeepSeekAgentTests.test_live_write_expansion_is_rejected_and_model_cannot_pay) ... skipped 'DeepSeek SDK 仅安装于独立 .venv-deepseek 环境'
+test_missing_usage_raises_safe_error_without_fake_zero_trace (test_deepseek_agent.DeepSeekAgentTests.test_missing_usage_raises_safe_error_without_fake_zero_trace) ... skipped 'DeepSeek SDK 仅安装于独立 .venv-deepseek 环境'
+test_policy_sources_and_multiturn_context_are_returned_to_sdk (test_deepseek_agent.DeepSeekAgentTests.test_policy_sources_and_multiturn_context_are_returned_to_sdk) ... skipped 'DeepSeek SDK 仅安装于独立 .venv-deepseek 环境'
+test_real_sdk_tool_call_feedback_usage_and_contract (test_deepseek_agent.DeepSeekAgentTests.test_real_sdk_tool_call_feedback_usage_and_contract) ... skipped 'DeepSeek SDK 仅安装于独立 .venv-deepseek 环境'
+test_reasoning_is_not_logged_and_thinking_replay_is_unsupported (test_deepseek_agent.DeepSeekAgentTests.test_reasoning_is_not_logged_and_thinking_replay_is_unsupported) ... skipped 'DeepSeek SDK 仅安装于独立 .venv-deepseek 环境'
+test_streamlit_missing_key_is_clear_and_does_not_fall_back (test_deepseek_agent.DeepSeekAgentTests.test_streamlit_missing_key_is_clear_and_does_not_fall_back) ... skipped 'DeepSeek SDK 仅安装于独立 .venv-deepseek 环境'
+test_streamlit_shows_deepseek_source_and_real_sdk_tool_result (test_deepseek_agent.DeepSeekAgentTests.test_streamlit_shows_deepseek_source_and_real_sdk_tool_result) ... skipped 'DeepSeek SDK 仅安装于独立 .venv-deepseek 环境'
+test_tool_call_count_limit_and_max_model_steps (test_deepseek_agent.DeepSeekAgentTests.test_tool_call_count_limit_and_max_model_steps) ... skipped 'DeepSeek SDK 仅安装于独立 .venv-deepseek 环境'
+test_tool_exception_is_returned_to_sdk_as_failure (test_deepseek_agent.DeepSeekAgentTests.test_tool_exception_is_returned_to_sdk_as_failure) ... skipped 'DeepSeek SDK 仅安装于独立 .venv-deepseek 环境'
+test_authentication_failure_is_failed_not_skipped_and_no_hello (test_deepseek_api_check.ConnectivityScriptTests.test_authentication_failure_is_failed_not_skipped_and_no_hello) ... ok
+test_connection_only_records_sdk_stub_tokens_and_stops (test_deepseek_api_check.ConnectivityScriptTests.test_connection_only_records_sdk_stub_tokens_and_stops) ... ok
+test_missing_key_skips_without_http_or_mock_fallback (test_deepseek_api_check.ConnectivityScriptTests.test_missing_key_skips_without_http_or_mock_fallback) ... ok
+test_all_http_categories_fail_closed_without_retry_or_success_trace (test_deepseek_readonly_quality.ReadOnlyQualityTests.test_all_http_categories_fail_closed_without_retry_or_success_trace) ... skipped '需要独立 DeepSeek SDK 环境；所有传输仍是 MockTransport'
+test_cli_failure_has_exit_two_null_tokens_and_no_fake_normal_record (test_deepseek_readonly_quality.ReadOnlyQualityTests.test_cli_failure_has_exit_two_null_tokens_and_no_fake_normal_record) ... skipped '需要独立 DeepSeek SDK 环境；所有传输仍是 MockTransport'
+test_cli_success_status_is_historical_and_not_full_live_acceptance (test_deepseek_readonly_quality.ReadOnlyQualityTests.test_cli_success_status_is_historical_and_not_full_live_acceptance) ... skipped '需要独立 DeepSeek SDK 环境；所有传输仍是 MockTransport'
+test_exhausted_budget_never_enters_mock_transport (test_deepseek_readonly_quality.ReadOnlyQualityTests.test_exhausted_budget_never_enters_mock_transport) ... skipped '需要独立 DeepSeek SDK 环境；所有传输仍是 MockTransport'
+test_failure_does_not_pollute_followup_protocol_or_other_session (test_deepseek_readonly_quality.ReadOnlyQualityTests.test_failure_does_not_pollute_followup_protocol_or_other_session) ... skipped '需要独立 DeepSeek SDK 环境；所有传输仍是 MockTransport'
+test_false_backend_flag_and_model_false_success_are_not_hidden (test_deepseek_readonly_quality.ReadOnlyQualityTests.test_false_backend_flag_and_model_false_success_are_not_hidden) ... skipped '需要独立 DeepSeek SDK 环境；所有传输仍是 MockTransport'
+test_invitation_is_rejected_and_raw_final_is_preserved_not_rewritten (test_deepseek_readonly_quality.ReadOnlyQualityTests.test_invitation_is_rejected_and_raw_final_is_preserved_not_rewritten) ... skipped '需要独立 DeepSeek SDK 环境；所有传输仍是 MockTransport'
+test_malformed_tool_call_is_auditable_and_never_executes (test_deepseek_readonly_quality.ReadOnlyQualityTests.test_malformed_tool_call_is_auditable_and_never_executes) ... skipped '需要独立 DeepSeek SDK 环境；所有传输仍是 MockTransport'
+test_policy_rules_and_readonly_disclosure_are_not_misclassified (test_deepseek_readonly_quality.ReadOnlyQualityTests.test_policy_rules_and_readonly_disclosure_are_not_misclassified) ... skipped '需要独立 DeepSeek SDK 环境；所有传输仍是 MockTransport'
+test_readonly_prompt_and_unmodified_legitimate_reply (test_deepseek_readonly_quality.ReadOnlyQualityTests.test_readonly_prompt_and_unmodified_legitimate_reply) ... skipped '需要独立 DeepSeek SDK 环境；所有传输仍是 MockTransport'
+test_save_trace_false_does_not_create_failure_or_success_files (test_deepseek_readonly_quality.ReadOnlyQualityTests.test_save_trace_false_does_not_create_failure_or_success_files) ... skipped '需要独立 DeepSeek SDK 环境；所有传输仍是 MockTransport'
+test_timeout_and_connection_failure_do_not_retry_or_refund_reservation (test_deepseek_readonly_quality.ReadOnlyQualityTests.test_timeout_and_connection_failure_do_not_retry_or_refund_reservation) ... skipped '需要独立 DeepSeek SDK 环境；所有传输仍是 MockTransport'
+test_unknown_second_usage_keeps_real_calls_and_only_observed_tokens (test_deepseek_readonly_quality.ReadOnlyQualityTests.test_unknown_second_usage_keeps_real_calls_and_only_observed_tokens) ... skipped '需要独立 DeepSeek SDK 环境；所有传输仍是 MockTransport'
+test_web_readonly_options_and_error_do_not_show_model_false_success (test_deepseek_readonly_quality.ReadOnlyQualityTests.test_web_readonly_options_and_error_do_not_show_model_false_success) ... skipped '需要独立 DeepSeek SDK 环境；所有传输仍是 MockTransport'
+test_balance_get_does_not_consume_generation_budget (test_deepseek_runtime.DeepSeekRuntimeTests.test_balance_get_does_not_consume_generation_budget) ... ok
+test_configuration_uses_only_canonical_key_and_defaults (test_deepseek_runtime.DeepSeekRuntimeTests.test_configuration_uses_only_canonical_key_and_defaults) ... ok
+test_default_stays_capped_and_negative_limit_is_rejected (test_deepseek_runtime.DeepSeekRuntimeTests.test_default_stays_capped_and_negative_limit_is_rejected) ... ok
+test_error_categories_do_not_leak_body_or_key (test_deepseek_runtime.DeepSeekRuntimeTests.test_error_categories_do_not_leak_body_or_key) ... ok
+test_global_budget_is_persistent_and_sixth_request_never_reaches_transport (test_deepseek_runtime.DeepSeekRuntimeTests.test_global_budget_is_persistent_and_sixth_request_never_reaches_transport) ... ok
+test_missing_key_endpoint_and_model_fail_closed (test_deepseek_runtime.DeepSeekRuntimeTests.test_missing_key_endpoint_and_model_fail_closed) ... ok
+test_read_only_thinking_output_and_host_guards (test_deepseek_runtime.DeepSeekRuntimeTests.test_read_only_thinking_output_and_host_guards) ... ok
+test_unknown_usage_is_null_in_ledger_not_invented_zero (test_deepseek_runtime.DeepSeekRuntimeTests.test_unknown_usage_is_null_in_ledger_not_invented_zero) ... ok
+test_unlimited_requests_still_reject_write_tools_before_transport (test_deepseek_runtime.DeepSeekRuntimeTests.test_unlimited_requests_still_reject_write_tools_before_transport) ... ok
+test_unsafe_limits_and_thinking_opt_in_are_rejected (test_deepseek_runtime.DeepSeekRuntimeTests.test_unsafe_limits_and_thinking_opt_in_are_rejected) ... ok
+test_zero_limit_allows_more_than_five_requests_and_keeps_recording (test_deepseek_runtime.DeepSeekRuntimeTests.test_zero_limit_allows_more_than_five_requests_and_keeps_recording) ... ok
+test_detects_explicit_nonexistent_train (test_diagnostics.DiagnosticTests.test_detects_explicit_nonexistent_train) ... ok
+test_large_evidence_is_hash_addressed_and_replay_detects_corruption (test_diagnostics.DiagnosticTests.test_large_evidence_is_hash_addressed_and_replay_detects_corruption) ... ok
+test_malformed_sidecar_is_indeterminate (test_diagnostics.DiagnosticTests.test_malformed_sidecar_is_indeterminate) ... ok
+test_metrics_never_turn_unknown_into_zero (test_diagnostics.DiagnosticTests.test_metrics_never_turn_unknown_into_zero) ... ok
+test_missing_authority_does_not_fabricate_verdict (test_diagnostics.DiagnosticTests.test_missing_authority_does_not_fabricate_verdict) ... ok
+test_old_trace_without_sidecar_is_not_fabricated (test_diagnostics.DiagnosticTests.test_old_trace_without_sidecar_is_not_fabricated) ... ok
+test_secret_headers_reasoning_and_personal_fields (test_diagnostics.DiagnosticTests.test_secret_headers_reasoning_and_personal_fields) ... ok
+test_statuses_disabled_and_error (test_diagnostics.DiagnosticTests.test_statuses_disabled_and_error) ... ok
+test_user_input_is_not_automatically_agent_hallucination (test_diagnostics.DiagnosticTests.test_user_input_is_not_automatically_agent_hallucination) ... ok
+test_valid_and_indeterminate_clauses_are_separate (test_diagnostics.DiagnosticTests.test_valid_and_indeterminate_clauses_are_separate) ... ok
+test_citation_removed_from_real_result_without_mutating_original (test_fault_injection.FaultDefinitionTests.test_citation_removed_from_real_result_without_mutating_original) ... ok
+test_date_original_and_actual_are_independent (test_fault_injection.FaultDefinitionTests.test_date_original_and_actual_are_independent) ... ok
+test_default_and_config_validation (test_fault_injection.FaultDefinitionTests.test_default_and_config_validation) ... ok
+test_disabled_is_noop_and_runs_do_not_leak (test_fault_injection.FaultDefinitionTests.test_disabled_is_noop_and_runs_do_not_leak) ... ok
+test_invalid_date_fails_explicitly (test_fault_injection.FaultDefinitionTests.test_invalid_date_fails_explicitly) ... ok
+test_multiple_faults_have_fixed_order_and_untriggered_reason (test_fault_injection.FaultDefinitionTests.test_multiple_faults_have_fixed_order_and_untriggered_reason) ... ok
+test_prepared_without_execution_is_not_counted_as_success (test_fault_injection.FaultDefinitionTests.test_prepared_without_execution_is_not_counted_as_success) ... ok
+test_route_means_policy_to_ticket_not_city_swap (test_fault_injection.FaultDefinitionTests.test_route_means_policy_to_ticket_not_city_swap) ... ok
+test_statistics_do_not_invent_agent_judgements (test_fault_injection.FaultDefinitionTests.test_statistics_do_not_invent_agent_judgements) ... ok
+test_backend_error_returns_to_model_without_secret (test_langchain_agent.LangChainPrototypeTests.test_backend_error_returns_to_model_without_secret) ... ok
+test_distinct_sessions_are_isolated (test_langchain_agent.LangChainPrototypeTests.test_distinct_sessions_are_isolated) ... ok
+test_legacy_and_mutation_behavior_are_retained (test_langchain_agent.LangChainPrototypeTests.test_legacy_and_mutation_behavior_are_retained) ... ok
+test_live_requires_key_before_network (test_langchain_agent.LangChainPrototypeTests.test_live_requires_key_before_network) ... ok
+test_model_budget_and_recovery_are_not_graph_node_count (test_langchain_agent.LangChainPrototypeTests.test_model_budget_and_recovery_are_not_graph_node_count) ... ok
+test_model_exception_is_safe_and_returns_stop (test_langchain_agent.LangChainPrototypeTests.test_model_exception_is_safe_and_returns_stop) ... ok
+test_multiturn_kind_date_and_seat_inheritance (test_langchain_agent.LangChainPrototypeTests.test_multiturn_kind_date_and_seat_inheritance) ... ok
+test_original_schema_and_invalid_arguments (test_langchain_agent.LangChainPrototypeTests.test_original_schema_and_invalid_arguments) ... ok
+test_policy_returns_checkable_source (test_langchain_agent.LangChainPrototypeTests.test_policy_returns_checkable_source) ... ok
+test_reset_removes_framework_thread_state (test_langchain_agent.LangChainPrototypeTests.test_reset_removes_framework_thread_state) ... ok
+test_single_query_runs_framework_and_feedback (test_langchain_agent.LangChainPrototypeTests.test_single_query_runs_framework_and_feedback) ... ok
+test_trace_jsonl_equals_return_value (test_langchain_agent.LangChainPrototypeTests.test_trace_jsonl_equals_return_value) ... ok
+test_unknown_tool_is_an_actual_failed_trace_call (test_langchain_agent.LangChainPrototypeTests.test_unknown_tool_is_an_actual_failed_trace_call) ... ok
+test_sdk_error_is_safe_and_next_turn_can_recover (test_langchain_live_adapter.LangChainLiveAdapterTests.test_sdk_error_is_safe_and_next_turn_can_recover) ... ok
+test_sdk_request_tool_schema_call_id_feedback_and_tokens (test_langchain_live_adapter.LangChainLiveAdapterTests.test_sdk_request_tool_schema_call_id_feedback_and_tokens) ... ok
+test_all_schemas_reused_and_invalid_mode_rejected (test_langchain_orders.LangChainOrderTests.test_all_schemas_reused_and_invalid_mode_rejected) ... ok
+test_buy_does_not_implicitly_authorize_payment (test_langchain_orders.LangChainOrderTests.test_buy_does_not_implicitly_authorize_payment) ... ok
+test_create_requires_this_turn_lock (test_langchain_orders.LangChainOrderTests.test_create_requires_this_turn_lock) ... ok
+test_eight_tools_and_idempotent_payment_and_refund (test_langchain_orders.LangChainOrderTests.test_eight_tools_and_idempotent_payment_and_refund) ... ok
+test_foreign_user_query_stays_denied (test_langchain_orders.LangChainOrderTests.test_foreign_user_query_stays_denied) ... ok
+test_model_cannot_change_order_reference (test_langchain_orders.LangChainOrderTests.test_model_cannot_change_order_reference) ... ok
+test_model_cannot_pay_policy_question_or_negative_command (test_langchain_orders.LangChainOrderTests.test_model_cannot_pay_policy_question_or_negative_command) ... ok
+test_monitor_backend_still_requires_sold_out (test_langchain_orders.LangChainOrderTests.test_monitor_backend_still_requires_sold_out) ... ok
+test_multiple_calls_in_one_model_step_are_serial_and_guarded (test_langchain_orders.LangChainOrderTests.test_multiple_calls_in_one_model_step_are_serial_and_guarded) ... ok
+test_no_extra_lock_even_if_model_repeats (test_langchain_orders.LangChainOrderTests.test_no_extra_lock_even_if_model_repeats) ... ok
+test_permission_boundary_is_conservative (test_langchain_orders.LangChainOrderTests.test_permission_boundary_is_conservative) ... ok
+test_read_only_mode_cannot_execute_orders (test_langchain_orders.LangChainOrderTests.test_read_only_mode_cannot_execute_orders) ... ok
+test_sold_out_and_no_schedule_are_distinct (test_langchain_orders.LangChainOrderTests.test_sold_out_and_no_schedule_are_distinct) ... ok
+test_budget_inspection_is_read_only (test_launcher.LauncherTests.test_budget_inspection_is_read_only) ... ok
+test_busy_port_is_not_killed_or_reused (test_launcher.LauncherTests.test_busy_port_is_not_killed_or_reused) ... ok
+test_existing_database_is_not_seeded_or_reset (test_launcher.LauncherTests.test_existing_database_is_not_seeded_or_reset) ... ok
+test_fake_key_preflight_never_connects_or_creates_files (test_launcher.LauncherTests.test_fake_key_preflight_never_connects_or_creates_files) ... ok
+test_live_uses_own_ledger_and_read_only_without_changing_source (test_launcher.LauncherTests.test_live_uses_own_ledger_and_read_only_without_changing_source) ... ok
+test_manual_default_and_mode_data_isolation (test_launcher.LauncherTests.test_manual_default_and_mode_data_isolation) ... ok
+test_missing_key_preflight_stops_without_prompt (test_launcher.LauncherTests.test_missing_key_preflight_stops_without_prompt) ... ok
+test_offline_rejects_inherited_live_and_mutation_settings (test_launcher.LauncherTests.test_offline_rejects_inherited_live_and_mutation_settings) ... ok
+test_budget_exhaustion_retains_successful_injection_evidence (test_live_faults.LiveFaultPathTests.test_budget_exhaustion_retains_successful_injection_evidence) ... skipped 'SDK环境执行'
+test_citation_original_result_and_actual_feedback (test_live_faults.LiveFaultPathTests.test_citation_original_result_and_actual_feedback) ... skipped 'SDK环境执行'
+test_combined_route_date_repeat_real_path (test_live_faults.LiveFaultPathTests.test_combined_route_date_repeat_real_path) ... skipped 'SDK环境执行'
+test_date_actual_database_date_and_sdk_feedback (test_live_faults.LiveFaultPathTests.test_date_actual_database_date_and_sdk_feedback) ... skipped 'SDK环境执行'
+test_finite_loop_tool_limit_has_distinct_reason (test_live_faults.LiveFaultPathTests.test_finite_loop_tool_limit_has_distinct_reason) ... skipped 'SDK环境执行'
+test_finite_monitor_loop_stops_at_agent_steps_with_one_model_request (test_live_faults.LiveFaultPathTests.test_finite_monitor_loop_stops_at_agent_steps_with_one_model_request) ... skipped 'SDK环境执行'
+test_invented_citation_rejected_without_rewriting_raw_reply (test_live_faults.LiveFaultPathTests.test_invented_citation_rejected_without_rewriting_raw_reply) ... skipped 'SDK环境执行'
+test_langchain_mock_write_fault_in_isolated_sandbox_reaches_backend (test_live_faults.LiveFaultPathTests.test_langchain_mock_write_fault_in_isolated_sandbox_reaches_backend) ... skipped 'SDK环境执行'
+test_langchain_mock_write_fault_without_sandbox_is_blocked (test_live_faults.LiveFaultPathTests.test_langchain_mock_write_fault_without_sandbox_is_blocked) ... skipped 'SDK环境执行'
+test_normal_no_sidecar_and_restore_clears_mutated_memory (test_live_faults.LiveFaultPathTests.test_normal_no_sidecar_and_restore_clears_mutated_memory) ... skipped 'SDK环境执行'
+test_one_step_cannot_be_claimed_as_repeated_loop (test_live_faults.LiveFaultPathTests.test_one_step_cannot_be_claimed_as_repeated_loop) ... skipped 'SDK环境执行'
+test_repeat_honors_tool_cap (test_live_faults.LiveFaultPathTests.test_repeat_honors_tool_cap) ... skipped 'SDK环境执行'
+test_repeat_one_model_call_two_real_backend_executions (test_live_faults.LiveFaultPathTests.test_repeat_one_model_call_two_real_backend_executions) ... skipped 'SDK环境执行'
+test_route_actual_query_not_policy_and_database_unchanged (test_live_faults.LiveFaultPathTests.test_route_actual_query_not_policy_and_database_unchanged) ... skipped 'SDK环境执行'
+test_sandbox_required_rejects_original_db_http_and_unbounded_budget (test_live_faults.LiveFaultPathTests.test_sandbox_required_rejects_original_db_http_and_unbounded_budget) ... skipped 'SDK环境执行'
+test_skip_lock_backend_rejects_fake_lock_no_orders_or_inventory_change (test_live_faults.LiveFaultPathTests.test_skip_lock_backend_rejects_fake_lock_no_orders_or_inventory_change) ... skipped 'SDK环境执行'
+test_skip_lock_does_not_bypass_payment_authorization (test_live_faults.LiveFaultPathTests.test_skip_lock_does_not_bypass_payment_authorization) ... skipped 'SDK环境执行'
+test_untriggered_and_inapplicable_are_explicit (test_live_faults.LiveFaultPathTests.test_untriggered_and_inapplicable_are_explicit) ... skipped 'SDK环境执行'
+test_web_checkbox_reaches_executor_and_restore_clears_fault_state (test_live_faults.LiveFaultPathTests.test_web_checkbox_reaches_executor_and_restore_clears_fault_state) ... skipped 'SDK环境执行'
+test_fake_key_construction_never_sends_or_reserves (test_minimal_deepseek.MinimalDeepSeekTests.test_fake_key_construction_never_sends_or_reserves) ... skipped '需要 DeepSeek SDK；仍只使用离线传输'
+test_loaded_credential_stays_redacted_if_environment_is_cleared (test_minimal_deepseek.MinimalDeepSeekTests.test_loaded_credential_stays_redacted_if_environment_is_cleared) ... skipped '需要 DeepSeek SDK；仍只使用离线传输'
+test_missing_key_fails_before_client_or_transport (test_minimal_deepseek.MinimalDeepSeekTests.test_missing_key_fails_before_client_or_transport) ... skipped '需要 DeepSeek SDK；仍只使用离线传输'
+test_normal_trace_and_logs_redact_secret_in_all_public_fields (test_minimal_deepseek.MinimalDeepSeekTests.test_normal_trace_and_logs_redact_secret_in_all_public_fields) ... skipped '需要 DeepSeek SDK；仍只使用离线传输'
+test_six_tools_and_waitlist_alias_cannot_enter_live (test_minimal_deepseek.MinimalDeepSeekTests.test_six_tools_and_waitlist_alias_cannot_enter_live) ... skipped '需要 DeepSeek SDK；仍只使用离线传输'
+test_two_readonly_schemas_and_tool_feedback_use_mocktransport (test_minimal_deepseek.MinimalDeepSeekTests.test_two_readonly_schemas_and_tool_feedback_use_mocktransport) ... skipped '需要 DeepSeek SDK；仍只使用离线传输'
+test_deepseek_selects_existing_langchain_and_canonical_key_only (test_minimal_deepseek.ProviderSelectionTests.test_deepseek_selects_existing_langchain_and_canonical_key_only) ... ok
+test_default_is_unchanged_legacy_mock (test_minimal_deepseek.ProviderSelectionTests.test_default_is_unchanged_legacy_mock) ... ok
+test_ids_usage_and_malformed_json (test_provider.ProviderTests.test_ids_usage_and_malformed_json) ... ok
+test_missing_key (test_provider.ProviderTests.test_missing_key) ... ok
+test_def01_explicit_seat_and_tool_validation (test_v2_defects.V2DefectTests.test_def01_explicit_seat_and_tool_validation) ... ok
+test_def01_reset_seat_on_flight_switch (test_v2_defects.V2DefectTests.test_def01_reset_seat_on_flight_switch) ... ok
+test_def02_ambiguous_mode_and_city_request_clarification (test_v2_defects.V2DefectTests.test_def02_ambiguous_mode_and_city_request_clarification) ... ok
+test_def02_omission_inherits_mode_seat_date_and_route (test_v2_defects.V2DefectTests.test_def02_omission_inherits_mode_seat_date_and_route) ... ok
+test_def02_switch_back_to_rail (test_v2_defects.V2DefectTests.test_def02_switch_back_to_rail) ... ok
+test_def03_available_and_no_match_are_distinct (test_v2_defects.V2DefectTests.test_def03_available_and_no_match_are_distinct) ... ok
+test_def03_mixed_inventory_marks_unsellable_rows (test_v2_defects.V2DefectTests.test_def03_mixed_inventory_marks_unsellable_rows) ... ok
+test_def03_sold_out_is_explicit_without_extra_tool_calls (test_v2_defects.V2DefectTests.test_def03_sold_out_is_explicit_without_extra_tool_calls) ... ok
+test_def04_duplicate_payment_explains_idempotency (test_v2_defects.V2DefectTests.test_def04_duplicate_payment_explains_idempotency) ... ok
+test_def05_explicit_pay_my_order_remains_an_operation (test_v2_defects.V2DefectTests.test_def05_explicit_pay_my_order_remains_an_operation) ... ok
+test_def05_payment_deadline_routes_to_policy_with_p11 (test_v2_defects.V2DefectTests.test_def05_payment_deadline_routes_to_policy_with_p11) ... ok
+test_def05_policy_with_existing_order_never_writes (test_v2_defects.V2DefectTests.test_def05_policy_with_existing_order_never_writes) ... ok
+test_def05_purchase_without_payment_and_compound_purchase_payment (test_v2_defects.V2DefectTests.test_def05_purchase_without_payment_and_compound_purchase_payment) ... ok
+test_sdk_function_result_returns_matching_call_id_and_usage (test_v2_provider.V2ProviderTests.test_sdk_function_result_returns_matching_call_id_and_usage) ... ok
+test_sdk_repeated_requests_hit_configured_limit (test_v2_provider.V2ProviderTests.test_sdk_repeated_requests_hit_configured_limit) ... ok
+test_sdk_tool_error_is_returned_to_model (test_v2_provider.V2ProviderTests.test_sdk_tool_error_is_returned_to_model) ... ok
+test_legacy_baseline_mutant_restore_and_unique_ids (test_v32_audit.AuditCompatibilityTests.test_legacy_baseline_mutant_restore_and_unique_ids) ... ok
+test_public_trace_credentials_only_redaction (test_v32_audit.AuditCompatibilityTests.test_public_trace_credentials_only_redaction) ... ok
+test_actual_corrective_query_required_for_recovery (test_v32_audit.AuditSDKTests.test_actual_corrective_query_required_for_recovery) ... skipped 'SDK 环境执行'
+test_invalid_parameter_does_not_claim_backend_executed (test_v32_audit.AuditSDKTests.test_invalid_parameter_does_not_claim_backend_executed) ... skipped 'SDK 环境执行'
+test_model_original_wrong_date_separated_from_injector (test_v32_audit.AuditSDKTests.test_model_original_wrong_date_separated_from_injector) ... skipped 'SDK 环境执行'
+test_no_citation_reject_preserves_raw_public_reply (test_v32_audit.AuditSDKTests.test_no_citation_reject_preserves_raw_public_reply) ... skipped 'SDK 环境执行'
+test_self_claim_without_corrective_action_is_unknown (test_v32_audit.AuditSDKTests.test_self_claim_without_corrective_action_is_unknown) ... skipped 'SDK 环境执行'
+test_seven_mutations_have_linked_actual_evidence (test_v32_audit.AuditSDKTests.test_seven_mutations_have_linked_actual_evidence) ... skipped 'SDK 环境执行'
+test_unknown_token_usage_explicit_in_audit (test_v32_audit.AuditSDKTests.test_unknown_token_usage_explicit_in_audit) ... skipped 'SDK 环境执行'
+test_all_workbench_pages_and_light_theme_render (test_v33_app.V33AppTests.test_all_workbench_pages_and_light_theme_render) ... 2026-10-25 14:53:17.903 WARNING streamlit.runtime.scriptrunner_utils.script_run_context: Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+ok
+test_dashboard_current_batch_is_separate_from_b (test_v33_app.V33AppTests.test_dashboard_current_batch_is_separate_from_b) ... 2026-10-25 14:53:19.699 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+ok
+test_failure_does_not_replace_model_output_with_success (test_v33_app.V33AppTests.test_failure_does_not_replace_model_output_with_success) ... 2026-10-25 14:53:20.084 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+ok
+test_initial_user_mode_never_initializes_or_calls_model (test_v33_app.V33AppTests.test_initial_user_mode_never_initializes_or_calls_model) ... 2026-10-25 14:53:20.251 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+ok
+test_lab_mutation_isolation_and_trace_diff (test_v33_app.V33AppTests.test_lab_mutation_isolation_and_trace_diff) ... 2026-10-25 14:53:20.368 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+ok
+test_langchain_mock_write_mutation_uses_existing_sandbox_guard (test_v33_app.V33AppTests.test_langchain_mock_write_mutation_uses_existing_sandbox_guard) ... 2026-10-25 14:53:20.689 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+ok
+test_m8_disables_chat_and_executes_actual_isolated_comparison (test_v33_app.V33AppTests.test_m8_disables_chat_and_executes_actual_isolated_comparison) ... 2026-10-25 14:53:21.001 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+ok
+test_new_and_historical_sessions_preserve_messages (test_v33_app.V33AppTests.test_new_and_historical_sessions_preserve_messages) ... 2026-10-25 14:53:21.349 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+ok
+test_new_live_ui_missing_key_does_not_construct_model (test_v33_app.V33AppTests.test_new_live_ui_missing_key_does_not_construct_model) ... 2026-10-25 14:53:21.522 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-25 14:53:21.642 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+ok
+test_new_live_ui_uses_real_sdk_with_only_mock_transport (test_v33_app.V33AppTests.test_new_live_ui_uses_real_sdk_with_only_mock_transport) ... 2026-10-25 14:53:21.652 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+skipped 'DeepSeek SDK protocol test requires the DeepSeek environment'
+test_quality_subpages_preserve_unknown_and_missed_states (test_v33_app.V33AppTests.test_quality_subpages_preserve_unknown_and_missed_states) ... 2026-10-25 14:53:21.845 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+ok
+test_query_cards_policy_and_rerender_are_real (test_v33_app.V33AppTests.test_query_cards_policy_and_rerender_are_real) ... 2026-10-25 14:53:22.162 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+ok
+test_seven_chat_mutations_reach_actual_legacy_execution (test_v33_app.V33AppTests.test_seven_chat_mutations_reach_actual_legacy_execution) ... 2026-10-25 14:53:22.340 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+ok
+test_trace_history_does_not_reexecute_and_has_json_search (test_v33_app.V33AppTests.test_trace_history_does_not_reexecute_and_has_json_search) ... 2026-10-25 14:53:23.172 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+ok
+test_write_confirm_is_explicit_and_payment_idempotency_preserved (test_v33_app.V33AppTests.test_write_confirm_is_explicit_and_payment_idempotency_preserved) ... 2026-10-25 14:53:23.481 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+ok
+test_all_semantic_states_have_distinct_labels (test_v33_design.DesignTests.test_all_semantic_states_have_distinct_labels) ... ok
+test_csv_does_not_execute_untrusted_formulas (test_v33_design.DesignTests.test_csv_does_not_execute_untrusted_formulas) ... ok
+test_table_escapes_untrusted_markup_and_preserves_unknown (test_v33_design.DesignTests.test_table_escapes_untrusted_markup_and_preserves_unknown) ... ok
+test_table_filter_and_csv_use_identical_visible_rows (test_v33_design.DesignTests.test_table_filter_and_csv_use_identical_visible_rows) ... ok
+test_untrusted_labels_are_escaped (test_v33_design.DesignTests.test_untrusted_labels_are_escaped) ... ok
+test_b_specialist_populations_stay_separate (test_v33_evidence.EvidenceTests.test_b_specialist_populations_stay_separate) ... ok
+test_blob_digest_and_missing_evidence_are_not_hidden (test_v33_evidence.EvidenceTests.test_blob_digest_and_missing_evidence_are_not_hidden) ... ok
+test_nested_diff_retains_missing_and_added_fields (test_v33_evidence.EvidenceTests.test_nested_diff_retains_missing_and_added_fields) ... ok
+test_nulls_not_converted_to_success_or_zero (test_v33_evidence.EvidenceTests.test_nulls_not_converted_to_success_or_zero) ... ok
+test_original_evidence_hashes_and_separate_denominators (test_v33_evidence.EvidenceTests.test_original_evidence_hashes_and_separate_denominators) ... ok
+test_selected_matrix_never_hides_extra_probe_miss (test_v33_evidence.EvidenceTests.test_selected_matrix_never_hides_extra_probe_miss) ... ok
+test_future_envelope_does_not_invent_graph_or_export_private_reasoning (test_v33_observation.ObservationTests.test_future_envelope_does_not_invent_graph_or_export_private_reasoning) ... ok
+test_only_actual_validation_events_are_added (test_v33_observation.ObservationTests.test_only_actual_validation_events_are_added) ... ok
+test_duplicate_submission_does_not_reexecute (test_v33_runtime.RuntimeTests.test_duplicate_submission_does_not_reexecute) ... ok
+test_live_preflight_cannot_fall_back_or_call_with_missing_key (test_v33_runtime.RuntimeTests.test_live_preflight_cannot_fall_back_or_call_with_missing_key) ... ok
+test_policy_question_is_not_a_payment_confirmation (test_v33_runtime.RuntimeTests.test_policy_question_is_not_a_payment_confirmation) ... ok
+test_user_and_lab_databases_and_mutations_are_isolated (test_v33_runtime.RuntimeTests.test_user_and_lab_databases_and_mutations_are_isolated) ... ok
+test_user_provider_does_not_inherit_old_global_test_mutations (test_v33_runtime.RuntimeTests.test_user_provider_does_not_inherit_old_global_test_mutations) ... ok
+test_user_rejects_mutation_and_m8_is_not_chat (test_v33_runtime.RuntimeTests.test_user_rejects_mutation_and_m8_is_not_chat) ... ok
+test_conflict_clarifies_before_model_or_tools_and_preserves_context (test_v3_def06_def07.PurchaseFlowTests.test_conflict_clarifies_before_model_or_tools_and_preserves_context) ... ok
+test_declined_purchase_does_not_call_model_or_tools (test_v3_def06_def07.PurchaseFlowTests.test_declined_purchase_does_not_call_model_or_tools) ... ok
+test_lock_confirmation_without_route_requests_missing_conditions (test_v3_def06_def07.PurchaseFlowTests.test_lock_confirmation_without_route_requests_missing_conditions) ... ok
+test_lock_only_confirmation_does_not_authorize_create_or_pay (test_v3_def06_def07.PurchaseFlowTests.test_lock_only_confirmation_does_not_authorize_create_or_pay) ... ok
+test_readonly_mode_does_not_offer_to_purchase (test_v3_def06_def07.PurchaseFlowTests.test_readonly_mode_does_not_offer_to_purchase) ... ok
+test_purchase_intent_is_separate_from_lock_authorization (test_v3_def06_def07.PurchaseIntentTests.test_purchase_intent_is_separate_from_lock_authorization) ... ok
+test_external_channel_final_text_is_not_replaced (test_v3_def06_def07.ReadOnlySDKReplayTests.test_external_channel_final_text_is_not_replaced) ... skipped '需要 DeepSeek SDK；只用 MockTransport'
+test_policy_final_text_is_not_replaced (test_v3_def06_def07.ReadOnlySDKReplayTests.test_policy_final_text_is_not_replaced) ... skipped '需要 DeepSeek SDK；只用 MockTransport'
+test_denials_are_allowed (test_v3_def06_def07.ReadOnlySubjectTests.test_denials_are_allowed) ... ok
+test_external_channels_are_allowed (test_v3_def06_def07.ReadOnlySubjectTests.test_external_channels_are_allowed) ... ok
+test_own_promises_and_completion_are_rejected (test_v3_def06_def07.ReadOnlySubjectTests.test_own_promises_and_completion_are_rejected) ... ok
+test_policy_explanations_are_allowed (test_v3_def06_def07.ReadOnlySubjectTests.test_policy_explanations_are_allowed) ... ok
+test_all_controls_and_restore (test_web.WebTests.test_all_controls_and_restore) ... 2026-10-25 14:53:24.071 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+ok
+test_audit_and_hallucination_restore (test_web.WebTests.test_audit_and_hallucination_restore) ... 2026-10-25 14:53:24.536 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+ok
+test_concurrency_button_and_saved_replay (test_web.WebTests.test_concurrency_button_and_saved_replay) ... 2026-10-25 14:53:24.963 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+ok
+test_conversation_and_replay (test_web.WebTests.test_conversation_and_replay) ... 2026-10-25 14:53:25.332 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+ok
+test_old_trace_is_not_attached_to_new_audit (test_web.WebTests.test_old_trace_is_not_attached_to_new_audit) ... 2026-10-25 14:53:25.752 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+ok
+test_cards_match_full_tool_results_and_no_extra_calls (test_web_live_ui.LangChainLiveUITests.test_cards_match_full_tool_results_and_no_extra_calls) ... 2026-10-25 14:53:26.095 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+ok
+test_chat_exception_does_not_present_previous_turn_as_new_result (test_web_live_ui.LangChainLiveUITests.test_chat_exception_does_not_present_previous_turn_as_new_result) ... 2026-10-25 14:53:26.380 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+ok
+test_failure_does_not_show_ticket_cards (test_web_live_ui.LangChainLiveUITests.test_failure_does_not_show_ticket_cards) ... 2026-10-25 14:53:26.734 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+ok
+test_order_policy_payment_and_clear (test_web_live_ui.LangChainLiveUITests.test_order_policy_payment_and_clear) ... 2026-10-25 14:53:27.075 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+ok
+test_cards_match_full_tool_results_and_no_extra_calls (test_web_live_ui.LegacyLiveUITests.test_cards_match_full_tool_results_and_no_extra_calls) ... 2026-10-25 14:53:27.632 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+ok
+test_chat_exception_does_not_present_previous_turn_as_new_result (test_web_live_ui.LegacyLiveUITests.test_chat_exception_does_not_present_previous_turn_as_new_result) ... 2026-10-25 14:53:27.974 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+ok
+test_failure_does_not_show_ticket_cards (test_web_live_ui.LegacyLiveUITests.test_failure_does_not_show_ticket_cards) ... 2026-10-25 14:53:28.247 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+ok
+test_order_policy_payment_and_clear (test_web_live_ui.LegacyLiveUITests.test_order_policy_payment_and_clear) ... 2026-10-25 14:53:28.528 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+ok
+test_initialization_failure_still_allows_trace_replay (test_web_live_ui.PresentationSafetyTests.test_initialization_failure_still_allows_trace_replay) ... 2026-10-25 14:53:29.118 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+ok
+test_mismatched_full_result_is_not_presented (test_web_live_ui.PresentationSafetyTests.test_mismatched_full_result_is_not_presented) ... ok
+test_untrusted_tool_text_is_escaped (test_web_live_ui.PresentationSafetyTests.test_untrusted_tool_text_is_escaped) ... ok
+
+----------------------------------------------------------------------
+Ran 222 tests in 15.162s
+
+OK (skipped=59)

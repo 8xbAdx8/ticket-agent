@@ -1,0 +1,67 @@
+{
+  "status": "passed",
+  "timestamp": "2026-10-25T07:07:15.811307+00:00",
+  "scope": "New/changed delivery text plus hashes of original protected files; not a full external security audit",
+  "scanned_text_files": 84,
+  "environment_credentials_compared": 1,
+  "credential_findings": [],
+  "private_home_path_findings": [],
+  "nonempty_raw_reasoning_findings": [],
+  "tracked_secret_file_findings": [],
+  "original_protected_files": 831,
+  "changed_original_files": [],
+  "backend_contract_launcher_diff": [],
+  "b_source_checks": [
+    {
+      "file": "execution.jsonl",
+      "source_exists": true,
+      "original_matches_copy": true,
+      "matches_manifest": true
+    },
+    {
+      "file": "execution_langchain.jsonl",
+      "source_exists": true,
+      "original_matches_copy": true,
+      "matches_manifest": true
+    },
+    {
+      "file": "mutation.json",
+      "source_exists": true,
+      "original_matches_copy": true,
+      "matches_manifest": true
+    },
+    {
+      "file": "newcode_check.json",
+      "source_exists": true,
+      "original_matches_copy": true,
+      "matches_manifest": true
+    },
+    {
+      "file": "m8_idempotent.json",
+      "source_exists": true,
+      "original_matches_copy": true,
+      "matches_manifest": true
+    },
+    {
+      "file": "probe_m6_m8.json",
+      "source_exists": true,
+      "original_matches_copy": true,
+      "matches_manifest": true
+    }
+  ],
+  "formal_budget_reserved": 5,
+  "formal_budget_limit": 5,
+  "v1_v2_tags": {
+    "handoff-a-20261012": "e719956d7c82bd6392c25916d3c193be7e4b452e",
+    "handoff-a-v2-20261013": "6ef683a50f60970dbd4ded1678a818d026afcbde",
+    "handoff-a-langchain-v3-20261013": "a4d6d62f88f796b39f4f27f239eaa6308d4143b2"
+  },
+  "new_model_api_requests": 0,
+  "new_langsmith_uploads": 0,
+  "screenshot_check": "13 native captures visually reviewed; no Key/auth header/raw reasoning visible; no OCR claim",
+  "limitations": [
+    "Pattern and exact environment-value scan cannot prove absence of every possible secret",
+    "Original B snapshots kept byte-for-byte; no source report edits",
+    "Git network push is separate from model API requests"
+  ]
+}
