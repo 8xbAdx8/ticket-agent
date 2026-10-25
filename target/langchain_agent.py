@@ -316,7 +316,8 @@ class LangChainAgent:
                     validate_read_only_reply(reply)
                     from target.reply_consistency import check
                     consistency=check(reply,context.events)
-                    context.events.append({"event":"reply_consistency",**consistency})
+                    final_event=next((e for e in reversed(context.events) if e.get("event")=="model_final"),None)
+                    if final_event is not None:final_event["reply_consistency"]=consistency
                     if consistency["status"]=="failed":raise DeepSeekError("reply_tool_mismatch")
                 if self.mutations.get("no_citation") and any(e["mutation"] == "no_citation" and e["status"] == "applied" for e in context.fault_run.events):
                     import re

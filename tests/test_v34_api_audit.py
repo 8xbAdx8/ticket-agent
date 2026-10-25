@@ -170,6 +170,7 @@ class SDKLifecycleTests(unittest.TestCase):
         row=snapshot(f.root/'total.db',4)['requests'][1]
         self.assertEqual(json.loads(row['request_summary'])['returned_tool_call_ids'],['offline-call'])
         self.assertEqual(result['tool_sequence'],['search_policy'])
+        self.assertEqual(agent.langchain_engine.last_events[-2]['text'],'锁座15分钟，来源P11。')
 
     def test_budget_blocks_before_network_without_phantom_total_row(self):
         f=self.fixture;agent=f.agent([f.response({'content':'当前只读咨询。'})])
