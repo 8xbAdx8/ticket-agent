@@ -1,0 +1,282 @@
+{
+  "schema": "ticket-rag-v351-quality/1",
+  "split": "holdout",
+  "frozen_before_tuning": true,
+  "scope": "New hand-authored A retrieval tests, not B formal cases. No newly paid query vectors.",
+  "cases": [
+    {
+      "id": "H01",
+      "question": "带猫上高铁需要哪种检疫证明？",
+      "expected_doc_ids": [],
+      "allowed_citations": [],
+      "answer_points": [],
+      "scenario": "similar_unrelated",
+      "reason": "没有宠物检疫政策",
+      "split": "holdout"
+    },
+    {
+      "id": "H02",
+      "question": "保险免赔额是多少钱？",
+      "expected_doc_ids": [],
+      "allowed_citations": [],
+      "answer_points": [],
+      "scenario": "external_category",
+      "reason": "没有保险条款",
+      "split": "holdout"
+    },
+    {
+      "id": "H03",
+      "question": "国际机票免费托运两件是否有限制？",
+      "expected_doc_ids": [],
+      "allowed_citations": [],
+      "answer_points": [],
+      "scenario": "wrong_transport",
+      "reason": "高铁行李规则不能移用航空",
+      "split": "holdout"
+    },
+    {
+      "id": "H04",
+      "question": "高铁报销凭证的发票抬头能改几次？",
+      "expected_doc_ids": [],
+      "allowed_citations": [],
+      "answer_points": [],
+      "scenario": "unsupported_attribute",
+      "reason": "没有发票抬头修改规则",
+      "split": "holdout"
+    },
+    {
+      "id": "H05",
+      "question": "候补成功后积分返还比例是多少？",
+      "expected_doc_ids": [],
+      "allowed_citations": [],
+      "answer_points": [],
+      "scenario": "keyword_overlap",
+      "reason": "没有积分规定",
+      "split": "holdout"
+    },
+    {
+      "id": "H06",
+      "question": "锁座超过15分钟会扣违约金吗？",
+      "expected_doc_ids": [],
+      "allowed_citations": [],
+      "answer_points": [],
+      "scenario": "unsupported_attribute",
+      "reason": "只有库存释放，没有违约金规则",
+      "split": "holdout"
+    },
+    {
+      "id": "H07",
+      "question": "学生优惠票可以报销双倍税额吗？",
+      "expected_doc_ids": [],
+      "allowed_citations": [],
+      "answer_points": [],
+      "scenario": "wrong_policy_attribute",
+      "reason": "没有税务规定",
+      "split": "holdout"
+    },
+    {
+      "id": "H08",
+      "question": "高铁行李超尺寸寄快递几天能到？",
+      "expected_doc_ids": [],
+      "allowed_citations": [],
+      "answer_points": [],
+      "scenario": "keyword_overlap",
+      "reason": "没有快递时效规则",
+      "split": "holdout"
+    },
+    {
+      "id": "H09",
+      "question": "高铁票取消退款到账银行卡需多久？",
+      "expected_doc_ids": [],
+      "allowed_citations": [],
+      "answer_points": [],
+      "scenario": "unsupported_attribute",
+      "reason": "没有到账时间规定",
+      "split": "holdout"
+    },
+    {
+      "id": "H10",
+      "question": "已改签乘客改姓名需要什么材料？",
+      "expected_doc_ids": [],
+      "allowed_citations": [],
+      "answer_points": [],
+      "scenario": "unsupported_attribute",
+      "reason": "没有更名流程",
+      "split": "holdout"
+    },
+    {
+      "id": "H11",
+      "question": "有军人优惠票吗？",
+      "expected_doc_ids": [],
+      "allowed_citations": [],
+      "answer_points": [],
+      "scenario": "external_category",
+      "reason": "没有军人票政策",
+      "split": "holdout"
+    },
+    {
+      "id": "H12",
+      "question": "商务座免费餐食提供几次？",
+      "expected_doc_ids": [],
+      "allowed_citations": [],
+      "answer_points": [],
+      "scenario": "keyword_overlap",
+      "reason": "没有餐食政策",
+      "split": "holdout"
+    },
+    {
+      "id": "H13",
+      "question": "机场贵宾室能免费休息多久？",
+      "expected_doc_ids": [],
+      "allowed_citations": [],
+      "answer_points": [],
+      "scenario": "outside_knowledge",
+      "reason": "没有贵宾室规则",
+      "split": "holdout"
+    },
+    {
+      "id": "H14",
+      "question": "这单具体退多少元？",
+      "expected_doc_ids": [],
+      "allowed_citations": [],
+      "answer_points": [],
+      "scenario": "missing_conditions",
+      "reason": "缺少订单、价格、退票时间和票种",
+      "split": "holdout"
+    },
+    {
+      "id": "H15",
+      "question": "我现在还能改票吗？",
+      "expected_doc_ids": [],
+      "allowed_citations": [],
+      "answer_points": [],
+      "scenario": "missing_conditions",
+      "reason": "缺少票种、开车时间和改签状态",
+      "split": "holdout"
+    },
+    {
+      "id": "H16",
+      "question": "候补余票准确到秒的放票时刻是什么？",
+      "expected_doc_ids": [],
+      "allowed_citations": [],
+      "answer_points": [],
+      "scenario": "unsupported_attribute",
+      "reason": "没有精确放票时刻",
+      "split": "holdout"
+    },
+    {
+      "id": "HP01",
+      "question": "乘车后补打报销凭证的天数上限？",
+      "expected_doc_ids": [
+        "P07"
+      ],
+      "allowed_citations": [
+        "P07"
+      ],
+      "answer_points": [],
+      "scenario": "positive",
+      "reason": "凭证180日",
+      "split": "holdout"
+    },
+    {
+      "id": "HP02",
+      "question": "已经发车90分钟，还能改成今天其他车次吗？",
+      "expected_doc_ids": [
+        "P03"
+      ],
+      "allowed_citations": [
+        "P03"
+      ],
+      "answer_points": [],
+      "scenario": "positive",
+      "reason": "开车后2小时",
+      "split": "holdout"
+    },
+    {
+      "id": "HP03",
+      "question": "候补队列是先提交的优先吗？",
+      "expected_doc_ids": [
+        "P08"
+      ],
+      "allowed_citations": [
+        "P08"
+      ],
+      "answer_points": [],
+      "scenario": "positive",
+      "reason": "候补顺序",
+      "split": "holdout"
+    },
+    {
+      "id": "HP04",
+      "question": "经济舱机票距起飞还有三天退票，费率几成？",
+      "expected_doc_ids": [
+        "P09"
+      ],
+      "allowed_citations": [
+        "P09"
+      ],
+      "answer_points": [],
+      "scenario": "positive",
+      "reason": "机票提前24小时以上",
+      "split": "holdout"
+    },
+    {
+      "id": "HP05",
+      "question": "同一天同一班高铁，一个身份证能买几张？",
+      "expected_doc_ids": [
+        "P10"
+      ],
+      "allowed_citations": [
+        "P10"
+      ],
+      "answer_points": [],
+      "scenario": "positive",
+      "reason": "实名重复购买限制",
+      "split": "holdout"
+    },
+    {
+      "id": "HP06",
+      "question": "模拟身份能取消别人的订单吗？",
+      "expected_doc_ids": [
+        "P13"
+      ],
+      "allowed_citations": [
+        "P13"
+      ],
+      "answer_points": [],
+      "scenario": "positive",
+      "reason": "仅自己的订单",
+      "split": "holdout"
+    },
+    {
+      "id": "HP07",
+      "question": "模拟数据库的日期窗口覆盖到哪一天？",
+      "expected_doc_ids": [
+        "P15"
+      ],
+      "allowed_citations": [
+        "P15"
+      ],
+      "answer_points": [],
+      "scenario": "positive",
+      "reason": "当天及后六天",
+      "split": "holdout"
+    },
+    {
+      "id": "HP08",
+      "question": "请分别说明锁座有效时间和未付款取消费用。",
+      "expected_doc_ids": [
+        "P11",
+        "P12"
+      ],
+      "allowed_citations": [
+        "P11",
+        "P12"
+      ],
+      "answer_points": [],
+      "scenario": "positive_multi",
+      "reason": "锁座和取消",
+      "split": "holdout"
+    }
+  ]
+}

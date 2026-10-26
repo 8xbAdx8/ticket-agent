@@ -1,0 +1,280 @@
+{
+  "schema": "ticket-rag-v351-quality/1",
+  "split": "development",
+  "frozen_before_tuning": true,
+  "scope": "New hand-authored A retrieval tests, not B formal cases. No newly paid query vectors.",
+  "cases": [
+    {
+      "id": "D01",
+      "question": "高铁宠物运输收费标准是什么？",
+      "expected_doc_ids": [],
+      "allowed_citations": [],
+      "answer_points": [],
+      "scenario": "similar_unrelated",
+      "reason": "没有宠物运输政策",
+      "split": "development"
+    },
+    {
+      "id": "D02",
+      "question": "票务保险的报案时限是多久？",
+      "expected_doc_ids": [],
+      "allowed_citations": [],
+      "answer_points": [],
+      "scenario": "external_category",
+      "reason": "没有保险政策",
+      "split": "development"
+    },
+    {
+      "id": "D03",
+      "question": "机票儿童随身行李免费多少公斤？",
+      "expected_doc_ids": [],
+      "allowed_citations": [],
+      "answer_points": [],
+      "scenario": "wrong_transport",
+      "reason": "P06只说明高铁行李",
+      "split": "development"
+    },
+    {
+      "id": "D04",
+      "question": "学生票能积多少航空里程？",
+      "expected_doc_ids": [],
+      "allowed_citations": [],
+      "answer_points": [],
+      "scenario": "keyword_overlap",
+      "reason": "学生票政策没有航空里程",
+      "split": "development"
+    },
+    {
+      "id": "D05",
+      "question": "改签后差价多久退回支付宝？",
+      "expected_doc_ids": [],
+      "allowed_citations": [],
+      "answer_points": [],
+      "scenario": "unsupported_attribute",
+      "reason": "没有差价到账规则",
+      "split": "development"
+    },
+    {
+      "id": "D06",
+      "question": "报销凭证电子发票的税率是多少？",
+      "expected_doc_ids": [],
+      "allowed_citations": [],
+      "answer_points": [],
+      "scenario": "unsupported_attribute",
+      "reason": "没有税率规定",
+      "split": "development"
+    },
+    {
+      "id": "D07",
+      "question": "未付款订单取消后的积分会退多少？",
+      "expected_doc_ids": [],
+      "allowed_citations": [],
+      "answer_points": [],
+      "scenario": "keyword_overlap",
+      "reason": "没有积分政策",
+      "split": "development"
+    },
+    {
+      "id": "D08",
+      "question": "学生票优惠能和会员券叠加吗？",
+      "expected_doc_ids": [],
+      "allowed_citations": [],
+      "answer_points": [],
+      "scenario": "unsupported_attribute",
+      "reason": "没有优惠券叠加规则",
+      "split": "development"
+    },
+    {
+      "id": "D09",
+      "question": "行李超重费用可用信用卡分期吗？",
+      "expected_doc_ids": [],
+      "allowed_citations": [],
+      "answer_points": [],
+      "scenario": "unsupported_attribute",
+      "reason": "没有分期付款政策",
+      "split": "development"
+    },
+    {
+      "id": "D10",
+      "question": "实名身份信息保存多少年？",
+      "expected_doc_ids": [],
+      "allowed_citations": [],
+      "answer_points": [],
+      "scenario": "wrong_policy_attribute",
+      "reason": "实名核验不含数据保存期限",
+      "split": "development"
+    },
+    {
+      "id": "D11",
+      "question": "身份证遗失后是否能用护照进站？",
+      "expected_doc_ids": [],
+      "allowed_citations": [],
+      "answer_points": [],
+      "scenario": "unsupported_document",
+      "reason": "没有替代证件流程",
+      "split": "development"
+    },
+    {
+      "id": "D12",
+      "question": "动车晚点给赔多少钱？",
+      "expected_doc_ids": [],
+      "allowed_citations": [],
+      "answer_points": [],
+      "scenario": "external_category",
+      "reason": "没有晚点赔偿规定",
+      "split": "development"
+    },
+    {
+      "id": "D13",
+      "question": "酒店早餐是否免费？",
+      "expected_doc_ids": [],
+      "allowed_citations": [],
+      "answer_points": [],
+      "scenario": "outside_knowledge",
+      "reason": "没有酒店政策",
+      "split": "development"
+    },
+    {
+      "id": "D14",
+      "question": "那到底扣多少？",
+      "expected_doc_ids": [],
+      "allowed_citations": [],
+      "answer_points": [],
+      "scenario": "missing_context",
+      "reason": "缺少业务对象和前文",
+      "split": "development"
+    },
+    {
+      "id": "D15",
+      "question": "我这张票退票实际手续费是多少？",
+      "expected_doc_ids": [],
+      "allowed_citations": [],
+      "answer_points": [],
+      "scenario": "missing_conditions",
+      "reason": "缺少票种、价格和时间等条件",
+      "split": "development"
+    },
+    {
+      "id": "D16",
+      "question": "这个服务能把我的隐私信息永久删除吗？",
+      "expected_doc_ids": [],
+      "allowed_citations": [],
+      "answer_points": [],
+      "scenario": "wrong_policy_attribute",
+      "reason": "隐私政策没有数据删除流程",
+      "split": "development"
+    },
+    {
+      "id": "DP01",
+      "question": "模拟锁座的截止期限是几分钟？",
+      "expected_doc_ids": [
+        "P11"
+      ],
+      "allowed_citations": [
+        "P11"
+      ],
+      "answer_points": [],
+      "scenario": "positive",
+      "reason": "锁座有效期",
+      "split": "development"
+    },
+    {
+      "id": "DP02",
+      "question": "每张高铁票最多允许几回改签？",
+      "expected_doc_ids": [
+        "P02"
+      ],
+      "allowed_citations": [
+        "P02"
+      ],
+      "answer_points": [],
+      "scenario": "positive",
+      "reason": "改签次数",
+      "split": "development"
+    },
+    {
+      "id": "DP03",
+      "question": "距离发车还有三天退票按百分之几收费？",
+      "expected_doc_ids": [
+        "P01"
+      ],
+      "allowed_citations": [
+        "P01"
+      ],
+      "answer_points": [],
+      "scenario": "positive",
+      "reason": "退票阶梯",
+      "split": "development"
+    },
+    {
+      "id": "DP04",
+      "question": "大人坐高铁随身行李限重多少千克？",
+      "expected_doc_ids": [
+        "P06"
+      ],
+      "allowed_citations": [
+        "P06"
+      ],
+      "answer_points": [],
+      "scenario": "positive",
+      "reason": "高铁成人行李",
+      "split": "development"
+    },
+    {
+      "id": "DP05",
+      "question": "儿童二等座按照票价的多少比例计算？",
+      "expected_doc_ids": [
+        "P04"
+      ],
+      "allowed_citations": [
+        "P04"
+      ],
+      "answer_points": [],
+      "scenario": "positive",
+      "reason": "儿童票价",
+      "split": "development"
+    },
+    {
+      "id": "DP06",
+      "question": "学生乘高铁每年度最多几次优惠票？",
+      "expected_doc_ids": [
+        "P05"
+      ],
+      "allowed_citations": [
+        "P05"
+      ],
+      "answer_points": [],
+      "scenario": "positive",
+      "reason": "学生次数",
+      "split": "development"
+    },
+    {
+      "id": "DP07",
+      "question": "尚未支付就取消订单会收费吗？",
+      "expected_doc_ids": [
+        "P12"
+      ],
+      "allowed_citations": [
+        "P12"
+      ],
+      "answer_points": [],
+      "scenario": "positive",
+      "reason": "未支付取消",
+      "split": "development"
+    },
+    {
+      "id": "DP08",
+      "question": "候补监控任务会替我自动付款吗？",
+      "expected_doc_ids": [
+        "P14"
+      ],
+      "allowed_citations": [
+        "P14"
+      ],
+      "answer_points": [],
+      "scenario": "positive",
+      "reason": "候补不扣款",
+      "split": "development"
+    }
+  ]
+}
