@@ -1,0 +1,49 @@
+{
+  "real_API_requests": 0,
+  "metric_errors": 0,
+  "metric_values_unchanged": true,
+  "models": [
+    {
+      "model": "deepseek-flash",
+      "verdict": "INDETERMINATE",
+      "factual_assertions": 10,
+      "counts": {
+        "supported": 6,
+        "contradicted": 0,
+        "unsupported": 0,
+        "indeterminate": 4,
+        "not_applicable": 0
+      },
+      "trace_id": "2c9a9c4e4f99497c931a48e792c2eb49"
+    },
+    {
+      "model": "qwen3.8-flash",
+      "verdict": "INDETERMINATE",
+      "factual_assertions": 10,
+      "counts": {
+        "supported": 7,
+        "contradicted": 0,
+        "unsupported": 0,
+        "indeterminate": 3,
+        "not_applicable": 0
+      },
+      "trace_id": "b4c2d6e91b594b24b0e078dfdb7d333d"
+    }
+  ],
+  "policy_facts_supported_per_model": 4,
+  "runtime_statements_for_B": 7,
+  "pytest": {
+    "passed": 537,
+    "subtests_passed": 89,
+    "junit": {
+      "tests": 626,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  },
+  "tested_source": "55737fef63a8a446f2d20a04a91e5a30fbce209c",
+  "protected_files": 4137,
+  "original_evidence_unchanged": true,
+  "full_regression_network_attempts": 0
+}

@@ -1,0 +1,321 @@
+{
+  "p11": {
+    "chunk_id": "P11-0000-589c2e46be21",
+    "content": "模拟锁座有效期 15 分钟，过期未支付自动释放库存；下单必须提供与锁座一致的乘客列表。重复支付不重复扣减库存。",
+    "metadata": {
+      "chunk_id": "P11-0000-589c2e46be21",
+      "doc_id": "P11",
+      "version": "43aea1ebf3c7b333",
+      "source": "data/policies.md#P11",
+      "title": "锁座与支付有效期"
+    },
+    "dimensions": 1024,
+    "vector_sha256": "d3d30214d5dba44947f955a0430a98b0a31aadad8f2fa900279680db0e213fb8"
+  },
+  "current_policy": {
+    "doc_id": "P11",
+    "title": "锁座与支付有效期",
+    "source": "data/policies.md#P11",
+    "version": "43aea1ebf3c7b333",
+    "chunk_id": "P11-0000-589c2e46be21",
+    "content": "模拟锁座有效期 15 分钟，过期未支付自动释放库存；下单必须提供与锁座一致的乘客列表。重复支付不重复扣减库存。"
+  },
+  "policy_header_line": 37,
+  "source_tree_before": {
+    "38cad6fc-745e-47ee-ad08-b36fb5cf29a7/data_level0.bin": "9c8f8e8bd55b85624ac67911fbb01195c6beb8e587e8217e3d9e78d9d23b8df5",
+    "38cad6fc-745e-47ee-ad08-b36fb5cf29a7/header.bin": "bf12d4486518c7addf488cb4854526902c78e91951990e1e2f4e055cec814e5d",
+    "38cad6fc-745e-47ee-ad08-b36fb5cf29a7/length.bin": "6d86676aecf7d1ea11c7e7985c9754123c5ae975b83791feeed68bf98667f6f3",
+    "38cad6fc-745e-47ee-ad08-b36fb5cf29a7/link_lists.bin": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "chroma.sqlite3": "539403976b9d89501506f23e7c696d1381bfbd763f0267fc9cf66ef555c332e7",
+    "manifest.json": "177aa83e1e86e1be1d729e456cfa1e58977ea798c6e7a642e77e3e3ba3eadc03"
+  },
+  "source_tree_after": {
+    "38cad6fc-745e-47ee-ad08-b36fb5cf29a7/data_level0.bin": "9c8f8e8bd55b85624ac67911fbb01195c6beb8e587e8217e3d9e78d9d23b8df5",
+    "38cad6fc-745e-47ee-ad08-b36fb5cf29a7/header.bin": "bf12d4486518c7addf488cb4854526902c78e91951990e1e2f4e055cec814e5d",
+    "38cad6fc-745e-47ee-ad08-b36fb5cf29a7/length.bin": "6d86676aecf7d1ea11c7e7985c9754123c5ae975b83791feeed68bf98667f6f3",
+    "38cad6fc-745e-47ee-ad08-b36fb5cf29a7/link_lists.bin": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "chroma.sqlite3": "539403976b9d89501506f23e7c696d1381bfbd763f0267fc9cf66ef555c332e7",
+    "manifest.json": "177aa83e1e86e1be1d729e456cfa1e58977ea798c6e7a642e77e3e3ba3eadc03"
+  },
+  "logical_snapshot": {
+    "index_version": "242aa8199c4a8393ded29751",
+    "chunks": 15,
+    "documents": 15,
+    "rows": [
+      {
+        "chunk_id": "P01-0000-7e17c7d453fc",
+        "content": "开车前 48 小时以上退票，收取票价 5% 手续费；开车前 24 至 48 小时退票，收取 10%；开车前不足 24 小时退票，收取 20%。已取报销凭证或已改签的车票不退。",
+        "metadata": {
+          "chunk_id": "P01-0000-7e17c7d453fc",
+          "doc_id": "P01",
+          "version": "645904208717fad9",
+          "title": "退票手续费阶梯",
+          "source": "data/policies.md#P01"
+        },
+        "dimensions": 1024,
+        "vector_sha256": "6ab525ad02fcfc5ed8cd463c07d6c595ee872d525ae81d0da71c41fadaf286d0"
+      },
+      {
+        "chunk_id": "P02-0000-ee28e78d13a2",
+        "content": "开车前 48 小时以上可改签预售期内任意车次；开车前 48 小时以内可改签开车前的其他车次，也可改签开车后至当日 24:00 之间的车次。每张票仅可改签一次，改签后不退。",
+        "metadata": {
+          "doc_id": "P02",
+          "title": "改签规则",
+          "chunk_id": "P02-0000-ee28e78d13a2",
+          "version": "d5926ccfe3981a69",
+          "source": "data/policies.md#P02"
+        },
+        "dimensions": 1024,
+        "vector_sha256": "98d6f92b1b6f63d52690b4946af9fef48be666efa85c36fa254cfb35033b6940"
+      },
+      {
+        "chunk_id": "P03-0000-0e22a8a4248f",
+        "content": "开车后 2 小时内可办理一次改签至当日其他有余票车次，不退票。超过 2 小时车票作废。",
+        "metadata": {
+          "source": "data/policies.md#P03",
+          "version": "5e1d85aec65728f4",
+          "doc_id": "P03",
+          "title": "开车后处理",
+          "chunk_id": "P03-0000-0e22a8a4248f"
+        },
+        "dimensions": 1024,
+        "vector_sha256": "c46c922dc41b047ad3161dcedb270a0585dedb70a849387c33ab8553fe6ceefa"
+      },
+      {
+        "chunk_id": "P04-0000-901a2dd37c20",
+        "content": "身高 1.2 米以下且不满 6 周岁儿童可免票（不占座）；6 至 14 周岁需购买儿童票，二等座按公布票价 50% 计算，一等座与商务座不售儿童票。",
+        "metadata": {
+          "title": "儿童票",
+          "source": "data/policies.md#P04",
+          "chunk_id": "P04-0000-901a2dd37c20",
+          "doc_id": "P04",
+          "version": "0e8a2e18e6885968"
+        },
+        "dimensions": 1024,
+        "vector_sha256": "7cc16a29d452bae661a6aaea38412cf5b963a7283e2750cb3ee5de56c3500f22"
+      },
+      {
+        "chunk_id": "P05-0000-2ad89d5c523b",
+        "content": "全日制在校学生每年可购买 4 次学生票，仅限二等座，按公布票价 75% 计算，寒暑假及家庭居住地至学校所在地之间有效。",
+        "metadata": {
+          "doc_id": "P05",
+          "version": "def9fcf8b2b8e173",
+          "title": "学生票",
+          "source": "data/policies.md#P05",
+          "chunk_id": "P05-0000-2ad89d5c523b"
+        },
+        "dimensions": 1024,
+        "vector_sha256": "df928ea1c105bc034fc9451342f2ea28c11566bd0c9d42dfb6e1e302df74d6ff"
+      },
+      {
+        "chunk_id": "P06-0000-2705abb94023",
+        "content": "高铁成人免费携带品重量 20 千克，儿童 10 千克；每件物品长宽高之和不超过 160 厘米。超重部分按每千克 5 元补收运费。",
+        "metadata": {
+          "source": "data/policies.md#P06",
+          "doc_id": "P06",
+          "title": "行李规定",
+          "version": "1e1fd8d51d3f9486",
+          "chunk_id": "P06-0000-2705abb94023"
+        },
+        "dimensions": 1024,
+        "vector_sha256": "6e8ced9bab23af8b08d86fa76091b88b39896b730073286e20489cead94e7539"
+      },
+      {
+        "chunk_id": "P07-0000-ef524fb2b645",
+        "content": "乘车之日起 180 日内可在车站窗口或自助机打印报销凭证，仅可打印一次；已打印报销凭证的车票退票时需先交回凭证。",
+        "metadata": {
+          "doc_id": "P07",
+          "chunk_id": "P07-0000-ef524fb2b645",
+          "title": "报销凭证",
+          "source": "data/policies.md#P07",
+          "version": "2c734d1ca6e68b07"
+        },
+        "dimensions": 1024,
+        "vector_sha256": "69de580ec3762360ff3b38a220b49f2dec01336103f98c558e24e01c17ac54c5"
+      },
+      {
+        "chunk_id": "P08-0000-d1134f07d8dc",
+        "content": "无票时可提交候补订单，系统按提交顺序自动兑现；其他旅客退票产生的余票优先分配给候补队列，候补订单有效期至开车前 2 小时。",
+        "metadata": {
+          "doc_id": "P08",
+          "title": "候补与余票释放",
+          "version": "e8159a7e61371bf7",
+          "chunk_id": "P08-0000-d1134f07d8dc",
+          "source": "data/policies.md#P08"
+        },
+        "dimensions": 1024,
+        "vector_sha256": "6959d426a1948ed08c1b818327cf26dfe5856c4285eda11ab873dd17c1858001"
+      },
+      {
+        "chunk_id": "P09-0000-799e4c5fd057",
+        "content": "机票经济舱起飞前 24 小时以上退票收取票面价 10%，24 小时内收取 30%；特价舱位（折扣低于 4 折）不支持退票，仅退机场建设费与燃油附加费。",
+        "metadata": {
+          "chunk_id": "P09-0000-799e4c5fd057",
+          "doc_id": "P09",
+          "version": "f31cd4160b93abb5",
+          "title": "机票退改规则",
+          "source": "data/policies.md#P09"
+        },
+        "dimensions": 1024,
+        "vector_sha256": "c1bcb32b3a740df91948e56839f275c7caf09e9de6065e72acb8eb3c4e565862"
+      },
+      {
+        "chunk_id": "P10-0000-d31bb6d46837",
+        "content": "购票实行实名制，乘车人须与票面信息一致；一个有效身份证件同一乘车日期同一车次仅可购买一张车票。",
+        "metadata": {
+          "chunk_id": "P10-0000-d31bb6d46837",
+          "title": "实名与身份核验",
+          "source": "data/policies.md#P10",
+          "version": "8b2a80eb3605dca0",
+          "doc_id": "P10"
+        },
+        "dimensions": 1024,
+        "vector_sha256": "09b4244562248bb3d364162da2fcb71a6cc54812091b5ce41ca073ae14aaa13b"
+      },
+      {
+        "chunk_id": "P11-0000-589c2e46be21",
+        "content": "模拟锁座有效期 15 分钟，过期未支付自动释放库存；下单必须提供与锁座一致的乘客列表。重复支付不重复扣减库存。",
+        "metadata": {
+          "chunk_id": "P11-0000-589c2e46be21",
+          "doc_id": "P11",
+          "version": "43aea1ebf3c7b333",
+          "source": "data/policies.md#P11",
+          "title": "锁座与支付有效期"
+        },
+        "dimensions": 1024,
+        "vector_sha256": "d3d30214d5dba44947f955a0430a98b0a31aadad8f2fa900279680db0e213fb8"
+      },
+      {
+        "chunk_id": "P12-0000-3fece7e2c814",
+        "content": "未支付订单取消不收取手续费，释放已占库存；已退款或已取消订单不得再次释放库存，取消后的订单不可支付。",
+        "metadata": {
+          "version": "2295151242863c57",
+          "source": "data/policies.md#P12",
+          "title": "未支付订单取消",
+          "chunk_id": "P12-0000-3fece7e2c814",
+          "doc_id": "P12"
+        },
+        "dimensions": 1024,
+        "vector_sha256": "28240826c35870d7f94b4e44dc6c7d51bebea8f575a0b7dfd21cdccac417cae6"
+      },
+      {
+        "chunk_id": "P13-0000-905680b18ce6",
+        "content": "演示身份固定为当前模拟用户，仅可查询、支付、取消自己的订单；不能通过另一个手机号或订单号读取其他用户的信息。",
+        "metadata": {
+          "doc_id": "P13",
+          "chunk_id": "P13-0000-905680b18ce6",
+          "source": "data/policies.md#P13",
+          "version": "fcb3716098433993",
+          "title": "模拟隐私规则"
+        },
+        "dimensions": 1024,
+        "vector_sha256": "1851d7f90d785c04039b474e6aa81e1f3124bd0c0fa14c21fa7aee01f951146f"
+      },
+      {
+        "chunk_id": "P14-0000-80089e9f49a8",
+        "content": "候补工具只返回监控任务凭据，不执行后台轮询、不承诺兑现，也不扣款。只有数据库中存在且当前无票的班次可以提交监控。",
+        "metadata": {
+          "chunk_id": "P14-0000-80089e9f49a8",
+          "source": "data/policies.md#P14",
+          "version": "f4285c57defe97e1",
+          "doc_id": "P14",
+          "title": "模拟候补边界"
+        },
+        "dimensions": 1024,
+        "vector_sha256": "f60d3801c0663d7118502e07037b13a56859bb2567150ec61b04c0a8d0fc4d1c"
+      },
+      {
+        "chunk_id": "P15-0000-9ab51dd978bf",
+        "content": "演示数据库覆盖生成当天及之后六天；超出日期范围或没有配置的路线返回空列表，不表示真实系统没有余票。",
+        "metadata": {
+          "doc_id": "P15",
+          "version": "3dad16931011fba7",
+          "title": "数据预售范围",
+          "chunk_id": "P15-0000-9ab51dd978bf",
+          "source": "data/policies.md#P15"
+        },
+        "dimensions": 1024,
+        "vector_sha256": "9881e06bd7e27b6f62ca679b89420282d9b817f41d2cac96263ada6c3a75eb6a"
+      }
+    ],
+    "logical_sha256": "bde52e41f7148c11c77e11cd0fbcb68c715f672588d7265699fd77a387bd2a70"
+  },
+  "policy_file_sha256": "bfef71389558e57a11f6d2459d7cc7ef79c1c77c8ff2e60152197e21c18a44ad",
+  "manifest": {
+    "model": "text-embedding-v4",
+    "dimensions": 1024,
+    "endpoint": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+    "corpus_hash": "bfef71389558e57a11f6d2459d7cc7ef79c1c77c8ff2e60152197e21c18a44ad",
+    "chunk_size": 450,
+    "overlap": 50,
+    "schema": "ticket-policy-index/1",
+    "index_version": "242aa8199c4a8393ded29751",
+    "collection": "policy-242aa8199c4a8393ded29751-8611bbb5",
+    "chunk_count": 15,
+    "document_count": 15,
+    "embedding_origin": "real_api",
+    "embedding_receipts": [
+      {
+        "request_id": "a3894ee717374180ae9ca2d93dc8d791",
+        "origin": "real_api",
+        "model": "text-embedding-v4",
+        "actual_model": "text-embedding-v4",
+        "dimensions": 1024,
+        "tokens": 574,
+        "status": 200,
+        "latency_ms": 2073,
+        "server_request_id": "eb1bd95d-ecce-9c04-a5e9-04bc54c69ec5",
+        "response_sha256": "9a966bde525c9c87667ccf4a1ffe489f13f26d88dbcd90b698973437cd89baeb",
+        "vector_hashes": [
+          "6ab525ad02fcfc5ed8cd463c07d6c595ee872d525ae81d0da71c41fadaf286d0",
+          "98d6f92b1b6f63d52690b4946af9fef48be666efa85c36fa254cfb35033b6940",
+          "8f6471ea1d55ec31eec3a3f9e7aab07c7dd2bfe548593ecd96781160e52a0f02",
+          "1e95536c2a1b04455a0835c745a2ab24f846721d78eaad97fd30d7f06eb513f3",
+          "df928ea1c105bc034fc9451342f2ea28c11566bd0c9d42dfb6e1e302df74d6ff",
+          "6e8ced9bab23af8b08d86fa76091b88b39896b730073286e20489cead94e7539",
+          "69de580ec3762360ff3b38a220b49f2dec01336103f98c558e24e01c17ac54c5",
+          "6959d426a1948ed08c1b818327cf26dfe5856c4285eda11ab873dd17c1858001",
+          "c1bcb32b3a740df91948e56839f275c7caf09e9de6065e72acb8eb3c4e565862",
+          "09b4244562248bb3d364162da2fcb71a6cc54812091b5ce41ca073ae14aaa13b"
+        ]
+      },
+      {
+        "request_id": "2e3e3f53eb5e4493b5353db0a2a62db4",
+        "origin": "real_api",
+        "model": "text-embedding-v4",
+        "actual_model": "text-embedding-v4",
+        "dimensions": 1024,
+        "tokens": 196,
+        "status": 200,
+        "latency_ms": 1642,
+        "server_request_id": "a6eb9b43-3934-9fdf-8bfe-195f1830f2e7",
+        "response_sha256": "f41396806fbf0c15a15f6a6db29116ac9a6b8c80d1139e8b855388fa34521bc1",
+        "vector_hashes": [
+          "d3d30214d5dba44947f955a0430a98b0a31aadad8f2fa900279680db0e213fb8",
+          "28240826c35870d7f94b4e44dc6c7d51bebea8f575a0b7dfd21cdccac417cae6",
+          "1851d7f90d785c04039b474e6aa81e1f3124bd0c0fa14c21fa7aee01f951146f",
+          "f60d3801c0663d7118502e07037b13a56859bb2567150ec61b04c0a8d0fc4d1c",
+          "ccfb9857668cef6e76884e4f10d15e04e4badb122cff52266440f9a1afadc8a9"
+        ]
+      }
+    ],
+    "stored_vector_hashes": {
+      "P01-0000-7e17c7d453fc": "6ab525ad02fcfc5ed8cd463c07d6c595ee872d525ae81d0da71c41fadaf286d0",
+      "P02-0000-ee28e78d13a2": "98d6f92b1b6f63d52690b4946af9fef48be666efa85c36fa254cfb35033b6940",
+      "P03-0000-0e22a8a4248f": "c46c922dc41b047ad3161dcedb270a0585dedb70a849387c33ab8553fe6ceefa",
+      "P04-0000-901a2dd37c20": "7cc16a29d452bae661a6aaea38412cf5b963a7283e2750cb3ee5de56c3500f22",
+      "P05-0000-2ad89d5c523b": "df928ea1c105bc034fc9451342f2ea28c11566bd0c9d42dfb6e1e302df74d6ff",
+      "P06-0000-2705abb94023": "6e8ced9bab23af8b08d86fa76091b88b39896b730073286e20489cead94e7539",
+      "P07-0000-ef524fb2b645": "69de580ec3762360ff3b38a220b49f2dec01336103f98c558e24e01c17ac54c5",
+      "P08-0000-d1134f07d8dc": "6959d426a1948ed08c1b818327cf26dfe5856c4285eda11ab873dd17c1858001",
+      "P09-0000-799e4c5fd057": "c1bcb32b3a740df91948e56839f275c7caf09e9de6065e72acb8eb3c4e565862",
+      "P10-0000-d31bb6d46837": "09b4244562248bb3d364162da2fcb71a6cc54812091b5ce41ca073ae14aaa13b",
+      "P11-0000-589c2e46be21": "d3d30214d5dba44947f955a0430a98b0a31aadad8f2fa900279680db0e213fb8",
+      "P12-0000-3fece7e2c814": "28240826c35870d7f94b4e44dc6c7d51bebea8f575a0b7dfd21cdccac417cae6",
+      "P13-0000-905680b18ce6": "1851d7f90d785c04039b474e6aa81e1f3124bd0c0fa14c21fa7aee01f951146f",
+      "P14-0000-80089e9f49a8": "f60d3801c0663d7118502e07037b13a56859bb2567150ec61b04c0a8d0fc4d1c",
+      "P15-0000-9ab51dd978bf": "9881e06bd7e27b6f62ca679b89420282d9b817f41d2cac96263ada6c3a75eb6a"
+    }
+  },
+  "real_API_requests": 0
+}

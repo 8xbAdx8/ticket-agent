@@ -1,0 +1,32 @@
+{
+  "schema": "ticket-v352-audit-delivery-review/1",
+  "status": "passed",
+  "real_API_requests": 0,
+  "langsmith_requests": 0,
+  "scanned_files": 1750,
+  "configured_secrets_checked": 3,
+  "secret_findings": [],
+  "protected_files": 4137,
+  "changed_original_files": [],
+  "old_budgets_original_replies_trace_chroma_and_B_originals_unchanged": true,
+  "other_branches_and_tags_unchanged": true,
+  "full_original_replies_and_spans_verified": true,
+  "raw_and_reconstructed_prompt_evidence_distinguished": true,
+  "counts_reconciled": true,
+  "independent_metric_disagreements": 0,
+  "regression": {
+    "passed": 537,
+    "subtests_passed": 89,
+    "junit": {
+      "tests": 626,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  },
+  "tested_source": "55737fef63a8a446f2d20a04a91e5a30fbce209c",
+  "limitations": [
+    "Configured-value scan does not identify every possible unknown secret.",
+    "Runtime tools schema was not historically retained; seven capability assertions remain for B."
+  ]
+}
