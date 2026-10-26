@@ -93,6 +93,35 @@ def scan(files):
             'nested_office_zip_checked': True, 'scope': 'known credentials, token patterns and private keys; image text is not OCR-scanned'}
 
 
+def frozen_serialization(files):
+    """Reproduce original frozen fixture bytes, using recorded hashes as authority.
+
+    Earlier Windows evidence was frozen as CRLF before Git normalized its blobs.
+    Only an LF/CRLF conversion whose hash equals the PREEXISTING manifest is
+    accepted. Neither labels nor assertions nor original worktree files change.
+    """
+    base = 'web/datasets/b_v32_20261020/'
+    expected = {base + name: spec['sha256']
+                for name, spec in json.loads(files[base + 'manifest.json'])['files'].items()}
+    old = json.loads(files['docs/evidence/v35/live/retrieval-evaluation/report.json'])
+    expected['cases/rag_quality_v35.json'] = old['dataset_sha256']
+    rows = json.loads(files['docs/evidence/v352/offline/authorized-final/retrieval/report.json'])
+    expected.update({f'cases/rag_quality_v351_{split}.json': digest for split, digest in rows['input_sha256'].items()})
+    receipt = []
+    for name, digest in expected.items():
+        original = files[name]
+        if sha(original) == digest:
+            continue
+        lf = original.replace(b'\r\n', b'\n')
+        match = next((data for data in (lf, lf.replace(b'\n', b'\r\n')) if sha(data) == digest), None)
+        if match is None:
+            raise ValueError('frozen_fixture_content_mismatch: ' + name)
+        files[name] = match
+        receipt.append({'path': name, 'git_blob_sha256': sha(original), 'frozen_sha256': digest,
+                        'change': 'line_endings_only_matching_historical_manifest'})
+    return receipt
+
+
 def build(destination):
     if git('diff', '--name-only').strip() or git('diff', '--cached', '--name-only').strip():
         raise ValueError('commit_tracked_changes_before_packaging')
@@ -113,6 +142,7 @@ def build(destination):
             if (member.external_attr >> 16) & 0o170000 == 0o120000:
                 raise ValueError('symlink_in_source_snapshot')
             files[member.filename] = snapshot.read(member)
+    serialization = frozen_serialization(files)
     manifest = json.loads(files[CACHE_MANIFEST])
     cache_zip = ROOT / manifest['path']
     raw = cache_zip.read_bytes()
@@ -139,6 +169,7 @@ def build(destination):
                'frozen_cache_archive_sha256': manifest['sha256'], 'live_tools': ['query_tickets', 'search_policy'],
                'packaging_real_requests': 0, 'excluded_tracked_paths': excluded,
                'historical_synthetic_db_exception': HISTORICAL_DB,
+               'frozen_file_serialization': serialization,
                'note': 'Package source ID is supplied here; ZIP is not a Git checkout. Historical evidence is not a new Live run.'}
     files['交付版本.json'] = json_bytes(version)
     safety = scan(files)
@@ -163,6 +194,7 @@ def build(destination):
               'sha256': digest, 'bytes': output.stat().st_size, 'files': len(files), 'source_commit': head,
               'source_branch': branch, 'zip_crc': 'passed', 'secret_scan': safety,
               'frozen_cache_files': len(manifest['files']), 'policy_hash_matches_index': True,
+              'frozen_fixture_line_endings_verified': len(serialization),
               'untracked_user_files_included': False, 'real_requests': 0,
               'extraction_verification': 'Run scripts/check_team_package.py in a fresh extracted folder; result is separate.'}
     report_path.write_bytes(json_bytes(report))
