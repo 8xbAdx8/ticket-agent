@@ -1,0 +1,815 @@
+{
+  "schema": "ticket-v351-guard-integration/1",
+  "evidence_mode": "offline_sdk_mock_transport",
+  "provider": "qwen",
+  "requested_model": "qwen3.8-flash",
+  "question": "锁座后多久必须完成支付？",
+  "authoritative_tool_result": {
+    "question": "锁座后多久必须完成支付？",
+    "hits": [
+      {
+        "doc_id": "P11",
+        "title": "锁座与支付有效期",
+        "source": "data/policies.md#P11",
+        "version": "43aea1ebf3c7b333",
+        "chunk_id": "P11-0000-589c2e46be21",
+        "content": "模拟锁座有效期 15 分钟，过期未支付自动释放库存；下单必须提供与锁座一致的乘客列表。重复支付不重复扣减库存。",
+        "score": 1.8708286933869707,
+        "keyword_score": 1.8708286933869707,
+        "rank": 1
+      }
+    ],
+    "count": 1
+  },
+  "original_model_reply": "依据 P11，模拟锁座有效期为45分钟。",
+  "expected_error": "rag_answer_inconsistent",
+  "observed_error": {
+    "category": "rag_answer_inconsistent",
+    "http_status": null
+  },
+  "field_finding": {
+    "type": "unsupported_quantity_or_scope",
+    "claim": "依据 P11，模拟锁座有效期为45分钟",
+    "cited_doc_ids": [
+      "P11"
+    ],
+    "claim_quantities": [
+      {
+        "text": "45分钟",
+        "dimension": "duration",
+        "value": "45",
+        "start": 12,
+        "end": 16,
+        "negated": false
+      }
+    ],
+    "missing_quantities": [
+      {
+        "text": "45分钟",
+        "dimension": "duration",
+        "value": "45",
+        "start": 12,
+        "end": 16,
+        "negated": false
+      }
+    ],
+    "condition": [],
+    "evidence": [
+      {
+        "doc_id": "P11",
+        "text": "模拟锁座有效期 15 分钟"
+      },
+      {
+        "doc_id": "P11",
+        "text": "过期未支付自动释放库存"
+      },
+      {
+        "doc_id": "P11",
+        "text": "下单必须提供与锁座一致的乘客列表"
+      },
+      {
+        "doc_id": "P11",
+        "text": "重复支付不重复扣减库存"
+      }
+    ],
+    "basis": "Numeric value/unit/subject/explicit conditional branch does not match the cited clause"
+  },
+  "faithfulness_check": {
+    "schema": "ticket-rag-faithfulness/1",
+    "status": "failed",
+    "original_model_reply": "依据 P11，模拟锁座有效期为45分钟。",
+    "question": "锁座后多久必须完成支付？",
+    "allowed_doc_ids": [
+      "P11"
+    ],
+    "cited_doc_ids": [
+      "P11"
+    ],
+    "claim_checks": [],
+    "findings": [
+      {
+        "type": "unsupported_quantity_or_scope",
+        "claim": "依据 P11，模拟锁座有效期为45分钟",
+        "cited_doc_ids": [
+          "P11"
+        ],
+        "claim_quantities": [
+          {
+            "text": "45分钟",
+            "dimension": "duration",
+            "value": "45",
+            "start": 12,
+            "end": 16,
+            "negated": false
+          }
+        ],
+        "missing_quantities": [
+          {
+            "text": "45分钟",
+            "dimension": "duration",
+            "value": "45",
+            "start": 12,
+            "end": 16,
+            "negated": false
+          }
+        ],
+        "condition": [],
+        "evidence": [
+          {
+            "doc_id": "P11",
+            "text": "模拟锁座有效期 15 分钟"
+          },
+          {
+            "doc_id": "P11",
+            "text": "过期未支付自动释放库存"
+          },
+          {
+            "doc_id": "P11",
+            "text": "下单必须提供与锁座一致的乘客列表"
+          },
+          {
+            "doc_id": "P11",
+            "text": "重复支付不重复扣减库存"
+          }
+        ],
+        "basis": "Numeric value/unit/subject/explicit conditional branch does not match the cited clause"
+      }
+    ],
+    "manual_review": [],
+    "refusal_observed": false,
+    "no_evidence_refusal": null,
+    "conflicts": [],
+    "conflict_disclosed": null,
+    "excluded_user_quotes": [],
+    "full_semantic_faithfulness": "indeterminate",
+    "limits": [
+      "Finite rules do not prove all semantic claims or the completeness of an answer.",
+      "Unknown paraphrases/implicit conditions require B independent review; this is not a model-generated judge."
+    ]
+  },
+  "provider_trace": {
+    "schema": "ticket-live-run/1",
+    "trace_id": "d87a27cf00ff41b592fef2d9fd73f169",
+    "session_id": "v351-guard-qwen",
+    "provider": "bailian_live",
+    "requested_model": "qwen3.8-flash",
+    "actual_models": [
+      "qwen3.8-flash"
+    ],
+    "mode": "live",
+    "case_id": "offline-fixture",
+    "git_sha": "6d5ba513386f80bb893716ab40a9cf16558290d4",
+    "requested_at": "2026-10-26T03:46:30.281579+00:00",
+    "recorded_at": "2026-10-26T03:46:30.296204+00:00",
+    "user_msg": "锁座后多久必须完成支付？",
+    "reply": null,
+    "finish_reason": "stop",
+    "total_latency_ms": 21,
+    "tokens": {
+      "prompt": 26,
+      "completion": 10
+    },
+    "observed_tokens": {
+      "prompt": 26,
+      "completion": 10
+    },
+    "token_usage_status": "complete",
+    "agent_completed": false,
+    "model_response_received": true,
+    "tool_execution_success": true,
+    "business_success": null,
+    "error": {
+      "category": "rag_answer_inconsistent",
+      "http_status": null
+    },
+    "local_trace_saved": false,
+    "local_sidecar_saved": true,
+    "public_trace": null,
+    "public_trace_sha256": null,
+    "events": [
+      {
+        "event": "model_start",
+        "model_step": 1,
+        "timestamp": "2026-10-26T03:46:30.281579+00:00"
+      },
+      {
+        "event": "http_request",
+        "request_id": "legacy-048fb04ebfb9e8ac-1",
+        "provider": "bailian",
+        "summary": {
+          "model": "qwen3.8-flash",
+          "message_roles": [
+            "system",
+            "user"
+          ],
+          "returned_tool_call_ids": []
+        },
+        "model_step": 1,
+        "timestamp": "2026-10-26T03:46:30.288557+00:00"
+      },
+      {
+        "event": "http_response",
+        "request_id": "legacy-048fb04ebfb9e8ac-1",
+        "provider": "bailian",
+        "http_status": 200,
+        "category": "response_received",
+        "usage": {
+          "prompt_tokens": 13,
+          "completion_tokens": 5,
+          "total_tokens": 18
+        },
+        "model_step": 1,
+        "timestamp": "2026-10-26T03:46:30.288557+00:00"
+      },
+      {
+        "event": "model_response",
+        "model_step": 1,
+        "request_id": "legacy-048fb04ebfb9e8ac-1",
+        "response_model": "qwen3.8-flash",
+        "usage": {
+          "input_tokens": 13,
+          "output_tokens": 5,
+          "total_tokens": 18,
+          "input_token_details": {},
+          "output_token_details": {}
+        },
+        "latency_ms": 8,
+        "finish_reason": "tool_calls",
+        "tool_calls": [
+          {
+            "id": "offline-call",
+            "name": "search_policy",
+            "args": {
+              "question": "锁座后多久必须完成支付？"
+            }
+          }
+        ]
+      },
+      {
+        "event": "model_end",
+        "model_step": 1
+      },
+      {
+        "event": "tool_start",
+        "model_step": 1,
+        "tool": "search_policy",
+        "args": {
+          "question": "锁座后多久必须完成支付？"
+        },
+        "call_id": "offline-call",
+        "execution_index": 1,
+        "model_requested_tool": "search_policy",
+        "model_requested_args": {
+          "question": "锁座后多久必须完成支付？"
+        }
+      },
+      {
+        "event": "tool_end",
+        "tool": "search_policy",
+        "args": {
+          "question": "锁座后多久必须完成支付？"
+        },
+        "call_id": "offline-call",
+        "ok": true,
+        "executed": true,
+        "execution_index": 1,
+        "latency_ms": 2,
+        "result": {
+          "question": "锁座后多久必须完成支付？",
+          "hits": [
+            {
+              "doc_id": "P11",
+              "title": "锁座与支付有效期",
+              "source": "data/policies.md#P11",
+              "version": "43aea1ebf3c7b333",
+              "chunk_id": "P11-0000-589c2e46be21",
+              "content": "模拟锁座有效期 15 分钟，过期未支付自动释放库存；下单必须提供与锁座一致的乘客列表。重复支付不重复扣减库存。",
+              "score": 1.8708286933869707,
+              "keyword_score": 1.8708286933869707,
+              "rank": 1
+            }
+          ],
+          "count": 1
+        },
+        "parameter_validation": {
+          "status": "valid",
+          "validated_args": {
+            "question": "锁座后多久必须完成支付？"
+          }
+        },
+        "timestamp": "2026-10-26T03:46:30.288557+00:00",
+        "step": 1
+      },
+      {
+        "event": "model_start",
+        "model_step": 2,
+        "timestamp": "2026-10-26T03:46:30.288557+00:00"
+      },
+      {
+        "event": "http_request",
+        "request_id": "legacy-048fb04ebfb9e8ac-2",
+        "provider": "bailian",
+        "summary": {
+          "model": "qwen3.8-flash",
+          "message_roles": [
+            "system",
+            "user",
+            "assistant",
+            "tool"
+          ],
+          "returned_tool_call_ids": [
+            "offline-call"
+          ]
+        },
+        "model_step": 2,
+        "timestamp": "2026-10-26T03:46:30.296204+00:00"
+      },
+      {
+        "event": "http_response",
+        "request_id": "legacy-048fb04ebfb9e8ac-2",
+        "provider": "bailian",
+        "http_status": 200,
+        "category": "response_received",
+        "usage": {
+          "prompt_tokens": 13,
+          "completion_tokens": 5,
+          "total_tokens": 18
+        },
+        "model_step": 2,
+        "timestamp": "2026-10-26T03:46:30.296204+00:00"
+      },
+      {
+        "event": "model_response",
+        "model_step": 2,
+        "request_id": "legacy-048fb04ebfb9e8ac-2",
+        "response_model": "qwen3.8-flash",
+        "usage": {
+          "input_tokens": 13,
+          "output_tokens": 5,
+          "total_tokens": 18,
+          "input_token_details": {},
+          "output_token_details": {}
+        },
+        "latency_ms": 6,
+        "finish_reason": "stop",
+        "tool_calls": []
+      },
+      {
+        "event": "model_final",
+        "model_step": 2,
+        "text": "依据 P11，模拟锁座有效期为45分钟。",
+        "reply_consistency": {
+          "schema": "reply-consistency/2",
+          "status": "not_verified",
+          "verdict": "indeterminate",
+          "checked_fields": 0,
+          "identity_checks": 0,
+          "findings": [],
+          "field_checks": [],
+          "indeterminate": [],
+          "ignored": [],
+          "authority_queries": [],
+          "scope": "Explicit ticket fields in labelled prose/tables; not full natural-language or business accuracy"
+        },
+        "rag_answer_check": {
+          "allowed_doc_ids": [
+            "P11"
+          ],
+          "cited_doc_ids": [
+            "P11"
+          ],
+          "wrong_citations": [],
+          "citation_status": "checked_ids_match",
+          "citation_support": "indeterminate",
+          "faithfulness": "indeterminate",
+          "scope": "Document-ID membership only; does not prove the cited passage supports every claim",
+          "status": "failed",
+          "faithfulness_check": {
+            "schema": "ticket-rag-faithfulness/1",
+            "status": "failed",
+            "original_model_reply": "依据 P11，模拟锁座有效期为45分钟。",
+            "question": "锁座后多久必须完成支付？",
+            "allowed_doc_ids": [
+              "P11"
+            ],
+            "cited_doc_ids": [
+              "P11"
+            ],
+            "claim_checks": [],
+            "findings": [
+              {
+                "type": "unsupported_quantity_or_scope",
+                "claim": "依据 P11，模拟锁座有效期为45分钟",
+                "cited_doc_ids": [
+                  "P11"
+                ],
+                "claim_quantities": [
+                  {
+                    "text": "45分钟",
+                    "dimension": "duration",
+                    "value": "45",
+                    "start": 12,
+                    "end": 16,
+                    "negated": false
+                  }
+                ],
+                "missing_quantities": [
+                  {
+                    "text": "45分钟",
+                    "dimension": "duration",
+                    "value": "45",
+                    "start": 12,
+                    "end": 16,
+                    "negated": false
+                  }
+                ],
+                "condition": [],
+                "evidence": [
+                  {
+                    "doc_id": "P11",
+                    "text": "模拟锁座有效期 15 分钟"
+                  },
+                  {
+                    "doc_id": "P11",
+                    "text": "过期未支付自动释放库存"
+                  },
+                  {
+                    "doc_id": "P11",
+                    "text": "下单必须提供与锁座一致的乘客列表"
+                  },
+                  {
+                    "doc_id": "P11",
+                    "text": "重复支付不重复扣减库存"
+                  }
+                ],
+                "basis": "Numeric value/unit/subject/explicit conditional branch does not match the cited clause"
+              }
+            ],
+            "manual_review": [],
+            "refusal_observed": false,
+            "no_evidence_refusal": null,
+            "conflicts": [],
+            "conflict_disclosed": null,
+            "excluded_user_quotes": [],
+            "full_semantic_faithfulness": "indeterminate",
+            "limits": [
+              "Finite rules do not prove all semantic claims or the completeness of an answer.",
+              "Unknown paraphrases/implicit conditions require B independent review; this is not a model-generated judge."
+            ]
+          }
+        }
+      },
+      {
+        "event": "model_end",
+        "model_step": 2
+      }
+    ],
+    "remote_status": "not_attempted"
+  },
+  "rag_sidecars": [
+    {
+      "schema": "ticket-rag-retrieval/1",
+      "retrieval_id": "67efb359cc2b4f58b6a8e86042f2181e",
+      "trace_id": "d87a27cf00ff41b592fef2d9fd73f169",
+      "session_id": "v351-guard-qwen",
+      "provider": "bailian_live",
+      "call_id": "offline-call",
+      "question": "锁座后多久必须完成支付？",
+      "mode": "keyword",
+      "hits": [
+        {
+          "doc_id": "P11",
+          "title": "锁座与支付有效期",
+          "source": "data/policies.md#P11",
+          "version": "43aea1ebf3c7b333",
+          "chunk_id": "P11-0000-589c2e46be21",
+          "content": "模拟锁座有效期 15 分钟，过期未支付自动释放库存；下单必须提供与锁座一致的乘客列表。重复支付不重复扣减库存。",
+          "score": 1.8708286933869707,
+          "keyword_score": 1.8708286933869707,
+          "rank": 1
+        }
+      ],
+      "embedding_model": null,
+      "index_version": null,
+      "embedding_latency_ms": 0,
+      "embedding_receipts": [],
+      "total_latency_ms": 1,
+      "candidate_hits": [
+        {
+          "doc_id": "P11",
+          "title": "锁座与支付有效期",
+          "source": "data/policies.md#P11",
+          "version": "43aea1ebf3c7b333",
+          "chunk_id": "P11-0000-589c2e46be21",
+          "content": "模拟锁座有效期 15 分钟，过期未支付自动释放库存；下单必须提供与锁座一致的乘客列表。重复支付不重复扣减库存。",
+          "score": 1.8708286933869707,
+          "keyword_score": 1.8708286933869707,
+          "rank": 1
+        },
+        {
+          "doc_id": "P12",
+          "title": "未支付订单取消",
+          "source": "data/policies.md#P12",
+          "version": "2295151242863c57",
+          "chunk_id": "P12-0000-3fece7e2c814",
+          "content": "未支付订单取消不收取手续费，释放已占库存；已退款或已取消订单不得再次释放库存，取消后的订单不可支付。",
+          "score": 0.9615239476408232,
+          "keyword_score": 0.9615239476408232,
+          "rank": 2
+        },
+        {
+          "doc_id": "P04",
+          "title": "儿童票",
+          "source": "data/policies.md#P04",
+          "version": "0e8a2e18e6885968",
+          "chunk_id": "P04-0000-901a2dd37c20",
+          "content": "身高 1.2 米以下且不满 6 周岁儿童可免票（不占座）；6 至 14 周岁需购买儿童票，二等座按公布票价 50% 计算，一等座与商务座不售儿童票。",
+          "score": 0.5252257314388902,
+          "keyword_score": 0.5252257314388902,
+          "rank": 3
+        },
+        {
+          "doc_id": "P03",
+          "title": "开车后处理",
+          "source": "data/policies.md#P03",
+          "version": "5e1d85aec65728f4",
+          "chunk_id": "P03-0000-0e22a8a4248f",
+          "content": "开车后 2 小时内可办理一次改签至当日其他有余票车次，不退票。超过 2 小时车票作废。",
+          "score": 0.31234752377721214,
+          "keyword_score": 0.31234752377721214,
+          "rank": 4
+        },
+        {
+          "doc_id": "P15",
+          "title": "数据预售范围",
+          "source": "data/policies.md#P15",
+          "version": "3dad16931011fba7",
+          "chunk_id": "P15-0000-9ab51dd978bf",
+          "content": "演示数据库覆盖生成当天及之后六天；超出日期范围或没有配置的路线返回空列表，不表示真实系统没有余票。",
+          "score": 0.2773500981126146,
+          "keyword_score": 0.2773500981126146,
+          "rank": 5
+        },
+        {
+          "doc_id": "P13",
+          "title": "模拟隐私规则",
+          "source": "data/policies.md#P13",
+          "version": "fcb3716098433993",
+          "chunk_id": "P13-0000-905680b18ce6",
+          "content": "演示身份固定为当前模拟用户，仅可查询、支付、取消自己的订单；不能通过另一个手机号或订单号读取其他用户的信息。",
+          "score": 0.26967994498529685,
+          "keyword_score": 0.26967994498529685,
+          "rank": 6
+        },
+        {
+          "doc_id": "P02",
+          "title": "改签规则",
+          "source": "data/policies.md#P02",
+          "version": "d5926ccfe3981a69",
+          "chunk_id": "P02-0000-ee28e78d13a2",
+          "content": "开车前 48 小时以上可改签预售期内任意车次；开车前 48 小时以内可改签开车前的其他车次，也可改签开车后至当日 24:00 之间的车次。每张票仅可改签一次，改签后不退。",
+          "score": 0.23408229439226114,
+          "keyword_score": 0.23408229439226114,
+          "rank": 7
+        },
+        {
+          "doc_id": "P10",
+          "title": "实名与身份核验",
+          "source": "data/policies.md#P10",
+          "version": "8b2a80eb3605dca0",
+          "chunk_id": "P10-0000-d31bb6d46837",
+          "content": "购票实行实名制，乘车人须与票面信息一致；一个有效身份证件同一乘车日期同一车次仅可购买一张车票。",
+          "score": 0.14002800840280097,
+          "keyword_score": 0.14002800840280097,
+          "rank": 8
+        },
+        {
+          "doc_id": "P05",
+          "title": "学生票",
+          "source": "data/policies.md#P05",
+          "version": "def9fcf8b2b8e173",
+          "chunk_id": "P05-0000-2ad89d5c523b",
+          "content": "全日制在校学生每年可购买 4 次学生票，仅限二等座，按公布票价 75% 计算，寒暑假及家庭居住地至学校所在地之间有效。",
+          "score": 0.1386750490563073,
+          "keyword_score": 0.1386750490563073,
+          "rank": 9
+        },
+        {
+          "doc_id": "P06",
+          "title": "行李规定",
+          "source": "data/policies.md#P06",
+          "version": "1e1fd8d51d3f9486",
+          "chunk_id": "P06-0000-2705abb94023",
+          "content": "高铁成人免费携带品重量 20 千克，儿童 10 千克；每件物品长宽高之和不超过 160 厘米。超重部分按每千克 5 元补收运费。",
+          "score": 0.1386750490563073,
+          "keyword_score": 0.1386750490563073,
+          "rank": 10
+        },
+        {
+          "doc_id": "P14",
+          "title": "模拟候补边界",
+          "source": "data/policies.md#P14",
+          "version": "f4285c57defe97e1",
+          "chunk_id": "P14-0000-80089e9f49a8",
+          "content": "候补工具只返回监控任务凭据，不执行后台轮询、不承诺兑现，也不扣款。只有数据库中存在且当前无票的班次可以提交监控。",
+          "score": 0.13245323570650439,
+          "keyword_score": 0.13245323570650439,
+          "rank": 11
+        },
+        {
+          "doc_id": "P09",
+          "title": "机票退改规则",
+          "source": "data/policies.md#P09",
+          "version": "f31cd4160b93abb5",
+          "chunk_id": "P09-0000-799e4c5fd057",
+          "content": "机票经济舱起飞前 24 小时以上退票收取票面价 10%，24 小时内收取 30%；特价舱位（折扣低于 4 折）不支持退票，仅退机场建设费与燃油附加费。",
+          "score": 0.1270001270001905,
+          "keyword_score": 0.1270001270001905,
+          "rank": 12
+        }
+      ],
+      "rejections": [
+        {
+          "doc_id": "P12",
+          "reason": "policy_subject_or_transport_mismatch",
+          "score": 0.9615239476408232
+        },
+        {
+          "doc_id": "P04",
+          "reason": "policy_subject_or_transport_mismatch",
+          "score": 0.5252257314388902
+        },
+        {
+          "doc_id": "P03",
+          "reason": "policy_subject_or_transport_mismatch",
+          "score": 0.31234752377721214
+        },
+        {
+          "doc_id": "P15",
+          "reason": "policy_subject_or_transport_mismatch",
+          "score": 0.2773500981126146
+        },
+        {
+          "doc_id": "P13",
+          "reason": "policy_subject_or_transport_mismatch",
+          "score": 0.26967994498529685
+        },
+        {
+          "doc_id": "P02",
+          "reason": "policy_subject_or_transport_mismatch",
+          "score": 0.23408229439226114
+        },
+        {
+          "doc_id": "P10",
+          "reason": "policy_subject_or_transport_mismatch",
+          "score": 0.14002800840280097
+        },
+        {
+          "doc_id": "P05",
+          "reason": "policy_subject_or_transport_mismatch",
+          "score": 0.1386750490563073
+        },
+        {
+          "doc_id": "P06",
+          "reason": "policy_subject_or_transport_mismatch",
+          "score": 0.1386750490563073
+        },
+        {
+          "doc_id": "P14",
+          "reason": "policy_subject_or_transport_mismatch",
+          "score": 0.13245323570650439
+        },
+        {
+          "doc_id": "P09",
+          "reason": "policy_subject_or_transport_mismatch",
+          "score": 0.1270001270001905
+        }
+      ],
+      "sufficiency": {
+        "state": "scoped_evidence",
+        "abstain_recommended": false,
+        "topics": [
+          "lock"
+        ],
+        "allowed_policy_ids": [
+          "P11"
+        ],
+        "unsupported_attributes": [],
+        "needs_clarification": false,
+        "transport_scope": "unspecified",
+        "limits": "Finite corpus capability checks; unknown paraphrases and semantic gaps require B review."
+      },
+      "fusion": null,
+      "quality_profile": "v351",
+      "minimum_keyword_score": 0.0,
+      "vector_weight": null,
+      "status": "retrieved",
+      "business_success": null
+    },
+    {
+      "schema": "ticket-rag-answer/1",
+      "trace_id": "d87a27cf00ff41b592fef2d9fd73f169",
+      "session_id": "v351-guard-qwen",
+      "provider": "bailian_live",
+      "model": "qwen3.8-flash",
+      "original_model_reply": "依据 P11，模拟锁座有效期为45分钟。",
+      "allowed_doc_ids": [
+        "P11"
+      ],
+      "cited_doc_ids": [
+        "P11"
+      ],
+      "wrong_citations": [],
+      "citation_status": "checked_ids_match",
+      "citation_support": "indeterminate",
+      "faithfulness": "indeterminate",
+      "scope": "Document-ID membership only; does not prove the cited passage supports every claim",
+      "status": "failed",
+      "faithfulness_check": {
+        "schema": "ticket-rag-faithfulness/1",
+        "status": "failed",
+        "original_model_reply": "依据 P11，模拟锁座有效期为45分钟。",
+        "question": "锁座后多久必须完成支付？",
+        "allowed_doc_ids": [
+          "P11"
+        ],
+        "cited_doc_ids": [
+          "P11"
+        ],
+        "claim_checks": [],
+        "findings": [
+          {
+            "type": "unsupported_quantity_or_scope",
+            "claim": "依据 P11，模拟锁座有效期为45分钟",
+            "cited_doc_ids": [
+              "P11"
+            ],
+            "claim_quantities": [
+              {
+                "text": "45分钟",
+                "dimension": "duration",
+                "value": "45",
+                "start": 12,
+                "end": 16,
+                "negated": false
+              }
+            ],
+            "missing_quantities": [
+              {
+                "text": "45分钟",
+                "dimension": "duration",
+                "value": "45",
+                "start": 12,
+                "end": 16,
+                "negated": false
+              }
+            ],
+            "condition": [],
+            "evidence": [
+              {
+                "doc_id": "P11",
+                "text": "模拟锁座有效期 15 分钟"
+              },
+              {
+                "doc_id": "P11",
+                "text": "过期未支付自动释放库存"
+              },
+              {
+                "doc_id": "P11",
+                "text": "下单必须提供与锁座一致的乘客列表"
+              },
+              {
+                "doc_id": "P11",
+                "text": "重复支付不重复扣减库存"
+              }
+            ],
+            "basis": "Numeric value/unit/subject/explicit conditional branch does not match the cited clause"
+          }
+        ],
+        "manual_review": [],
+        "refusal_observed": false,
+        "no_evidence_refusal": null,
+        "conflicts": [],
+        "conflict_disclosed": null,
+        "excluded_user_quotes": [],
+        "full_semantic_faithfulness": "indeterminate",
+        "limits": [
+          "Finite rules do not prove all semantic claims or the completeness of an answer.",
+          "Unknown paraphrases/implicit conditions require B independent review; this is not a model-generated judge."
+        ]
+      },
+      "business_success": false
+    }
+  ],
+  "assertions": [
+    "correct 15-minute tool result returned to SDK",
+    "45-minute model claim rejected after tool success",
+    "original model text retained unchanged",
+    "failure sidecars linked by trace ID",
+    "no fabricated public success and no order writes"
+  ],
+  "judgement": "passed",
+  "new_real_generation_requests": 0,
+  "new_embedding_requests": 0,
+  "limits": "The model reply and token usage are explicit fixtures; raw adapter mode=live is not a new online run."
+}

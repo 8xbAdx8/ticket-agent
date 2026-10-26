@@ -1,6 +1,26 @@
 # Ticket Agent
 
-## 2026-10-26：V3.5 Qwen3.8-Flash 与真实 RAG（当前版本）
+## 2026-10-26：V3.5.1 RAG质量强化（当前版本）
+
+新增有限政策范围/缺失条件门控、向量主导的加权RRF、逐句出处与数值/条件检查及两Provider政策工具往返的SDK离线验证。原30题保持不变，另冻结开发/保留集各24题；不修改B正式断言。真实API新增 **0**，旧Embedding **5/8**、Qwen生成 **4/4**不变。
+
+最终pytest **472通过、0失败、0跳过，另89子测试通过**；原多环境、smoke和两组变异检查通过。保留首次失败与索引留存事件，不将后续成功覆盖它们。
+
+固定30题的缓存真实向量离线重放：Hybrid Recall@3/MRR由0.980769/0.923077升为1/1，三模式无答案误召回均0/4。新保留集Keyword正样本Recall1、MRR0.875，负样本0/16误召回；两题正确文档仍第二。新48题没有真实查询向量，Vector/Hybrid未运行；真实模型拒答和修复后Live往返未验证，不能把这些数字当模型整体准确率。
+
+第一次全量测试发现Chroma读取期间原运行索引3文件字节变化；未自动恢复。隔离副本核对15个文档/元数据/向量与原真实导出一致，后续回归改读本轮副本。票务业务库、历史Trace及API账本未变。详见[留存事件](docs/evidence/v351/chroma-retention-incident.json)，交接保留该风险。
+
+```powershell
+# 纯离线，输出目录必须全新。新机器只运行当前环境可加 --current-only
+.\.venv-v35\Scripts\python.exe scripts/verify_v351_offline.py --out artifacts/runtime/v351-my-review
+.\.venv-v35\Scripts\python.exe scripts/evaluate_v351_rag.py --out artifacts/runtime/v351-my-quality
+# 仅输出未来验收方案，没有联网开关，不创建额度
+.\.venv-v35\Scripts\python.exe scripts/prepare_v351_acceptance.py
+```
+
+[前后对照](docs/handoff/v351/RAG优化前后对照报告.md) · [无答案专项](docs/handoff/v351/无答案专项测试结果.md) · [Hybrid诊断](docs/handoff/v351/Hybrid融合诊断报告.md) · [忠实度专项](docs/handoff/v351/回答忠实度专项报告.md) · [B独立验收](docs/handoff/v351/B独立验收手册.md) · [C演示说明](docs/handoff/v351/C真实RAG演示说明.md) · [待授权真实方案](docs/handoff/v351/真实验收方案.md)。当前**有条件交接**，真实新验收需另授权，旧4/4不能再请求。下方是按日期保留的历史结果。
+
+## 2026-10-26：V3.5 Qwen3.8-Flash 与真实 RAG（历史基线）
 
 已实际调用 `text-embedding-v4`，将15条政策的15个1024维向量持久化到 Chroma；支持 Keyword、Vector、RRF Hybrid、独立检索/回答审计、固定30题和8种隔离 RAG 变异。Qwen3.8-Flash 已完成真实查票 Function Calling 闭环，以及基于真实检索证据的政策回答和无答案拒答。原 Mock、DeepSeek、原八变异及接口契约保留。
 

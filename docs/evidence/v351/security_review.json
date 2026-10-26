@@ -1,0 +1,31 @@
+{
+  "schema": "ticket-v351-release-review/1",
+  "checked_at": "2026-10-26T07:49:25.974073+00:00",
+  "source_head": "74ea359a33539289f62964e8ad8cf75dc824d565",
+  "scanned_files": 1543,
+  "distinct_configured_secrets_checked": 3,
+  "findings": [],
+  "secret_check_status": "passed",
+  "initial_protected_files": 3862,
+  "initial_runtime_index_byte_changes": [
+    "artifacts/runtime/v35-rag/index/38cad6fc-745e-47ee-ad08-b36fb5cf29a7/data_level0.bin",
+    "artifacts/runtime/v35-rag/index/38cad6fc-745e-47ee-ad08-b36fb5cf29a7/length.bin",
+    "artifacts/runtime/v35-rag/index/chroma.sqlite3"
+  ],
+  "retention_status": "warning_known_three_index_changes_not_restored",
+  "logical_index_check": "passed_on_copy",
+  "no_further_initial_file_changes_since_incident": true,
+  "existing_tests_B_contract_mutations_business_and_budgets_unchanged": true,
+  "frozen_selection_and_algorithm_hashes_match": true,
+  "v35_embedding_budget": "5/8",
+  "v35_generation_budget": "4/4",
+  "new_generation_requests": 0,
+  "new_embedding_requests": 0,
+  "langsmith_requests": 0,
+  "local_only": true,
+  "limits": [
+    "Exact scan covers configured secrets, not proof of absence of every possible unknown credential.",
+    "Initial Chroma runtime files changed bytes in first regression; this remains an explicit warning, not hidden by final tests passing.",
+    "No post-fix Live or new48 vector results were produced."
+  ]
+}

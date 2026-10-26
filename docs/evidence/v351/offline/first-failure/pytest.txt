@@ -1,0 +1,26 @@
+............................................... [ 10%]
+........................................................................ [ 25%]
+.................................................. [ 35%]
+................................................................. [ 49%]
+........................................................................ [ 65%]
+...................................................................... [ 80%]
+..........................F...................................................................                  [100%]
+================================== FAILURES ===================================
+_ QualityGuardTests.test_new_live_entry_defaults_are_cache_only_and_quality_profile_explicit _
+
+self = <test_v351_relevance.QualityGuardTests testMethod=test_new_live_entry_defaults_are_cache_only_and_quality_profile_explicit>
+
+    def test_new_live_entry_defaults_are_cache_only_and_quality_profile_explicit(self):
+        from target.live_providers import isolated_environment
+        with patch.dict(os.environ,{'DASHSCOPE_MODEL':'qwen3.8-flash'}):
+            for provider in ('deepseek','bailian'):
+                env=isolated_environment(provider,ROOT/'artifacts/runtime/v351-test-entry',profile='v34')
+>               self.assertEqual(env['AGENT_RAG_MODE'],'hybrid');self.assertEqual(env['RAG_ALLOW_NETWORK'],'0')
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E               AssertionError: '' != 'hybrid'
+E               + hybrid
+
+tests\test_v351_relevance.py:98: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_v351_relevance.py::QualityGuardTests::test_new_live_entry_defaults_are_cache_only_and_quality_profile_explicit
+1 failed, 469 passed, 89 subtests passed in 40.31s

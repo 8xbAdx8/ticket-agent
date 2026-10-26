@@ -1,0 +1,99 @@
+{
+  "schema": "ticket-v351-frozen-selection/1",
+  "selection_split": "development_only",
+  "objective": "Maximize positive Recall@3, then minimize no-answer false recall, then choose the smallest threshold.",
+  "grid": [
+    0.0,
+    0.5,
+    1.0
+  ],
+  "selected_min_keyword_score": 0.0,
+  "vector_weight_fixed_not_tuned": 0.7,
+  "top_k": 3,
+  "vector_threshold_unchanged": 0.35,
+  "development_sha256": "37645ac9faea23e8316654566fc5d75f6df3cfabcc7a31a910da81d5bf237925",
+  "policy_sha256": "bfef71389558e57a11f6d2459d7cc7ef79c1c77c8ff2e60152197e21c18a44ad",
+  "algorithm_sha256": {
+    "target/rag_relevance.py": "c5ed14431a3c170f7aeb667fee3cc3dc4df3ef5cb6bbcd436c15e9ad25bde0dd",
+    "target/rag_store.py": "edf63a795a2a622095e8f79cd3b11f5abf485ab40715db07d4e32c583eb6ed05",
+    "scripts/evaluate_v351_rag.py": "62c627a4b54d2d7a92d9170c2370db54041a68de31d8a6b0db0f367cea119cc4"
+  },
+  "holdout_read_or_scored_during_selection": false,
+  "trials": [
+    {
+      "minimum": 0.0,
+      "before": {
+        "scope": "retrieval only; no final-answer success inferred",
+        "k": 3,
+        "cases": 24,
+        "answerable_scored": 8,
+        "no_answer_scored": 16,
+        "recall_at_k": 1.0,
+        "mrr": 1.0,
+        "no_answer_false_recall_rate": 1.0,
+        "retrieval_failures": 0
+      },
+      "after": {
+        "scope": "retrieval only; no final-answer success inferred",
+        "k": 3,
+        "cases": 24,
+        "answerable_scored": 8,
+        "no_answer_scored": 16,
+        "recall_at_k": 1.0,
+        "mrr": 1.0,
+        "no_answer_false_recall_rate": 0.0,
+        "retrieval_failures": 0
+      }
+    },
+    {
+      "minimum": 0.5,
+      "before": {
+        "scope": "retrieval only; no final-answer success inferred",
+        "k": 3,
+        "cases": 24,
+        "answerable_scored": 8,
+        "no_answer_scored": 16,
+        "recall_at_k": 1.0,
+        "mrr": 1.0,
+        "no_answer_false_recall_rate": 1.0,
+        "retrieval_failures": 0
+      },
+      "after": {
+        "scope": "retrieval only; no final-answer success inferred",
+        "k": 3,
+        "cases": 24,
+        "answerable_scored": 8,
+        "no_answer_scored": 16,
+        "recall_at_k": 1.0,
+        "mrr": 1.0,
+        "no_answer_false_recall_rate": 0.0,
+        "retrieval_failures": 0
+      }
+    },
+    {
+      "minimum": 1.0,
+      "before": {
+        "scope": "retrieval only; no final-answer success inferred",
+        "k": 3,
+        "cases": 24,
+        "answerable_scored": 8,
+        "no_answer_scored": 16,
+        "recall_at_k": 1.0,
+        "mrr": 1.0,
+        "no_answer_false_recall_rate": 1.0,
+        "retrieval_failures": 0
+      },
+      "after": {
+        "scope": "retrieval only; no final-answer success inferred",
+        "k": 3,
+        "cases": 24,
+        "answerable_scored": 8,
+        "no_answer_scored": 16,
+        "recall_at_k": 1.0,
+        "mrr": 1.0,
+        "no_answer_false_recall_rate": 0.0,
+        "retrieval_failures": 0
+      }
+    }
+  ]
+}

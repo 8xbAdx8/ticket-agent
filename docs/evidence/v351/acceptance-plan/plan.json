@@ -1,0 +1,93 @@
+{
+  "schema": "ticket-v351-acceptance-plan/1",
+  "execution_status": "not_run",
+  "network_requests": 0,
+  "reads_api_keys": false,
+  "has_execution_switch": false,
+  "frozen_evidence": {
+    "source": "docs/evidence/v351/optimized-RQ01-frozen.json",
+    "source_file_sha256": "d880ed0b633237958e5a06f947c720305a8b54be83d35775e3a57e1df8032ef1",
+    "question": "锁座后多久必须完成支付？",
+    "retrieval_mode": "hybrid",
+    "quality_profile": "v351",
+    "index_version": "242aa8199c4a8393ded29751",
+    "embedding_origin": "real_api",
+    "tool_result": {
+      "question": "锁座后多久必须完成支付？",
+      "hits": [
+        {
+          "doc_id": "P11",
+          "title": "锁座与支付有效期",
+          "source": "data/policies.md#P11",
+          "version": "43aea1ebf3c7b333",
+          "chunk_id": "P11-0000-589c2e46be21",
+          "content": "模拟锁座有效期 15 分钟，过期未支付自动释放库存；下单必须提供与锁座一致的乘客列表。重复支付不重复扣减库存。",
+          "score": 0.01639344262295082,
+          "keyword_score": 1.8708286933869707,
+          "rank": 1,
+          "fusion_ranks": {
+            "keyword": 1,
+            "vector": 1
+          },
+          "fusion_weights": {
+            "keyword": 0.30000000000000004,
+            "vector": 0.7
+          },
+          "vector_score": 0.8076332466757274
+        }
+      ],
+      "count": 1
+    },
+    "tool_result_sha256": "249e859a6187d8863dc4cba47d6702d32c0189c6f170e80b27331cc3c2888f98"
+  },
+  "current_v35_budgets": {
+    "embedding": {
+      "status": "read_only",
+      "used": 5,
+      "sha256": "c73f717e54b45f33f5e657882d0abb8e3bede993b464ee7836e6f6bbb4d04da1",
+      "limit": 8
+    },
+    "qwen_generation": {
+      "status": "read_only",
+      "used": 4,
+      "sha256": "b2a748d0ebcb15b115e47ea655c6d30172d359d6c7959eedb332e5c8912725f1",
+      "limit": 4
+    },
+    "shared_generation": {
+      "status": "read_only",
+      "used": 4,
+      "sha256": "b2a748d0ebcb15b115e47ea655c6d30172d359d6c7959eedb332e5c8912725f1",
+      "limit": 4
+    }
+  },
+  "minimum_new_authorization": {
+    "qwen_generation": 2,
+    "deepseek_generation": 2,
+    "total_generation": 4,
+    "embedding": 0,
+    "automatic_retries": 0,
+    "max_output_tokens_each_request": 512,
+    "embedding_basis": "RQ01 is already cached. Validate cache/index provenance first; cache miss must stop, not request implicitly."
+  },
+  "execution_prerequisite": "Wait for explicit new authorization; bind a new fixed V3.5.1 validation profile without changing the exhausted V3.5 guard or old ledger. This script cannot do that.",
+  "paired_run_rules": [
+    "Isolated new session, simulated SQLite and local trace directory for each Provider.",
+    "Same user question, read-only tools, system prompt, model-call limit and frozen tool result hash.",
+    "Each model independently requests search_policy; Python executes the new RAG cache-only, then verify frozen hash before returning evidence.",
+    "A missing/different cache-only result stops the pair; do not substitute fixture tool_calls or fake a successful tool return.",
+    "Retain two original model outputs, actual tool_call_id, args, request IDs and local sidecars; compare using the same fidelity rules.",
+    "Model error, no tool call, unsupported citation and budget exhaustion are separate outcomes, never automatic retry or Mock fallback."
+  ],
+  "pass_criteria": {
+    "protocol": "real HTTP responses plus actual model search_policy tool call, executed new RAG and ToolMessage return before final answer",
+    "evidence": "Both providers consume byte-identical canonical tool-result hash; provenance matches real cached vectors and current corpus.",
+    "fidelity": "No determined unsupported fact/citation/action; uncertain semantics remain manual-review, not automatic pass.",
+    "budget": "At most 2 generation attempts per provider, 4 total, retries zero; old budget hashes unchanged."
+  },
+  "cost": "Unknown until actual request usage and reliable account billing are available; 2048 aggregate maximum output tokens is a request cap, not a currency hard limit.",
+  "limits": [
+    "A single paired sample cannot establish model-wide accuracy.",
+    "Default frozen evidence comes from V3.5; use --retrieval-file with a saved V3.5.1 RQ01 result to freeze the new optimized profile.",
+    "No new Live evidence is produced by preparing this plan."
+  ]
+}

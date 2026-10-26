@@ -1,0 +1,4115 @@
+{
+  "schema": "ticket-v351-faithfulness-result/1",
+  "date": "2026-10-26",
+  "execution": "deterministic_offline_rules",
+  "real_generation_requests": 0,
+  "real_embedding_requests": 0,
+  "source_sha256": "d0e6de9d088a2d94582c780b89ce407ec5b8af050c51151cfe5e9de3386a87be",
+  "fixture_sha256": "200e085dc1ea44fb1f2eea21cbcb18576be860ad6479b9c8ad3d2bb29667285a",
+  "fixtures": 55,
+  "assertions_passed": 55,
+  "assertions_failed": 0,
+  "assessment_statuses": {
+    "checked_scoped_facts": 14,
+    "failed": 27,
+    "indeterminate": 14
+  },
+  "explicit_failure_fixtures": 27,
+  "scope_tests": 3,
+  "unit_collected": 58,
+  "unit_passed": 58,
+  "unit_failed": 0,
+  "unit_skipped": 0,
+  "full_semantic_faithfulness": "indeterminate_for_all",
+  "records": [
+    {
+      "id": "F01",
+      "purpose": "正确期限",
+      "input": "请解释相关模拟政策",
+      "hits": [
+        {
+          "doc_id": "P11",
+          "title": "锁座与支付有效期",
+          "content": "模拟锁座有效期 15 分钟，过期未支付自动释放库存；下单必须提供与锁座一致的乘客列表。重复支付不重复扣减库存。",
+          "source": "data/policies.md#P11"
+        }
+      ],
+      "reply": "模拟锁座有效期15分钟 [P11]。",
+      "events": [],
+      "expected": {
+        "failed": false,
+        "finding_types": [],
+        "full_semantic_faithfulness": "indeterminate"
+      },
+      "actual_assessment": {
+        "schema": "ticket-rag-faithfulness/1",
+        "status": "checked_scoped_facts",
+        "original_model_reply": "模拟锁座有效期15分钟 [P11]。",
+        "question": "请解释相关模拟政策",
+        "allowed_doc_ids": [
+          "P11"
+        ],
+        "cited_doc_ids": [
+          "P11"
+        ],
+        "claim_checks": [
+          {
+            "claim": "模拟锁座有效期15分钟 [P11]",
+            "status": "supported_scoped_quantities",
+            "quantities": [
+              {
+                "text": "15分钟",
+                "dimension": "duration",
+                "value": "15",
+                "start": 7,
+                "end": 11,
+                "negated": false
+              }
+            ],
+            "sources": [
+              {
+                "doc_id": "P11",
+                "evidence_text": "模拟锁座有效期 15 分钟",
+                "source": "data/policies.md#P11"
+              }
+            ],
+            "basis": "Same citation, compatible subjects/explicit interval, quantities with normalized units"
+          }
+        ],
+        "findings": [],
+        "manual_review": [],
+        "refusal_observed": false,
+        "no_evidence_refusal": null,
+        "conflicts": [],
+        "conflict_disclosed": null,
+        "excluded_user_quotes": [],
+        "full_semantic_faithfulness": "indeterminate",
+        "limits": [
+          "Finite rules do not prove all semantic claims or the completeness of an answer.",
+          "Unknown paraphrases/implicit conditions require B independent review; this is not a model-generated judge."
+        ]
+      },
+      "assertions": {
+        "failure_classification_matches": true,
+        "required_findings_present": true,
+        "original_reply_preserved": true,
+        "full_semantic_faithfulness_not_fabricated": true
+      },
+      "passed": true
+    },
+    {
+      "id": "F02",
+      "purpose": "分钟与小时换算",
+      "input": "请解释相关模拟政策",
+      "hits": [
+        {
+          "doc_id": "P11",
+          "title": "锁座与支付有效期",
+          "content": "模拟锁座有效期 15 分钟，过期未支付自动释放库存；下单必须提供与锁座一致的乘客列表。重复支付不重复扣减库存。",
+          "source": "data/policies.md#P11"
+        }
+      ],
+      "reply": "模拟锁座有效期0.25小时 [P11]。",
+      "events": [],
+      "expected": {
+        "failed": false,
+        "finding_types": [],
+        "full_semantic_faithfulness": "indeterminate"
+      },
+      "actual_assessment": {
+        "schema": "ticket-rag-faithfulness/1",
+        "status": "checked_scoped_facts",
+        "original_model_reply": "模拟锁座有效期0.25小时 [P11]。",
+        "question": "请解释相关模拟政策",
+        "allowed_doc_ids": [
+          "P11"
+        ],
+        "cited_doc_ids": [
+          "P11"
+        ],
+        "claim_checks": [
+          {
+            "claim": "模拟锁座有效期0.25小时 [P11]",
+            "status": "supported_scoped_quantities",
+            "quantities": [
+              {
+                "text": "0.25小时",
+                "dimension": "duration",
+                "value": "15",
+                "start": 7,
+                "end": 13,
+                "negated": false
+              }
+            ],
+            "sources": [
+              {
+                "doc_id": "P11",
+                "evidence_text": "模拟锁座有效期 15 分钟",
+                "source": "data/policies.md#P11"
+              }
+            ],
+            "basis": "Same citation, compatible subjects/explicit interval, quantities with normalized units"
+          }
+        ],
+        "findings": [],
+        "manual_review": [],
+        "refusal_observed": false,
+        "no_evidence_refusal": null,
+        "conflicts": [],
+        "conflict_disclosed": null,
+        "excluded_user_quotes": [],
+        "full_semantic_faithfulness": "indeterminate",
+        "limits": [
+          "Finite rules do not prove all semantic claims or the completeness of an answer.",
+          "Unknown paraphrases/implicit conditions require B independent review; this is not a model-generated judge."
+        ]
+      },
+      "assertions": {
+        "failure_classification_matches": true,
+        "required_findings_present": true,
+        "original_reply_preserved": true,
+        "full_semantic_faithfulness_not_fabricated": true
+      },
+      "passed": true
+    },
+    {
+      "id": "F03",
+      "purpose": "添加不存在的期限",
+      "input": "请解释相关模拟政策",
+      "hits": [
+        {
+          "doc_id": "P11",
+          "title": "锁座与支付有效期",
+          "content": "模拟锁座有效期 15 分钟，过期未支付自动释放库存；下单必须提供与锁座一致的乘客列表。重复支付不重复扣减库存。",
+          "source": "data/policies.md#P11"
+        }
+      ],
+      "reply": "模拟锁座有效期30分钟 [P11]。",
+      "events": [],
+      "expected": {
+        "failed": true,
+        "finding_types": [
+          "unsupported_quantity_or_scope"
+        ],
+        "full_semantic_faithfulness": "indeterminate"
+      },
+      "actual_assessment": {
+        "schema": "ticket-rag-faithfulness/1",
+        "status": "failed",
+        "original_model_reply": "模拟锁座有效期30分钟 [P11]。",
+        "question": "请解释相关模拟政策",
+        "allowed_doc_ids": [
+          "P11"
+        ],
+        "cited_doc_ids": [
+          "P11"
+        ],
+        "claim_checks": [],
+        "findings": [
+          {
+            "type": "unsupported_quantity_or_scope",
+            "claim": "模拟锁座有效期30分钟 [P11]",
+            "cited_doc_ids": [
+              "P11"
+            ],
+            "claim_quantities": [
+              {
+                "text": "30分钟",
+                "dimension": "duration",
+                "value": "3E+1",
+                "start": 7,
+                "end": 11,
+                "negated": false
+              }
+            ],
+            "missing_quantities": [
+              {
+                "text": "30分钟",
+                "dimension": "duration",
+                "value": "3E+1",
+                "start": 7,
+                "end": 11,
+                "negated": false
+              }
+            ],
+            "condition": [],
+            "evidence": [
+              {
+                "doc_id": "P11",
+                "text": "模拟锁座有效期 15 分钟"
+              },
+              {
+                "doc_id": "P11",
+                "text": "过期未支付自动释放库存"
+              },
+              {
+                "doc_id": "P11",
+                "text": "下单必须提供与锁座一致的乘客列表"
+              },
+              {
+                "doc_id": "P11",
+                "text": "重复支付不重复扣减库存"
+              }
+            ],
+            "basis": "Numeric value/unit/subject/explicit conditional branch does not match the cited clause"
+          }
+        ],
+        "manual_review": [],
+        "refusal_observed": false,
+        "no_evidence_refusal": null,
+        "conflicts": [],
+        "conflict_disclosed": null,
+        "excluded_user_quotes": [],
+        "full_semantic_faithfulness": "indeterminate",
+        "limits": [
+          "Finite rules do not prove all semantic claims or the completeness of an answer.",
+          "Unknown paraphrases/implicit conditions require B independent review; this is not a model-generated judge."
+        ]
+      },
+      "assertions": {
+        "failure_classification_matches": true,
+        "required_findings_present": true,
+        "original_reply_preserved": true,
+        "full_semantic_faithfulness_not_fabricated": true
+      },
+      "passed": true
+    },
+    {
+      "id": "F04",
+      "purpose": "单位错配",
+      "input": "请解释相关模拟政策",
+      "hits": [
+        {
+          "doc_id": "P11",
+          "title": "锁座与支付有效期",
+          "content": "模拟锁座有效期 15 分钟，过期未支付自动释放库存；下单必须提供与锁座一致的乘客列表。重复支付不重复扣减库存。",
+          "source": "data/policies.md#P11"
+        }
+      ],
+      "reply": "模拟锁座有效期15小时 [P11]。",
+      "events": [],
+      "expected": {
+        "failed": true,
+        "finding_types": [
+          "unsupported_quantity_or_scope"
+        ],
+        "full_semantic_faithfulness": "indeterminate"
+      },
+      "actual_assessment": {
+        "schema": "ticket-rag-faithfulness/1",
+        "status": "failed",
+        "original_model_reply": "模拟锁座有效期15小时 [P11]。",
+        "question": "请解释相关模拟政策",
+        "allowed_doc_ids": [
+          "P11"
+        ],
+        "cited_doc_ids": [
+          "P11"
+        ],
+        "claim_checks": [],
+        "findings": [
+          {
+            "type": "unsupported_quantity_or_scope",
+            "claim": "模拟锁座有效期15小时 [P11]",
+            "cited_doc_ids": [
+              "P11"
+            ],
+            "claim_quantities": [
+              {
+                "text": "15小时",
+                "dimension": "duration",
+                "value": "9E+2",
+                "start": 7,
+                "end": 11,
+                "negated": false
+              }
+            ],
+            "missing_quantities": [
+              {
+                "text": "15小时",
+                "dimension": "duration",
+                "value": "9E+2",
+                "start": 7,
+                "end": 11,
+                "negated": false
+              }
+            ],
+            "condition": [],
+            "evidence": [
+              {
+                "doc_id": "P11",
+                "text": "模拟锁座有效期 15 分钟"
+              },
+              {
+                "doc_id": "P11",
+                "text": "过期未支付自动释放库存"
+              },
+              {
+                "doc_id": "P11",
+                "text": "下单必须提供与锁座一致的乘客列表"
+              },
+              {
+                "doc_id": "P11",
+                "text": "重复支付不重复扣减库存"
+              }
+            ],
+            "basis": "Numeric value/unit/subject/explicit conditional branch does not match the cited clause"
+          }
+        ],
+        "manual_review": [],
+        "refusal_observed": false,
+        "no_evidence_refusal": null,
+        "conflicts": [],
+        "conflict_disclosed": null,
+        "excluded_user_quotes": [],
+        "full_semantic_faithfulness": "indeterminate",
+        "limits": [
+          "Finite rules do not prove all semantic claims or the completeness of an answer.",
+          "Unknown paraphrases/implicit conditions require B independent review; this is not a model-generated judge."
+        ]
+      },
+      "assertions": {
+        "failure_classification_matches": true,
+        "required_findings_present": true,
+        "original_reply_preserved": true,
+        "full_semantic_faithfulness_not_fabricated": true
+      },
+      "passed": true
+    },
+    {
+      "id": "F05",
+      "purpose": "同文档条件错绑",
+      "input": "请解释相关模拟政策",
+      "hits": [
+        {
+          "doc_id": "P01",
+          "title": "退票手续费阶梯",
+          "content": "开车前 48 小时以上退票，收取票价 5% 手续费；开车前 24 至 48 小时退票，收取 10%；开车前不足 24 小时退票，收取 20%。已取报销凭证或已改签的车票不退。",
+          "source": "data/policies.md#P01"
+        }
+      ],
+      "reply": "开车前48小时以上退票收取10%手续费 [P01]。",
+      "events": [],
+      "expected": {
+        "failed": true,
+        "finding_types": [
+          "unsupported_quantity_or_scope"
+        ],
+        "full_semantic_faithfulness": "indeterminate"
+      },
+      "actual_assessment": {
+        "schema": "ticket-rag-faithfulness/1",
+        "status": "failed",
+        "original_model_reply": "开车前48小时以上退票收取10%手续费 [P01]。",
+        "question": "请解释相关模拟政策",
+        "allowed_doc_ids": [
+          "P01"
+        ],
+        "cited_doc_ids": [
+          "P01"
+        ],
+        "claim_checks": [],
+        "findings": [
+          {
+            "type": "unsupported_quantity_or_scope",
+            "claim": "开车前48小时以上退票收取10%手续费 [P01]",
+            "cited_doc_ids": [
+              "P01"
+            ],
+            "claim_quantities": [
+              {
+                "text": "48小时",
+                "dimension": "duration",
+                "value": "2.88E+3",
+                "start": 3,
+                "end": 7,
+                "negated": false
+              },
+              {
+                "text": "10%",
+                "dimension": "percentage",
+                "value": "1E+1",
+                "start": 13,
+                "end": 16,
+                "negated": false
+              }
+            ],
+            "missing_quantities": [],
+            "condition": [
+              [
+                "开车前",
+                "2.88E+3",
+                null,
+                "以上"
+              ]
+            ],
+            "evidence": [
+              {
+                "doc_id": "P01",
+                "text": "开车前 48 小时以上退票，收取票价 5% 手续费"
+              },
+              {
+                "doc_id": "P01",
+                "text": "开车前 24 至 48 小时退票，收取 10%"
+              },
+              {
+                "doc_id": "P01",
+                "text": "开车前不足 24 小时退票，收取 20%"
+              },
+              {
+                "doc_id": "P01",
+                "text": "已取报销凭证或已改签的车票不退"
+              }
+            ],
+            "basis": "Numeric value/unit/subject/explicit conditional branch does not match the cited clause"
+          }
+        ],
+        "manual_review": [],
+        "refusal_observed": false,
+        "no_evidence_refusal": null,
+        "conflicts": [],
+        "conflict_disclosed": null,
+        "excluded_user_quotes": [],
+        "full_semantic_faithfulness": "indeterminate",
+        "limits": [
+          "Finite rules do not prove all semantic claims or the completeness of an answer.",
+          "Unknown paraphrases/implicit conditions require B independent review; this is not a model-generated judge."
+        ]
+      },
+      "assertions": {
+        "failure_classification_matches": true,
+        "required_findings_present": true,
+        "original_reply_preserved": true,
+        "full_semantic_faithfulness_not_fabricated": true
+      },
+      "passed": true
+    },
+    {
+      "id": "F06",
+      "purpose": "条件与费用正确",
+      "input": "请解释相关模拟政策",
+      "hits": [
+        {
+          "doc_id": "P01",
+          "title": "退票手续费阶梯",
+          "content": "开车前 48 小时以上退票，收取票价 5% 手续费；开车前 24 至 48 小时退票，收取 10%；开车前不足 24 小时退票，收取 20%。已取报销凭证或已改签的车票不退。",
+          "source": "data/policies.md#P01"
+        }
+      ],
+      "reply": "开车前48小时以上退票收取5%手续费 [P01]。",
+      "events": [],
+      "expected": {
+        "failed": false,
+        "finding_types": [],
+        "full_semantic_faithfulness": "indeterminate"
+      },
+      "actual_assessment": {
+        "schema": "ticket-rag-faithfulness/1",
+        "status": "checked_scoped_facts",
+        "original_model_reply": "开车前48小时以上退票收取5%手续费 [P01]。",
+        "question": "请解释相关模拟政策",
+        "allowed_doc_ids": [
+          "P01"
+        ],
+        "cited_doc_ids": [
+          "P01"
+        ],
+        "claim_checks": [
+          {
+            "claim": "开车前48小时以上退票收取5%手续费 [P01]",
+            "status": "supported_scoped_quantities",
+            "quantities": [
+              {
+                "text": "48小时",
+                "dimension": "duration",
+                "value": "2.88E+3",
+                "start": 3,
+                "end": 7,
+                "negated": false
+              },
+              {
+                "text": "5%",
+                "dimension": "percentage",
+                "value": "5",
+                "start": 13,
+                "end": 15,
+                "negated": false
+              }
+            ],
+            "sources": [
+              {
+                "doc_id": "P01",
+                "evidence_text": "开车前 48 小时以上退票，收取票价 5% 手续费",
+                "source": "data/policies.md#P01"
+              }
+            ],
+            "basis": "Same citation, compatible subjects/explicit interval, quantities with normalized units"
+          }
+        ],
+        "findings": [],
+        "manual_review": [],
+        "refusal_observed": false,
+        "no_evidence_refusal": null,
+        "conflicts": [],
+        "conflict_disclosed": null,
+        "excluded_user_quotes": [],
+        "full_semantic_faithfulness": "indeterminate",
+        "limits": [
+          "Finite rules do not prove all semantic claims or the completeness of an answer.",
+          "Unknown paraphrases/implicit conditions require B independent review; this is not a model-generated judge."
+        ]
+      },
+      "assertions": {
+        "failure_classification_matches": true,
+        "required_findings_present": true,
+        "original_reply_preserved": true,
+        "full_semantic_faithfulness_not_fabricated": true
+      },
+      "passed": true
+    },
+    {
+      "id": "F07",
+      "purpose": "区间与费用正确",
+      "input": "请解释相关模拟政策",
+      "hits": [
+        {
+          "doc_id": "P01",
+          "title": "退票手续费阶梯",
+          "content": "开车前 48 小时以上退票，收取票价 5% 手续费；开车前 24 至 48 小时退票，收取 10%；开车前不足 24 小时退票，收取 20%。已取报销凭证或已改签的车票不退。",
+          "source": "data/policies.md#P01"
+        }
+      ],
+      "reply": "开车前24至48小时退票收取10%手续费 [P01]。",
+      "events": [],
+      "expected": {
+        "failed": false,
+        "finding_types": [],
+        "full_semantic_faithfulness": "indeterminate"
+      },
+      "actual_assessment": {
+        "schema": "ticket-rag-faithfulness/1",
+        "status": "checked_scoped_facts",
+        "original_model_reply": "开车前24至48小时退票收取10%手续费 [P01]。",
+        "question": "请解释相关模拟政策",
+        "allowed_doc_ids": [
+          "P01"
+        ],
+        "cited_doc_ids": [
+          "P01"
+        ],
+        "claim_checks": [
+          {
+            "claim": "开车前24至48小时退票收取10%手续费 [P01]",
+            "status": "supported_scoped_quantities",
+            "quantities": [
+              {
+                "text": "48小时",
+                "dimension": "duration",
+                "value": "2.88E+3",
+                "start": 6,
+                "end": 10,
+                "negated": false
+              },
+              {
+                "text": "10%",
+                "dimension": "percentage",
+                "value": "1E+1",
+                "start": 14,
+                "end": 17,
+                "negated": false
+              }
+            ],
+            "sources": [
+              {
+                "doc_id": "P01",
+                "evidence_text": "开车前 24 至 48 小时退票，收取 10%",
+                "source": "data/policies.md#P01"
+              }
+            ],
+            "basis": "Same citation, compatible subjects/explicit interval, quantities with normalized units"
+          }
+        ],
+        "findings": [],
+        "manual_review": [],
+        "refusal_observed": false,
+        "no_evidence_refusal": null,
+        "conflicts": [],
+        "conflict_disclosed": null,
+        "excluded_user_quotes": [],
+        "full_semantic_faithfulness": "indeterminate",
+        "limits": [
+          "Finite rules do not prove all semantic claims or the completeness of an answer.",
+          "Unknown paraphrases/implicit conditions require B independent review; this is not a model-generated judge."
+        ]
+      },
+      "assertions": {
+        "failure_classification_matches": true,
+        "required_findings_present": true,
+        "original_reply_preserved": true,
+        "full_semantic_faithfulness_not_fabricated": true
+      },
+      "passed": true
+    },
+    {
+      "id": "F08",
+      "purpose": "省略适用条件待人工",
+      "input": "请解释相关模拟政策",
+      "hits": [
+        {
+          "doc_id": "P01",
+          "title": "退票手续费阶梯",
+          "content": "开车前 48 小时以上退票，收取票价 5% 手续费；开车前 24 至 48 小时退票，收取 10%；开车前不足 24 小时退票，收取 20%。已取报销凭证或已改签的车票不退。",
+          "source": "data/policies.md#P01"
+        }
+      ],
+      "reply": "退票收取10%手续费 [P01]。",
+      "events": [],
+      "expected": {
+        "failed": false,
+        "finding_types": [],
+        "full_semantic_faithfulness": "indeterminate"
+      },
+      "actual_assessment": {
+        "schema": "ticket-rag-faithfulness/1",
+        "status": "indeterminate",
+        "original_model_reply": "退票收取10%手续费 [P01]。",
+        "question": "请解释相关模拟政策",
+        "allowed_doc_ids": [
+          "P01"
+        ],
+        "cited_doc_ids": [
+          "P01"
+        ],
+        "claim_checks": [
+          {
+            "claim": "退票收取10%手续费 [P01]",
+            "status": "indeterminate",
+            "reason": "Numeric values exist but their policy condition is omitted"
+          }
+        ],
+        "findings": [],
+        "manual_review": [
+          {
+            "claim": "退票收取10%手续费 [P01]",
+            "reason": "conditional_policy_scope_omitted"
+          }
+        ],
+        "refusal_observed": false,
+        "no_evidence_refusal": null,
+        "conflicts": [],
+        "conflict_disclosed": null,
+        "excluded_user_quotes": [],
+        "full_semantic_faithfulness": "indeterminate",
+        "limits": [
+          "Finite rules do not prove all semantic claims or the completeness of an answer.",
+          "Unknown paraphrases/implicit conditions require B independent review; this is not a model-generated judge."
+        ]
+      },
+      "assertions": {
+        "failure_classification_matches": true,
+        "required_findings_present": true,
+        "original_reply_preserved": true,
+        "full_semantic_faithfulness_not_fabricated": true
+      },
+      "passed": true
+    },
+    {
+      "id": "F09",
+      "purpose": "编造引用",
+      "input": "请解释相关模拟政策",
+      "hits": [
+        {
+          "doc_id": "P11",
+          "title": "锁座与支付有效期",
+          "content": "模拟锁座有效期 15 分钟，过期未支付自动释放库存；下单必须提供与锁座一致的乘客列表。重复支付不重复扣减库存。",
+          "source": "data/policies.md#P11"
+        }
+      ],
+      "reply": "锁座有效期15分钟 [P99]。",
+      "events": [],
+      "expected": {
+        "failed": true,
+        "finding_types": [
+          "nonexistent_citation"
+        ],
+        "full_semantic_faithfulness": "indeterminate"
+      },
+      "actual_assessment": {
+        "schema": "ticket-rag-faithfulness/1",
+        "status": "failed",
+        "original_model_reply": "锁座有效期15分钟 [P99]。",
+        "question": "请解释相关模拟政策",
+        "allowed_doc_ids": [
+          "P11"
+        ],
+        "cited_doc_ids": [
+          "P99"
+        ],
+        "claim_checks": [],
+        "findings": [
+          {
+            "type": "nonexistent_citation",
+            "claim": "锁座有效期15分钟 [P99]",
+            "doc_ids": [
+              "P99"
+            ],
+            "basis": "IDs absent from actual retrieved tool evidence"
+          }
+        ],
+        "manual_review": [],
+        "refusal_observed": false,
+        "no_evidence_refusal": null,
+        "conflicts": [],
+        "conflict_disclosed": null,
+        "excluded_user_quotes": [],
+        "full_semantic_faithfulness": "indeterminate",
+        "limits": [
+          "Finite rules do not prove all semantic claims or the completeness of an answer.",
+          "Unknown paraphrases/implicit conditions require B independent review; this is not a model-generated judge."
+        ]
+      },
+      "assertions": {
+        "failure_classification_matches": true,
+        "required_findings_present": true,
+        "original_reply_preserved": true,
+        "full_semantic_faithfulness_not_fabricated": true
+      },
+      "passed": true
+    },
+    {
+      "id": "F10",
+      "purpose": "用户引用不当模型陈述",
+      "input": "请解释相关模拟政策",
+      "hits": [
+        {
+          "doc_id": "P11",
+          "title": "锁座与支付有效期",
+          "content": "模拟锁座有效期 15 分钟，过期未支付自动释放库存；下单必须提供与锁座一致的乘客列表。重复支付不重复扣减库存。",
+          "source": "data/policies.md#P11"
+        }
+      ],
+      "reply": "用户说“锁座有效期45分钟 [P99]”，请先核对您的问题。",
+      "events": [],
+      "expected": {
+        "failed": false,
+        "finding_types": [],
+        "full_semantic_faithfulness": "indeterminate"
+      },
+      "actual_assessment": {
+        "schema": "ticket-rag-faithfulness/1",
+        "status": "indeterminate",
+        "original_model_reply": "用户说“锁座有效期45分钟 [P99]”，请先核对您的问题。",
+        "question": "请解释相关模拟政策",
+        "allowed_doc_ids": [
+          "P11"
+        ],
+        "cited_doc_ids": [],
+        "claim_checks": [],
+        "findings": [],
+        "manual_review": [],
+        "refusal_observed": false,
+        "no_evidence_refusal": null,
+        "conflicts": [],
+        "conflict_disclosed": null,
+        "excluded_user_quotes": [
+          "用户说“锁座有效期45分钟 [P99]”"
+        ],
+        "full_semantic_faithfulness": "indeterminate",
+        "limits": [
+          "Finite rules do not prove all semantic claims or the completeness of an answer.",
+          "Unknown paraphrases/implicit conditions require B independent review; this is not a model-generated judge."
+        ]
+      },
+      "assertions": {
+        "failure_classification_matches": true,
+        "required_findings_present": true,
+        "original_reply_preserved": true,
+        "full_semantic_faithfulness_not_fabricated": true
+      },
+      "passed": true
+    },
+    {
+      "id": "F11",
+      "purpose": "否定不存在引用不当来源声称",
+      "input": "请解释相关模拟政策",
+      "hits": [
+        {
+          "doc_id": "P11",
+          "title": "锁座与支付有效期",
+          "content": "模拟锁座有效期 15 分钟，过期未支付自动释放库存；下单必须提供与锁座一致的乘客列表。重复支付不重复扣减库存。",
+          "source": "data/policies.md#P11"
+        }
+      ],
+      "reply": "P99不存在于当前检索证据中，无法确认该说法。",
+      "events": [],
+      "expected": {
+        "failed": false,
+        "finding_types": [],
+        "full_semantic_faithfulness": "indeterminate"
+      },
+      "actual_assessment": {
+        "schema": "ticket-rag-faithfulness/1",
+        "status": "checked_scoped_facts",
+        "original_model_reply": "P99不存在于当前检索证据中，无法确认该说法。",
+        "question": "请解释相关模拟政策",
+        "allowed_doc_ids": [
+          "P11"
+        ],
+        "cited_doc_ids": [],
+        "claim_checks": [
+          {
+            "claim": "P99不存在于当前检索证据中，无法确认该说法",
+            "cited_doc_ids": [],
+            "status": "negative_evidence_reference",
+            "basis": "References explain unavailable scope, not positive policy support"
+          }
+        ],
+        "findings": [],
+        "manual_review": [],
+        "refusal_observed": true,
+        "no_evidence_refusal": null,
+        "conflicts": [],
+        "conflict_disclosed": null,
+        "excluded_user_quotes": [],
+        "full_semantic_faithfulness": "indeterminate",
+        "limits": [
+          "Finite rules do not prove all semantic claims or the completeness of an answer.",
+          "Unknown paraphrases/implicit conditions require B independent review; this is not a model-generated judge."
+        ]
+      },
+      "assertions": {
+        "failure_classification_matches": true,
+        "required_findings_present": true,
+        "original_reply_preserved": true,
+        "full_semantic_faithfulness_not_fabricated": true
+      },
+      "passed": true
+    },
+    {
+      "id": "F12",
+      "purpose": "无证据明确拒答",
+      "input": "请解释相关模拟政策",
+      "hits": [],
+      "reply": "无法确认，当前没有相关政策依据。",
+      "events": [],
+      "expected": {
+        "failed": false,
+        "finding_types": [],
+        "full_semantic_faithfulness": "indeterminate"
+      },
+      "actual_assessment": {
+        "schema": "ticket-rag-faithfulness/1",
+        "status": "indeterminate",
+        "original_model_reply": "无法确认，当前没有相关政策依据。",
+        "question": "请解释相关模拟政策",
+        "allowed_doc_ids": [],
+        "cited_doc_ids": [],
+        "claim_checks": [],
+        "findings": [],
+        "manual_review": [],
+        "refusal_observed": true,
+        "no_evidence_refusal": true,
+        "conflicts": [],
+        "conflict_disclosed": null,
+        "excluded_user_quotes": [],
+        "full_semantic_faithfulness": "indeterminate",
+        "limits": [
+          "Finite rules do not prove all semantic claims or the completeness of an answer.",
+          "Unknown paraphrases/implicit conditions require B independent review; this is not a model-generated judge."
+        ]
+      },
+      "assertions": {
+        "failure_classification_matches": true,
+        "required_findings_present": true,
+        "original_reply_preserved": true,
+        "full_semantic_faithfulness_not_fabricated": true
+      },
+      "passed": true
+    },
+    {
+      "id": "F13",
+      "purpose": "无证据仍编造金额",
+      "input": "请解释相关模拟政策",
+      "hits": [],
+      "reply": "可以理赔100元 [P11]。",
+      "events": [],
+      "expected": {
+        "failed": true,
+        "finding_types": [
+          "no_evidence_positive_claim"
+        ],
+        "full_semantic_faithfulness": "indeterminate"
+      },
+      "actual_assessment": {
+        "schema": "ticket-rag-faithfulness/1",
+        "status": "failed",
+        "original_model_reply": "可以理赔100元 [P11]。",
+        "question": "请解释相关模拟政策",
+        "allowed_doc_ids": [],
+        "cited_doc_ids": [
+          "P11"
+        ],
+        "claim_checks": [],
+        "findings": [
+          {
+            "type": "nonexistent_citation",
+            "claim": "可以理赔100元 [P11]",
+            "doc_ids": [
+              "P11"
+            ],
+            "basis": "IDs absent from actual retrieved tool evidence"
+          },
+          {
+            "type": "no_evidence_positive_claim",
+            "claim": "可以理赔100元 [P11]",
+            "basis": "Policy assertion with empty actual retrieval evidence"
+          }
+        ],
+        "manual_review": [],
+        "refusal_observed": false,
+        "no_evidence_refusal": false,
+        "conflicts": [],
+        "conflict_disclosed": null,
+        "excluded_user_quotes": [],
+        "full_semantic_faithfulness": "indeterminate",
+        "limits": [
+          "Finite rules do not prove all semantic claims or the completeness of an answer.",
+          "Unknown paraphrases/implicit conditions require B independent review; this is not a model-generated judge."
+        ]
+      },
+      "assertions": {
+        "failure_classification_matches": true,
+        "required_findings_present": true,
+        "original_reply_preserved": true,
+        "full_semantic_faithfulness_not_fabricated": true
+      },
+      "passed": true
+    },
+    {
+      "id": "F14",
+      "purpose": "虚构已支付",
+      "input": "请解释相关模拟政策",
+      "hits": [],
+      "reply": "我已成功支付。",
+      "events": [],
+      "expected": {
+        "failed": true,
+        "finding_types": [
+          "unsubstantiated_execution"
+        ],
+        "full_semantic_faithfulness": "indeterminate"
+      },
+      "actual_assessment": {
+        "schema": "ticket-rag-faithfulness/1",
+        "status": "failed",
+        "original_model_reply": "我已成功支付。",
+        "question": "请解释相关模拟政策",
+        "allowed_doc_ids": [],
+        "cited_doc_ids": [],
+        "claim_checks": [
+          {
+            "claim": "我已成功支付",
+            "required_tool": "pay_order",
+            "status": "failed"
+          }
+        ],
+        "findings": [
+          {
+            "type": "unsubstantiated_execution",
+            "claim": "我已成功支付",
+            "required_tool": "pay_order",
+            "basis": "No successful, actually executed matching tool_end event"
+          }
+        ],
+        "manual_review": [],
+        "refusal_observed": false,
+        "no_evidence_refusal": false,
+        "conflicts": [],
+        "conflict_disclosed": null,
+        "excluded_user_quotes": [],
+        "full_semantic_faithfulness": "indeterminate",
+        "limits": [
+          "Finite rules do not prove all semantic claims or the completeness of an answer.",
+          "Unknown paraphrases/implicit conditions require B independent review; this is not a model-generated judge."
+        ]
+      },
+      "assertions": {
+        "failure_classification_matches": true,
+        "required_findings_present": true,
+        "original_reply_preserved": true,
+        "full_semantic_faithfulness_not_fabricated": true
+      },
+      "passed": true
+    },
+    {
+      "id": "F15",
+      "purpose": "实际支付事件",
+      "input": "请解释相关模拟政策",
+      "hits": [],
+      "reply": "我已成功支付。",
+      "events": [
+        {
+          "event": "tool_end",
+          "tool": "pay_order",
+          "ok": true,
+          "executed": true,
+          "call_id": "offline-fixture-call",
+          "result": {
+            "status": "ok"
+          }
+        }
+      ],
+      "expected": {
+        "failed": false,
+        "finding_types": [],
+        "full_semantic_faithfulness": "indeterminate"
+      },
+      "actual_assessment": {
+        "schema": "ticket-rag-faithfulness/1",
+        "status": "checked_scoped_facts",
+        "original_model_reply": "我已成功支付。",
+        "question": "请解释相关模拟政策",
+        "allowed_doc_ids": [],
+        "cited_doc_ids": [],
+        "claim_checks": [
+          {
+            "claim": "我已成功支付",
+            "required_tool": "pay_order",
+            "status": "supported_execution"
+          }
+        ],
+        "findings": [],
+        "manual_review": [],
+        "refusal_observed": false,
+        "no_evidence_refusal": false,
+        "conflicts": [],
+        "conflict_disclosed": null,
+        "excluded_user_quotes": [],
+        "full_semantic_faithfulness": "indeterminate",
+        "limits": [
+          "Finite rules do not prove all semantic claims or the completeness of an answer.",
+          "Unknown paraphrases/implicit conditions require B independent review; this is not a model-generated judge."
+        ]
+      },
+      "assertions": {
+        "failure_classification_matches": true,
+        "required_findings_present": true,
+        "original_reply_preserved": true,
+        "full_semantic_faithfulness_not_fabricated": true
+      },
+      "passed": true
+    },
+    {
+      "id": "F16",
+      "purpose": "失败事件不能成功声称",
+      "input": "请解释相关模拟政策",
+      "hits": [],
+      "reply": "我已成功支付。",
+      "events": [
+        {
+          "event": "tool_end",
+          "tool": "pay_order",
+          "ok": false,
+          "executed": true,
+          "call_id": "offline-fixture-call",
+          "result": {
+            "status": "error"
+          }
+        }
+      ],
+      "expected": {
+        "failed": true,
+        "finding_types": [
+          "unsubstantiated_execution"
+        ],
+        "full_semantic_faithfulness": "indeterminate"
+      },
+      "actual_assessment": {
+        "schema": "ticket-rag-faithfulness/1",
+        "status": "failed",
+        "original_model_reply": "我已成功支付。",
+        "question": "请解释相关模拟政策",
+        "allowed_doc_ids": [],
+        "cited_doc_ids": [],
+        "claim_checks": [
+          {
+            "claim": "我已成功支付",
+            "required_tool": "pay_order",
+            "status": "failed"
+          }
+        ],
+        "findings": [
+          {
+            "type": "unsubstantiated_execution",
+            "claim": "我已成功支付",
+            "required_tool": "pay_order",
+            "basis": "No successful, actually executed matching tool_end event"
+          }
+        ],
+        "manual_review": [],
+        "refusal_observed": false,
+        "no_evidence_refusal": false,
+        "conflicts": [],
+        "conflict_disclosed": null,
+        "excluded_user_quotes": [],
+        "full_semantic_faithfulness": "indeterminate",
+        "limits": [
+          "Finite rules do not prove all semantic claims or the completeness of an answer.",
+          "Unknown paraphrases/implicit conditions require B independent review; this is not a model-generated judge."
+        ]
+      },
+      "assertions": {
+        "failure_classification_matches": true,
+        "required_findings_present": true,
+        "original_reply_preserved": true,
+        "full_semantic_faithfulness_not_fabricated": true
+      },
+      "passed": true
+    },
+    {
+      "id": "F17",
+      "purpose": "未实际执行不能声称成功",
+      "input": "请解释相关模拟政策",
+      "hits": [],
+      "reply": "我已成功支付。",
+      "events": [
+        {
+          "event": "tool_end",
+          "tool": "pay_order",
+          "ok": true,
+          "executed": false,
+          "call_id": "offline-fixture-call",
+          "result": {
+            "status": "ok"
+          }
+        }
+      ],
+      "expected": {
+        "failed": true,
+        "finding_types": [
+          "unsubstantiated_execution"
+        ],
+        "full_semantic_faithfulness": "indeterminate"
+      },
+      "actual_assessment": {
+        "schema": "ticket-rag-faithfulness/1",
+        "status": "failed",
+        "original_model_reply": "我已成功支付。",
+        "question": "请解释相关模拟政策",
+        "allowed_doc_ids": [],
+        "cited_doc_ids": [],
+        "claim_checks": [
+          {
+            "claim": "我已成功支付",
+            "required_tool": "pay_order",
+            "status": "failed"
+          }
+        ],
+        "findings": [
+          {
+            "type": "unsubstantiated_execution",
+            "claim": "我已成功支付",
+            "required_tool": "pay_order",
+            "basis": "No successful, actually executed matching tool_end event"
+          }
+        ],
+        "manual_review": [],
+        "refusal_observed": false,
+        "no_evidence_refusal": false,
+        "conflicts": [],
+        "conflict_disclosed": null,
+        "excluded_user_quotes": [],
+        "full_semantic_faithfulness": "indeterminate",
+        "limits": [
+          "Finite rules do not prove all semantic claims or the completeness of an answer.",
+          "Unknown paraphrases/implicit conditions require B independent review; this is not a model-generated judge."
+        ]
+      },
+      "assertions": {
+        "failure_classification_matches": true,
+        "required_findings_present": true,
+        "original_reply_preserved": true,
+        "full_semantic_faithfulness_not_fabricated": true
+      },
+      "passed": true
+    },
+    {
+      "id": "F18",
+      "purpose": "用户引用的操作不是执行事实",
+      "input": "请解释相关模拟政策",
+      "hits": [],
+      "reply": "用户说“我已成功支付”，请补充订单号。",
+      "events": [],
+      "expected": {
+        "failed": false,
+        "finding_types": [],
+        "full_semantic_faithfulness": "indeterminate"
+      },
+      "actual_assessment": {
+        "schema": "ticket-rag-faithfulness/1",
+        "status": "indeterminate",
+        "original_model_reply": "用户说“我已成功支付”，请补充订单号。",
+        "question": "请解释相关模拟政策",
+        "allowed_doc_ids": [],
+        "cited_doc_ids": [],
+        "claim_checks": [],
+        "findings": [],
+        "manual_review": [],
+        "refusal_observed": false,
+        "no_evidence_refusal": false,
+        "conflicts": [],
+        "conflict_disclosed": null,
+        "excluded_user_quotes": [
+          "用户说“我已成功支付”"
+        ],
+        "full_semantic_faithfulness": "indeterminate",
+        "limits": [
+          "Finite rules do not prove all semantic claims or the completeness of an answer.",
+          "Unknown paraphrases/implicit conditions require B independent review; this is not a model-generated judge."
+        ]
+      },
+      "assertions": {
+        "failure_classification_matches": true,
+        "required_findings_present": true,
+        "original_reply_preserved": true,
+        "full_semantic_faithfulness_not_fabricated": true
+      },
+      "passed": true
+    },
+    {
+      "id": "F19",
+      "purpose": "条件句不是操作声称",
+      "input": "请解释相关模拟政策",
+      "hits": [
+        {
+          "doc_id": "P12",
+          "title": "未支付订单取消",
+          "content": "未支付订单取消不收取手续费，释放已占库存；已退款或已取消订单不得再次释放库存，取消后的订单不可支付。",
+          "source": "data/policies.md#P12"
+        }
+      ],
+      "reply": "如果订单已支付，则应根据政策判断后续操作。",
+      "events": [],
+      "expected": {
+        "failed": false,
+        "finding_types": [],
+        "full_semantic_faithfulness": "indeterminate"
+      },
+      "actual_assessment": {
+        "schema": "ticket-rag-faithfulness/1",
+        "status": "indeterminate",
+        "original_model_reply": "如果订单已支付，则应根据政策判断后续操作。",
+        "question": "请解释相关模拟政策",
+        "allowed_doc_ids": [
+          "P12"
+        ],
+        "cited_doc_ids": [],
+        "claim_checks": [],
+        "findings": [],
+        "manual_review": [],
+        "refusal_observed": false,
+        "no_evidence_refusal": null,
+        "conflicts": [],
+        "conflict_disclosed": null,
+        "excluded_user_quotes": [],
+        "full_semantic_faithfulness": "indeterminate",
+        "limits": [
+          "Finite rules do not prove all semantic claims or the completeness of an answer.",
+          "Unknown paraphrases/implicit conditions require B independent review; this is not a model-generated judge."
+        ]
+      },
+      "assertions": {
+        "failure_classification_matches": true,
+        "required_findings_present": true,
+        "original_reply_preserved": true,
+        "full_semantic_faithfulness_not_fabricated": true
+      },
+      "passed": true
+    },
+    {
+      "id": "F20",
+      "purpose": "否定操作不是成功声称",
+      "input": "请解释相关模拟政策",
+      "hits": [],
+      "reply": "尚未成功支付，本次没有执行任何写操作。",
+      "events": [],
+      "expected": {
+        "failed": false,
+        "finding_types": [],
+        "full_semantic_faithfulness": "indeterminate"
+      },
+      "actual_assessment": {
+        "schema": "ticket-rag-faithfulness/1",
+        "status": "indeterminate",
+        "original_model_reply": "尚未成功支付，本次没有执行任何写操作。",
+        "question": "请解释相关模拟政策",
+        "allowed_doc_ids": [],
+        "cited_doc_ids": [],
+        "claim_checks": [],
+        "findings": [],
+        "manual_review": [],
+        "refusal_observed": false,
+        "no_evidence_refusal": false,
+        "conflicts": [],
+        "conflict_disclosed": null,
+        "excluded_user_quotes": [],
+        "full_semantic_faithfulness": "indeterminate",
+        "limits": [
+          "Finite rules do not prove all semantic claims or the completeness of an answer.",
+          "Unknown paraphrases/implicit conditions require B independent review; this is not a model-generated judge."
+        ]
+      },
+      "assertions": {
+        "failure_classification_matches": true,
+        "required_findings_present": true,
+        "original_reply_preserved": true,
+        "full_semantic_faithfulness_not_fabricated": true
+      },
+      "passed": true
+    },
+    {
+      "id": "F21",
+      "purpose": "冲突来源未披露",
+      "input": "请解释相关模拟政策",
+      "hits": [
+        {
+          "doc_id": "P11",
+          "title": "锁座与支付有效期",
+          "content": "模拟锁座有效期 15 分钟，过期未支付自动释放库存；下单必须提供与锁座一致的乘客列表。重复支付不重复扣减库存。",
+          "source": "data/policies.md#P11"
+        },
+        {
+          "doc_id": "P90",
+          "title": "冲突测试政策",
+          "content": "锁座有效期60分钟。",
+          "source": "isolated-test#P90"
+        }
+      ],
+      "reply": "锁座有效期15分钟 [P11]。",
+      "events": [],
+      "expected": {
+        "failed": true,
+        "finding_types": [
+          "undisclosed_conflicting_policy"
+        ],
+        "full_semantic_faithfulness": "indeterminate"
+      },
+      "actual_assessment": {
+        "schema": "ticket-rag-faithfulness/1",
+        "status": "failed",
+        "original_model_reply": "锁座有效期15分钟 [P11]。",
+        "question": "请解释相关模拟政策",
+        "allowed_doc_ids": [
+          "P11",
+          "P90"
+        ],
+        "cited_doc_ids": [
+          "P11"
+        ],
+        "claim_checks": [
+          {
+            "claim": "锁座有效期15分钟 [P11]",
+            "status": "supported_scoped_quantities",
+            "quantities": [
+              {
+                "text": "15分钟",
+                "dimension": "duration",
+                "value": "15",
+                "start": 5,
+                "end": 9,
+                "negated": false
+              }
+            ],
+            "sources": [
+              {
+                "doc_id": "P11",
+                "evidence_text": "模拟锁座有效期 15 分钟",
+                "source": "data/policies.md#P11"
+              }
+            ],
+            "basis": "Same citation, compatible subjects/explicit interval, quantities with normalized units"
+          }
+        ],
+        "findings": [
+          {
+            "type": "undisclosed_conflicting_policy",
+            "conflicts": [
+              {
+                "field": "lock_expiry_minutes",
+                "values": {
+                  "15": [
+                    "P11"
+                  ],
+                  "6E+1": [
+                    "P90"
+                  ]
+                }
+              }
+            ],
+            "basis": "Conflicting actual sources exist but reply selects a numeric rule without disclosure"
+          }
+        ],
+        "manual_review": [],
+        "refusal_observed": false,
+        "no_evidence_refusal": null,
+        "conflicts": [
+          {
+            "field": "lock_expiry_minutes",
+            "values": {
+              "15": [
+                "P11"
+              ],
+              "6E+1": [
+                "P90"
+              ]
+            }
+          }
+        ],
+        "conflict_disclosed": false,
+        "excluded_user_quotes": [],
+        "full_semantic_faithfulness": "indeterminate",
+        "limits": [
+          "Finite rules do not prove all semantic claims or the completeness of an answer.",
+          "Unknown paraphrases/implicit conditions require B independent review; this is not a model-generated judge."
+        ]
+      },
+      "assertions": {
+        "failure_classification_matches": true,
+        "required_findings_present": true,
+        "original_reply_preserved": true,
+        "full_semantic_faithfulness_not_fabricated": true
+      },
+      "passed": true
+    },
+    {
+      "id": "F22",
+      "purpose": "冲突明确披露",
+      "input": "请解释相关模拟政策",
+      "hits": [
+        {
+          "doc_id": "P11",
+          "title": "锁座与支付有效期",
+          "content": "模拟锁座有效期 15 分钟，过期未支付自动释放库存；下单必须提供与锁座一致的乘客列表。重复支付不重复扣减库存。",
+          "source": "data/policies.md#P11"
+        },
+        {
+          "doc_id": "P90",
+          "title": "冲突测试政策",
+          "content": "锁座有效期60分钟。",
+          "source": "isolated-test#P90"
+        }
+      ],
+      "reply": "P11规定15分钟，P90规定60分钟，两份政策存在冲突，无法确认采用哪条。",
+      "events": [],
+      "expected": {
+        "failed": false,
+        "finding_types": [],
+        "full_semantic_faithfulness": "indeterminate"
+      },
+      "actual_assessment": {
+        "schema": "ticket-rag-faithfulness/1",
+        "status": "indeterminate",
+        "original_model_reply": "P11规定15分钟，P90规定60分钟，两份政策存在冲突，无法确认采用哪条。",
+        "question": "请解释相关模拟政策",
+        "allowed_doc_ids": [
+          "P11",
+          "P90"
+        ],
+        "cited_doc_ids": [],
+        "claim_checks": [
+          {
+            "claim": "P11规定15分钟，P90规定60分钟，两份政策存在冲突，无法确认采用哪条",
+            "status": "indeterminate",
+            "reason": "No local doc_id anchors this assertion"
+          }
+        ],
+        "findings": [],
+        "manual_review": [
+          {
+            "claim": "P11规定15分钟，P90规定60分钟，两份政策存在冲突，无法确认采用哪条",
+            "reason": "no_locatable_citation"
+          }
+        ],
+        "refusal_observed": true,
+        "no_evidence_refusal": null,
+        "conflicts": [
+          {
+            "field": "lock_expiry_minutes",
+            "values": {
+              "15": [
+                "P11"
+              ],
+              "6E+1": [
+                "P90"
+              ]
+            }
+          }
+        ],
+        "conflict_disclosed": true,
+        "excluded_user_quotes": [],
+        "full_semantic_faithfulness": "indeterminate",
+        "limits": [
+          "Finite rules do not prove all semantic claims or the completeness of an answer.",
+          "Unknown paraphrases/implicit conditions require B independent review; this is not a model-generated judge."
+        ]
+      },
+      "assertions": {
+        "failure_classification_matches": true,
+        "required_findings_present": true,
+        "original_reply_preserved": true,
+        "full_semantic_faithfulness_not_fabricated": true
+      },
+      "passed": true
+    },
+    {
+      "id": "F23",
+      "purpose": "字面规则有来源",
+      "input": "请解释相关模拟政策",
+      "hits": [
+        {
+          "doc_id": "P12",
+          "title": "未支付订单取消",
+          "content": "未支付订单取消不收取手续费，释放已占库存；已退款或已取消订单不得再次释放库存，取消后的订单不可支付。",
+          "source": "data/policies.md#P12"
+        }
+      ],
+      "reply": "未支付订单取消不收取手续费 [P12]。",
+      "events": [],
+      "expected": {
+        "failed": false,
+        "finding_types": [],
+        "full_semantic_faithfulness": "indeterminate"
+      },
+      "actual_assessment": {
+        "schema": "ticket-rag-faithfulness/1",
+        "status": "checked_scoped_facts",
+        "original_model_reply": "未支付订单取消不收取手续费 [P12]。",
+        "question": "请解释相关模拟政策",
+        "allowed_doc_ids": [
+          "P12"
+        ],
+        "cited_doc_ids": [
+          "P12"
+        ],
+        "claim_checks": [
+          {
+            "claim": "未支付订单取消不收取手续费 [P12]",
+            "status": "supported_literal",
+            "doc_id": "P12",
+            "evidence_text": "未支付订单取消不收取手续费"
+          }
+        ],
+        "findings": [],
+        "manual_review": [],
+        "refusal_observed": false,
+        "no_evidence_refusal": null,
+        "conflicts": [],
+        "conflict_disclosed": null,
+        "excluded_user_quotes": [],
+        "full_semantic_faithfulness": "indeterminate",
+        "limits": [
+          "Finite rules do not prove all semantic claims or the completeness of an answer.",
+          "Unknown paraphrases/implicit conditions require B independent review; this is not a model-generated judge."
+        ]
+      },
+      "assertions": {
+        "failure_classification_matches": true,
+        "required_findings_present": true,
+        "original_reply_preserved": true,
+        "full_semantic_faithfulness_not_fabricated": true
+      },
+      "passed": true
+    },
+    {
+      "id": "F24",
+      "purpose": "费用否定条件反转",
+      "input": "请解释相关模拟政策",
+      "hits": [
+        {
+          "doc_id": "P12",
+          "title": "未支付订单取消",
+          "content": "未支付订单取消不收取手续费，释放已占库存；已退款或已取消订单不得再次释放库存，取消后的订单不可支付。",
+          "source": "data/policies.md#P12"
+        }
+      ],
+      "reply": "未支付订单取消需要收取手续费 [P12]。",
+      "events": [],
+      "expected": {
+        "failed": true,
+        "finding_types": [
+          "restriction_contradiction"
+        ],
+        "full_semantic_faithfulness": "indeterminate"
+      },
+      "actual_assessment": {
+        "schema": "ticket-rag-faithfulness/1",
+        "status": "failed",
+        "original_model_reply": "未支付订单取消需要收取手续费 [P12]。",
+        "question": "请解释相关模拟政策",
+        "allowed_doc_ids": [
+          "P12"
+        ],
+        "cited_doc_ids": [
+          "P12"
+        ],
+        "claim_checks": [],
+        "findings": [
+          {
+            "type": "restriction_contradiction",
+            "claim": "未支付订单取消需要收取手续费 [P12]",
+            "doc_id": "P12",
+            "evidence_text": "未支付订单取消不收取手续费",
+            "basis": "Explicit positive permission contradicts a scoped prohibition"
+          }
+        ],
+        "manual_review": [],
+        "refusal_observed": false,
+        "no_evidence_refusal": null,
+        "conflicts": [],
+        "conflict_disclosed": null,
+        "excluded_user_quotes": [],
+        "full_semantic_faithfulness": "indeterminate",
+        "limits": [
+          "Finite rules do not prove all semantic claims or the completeness of an answer.",
+          "Unknown paraphrases/implicit conditions require B independent review; this is not a model-generated judge."
+        ]
+      },
+      "assertions": {
+        "failure_classification_matches": true,
+        "required_findings_present": true,
+        "original_reply_preserved": true,
+        "full_semantic_faithfulness_not_fabricated": true
+      },
+      "passed": true
+    },
+    {
+      "id": "F25",
+      "purpose": "额外强制购买保险",
+      "input": "请解释相关模拟政策",
+      "hits": [
+        {
+          "doc_id": "P11",
+          "title": "锁座与支付有效期",
+          "content": "模拟锁座有效期 15 分钟，过期未支付自动释放库存；下单必须提供与锁座一致的乘客列表。重复支付不重复扣减库存。",
+          "source": "data/policies.md#P11"
+        }
+      ],
+      "reply": "锁座有效期15分钟且必须购买保险 [P11]。",
+      "events": [],
+      "expected": {
+        "failed": true,
+        "finding_types": [
+          "unsupported_added_requirement"
+        ],
+        "full_semantic_faithfulness": "indeterminate"
+      },
+      "actual_assessment": {
+        "schema": "ticket-rag-faithfulness/1",
+        "status": "failed",
+        "original_model_reply": "锁座有效期15分钟且必须购买保险 [P11]。",
+        "question": "请解释相关模拟政策",
+        "allowed_doc_ids": [
+          "P11"
+        ],
+        "cited_doc_ids": [
+          "P11"
+        ],
+        "claim_checks": [
+          {
+            "claim": "锁座有效期15分钟且必须购买保险 [P11]",
+            "status": "supported_scoped_quantities",
+            "quantities": [
+              {
+                "text": "15分钟",
+                "dimension": "duration",
+                "value": "15",
+                "start": 5,
+                "end": 9,
+                "negated": false
+              }
+            ],
+            "sources": [
+              {
+                "doc_id": "P11",
+                "evidence_text": "模拟锁座有效期 15 分钟",
+                "source": "data/policies.md#P11"
+              }
+            ],
+            "basis": "Same citation, compatible subjects/explicit interval, quantities with normalized units"
+          }
+        ],
+        "findings": [
+          {
+            "type": "unsupported_added_requirement",
+            "claim": "锁座有效期15分钟且必须购买保险 [P11]",
+            "object": "购买保险",
+            "basis": "Explicit requirement absent from the actual cited policy clauses"
+          },
+          {
+            "type": "unsupported_added_requirement",
+            "claim": "锁座有效期15分钟且必须购买保险 [P11]",
+            "object": "买保险",
+            "basis": "Explicit requirement absent from the actual cited policy clauses"
+          }
+        ],
+        "manual_review": [],
+        "refusal_observed": false,
+        "no_evidence_refusal": null,
+        "conflicts": [],
+        "conflict_disclosed": null,
+        "excluded_user_quotes": [],
+        "full_semantic_faithfulness": "indeterminate",
+        "limits": [
+          "Finite rules do not prove all semantic claims or the completeness of an answer.",
+          "Unknown paraphrases/implicit conditions require B independent review; this is not a model-generated judge."
+        ]
+      },
+      "assertions": {
+        "failure_classification_matches": true,
+        "required_findings_present": true,
+        "original_reply_preserved": true,
+        "full_semantic_faithfulness_not_fabricated": true
+      },
+      "passed": true
+    },
+    {
+      "id": "F26",
+      "purpose": "难判语义不强行通过",
+      "input": "请解释相关模拟政策",
+      "hits": [
+        {
+          "doc_id": "P11",
+          "title": "锁座与支付有效期",
+          "content": "模拟锁座有效期 15 分钟，过期未支付自动释放库存；下单必须提供与锁座一致的乘客列表。重复支付不重复扣减库存。",
+          "source": "data/policies.md#P11"
+        }
+      ],
+      "reply": "提前付款会更稳妥 [P11]。",
+      "events": [],
+      "expected": {
+        "failed": false,
+        "finding_types": [],
+        "full_semantic_faithfulness": "indeterminate"
+      },
+      "actual_assessment": {
+        "schema": "ticket-rag-faithfulness/1",
+        "status": "indeterminate",
+        "original_model_reply": "提前付款会更稳妥 [P11]。",
+        "question": "请解释相关模拟政策",
+        "allowed_doc_ids": [
+          "P11"
+        ],
+        "cited_doc_ids": [
+          "P11"
+        ],
+        "claim_checks": [],
+        "findings": [],
+        "manual_review": [],
+        "refusal_observed": false,
+        "no_evidence_refusal": null,
+        "conflicts": [],
+        "conflict_disclosed": null,
+        "excluded_user_quotes": [],
+        "full_semantic_faithfulness": "indeterminate",
+        "limits": [
+          "Finite rules do not prove all semantic claims or the completeness of an answer.",
+          "Unknown paraphrases/implicit conditions require B independent review; this is not a model-generated judge."
+        ]
+      },
+      "assertions": {
+        "failure_classification_matches": true,
+        "required_findings_present": true,
+        "original_reply_preserved": true,
+        "full_semantic_faithfulness_not_fabricated": true
+      },
+      "passed": true
+    },
+    {
+      "id": "F27",
+      "purpose": "添加不存在的手续费",
+      "input": "请解释相关模拟政策",
+      "hits": [
+        {
+          "doc_id": "P12",
+          "title": "未支付订单取消",
+          "content": "未支付订单取消不收取手续费，释放已占库存；已退款或已取消订单不得再次释放库存，取消后的订单不可支付。",
+          "source": "data/policies.md#P12"
+        }
+      ],
+      "reply": "取消未支付订单手续费5元 [P12]。",
+      "events": [],
+      "expected": {
+        "failed": true,
+        "finding_types": [
+          "unsupported_quantity_or_scope"
+        ],
+        "full_semantic_faithfulness": "indeterminate"
+      },
+      "actual_assessment": {
+        "schema": "ticket-rag-faithfulness/1",
+        "status": "failed",
+        "original_model_reply": "取消未支付订单手续费5元 [P12]。",
+        "question": "请解释相关模拟政策",
+        "allowed_doc_ids": [
+          "P12"
+        ],
+        "cited_doc_ids": [
+          "P12"
+        ],
+        "claim_checks": [],
+        "findings": [
+          {
+            "type": "unsupported_quantity_or_scope",
+            "claim": "取消未支付订单手续费5元 [P12]",
+            "cited_doc_ids": [
+              "P12"
+            ],
+            "claim_quantities": [
+              {
+                "text": "5元",
+                "dimension": "money",
+                "value": "5",
+                "start": 10,
+                "end": 12,
+                "negated": false
+              }
+            ],
+            "missing_quantities": [
+              {
+                "text": "5元",
+                "dimension": "money",
+                "value": "5",
+                "start": 10,
+                "end": 12,
+                "negated": false
+              }
+            ],
+            "condition": [],
+            "evidence": [
+              {
+                "doc_id": "P12",
+                "text": "未支付订单取消不收取手续费"
+              },
+              {
+                "doc_id": "P12",
+                "text": "释放已占库存"
+              },
+              {
+                "doc_id": "P12",
+                "text": "已退款或已取消订单不得再次释放库存"
+              },
+              {
+                "doc_id": "P12",
+                "text": "取消后的订单不可支付"
+              }
+            ],
+            "basis": "Numeric value/unit/subject/explicit conditional branch does not match the cited clause"
+          }
+        ],
+        "manual_review": [],
+        "refusal_observed": false,
+        "no_evidence_refusal": null,
+        "conflicts": [],
+        "conflict_disclosed": null,
+        "excluded_user_quotes": [],
+        "full_semantic_faithfulness": "indeterminate",
+        "limits": [
+          "Finite rules do not prove all semantic claims or the completeness of an answer.",
+          "Unknown paraphrases/implicit conditions require B independent review; this is not a model-generated judge."
+        ]
+      },
+      "assertions": {
+        "failure_classification_matches": true,
+        "required_findings_present": true,
+        "original_reply_preserved": true,
+        "full_semantic_faithfulness_not_fabricated": true
+      },
+      "passed": true
+    },
+    {
+      "id": "F28",
+      "purpose": "儿童与成人额度错绑",
+      "input": "请解释相关模拟政策",
+      "hits": [
+        {
+          "doc_id": "P06",
+          "title": "行李规定",
+          "content": "高铁成人免费携带品重量 20 千克，儿童 10 千克；每件物品长宽高之和不超过 160 厘米。超重部分按每千克 5 元补收运费。",
+          "source": "data/policies.md#P06"
+        }
+      ],
+      "reply": "儿童免费行李20千克 [P06]。",
+      "events": [],
+      "expected": {
+        "failed": true,
+        "finding_types": [
+          "unsupported_quantity_or_scope"
+        ],
+        "full_semantic_faithfulness": "indeterminate"
+      },
+      "actual_assessment": {
+        "schema": "ticket-rag-faithfulness/1",
+        "status": "failed",
+        "original_model_reply": "儿童免费行李20千克 [P06]。",
+        "question": "请解释相关模拟政策",
+        "allowed_doc_ids": [
+          "P06"
+        ],
+        "cited_doc_ids": [
+          "P06"
+        ],
+        "claim_checks": [],
+        "findings": [
+          {
+            "type": "unsupported_quantity_or_scope",
+            "claim": "儿童免费行李20千克 [P06]",
+            "cited_doc_ids": [
+              "P06"
+            ],
+            "claim_quantities": [
+              {
+                "text": "20千克",
+                "dimension": "weight",
+                "value": "2E+1",
+                "start": 6,
+                "end": 10,
+                "negated": false
+              }
+            ],
+            "missing_quantities": [],
+            "condition": [],
+            "evidence": [
+              {
+                "doc_id": "P06",
+                "text": "高铁成人免费携带品重量 20 千克"
+              },
+              {
+                "doc_id": "P06",
+                "text": "儿童 10 千克"
+              },
+              {
+                "doc_id": "P06",
+                "text": "每件物品长宽高之和不超过 160 厘米"
+              },
+              {
+                "doc_id": "P06",
+                "text": "超重部分按每千克 5 元补收运费"
+              }
+            ],
+            "basis": "Numeric value/unit/subject/explicit conditional branch does not match the cited clause"
+          }
+        ],
+        "manual_review": [],
+        "refusal_observed": false,
+        "no_evidence_refusal": null,
+        "conflicts": [],
+        "conflict_disclosed": null,
+        "excluded_user_quotes": [],
+        "full_semantic_faithfulness": "indeterminate",
+        "limits": [
+          "Finite rules do not prove all semantic claims or the completeness of an answer.",
+          "Unknown paraphrases/implicit conditions require B independent review; this is not a model-generated judge."
+        ]
+      },
+      "assertions": {
+        "failure_classification_matches": true,
+        "required_findings_present": true,
+        "original_reply_preserved": true,
+        "full_semantic_faithfulness_not_fabricated": true
+      },
+      "passed": true
+    },
+    {
+      "id": "F29",
+      "purpose": "正确儿童额度",
+      "input": "请解释相关模拟政策",
+      "hits": [
+        {
+          "doc_id": "P06",
+          "title": "行李规定",
+          "content": "高铁成人免费携带品重量 20 千克，儿童 10 千克；每件物品长宽高之和不超过 160 厘米。超重部分按每千克 5 元补收运费。",
+          "source": "data/policies.md#P06"
+        }
+      ],
+      "reply": "儿童免费行李10千克 [P06]。",
+      "events": [],
+      "expected": {
+        "failed": false,
+        "finding_types": [],
+        "full_semantic_faithfulness": "indeterminate"
+      },
+      "actual_assessment": {
+        "schema": "ticket-rag-faithfulness/1",
+        "status": "checked_scoped_facts",
+        "original_model_reply": "儿童免费行李10千克 [P06]。",
+        "question": "请解释相关模拟政策",
+        "allowed_doc_ids": [
+          "P06"
+        ],
+        "cited_doc_ids": [
+          "P06"
+        ],
+        "claim_checks": [
+          {
+            "claim": "儿童免费行李10千克 [P06]",
+            "status": "supported_scoped_quantities",
+            "quantities": [
+              {
+                "text": "10千克",
+                "dimension": "weight",
+                "value": "1E+1",
+                "start": 6,
+                "end": 10,
+                "negated": false
+              }
+            ],
+            "sources": [
+              {
+                "doc_id": "P06",
+                "evidence_text": "儿童 10 千克",
+                "source": "data/policies.md#P06"
+              }
+            ],
+            "basis": "Same citation, compatible subjects/explicit interval, quantities with normalized units"
+          }
+        ],
+        "findings": [],
+        "manual_review": [],
+        "refusal_observed": false,
+        "no_evidence_refusal": null,
+        "conflicts": [],
+        "conflict_disclosed": null,
+        "excluded_user_quotes": [],
+        "full_semantic_faithfulness": "indeterminate",
+        "limits": [
+          "Finite rules do not prove all semantic claims or the completeness of an answer.",
+          "Unknown paraphrases/implicit conditions require B independent review; this is not a model-generated judge."
+        ]
+      },
+      "assertions": {
+        "failure_classification_matches": true,
+        "required_findings_present": true,
+        "original_reply_preserved": true,
+        "full_semantic_faithfulness_not_fabricated": true
+      },
+      "passed": true
+    },
+    {
+      "id": "F30",
+      "purpose": "成人与儿童额度错绑",
+      "input": "请解释相关模拟政策",
+      "hits": [
+        {
+          "doc_id": "P06",
+          "title": "行李规定",
+          "content": "高铁成人免费携带品重量 20 千克，儿童 10 千克；每件物品长宽高之和不超过 160 厘米。超重部分按每千克 5 元补收运费。",
+          "source": "data/policies.md#P06"
+        }
+      ],
+      "reply": "成人免费行李10千克 [P06]。",
+      "events": [],
+      "expected": {
+        "failed": true,
+        "finding_types": [
+          "unsupported_quantity_or_scope"
+        ],
+        "full_semantic_faithfulness": "indeterminate"
+      },
+      "actual_assessment": {
+        "schema": "ticket-rag-faithfulness/1",
+        "status": "failed",
+        "original_model_reply": "成人免费行李10千克 [P06]。",
+        "question": "请解释相关模拟政策",
+        "allowed_doc_ids": [
+          "P06"
+        ],
+        "cited_doc_ids": [
+          "P06"
+        ],
+        "claim_checks": [],
+        "findings": [
+          {
+            "type": "unsupported_quantity_or_scope",
+            "claim": "成人免费行李10千克 [P06]",
+            "cited_doc_ids": [
+              "P06"
+            ],
+            "claim_quantities": [
+              {
+                "text": "10千克",
+                "dimension": "weight",
+                "value": "1E+1",
+                "start": 6,
+                "end": 10,
+                "negated": false
+              }
+            ],
+            "missing_quantities": [],
+            "condition": [],
+            "evidence": [
+              {
+                "doc_id": "P06",
+                "text": "高铁成人免费携带品重量 20 千克"
+              },
+              {
+                "doc_id": "P06",
+                "text": "儿童 10 千克"
+              },
+              {
+                "doc_id": "P06",
+                "text": "每件物品长宽高之和不超过 160 厘米"
+              },
+              {
+                "doc_id": "P06",
+                "text": "超重部分按每千克 5 元补收运费"
+              }
+            ],
+            "basis": "Numeric value/unit/subject/explicit conditional branch does not match the cited clause"
+          }
+        ],
+        "manual_review": [],
+        "refusal_observed": false,
+        "no_evidence_refusal": null,
+        "conflicts": [],
+        "conflict_disclosed": null,
+        "excluded_user_quotes": [],
+        "full_semantic_faithfulness": "indeterminate",
+        "limits": [
+          "Finite rules do not prove all semantic claims or the completeness of an answer.",
+          "Unknown paraphrases/implicit conditions require B independent review; this is not a model-generated judge."
+        ]
+      },
+      "assertions": {
+        "failure_classification_matches": true,
+        "required_findings_present": true,
+        "original_reply_preserved": true,
+        "full_semantic_faithfulness_not_fabricated": true
+      },
+      "passed": true
+    },
+    {
+      "id": "F31",
+      "purpose": "改签后不退限制被反转",
+      "input": "请解释相关模拟政策",
+      "hits": [
+        {
+          "doc_id": "P02",
+          "title": "改签规则",
+          "content": "开车前 48 小时以上可改签预售期内任意车次；开车前 48 小时以内可改签开车前的其他车次，也可改签开车后至当日 24:00 之间的车次。每张票仅可改签一次，改签后不退。",
+          "source": "data/policies.md#P02"
+        }
+      ],
+      "reply": "改签后可以退票 [P02]。",
+      "events": [],
+      "expected": {
+        "failed": true,
+        "finding_types": [
+          "restriction_contradiction"
+        ],
+        "full_semantic_faithfulness": "indeterminate"
+      },
+      "actual_assessment": {
+        "schema": "ticket-rag-faithfulness/1",
+        "status": "failed",
+        "original_model_reply": "改签后可以退票 [P02]。",
+        "question": "请解释相关模拟政策",
+        "allowed_doc_ids": [
+          "P02"
+        ],
+        "cited_doc_ids": [
+          "P02"
+        ],
+        "claim_checks": [],
+        "findings": [
+          {
+            "type": "restriction_contradiction",
+            "claim": "改签后可以退票 [P02]",
+            "doc_id": "P02",
+            "evidence_text": "改签后不退",
+            "basis": "Explicit positive permission contradicts a scoped prohibition"
+          }
+        ],
+        "manual_review": [],
+        "refusal_observed": false,
+        "no_evidence_refusal": null,
+        "conflicts": [],
+        "conflict_disclosed": null,
+        "excluded_user_quotes": [],
+        "full_semantic_faithfulness": "indeterminate",
+        "limits": [
+          "Finite rules do not prove all semantic claims or the completeness of an answer.",
+          "Unknown paraphrases/implicit conditions require B independent review; this is not a model-generated judge."
+        ]
+      },
+      "assertions": {
+        "failure_classification_matches": true,
+        "required_findings_present": true,
+        "original_reply_preserved": true,
+        "full_semantic_faithfulness_not_fabricated": true
+      },
+      "passed": true
+    },
+    {
+      "id": "F32",
+      "purpose": "席别儿童票限制反转",
+      "input": "请解释相关模拟政策",
+      "hits": [
+        {
+          "doc_id": "P04",
+          "title": "儿童票",
+          "content": "身高 1.2 米以下且不满 6 周岁儿童可免票（不占座）；6 至 14 周岁需购买儿童票，二等座按公布票价 50% 计算，一等座与商务座不售儿童票。",
+          "source": "data/policies.md#P04"
+        }
+      ],
+      "reply": "商务座可以购买儿童票 [P04]。",
+      "events": [],
+      "expected": {
+        "failed": true,
+        "finding_types": [
+          "restriction_contradiction"
+        ],
+        "full_semantic_faithfulness": "indeterminate"
+      },
+      "actual_assessment": {
+        "schema": "ticket-rag-faithfulness/1",
+        "status": "failed",
+        "original_model_reply": "商务座可以购买儿童票 [P04]。",
+        "question": "请解释相关模拟政策",
+        "allowed_doc_ids": [
+          "P04"
+        ],
+        "cited_doc_ids": [
+          "P04"
+        ],
+        "claim_checks": [],
+        "findings": [
+          {
+            "type": "restriction_contradiction",
+            "claim": "商务座可以购买儿童票 [P04]",
+            "doc_id": "P04",
+            "evidence_text": "一等座与商务座不售儿童票",
+            "basis": "Explicit positive permission contradicts a scoped prohibition"
+          }
+        ],
+        "manual_review": [],
+        "refusal_observed": false,
+        "no_evidence_refusal": null,
+        "conflicts": [],
+        "conflict_disclosed": null,
+        "excluded_user_quotes": [],
+        "full_semantic_faithfulness": "indeterminate",
+        "limits": [
+          "Finite rules do not prove all semantic claims or the completeness of an answer.",
+          "Unknown paraphrases/implicit conditions require B independent review; this is not a model-generated judge."
+        ]
+      },
+      "assertions": {
+        "failure_classification_matches": true,
+        "required_findings_present": true,
+        "original_reply_preserved": true,
+        "full_semantic_faithfulness_not_fabricated": true
+      },
+      "passed": true
+    },
+    {
+      "id": "F33",
+      "purpose": "新增服务费",
+      "input": "请解释相关模拟政策",
+      "hits": [
+        {
+          "doc_id": "P11",
+          "title": "锁座与支付有效期",
+          "content": "模拟锁座有效期 15 分钟，过期未支付自动释放库存；下单必须提供与锁座一致的乘客列表。重复支付不重复扣减库存。",
+          "source": "data/policies.md#P11"
+        }
+      ],
+      "reply": "锁座服务费1000元 [P11]。",
+      "events": [],
+      "expected": {
+        "failed": true,
+        "finding_types": [
+          "unsupported_quantity_or_scope"
+        ],
+        "full_semantic_faithfulness": "indeterminate"
+      },
+      "actual_assessment": {
+        "schema": "ticket-rag-faithfulness/1",
+        "status": "failed",
+        "original_model_reply": "锁座服务费1000元 [P11]。",
+        "question": "请解释相关模拟政策",
+        "allowed_doc_ids": [
+          "P11"
+        ],
+        "cited_doc_ids": [
+          "P11"
+        ],
+        "claim_checks": [],
+        "findings": [
+          {
+            "type": "unsupported_quantity_or_scope",
+            "claim": "锁座服务费1000元 [P11]",
+            "cited_doc_ids": [
+              "P11"
+            ],
+            "claim_quantities": [
+              {
+                "text": "1000元",
+                "dimension": "money",
+                "value": "1E+3",
+                "start": 5,
+                "end": 10,
+                "negated": false
+              }
+            ],
+            "missing_quantities": [
+              {
+                "text": "1000元",
+                "dimension": "money",
+                "value": "1E+3",
+                "start": 5,
+                "end": 10,
+                "negated": false
+              }
+            ],
+            "condition": [],
+            "evidence": [
+              {
+                "doc_id": "P11",
+                "text": "模拟锁座有效期 15 分钟"
+              },
+              {
+                "doc_id": "P11",
+                "text": "过期未支付自动释放库存"
+              },
+              {
+                "doc_id": "P11",
+                "text": "下单必须提供与锁座一致的乘客列表"
+              },
+              {
+                "doc_id": "P11",
+                "text": "重复支付不重复扣减库存"
+              }
+            ],
+            "basis": "Numeric value/unit/subject/explicit conditional branch does not match the cited clause"
+          }
+        ],
+        "manual_review": [],
+        "refusal_observed": false,
+        "no_evidence_refusal": null,
+        "conflicts": [],
+        "conflict_disclosed": null,
+        "excluded_user_quotes": [],
+        "full_semantic_faithfulness": "indeterminate",
+        "limits": [
+          "Finite rules do not prove all semantic claims or the completeness of an answer.",
+          "Unknown paraphrases/implicit conditions require B independent review; this is not a model-generated judge."
+        ]
+      },
+      "assertions": {
+        "failure_classification_matches": true,
+        "required_findings_present": true,
+        "original_reply_preserved": true,
+        "full_semantic_faithfulness_not_fabricated": true
+      },
+      "passed": true
+    },
+    {
+      "id": "F34",
+      "purpose": "引用存在但不支持结论",
+      "input": "请解释相关模拟政策",
+      "hits": [
+        {
+          "doc_id": "P01",
+          "title": "退票手续费阶梯",
+          "content": "开车前 48 小时以上退票，收取票价 5% 手续费；开车前 24 至 48 小时退票，收取 10%；开车前不足 24 小时退票，收取 20%。已取报销凭证或已改签的车票不退。",
+          "source": "data/policies.md#P01"
+        }
+      ],
+      "reply": "锁座有效期15分钟 [P01]。",
+      "events": [],
+      "expected": {
+        "failed": true,
+        "finding_types": [
+          "unsupported_quantity_or_scope"
+        ],
+        "full_semantic_faithfulness": "indeterminate"
+      },
+      "actual_assessment": {
+        "schema": "ticket-rag-faithfulness/1",
+        "status": "failed",
+        "original_model_reply": "锁座有效期15分钟 [P01]。",
+        "question": "请解释相关模拟政策",
+        "allowed_doc_ids": [
+          "P01"
+        ],
+        "cited_doc_ids": [
+          "P01"
+        ],
+        "claim_checks": [],
+        "findings": [
+          {
+            "type": "citation_policy_category_mismatch",
+            "claim": "锁座有效期15分钟 [P01]",
+            "policy_topic": "锁座",
+            "cited_doc_ids": [
+              "P01"
+            ],
+            "basis": "The stated policy category is absent from the cited clause and document title"
+          },
+          {
+            "type": "unsupported_quantity_or_scope",
+            "claim": "锁座有效期15分钟 [P01]",
+            "cited_doc_ids": [
+              "P01"
+            ],
+            "claim_quantities": [
+              {
+                "text": "15分钟",
+                "dimension": "duration",
+                "value": "15",
+                "start": 5,
+                "end": 9,
+                "negated": false
+              }
+            ],
+            "missing_quantities": [
+              {
+                "text": "15分钟",
+                "dimension": "duration",
+                "value": "15",
+                "start": 5,
+                "end": 9,
+                "negated": false
+              }
+            ],
+            "condition": [],
+            "evidence": [
+              {
+                "doc_id": "P01",
+                "text": "开车前 48 小时以上退票，收取票价 5% 手续费"
+              },
+              {
+                "doc_id": "P01",
+                "text": "开车前 24 至 48 小时退票，收取 10%"
+              },
+              {
+                "doc_id": "P01",
+                "text": "开车前不足 24 小时退票，收取 20%"
+              },
+              {
+                "doc_id": "P01",
+                "text": "已取报销凭证或已改签的车票不退"
+              }
+            ],
+            "basis": "Numeric value/unit/subject/explicit conditional branch does not match the cited clause"
+          }
+        ],
+        "manual_review": [],
+        "refusal_observed": false,
+        "no_evidence_refusal": null,
+        "conflicts": [],
+        "conflict_disclosed": null,
+        "excluded_user_quotes": [],
+        "full_semantic_faithfulness": "indeterminate",
+        "limits": [
+          "Finite rules do not prove all semantic claims or the completeness of an answer.",
+          "Unknown paraphrases/implicit conditions require B independent review; this is not a model-generated judge."
+        ]
+      },
+      "assertions": {
+        "failure_classification_matches": true,
+        "required_findings_present": true,
+        "original_reply_preserved": true,
+        "full_semantic_faithfulness_not_fabricated": true
+      },
+      "passed": true
+    },
+    {
+      "id": "F35",
+      "purpose": "多来源跨句绑定不确定",
+      "input": "请解释相关模拟政策",
+      "hits": [
+        {
+          "doc_id": "P11",
+          "title": "锁座与支付有效期",
+          "content": "模拟锁座有效期 15 分钟，过期未支付自动释放库存；下单必须提供与锁座一致的乘客列表。重复支付不重复扣减库存。",
+          "source": "data/policies.md#P11"
+        },
+        {
+          "doc_id": "P06",
+          "title": "行李规定",
+          "content": "高铁成人免费携带品重量 20 千克，儿童 10 千克；每件物品长宽高之和不超过 160 厘米。超重部分按每千克 5 元补收运费。",
+          "source": "data/policies.md#P06"
+        }
+      ],
+      "reply": "锁座15分钟，成人行李20千克 [P11][P06]。",
+      "events": [],
+      "expected": {
+        "failed": false,
+        "finding_types": [],
+        "full_semantic_faithfulness": "indeterminate"
+      },
+      "actual_assessment": {
+        "schema": "ticket-rag-faithfulness/1",
+        "status": "indeterminate",
+        "original_model_reply": "锁座15分钟，成人行李20千克 [P11][P06]。",
+        "question": "请解释相关模拟政策",
+        "allowed_doc_ids": [
+          "P06",
+          "P11"
+        ],
+        "cited_doc_ids": [
+          "P11",
+          "P06"
+        ],
+        "claim_checks": [
+          {
+            "claim": "锁座15分钟，成人行李20千克 [P11][P06]",
+            "status": "indeterminate",
+            "reason": "Numbers occur across separate evidence clauses; no single bound support"
+          }
+        ],
+        "findings": [],
+        "manual_review": [
+          {
+            "claim": "锁座15分钟，成人行李20千克 [P11][P06]",
+            "reason": "numeric_binding_not_proven"
+          }
+        ],
+        "refusal_observed": false,
+        "no_evidence_refusal": null,
+        "conflicts": [],
+        "conflict_disclosed": null,
+        "excluded_user_quotes": [],
+        "full_semantic_faithfulness": "indeterminate",
+        "limits": [
+          "Finite rules do not prove all semantic claims or the completeness of an answer.",
+          "Unknown paraphrases/implicit conditions require B independent review; this is not a model-generated judge."
+        ]
+      },
+      "assertions": {
+        "failure_classification_matches": true,
+        "required_findings_present": true,
+        "original_reply_preserved": true,
+        "full_semantic_faithfulness_not_fabricated": true
+      },
+      "passed": true
+    },
+    {
+      "id": "F36",
+      "purpose": "真实Qwen政策样本保留未知",
+      "input": "请解释相关模拟政策",
+      "hits": [
+        {
+          "doc_id": "P11",
+          "title": "锁座与支付有效期",
+          "content": "模拟锁座有效期 15 分钟，过期未支付自动释放库存；下单必须提供与锁座一致的乘客列表。重复支付不重复扣减库存。",
+          "source": "data/policies.md#P11"
+        },
+        {
+          "doc_id": "P12",
+          "title": "未支付订单取消",
+          "content": "未支付订单取消不收取手续费，释放已占库存；已退款或已取消订单不得再次释放库存，取消后的订单不可支付。",
+          "source": "data/policies.md#P12"
+        },
+        {
+          "doc_id": "P15",
+          "title": "数据预售范围",
+          "content": "演示数据库覆盖生成当天及之后六天；超出日期范围或没有配置的路线返回空列表，不表示真实系统没有余票。",
+          "source": "data/policies.md#P15"
+        }
+      ],
+      "reply": "根据检索证据，锁座后必须在 **15分钟** 内完成支付。如果过期未支付，系统将自动释放库存（依据 doc_id: P11）。",
+      "events": [],
+      "expected": {
+        "failed": false,
+        "finding_types": [],
+        "full_semantic_faithfulness": "indeterminate"
+      },
+      "actual_assessment": {
+        "schema": "ticket-rag-faithfulness/1",
+        "status": "indeterminate",
+        "original_model_reply": "根据检索证据，锁座后必须在 **15分钟** 内完成支付。如果过期未支付，系统将自动释放库存（依据 doc_id: P11）。",
+        "question": "请解释相关模拟政策",
+        "allowed_doc_ids": [
+          "P11",
+          "P12",
+          "P15"
+        ],
+        "cited_doc_ids": [
+          "P11"
+        ],
+        "claim_checks": [
+          {
+            "claim": "根据检索证据，锁座后必须在 **15分钟** 内完成支付",
+            "status": "indeterminate",
+            "reason": "No local doc_id anchors this assertion"
+          },
+          {
+            "claim": "如果过期未支付，系统将自动释放库存（依据 doc_id: P11）",
+            "status": "indeterminate",
+            "reason": "Non-numeric semantic paraphrase is not automatically proved"
+          }
+        ],
+        "findings": [],
+        "manual_review": [
+          {
+            "claim": "根据检索证据，锁座后必须在 **15分钟** 内完成支付",
+            "reason": "no_locatable_citation"
+          },
+          {
+            "claim": "如果过期未支付，系统将自动释放库存（依据 doc_id: P11）",
+            "reason": "semantic_support_requires_review"
+          }
+        ],
+        "refusal_observed": false,
+        "no_evidence_refusal": null,
+        "conflicts": [],
+        "conflict_disclosed": null,
+        "excluded_user_quotes": [],
+        "full_semantic_faithfulness": "indeterminate",
+        "limits": [
+          "Finite rules do not prove all semantic claims or the completeness of an answer.",
+          "Unknown paraphrases/implicit conditions require B independent review; this is not a model-generated judge."
+        ]
+      },
+      "assertions": {
+        "failure_classification_matches": true,
+        "required_findings_present": true,
+        "original_reply_preserved": true,
+        "full_semantic_faithfulness_not_fabricated": true
+      },
+      "passed": true
+    },
+    {
+      "id": "F37",
+      "purpose": "真实Qwen否定引用样本",
+      "input": "请解释相关模拟政策",
+      "hits": [
+        {
+          "doc_id": "P01",
+          "title": "退票手续费阶梯",
+          "content": "开车前 48 小时以上退票，收取票价 5% 手续费；开车前 24 至 48 小时退票，收取 10%；开车前不足 24 小时退票，收取 20%。已取报销凭证或已改签的车票不退。",
+          "source": "data/policies.md#P01"
+        },
+        {
+          "doc_id": "P07",
+          "title": "报销凭证",
+          "content": "乘车之日起 180 日内可在车站窗口或自助机打印报销凭证，仅可打印一次；已打印报销凭证的车票退票时需先交回凭证。",
+          "source": "data/policies.md#P07"
+        },
+        {
+          "doc_id": "P09",
+          "title": "机票退改规则",
+          "content": "机票经济舱起飞前 24 小时以上退票收取票面价 10%，24 小时内收取 30%；特价舱位（折扣低于 4 折）不支持退票，仅退机场建设费与燃油附加费。",
+          "source": "data/policies.md#P09"
+        }
+      ],
+      "reply": "无法确认。提供的检索证据仅包含火车票退票手续费阶梯（doc_id: P01）、报销凭证规定（doc_id: P07）以及机票退改规则（doc_id: P09），均未涉及“票务保险”的理赔金额或赔付比例相关内容。",
+      "events": [],
+      "expected": {
+        "failed": false,
+        "finding_types": [],
+        "full_semantic_faithfulness": "indeterminate"
+      },
+      "actual_assessment": {
+        "schema": "ticket-rag-faithfulness/1",
+        "status": "checked_scoped_facts",
+        "original_model_reply": "无法确认。提供的检索证据仅包含火车票退票手续费阶梯（doc_id: P01）、报销凭证规定（doc_id: P07）以及机票退改规则（doc_id: P09），均未涉及“票务保险”的理赔金额或赔付比例相关内容。",
+        "question": "请解释相关模拟政策",
+        "allowed_doc_ids": [
+          "P01",
+          "P07",
+          "P09"
+        ],
+        "cited_doc_ids": [
+          "P01",
+          "P07",
+          "P09"
+        ],
+        "claim_checks": [
+          {
+            "claim": "提供的检索证据仅包含火车票退票手续费阶梯（doc_id: P01）、报销凭证规定（doc_id: P07）以及机票退改规则（doc_id: P09），均未涉及“票务保险”的理赔金额或赔付比例相关内容",
+            "cited_doc_ids": [
+              "P01",
+              "P07",
+              "P09"
+            ],
+            "status": "negative_evidence_reference",
+            "basis": "References explain unavailable scope, not positive policy support"
+          }
+        ],
+        "findings": [],
+        "manual_review": [],
+        "refusal_observed": true,
+        "no_evidence_refusal": null,
+        "conflicts": [],
+        "conflict_disclosed": null,
+        "excluded_user_quotes": [],
+        "full_semantic_faithfulness": "indeterminate",
+        "limits": [
+          "Finite rules do not prove all semantic claims or the completeness of an answer.",
+          "Unknown paraphrases/implicit conditions require B independent review; this is not a model-generated judge."
+        ]
+      },
+      "assertions": {
+        "failure_classification_matches": true,
+        "required_findings_present": true,
+        "original_reply_preserved": true,
+        "full_semantic_faithfulness_not_fabricated": true
+      },
+      "passed": true
+    },
+    {
+      "id": "F38",
+      "purpose": "带订单ID的虚构状态",
+      "input": "请解释相关模拟政策",
+      "hits": [],
+      "reply": "订单AB123已支付。",
+      "events": [],
+      "expected": {
+        "failed": true,
+        "finding_types": [
+          "unsubstantiated_execution"
+        ],
+        "full_semantic_faithfulness": "indeterminate"
+      },
+      "actual_assessment": {
+        "schema": "ticket-rag-faithfulness/1",
+        "status": "failed",
+        "original_model_reply": "订单AB123已支付。",
+        "question": "请解释相关模拟政策",
+        "allowed_doc_ids": [],
+        "cited_doc_ids": [],
+        "claim_checks": [
+          {
+            "claim": "订单AB123已支付",
+            "required_tool": "pay_order",
+            "status": "failed"
+          }
+        ],
+        "findings": [
+          {
+            "type": "unsubstantiated_execution",
+            "claim": "订单AB123已支付",
+            "required_tool": "pay_order",
+            "basis": "No successful, actually executed matching tool_end event"
+          }
+        ],
+        "manual_review": [],
+        "refusal_observed": false,
+        "no_evidence_refusal": false,
+        "conflicts": [],
+        "conflict_disclosed": null,
+        "excluded_user_quotes": [],
+        "full_semantic_faithfulness": "indeterminate",
+        "limits": [
+          "Finite rules do not prove all semantic claims or the completeness of an answer.",
+          "Unknown paraphrases/implicit conditions require B independent review; this is not a model-generated judge."
+        ]
+      },
+      "assertions": {
+        "failure_classification_matches": true,
+        "required_findings_present": true,
+        "original_reply_preserved": true,
+        "full_semantic_faithfulness_not_fabricated": true
+      },
+      "passed": true
+    },
+    {
+      "id": "F39",
+      "purpose": "虚构调用工具",
+      "input": "请解释相关模拟政策",
+      "hits": [],
+      "reply": "已调用 search_policy 查询政策。",
+      "events": [],
+      "expected": {
+        "failed": true,
+        "finding_types": [
+          "unsubstantiated_execution"
+        ],
+        "full_semantic_faithfulness": "indeterminate"
+      },
+      "actual_assessment": {
+        "schema": "ticket-rag-faithfulness/1",
+        "status": "failed",
+        "original_model_reply": "已调用 search_policy 查询政策。",
+        "question": "请解释相关模拟政策",
+        "allowed_doc_ids": [],
+        "cited_doc_ids": [],
+        "claim_checks": [
+          {
+            "claim": "已调用 search_policy",
+            "required_tool": "search_policy",
+            "status": "failed"
+          }
+        ],
+        "findings": [
+          {
+            "type": "unsubstantiated_execution",
+            "claim": "已调用 search_policy",
+            "required_tool": "search_policy",
+            "basis": "Explicit tool execution claim has no actual successful event"
+          }
+        ],
+        "manual_review": [],
+        "refusal_observed": false,
+        "no_evidence_refusal": false,
+        "conflicts": [],
+        "conflict_disclosed": null,
+        "excluded_user_quotes": [],
+        "full_semantic_faithfulness": "indeterminate",
+        "limits": [
+          "Finite rules do not prove all semantic claims or the completeness of an answer.",
+          "Unknown paraphrases/implicit conditions require B independent review; this is not a model-generated judge."
+        ]
+      },
+      "assertions": {
+        "failure_classification_matches": true,
+        "required_findings_present": true,
+        "original_reply_preserved": true,
+        "full_semantic_faithfulness_not_fabricated": true
+      },
+      "passed": true
+    },
+    {
+      "id": "F40",
+      "purpose": "真实执行工具事件",
+      "input": "请解释相关模拟政策",
+      "hits": [],
+      "reply": "已调用 search_policy 查询政策。",
+      "events": [
+        {
+          "event": "tool_end",
+          "tool": "search_policy",
+          "ok": true,
+          "executed": true,
+          "call_id": "offline-fixture-call",
+          "result": {
+            "status": "ok"
+          }
+        }
+      ],
+      "expected": {
+        "failed": false,
+        "finding_types": [],
+        "full_semantic_faithfulness": "indeterminate"
+      },
+      "actual_assessment": {
+        "schema": "ticket-rag-faithfulness/1",
+        "status": "checked_scoped_facts",
+        "original_model_reply": "已调用 search_policy 查询政策。",
+        "question": "请解释相关模拟政策",
+        "allowed_doc_ids": [],
+        "cited_doc_ids": [],
+        "claim_checks": [
+          {
+            "claim": "已调用 search_policy",
+            "required_tool": "search_policy",
+            "status": "supported_execution"
+          }
+        ],
+        "findings": [],
+        "manual_review": [],
+        "refusal_observed": false,
+        "no_evidence_refusal": false,
+        "conflicts": [],
+        "conflict_disclosed": null,
+        "excluded_user_quotes": [],
+        "full_semantic_faithfulness": "indeterminate",
+        "limits": [
+          "Finite rules do not prove all semantic claims or the completeness of an answer.",
+          "Unknown paraphrases/implicit conditions require B independent review; this is not a model-generated judge."
+        ]
+      },
+      "assertions": {
+        "failure_classification_matches": true,
+        "required_findings_present": true,
+        "original_reply_preserved": true,
+        "full_semantic_faithfulness_not_fabricated": true
+      },
+      "passed": true
+    },
+    {
+      "id": "F41",
+      "purpose": "用户错误数字与模型正确数字分离",
+      "input": "请解释相关模拟政策",
+      "hits": [
+        {
+          "doc_id": "P11",
+          "title": "锁座与支付有效期",
+          "content": "模拟锁座有效期 15 分钟，过期未支付自动释放库存；下单必须提供与锁座一致的乘客列表。重复支付不重复扣减库存。",
+          "source": "data/policies.md#P11"
+        }
+      ],
+      "reply": "用户说“锁座45分钟 [P11]”，模拟锁座有效期15分钟 [P11]。",
+      "events": [],
+      "expected": {
+        "failed": false,
+        "finding_types": [],
+        "full_semantic_faithfulness": "indeterminate"
+      },
+      "actual_assessment": {
+        "schema": "ticket-rag-faithfulness/1",
+        "status": "checked_scoped_facts",
+        "original_model_reply": "用户说“锁座45分钟 [P11]”，模拟锁座有效期15分钟 [P11]。",
+        "question": "请解释相关模拟政策",
+        "allowed_doc_ids": [
+          "P11"
+        ],
+        "cited_doc_ids": [
+          "P11"
+        ],
+        "claim_checks": [
+          {
+            "claim": "，模拟锁座有效期15分钟 [P11]",
+            "status": "supported_scoped_quantities",
+            "quantities": [
+              {
+                "text": "15分钟",
+                "dimension": "duration",
+                "value": "15",
+                "start": 8,
+                "end": 12,
+                "negated": false
+              }
+            ],
+            "sources": [
+              {
+                "doc_id": "P11",
+                "evidence_text": "模拟锁座有效期 15 分钟",
+                "source": "data/policies.md#P11"
+              }
+            ],
+            "basis": "Same citation, compatible subjects/explicit interval, quantities with normalized units"
+          }
+        ],
+        "findings": [],
+        "manual_review": [],
+        "refusal_observed": false,
+        "no_evidence_refusal": null,
+        "conflicts": [],
+        "conflict_disclosed": null,
+        "excluded_user_quotes": [
+          "用户说“锁座45分钟 [P11]”"
+        ],
+        "full_semantic_faithfulness": "indeterminate",
+        "limits": [
+          "Finite rules do not prove all semantic claims or the completeness of an answer.",
+          "Unknown paraphrases/implicit conditions require B independent review; this is not a model-generated judge."
+        ]
+      },
+      "assertions": {
+        "failure_classification_matches": true,
+        "required_findings_present": true,
+        "original_reply_preserved": true,
+        "full_semantic_faithfulness_not_fabricated": true
+      },
+      "passed": true
+    },
+    {
+      "id": "F42",
+      "purpose": "纯用户引用不得自动算模型回答",
+      "input": "请解释相关模拟政策",
+      "hits": [
+        {
+          "doc_id": "P01",
+          "title": "退票手续费阶梯",
+          "content": "开车前 48 小时以上退票，收取票价 5% 手续费；开车前 24 至 48 小时退票，收取 10%；开车前不足 24 小时退票，收取 20%。已取报销凭证或已改签的车票不退。",
+          "source": "data/policies.md#P01"
+        }
+      ],
+      "reply": "用户问“退票手续费是不是100元 [P01]”？",
+      "events": [],
+      "expected": {
+        "failed": false,
+        "finding_types": [],
+        "full_semantic_faithfulness": "indeterminate"
+      },
+      "actual_assessment": {
+        "schema": "ticket-rag-faithfulness/1",
+        "status": "indeterminate",
+        "original_model_reply": "用户问“退票手续费是不是100元 [P01]”？",
+        "question": "请解释相关模拟政策",
+        "allowed_doc_ids": [
+          "P01"
+        ],
+        "cited_doc_ids": [],
+        "claim_checks": [],
+        "findings": [],
+        "manual_review": [],
+        "refusal_observed": false,
+        "no_evidence_refusal": null,
+        "conflicts": [],
+        "conflict_disclosed": null,
+        "excluded_user_quotes": [
+          "用户问“退票手续费是不是100元 [P01]”"
+        ],
+        "full_semantic_faithfulness": "indeterminate",
+        "limits": [
+          "Finite rules do not prove all semantic claims or the completeness of an answer.",
+          "Unknown paraphrases/implicit conditions require B independent review; this is not a model-generated judge."
+        ]
+      },
+      "assertions": {
+        "failure_classification_matches": true,
+        "required_findings_present": true,
+        "original_reply_preserved": true,
+        "full_semantic_faithfulness_not_fabricated": true
+      },
+      "passed": true
+    },
+    {
+      "id": "F43",
+      "purpose": "否定错误数字且给出正确值",
+      "input": "请解释相关模拟政策",
+      "hits": [
+        {
+          "doc_id": "P11",
+          "title": "锁座与支付有效期",
+          "content": "模拟锁座有效期 15 分钟，过期未支付自动释放库存；下单必须提供与锁座一致的乘客列表。重复支付不重复扣减库存。",
+          "source": "data/policies.md#P11"
+        }
+      ],
+      "reply": "锁座有效期不是30分钟，而是15分钟 [P11]。",
+      "events": [],
+      "expected": {
+        "failed": false,
+        "finding_types": [],
+        "full_semantic_faithfulness": "indeterminate"
+      },
+      "actual_assessment": {
+        "schema": "ticket-rag-faithfulness/1",
+        "status": "checked_scoped_facts",
+        "original_model_reply": "锁座有效期不是30分钟，而是15分钟 [P11]。",
+        "question": "请解释相关模拟政策",
+        "allowed_doc_ids": [
+          "P11"
+        ],
+        "cited_doc_ids": [
+          "P11"
+        ],
+        "claim_checks": [
+          {
+            "claim": "锁座有效期不是30分钟，而是15分钟 [P11]",
+            "status": "supported_scoped_quantities",
+            "quantities": [
+              {
+                "text": "15分钟",
+                "dimension": "duration",
+                "value": "15",
+                "start": 14,
+                "end": 18,
+                "negated": false
+              }
+            ],
+            "sources": [
+              {
+                "doc_id": "P11",
+                "evidence_text": "模拟锁座有效期 15 分钟",
+                "source": "data/policies.md#P11"
+              }
+            ],
+            "basis": "Same citation, compatible subjects/explicit interval, quantities with normalized units"
+          }
+        ],
+        "findings": [],
+        "manual_review": [],
+        "refusal_observed": false,
+        "no_evidence_refusal": null,
+        "conflicts": [],
+        "conflict_disclosed": null,
+        "excluded_user_quotes": [],
+        "full_semantic_faithfulness": "indeterminate",
+        "limits": [
+          "Finite rules do not prove all semantic claims or the completeness of an answer.",
+          "Unknown paraphrases/implicit conditions require B independent review; this is not a model-generated judge."
+        ]
+      },
+      "assertions": {
+        "failure_classification_matches": true,
+        "required_findings_present": true,
+        "original_reply_preserved": true,
+        "full_semantic_faithfulness_not_fabricated": true
+      },
+      "passed": true
+    },
+    {
+      "id": "F44",
+      "purpose": "否定权威唯一期限",
+      "input": "请解释相关模拟政策",
+      "hits": [
+        {
+          "doc_id": "P11",
+          "title": "锁座与支付有效期",
+          "content": "模拟锁座有效期 15 分钟，过期未支付自动释放库存；下单必须提供与锁座一致的乘客列表。重复支付不重复扣减库存。",
+          "source": "data/policies.md#P11"
+        }
+      ],
+      "reply": "锁座有效期不是15分钟 [P11]。",
+      "events": [],
+      "expected": {
+        "failed": true,
+        "finding_types": [
+          "denies_authoritative_quantity"
+        ],
+        "full_semantic_faithfulness": "indeterminate"
+      },
+      "actual_assessment": {
+        "schema": "ticket-rag-faithfulness/1",
+        "status": "failed",
+        "original_model_reply": "锁座有效期不是15分钟 [P11]。",
+        "question": "请解释相关模拟政策",
+        "allowed_doc_ids": [
+          "P11"
+        ],
+        "cited_doc_ids": [
+          "P11"
+        ],
+        "claim_checks": [
+          {
+            "claim": "锁座有效期不是15分钟 [P11]",
+            "status": "indeterminate",
+            "reason": "Non-numeric semantic paraphrase is not automatically proved"
+          }
+        ],
+        "findings": [
+          {
+            "type": "denies_authoritative_quantity",
+            "claim": "锁座有效期不是15分钟 [P11]",
+            "denied": {
+              "text": "15分钟",
+              "dimension": "duration",
+              "value": "15",
+              "start": 7,
+              "end": 11,
+              "negated": true
+            },
+            "basis": "Explicit denial contradicts the sole applicable value in the actual cited evidence"
+          }
+        ],
+        "manual_review": [
+          {
+            "claim": "锁座有效期不是15分钟 [P11]",
+            "reason": "semantic_support_requires_review"
+          }
+        ],
+        "refusal_observed": false,
+        "no_evidence_refusal": null,
+        "conflicts": [],
+        "conflict_disclosed": null,
+        "excluded_user_quotes": [],
+        "full_semantic_faithfulness": "indeterminate",
+        "limits": [
+          "Finite rules do not prove all semantic claims or the completeness of an answer.",
+          "Unknown paraphrases/implicit conditions require B independent review; this is not a model-generated judge."
+        ]
+      },
+      "assertions": {
+        "failure_classification_matches": true,
+        "required_findings_present": true,
+        "original_reply_preserved": true,
+        "full_semantic_faithfulness_not_fabricated": true
+      },
+      "passed": true
+    },
+    {
+      "id": "F45",
+      "purpose": "两段实际证据分别有对应引用",
+      "input": "请解释相关模拟政策",
+      "hits": [
+        {
+          "doc_id": "P11",
+          "title": "锁座与支付有效期",
+          "content": "模拟锁座有效期 15 分钟，过期未支付自动释放库存；下单必须提供与锁座一致的乘客列表。重复支付不重复扣减库存。",
+          "source": "data/policies.md#P11"
+        },
+        {
+          "doc_id": "P06",
+          "title": "行李规定",
+          "content": "高铁成人免费携带品重量 20 千克，儿童 10 千克；每件物品长宽高之和不超过 160 厘米。超重部分按每千克 5 元补收运费。",
+          "source": "data/policies.md#P06"
+        }
+      ],
+      "reply": "模拟锁座有效期15分钟 [P11]；儿童免费行李10千克 [P06]。",
+      "events": [],
+      "expected": {
+        "failed": false,
+        "finding_types": [],
+        "full_semantic_faithfulness": "indeterminate"
+      },
+      "actual_assessment": {
+        "schema": "ticket-rag-faithfulness/1",
+        "status": "checked_scoped_facts",
+        "original_model_reply": "模拟锁座有效期15分钟 [P11]；儿童免费行李10千克 [P06]。",
+        "question": "请解释相关模拟政策",
+        "allowed_doc_ids": [
+          "P06",
+          "P11"
+        ],
+        "cited_doc_ids": [
+          "P11",
+          "P06"
+        ],
+        "claim_checks": [
+          {
+            "claim": "模拟锁座有效期15分钟 [P11]",
+            "status": "supported_scoped_quantities",
+            "quantities": [
+              {
+                "text": "15分钟",
+                "dimension": "duration",
+                "value": "15",
+                "start": 7,
+                "end": 11,
+                "negated": false
+              }
+            ],
+            "sources": [
+              {
+                "doc_id": "P11",
+                "evidence_text": "模拟锁座有效期 15 分钟",
+                "source": "data/policies.md#P11"
+              }
+            ],
+            "basis": "Same citation, compatible subjects/explicit interval, quantities with normalized units"
+          },
+          {
+            "claim": "儿童免费行李10千克 [P06]",
+            "status": "supported_scoped_quantities",
+            "quantities": [
+              {
+                "text": "10千克",
+                "dimension": "weight",
+                "value": "1E+1",
+                "start": 6,
+                "end": 10,
+                "negated": false
+              }
+            ],
+            "sources": [
+              {
+                "doc_id": "P06",
+                "evidence_text": "儿童 10 千克",
+                "source": "data/policies.md#P06"
+              }
+            ],
+            "basis": "Same citation, compatible subjects/explicit interval, quantities with normalized units"
+          }
+        ],
+        "findings": [],
+        "manual_review": [],
+        "refusal_observed": false,
+        "no_evidence_refusal": null,
+        "conflicts": [],
+        "conflict_disclosed": null,
+        "excluded_user_quotes": [],
+        "full_semantic_faithfulness": "indeterminate",
+        "limits": [
+          "Finite rules do not prove all semantic claims or the completeness of an answer.",
+          "Unknown paraphrases/implicit conditions require B independent review; this is not a model-generated judge."
+        ]
+      },
+      "assertions": {
+        "failure_classification_matches": true,
+        "required_findings_present": true,
+        "original_reply_preserved": true,
+        "full_semantic_faithfulness_not_fabricated": true
+      },
+      "passed": true
+    },
+    {
+      "id": "F46",
+      "purpose": "条件单位换算",
+      "input": "请解释相关模拟政策",
+      "hits": [
+        {
+          "doc_id": "P01",
+          "title": "退票手续费阶梯",
+          "content": "开车前 48 小时以上退票，收取票价 5% 手续费；开车前 24 至 48 小时退票，收取 10%；开车前不足 24 小时退票，收取 20%。已取报销凭证或已改签的车票不退。",
+          "source": "data/policies.md#P01"
+        }
+      ],
+      "reply": "开车前2天以上退票收取5%手续费 [P01]。",
+      "events": [],
+      "expected": {
+        "failed": false,
+        "finding_types": [],
+        "full_semantic_faithfulness": "indeterminate"
+      },
+      "actual_assessment": {
+        "schema": "ticket-rag-faithfulness/1",
+        "status": "checked_scoped_facts",
+        "original_model_reply": "开车前2天以上退票收取5%手续费 [P01]。",
+        "question": "请解释相关模拟政策",
+        "allowed_doc_ids": [
+          "P01"
+        ],
+        "cited_doc_ids": [
+          "P01"
+        ],
+        "claim_checks": [
+          {
+            "claim": "开车前2天以上退票收取5%手续费 [P01]",
+            "status": "supported_scoped_quantities",
+            "quantities": [
+              {
+                "text": "2天",
+                "dimension": "duration",
+                "value": "2.88E+3",
+                "start": 3,
+                "end": 5,
+                "negated": false
+              },
+              {
+                "text": "5%",
+                "dimension": "percentage",
+                "value": "5",
+                "start": 11,
+                "end": 13,
+                "negated": false
+              }
+            ],
+            "sources": [
+              {
+                "doc_id": "P01",
+                "evidence_text": "开车前 48 小时以上退票，收取票价 5% 手续费",
+                "source": "data/policies.md#P01"
+              }
+            ],
+            "basis": "Same citation, compatible subjects/explicit interval, quantities with normalized units"
+          }
+        ],
+        "findings": [],
+        "manual_review": [],
+        "refusal_observed": false,
+        "no_evidence_refusal": null,
+        "conflicts": [],
+        "conflict_disclosed": null,
+        "excluded_user_quotes": [],
+        "full_semantic_faithfulness": "indeterminate",
+        "limits": [
+          "Finite rules do not prove all semantic claims or the completeness of an answer.",
+          "Unknown paraphrases/implicit conditions require B independent review; this is not a model-generated judge."
+        ]
+      },
+      "assertions": {
+        "failure_classification_matches": true,
+        "required_findings_present": true,
+        "original_reply_preserved": true,
+        "full_semantic_faithfulness_not_fabricated": true
+      },
+      "passed": true
+    },
+    {
+      "id": "F47",
+      "purpose": "仅拒答但又编造金额",
+      "input": "请解释相关模拟政策",
+      "hits": [],
+      "reply": "无法确认，但可以获得理赔100元。",
+      "events": [],
+      "expected": {
+        "failed": true,
+        "finding_types": [
+          "no_evidence_positive_claim"
+        ],
+        "full_semantic_faithfulness": "indeterminate"
+      },
+      "actual_assessment": {
+        "schema": "ticket-rag-faithfulness/1",
+        "status": "failed",
+        "original_model_reply": "无法确认，但可以获得理赔100元。",
+        "question": "请解释相关模拟政策",
+        "allowed_doc_ids": [],
+        "cited_doc_ids": [],
+        "claim_checks": [],
+        "findings": [
+          {
+            "type": "no_evidence_positive_claim",
+            "claim": "可以获得理赔100元",
+            "basis": "Policy assertion with empty actual retrieval evidence"
+          }
+        ],
+        "manual_review": [],
+        "refusal_observed": true,
+        "no_evidence_refusal": false,
+        "conflicts": [],
+        "conflict_disclosed": null,
+        "excluded_user_quotes": [],
+        "full_semantic_faithfulness": "indeterminate",
+        "limits": [
+          "Finite rules do not prove all semantic claims or the completeness of an answer.",
+          "Unknown paraphrases/implicit conditions require B independent review; this is not a model-generated judge."
+        ]
+      },
+      "assertions": {
+        "failure_classification_matches": true,
+        "required_findings_present": true,
+        "original_reply_preserved": true,
+        "full_semantic_faithfulness_not_fabricated": true
+      },
+      "passed": true
+    },
+    {
+      "id": "F48",
+      "purpose": "错误数字在代码引用也不可当支持",
+      "input": "请解释相关模拟政策",
+      "hits": [
+        {
+          "doc_id": "P11",
+          "title": "锁座与支付有效期",
+          "content": "模拟锁座有效期 15 分钟，过期未支付自动释放库存；下单必须提供与锁座一致的乘客列表。重复支付不重复扣减库存。",
+          "source": "data/policies.md#P11"
+        }
+      ],
+      "reply": "模拟锁座有效期`30分钟` [P11]。",
+      "events": [],
+      "expected": {
+        "failed": true,
+        "finding_types": [
+          "unsupported_quantity_or_scope"
+        ],
+        "full_semantic_faithfulness": "indeterminate"
+      },
+      "actual_assessment": {
+        "schema": "ticket-rag-faithfulness/1",
+        "status": "failed",
+        "original_model_reply": "模拟锁座有效期`30分钟` [P11]。",
+        "question": "请解释相关模拟政策",
+        "allowed_doc_ids": [
+          "P11"
+        ],
+        "cited_doc_ids": [
+          "P11"
+        ],
+        "claim_checks": [],
+        "findings": [
+          {
+            "type": "unsupported_quantity_or_scope",
+            "claim": "模拟锁座有效期`30分钟` [P11]",
+            "cited_doc_ids": [
+              "P11"
+            ],
+            "claim_quantities": [
+              {
+                "text": "30分钟",
+                "dimension": "duration",
+                "value": "3E+1",
+                "start": 8,
+                "end": 12,
+                "negated": false
+              }
+            ],
+            "missing_quantities": [
+              {
+                "text": "30分钟",
+                "dimension": "duration",
+                "value": "3E+1",
+                "start": 8,
+                "end": 12,
+                "negated": false
+              }
+            ],
+            "condition": [],
+            "evidence": [
+              {
+                "doc_id": "P11",
+                "text": "模拟锁座有效期 15 分钟"
+              },
+              {
+                "doc_id": "P11",
+                "text": "过期未支付自动释放库存"
+              },
+              {
+                "doc_id": "P11",
+                "text": "下单必须提供与锁座一致的乘客列表"
+              },
+              {
+                "doc_id": "P11",
+                "text": "重复支付不重复扣减库存"
+              }
+            ],
+            "basis": "Numeric value/unit/subject/explicit conditional branch does not match the cited clause"
+          }
+        ],
+        "manual_review": [],
+        "refusal_observed": false,
+        "no_evidence_refusal": null,
+        "conflicts": [],
+        "conflict_disclosed": null,
+        "excluded_user_quotes": [],
+        "full_semantic_faithfulness": "indeterminate",
+        "limits": [
+          "Finite rules do not prove all semantic claims or the completeness of an answer.",
+          "Unknown paraphrases/implicit conditions require B independent review; this is not a model-generated judge."
+        ]
+      },
+      "assertions": {
+        "failure_classification_matches": true,
+        "required_findings_present": true,
+        "original_reply_preserved": true,
+        "full_semantic_faithfulness_not_fabricated": true
+      },
+      "passed": true
+    },
+    {
+      "id": "F49",
+      "purpose": "否定引用后不能夹带编造金额",
+      "input": "解释相关模拟政策",
+      "hits": [
+        {
+          "doc_id": "P11",
+          "title": "锁座与支付有效期",
+          "content": "模拟锁座有效期 15 分钟，过期未支付自动释放库存；下单必须提供与锁座一致的乘客列表。重复支付不重复扣减库存。",
+          "source": "data/policies.md#P11"
+        }
+      ],
+      "reply": "P11未涉及保险理赔，但可以理赔100元 [P11]。",
+      "events": [],
+      "expected": {
+        "failed": true,
+        "finding_types": [
+          "unsupported_quantity_or_scope"
+        ],
+        "full_semantic_faithfulness": "indeterminate"
+      },
+      "actual_assessment": {
+        "schema": "ticket-rag-faithfulness/1",
+        "status": "failed",
+        "original_model_reply": "P11未涉及保险理赔，但可以理赔100元 [P11]。",
+        "question": "解释相关模拟政策",
+        "allowed_doc_ids": [
+          "P11"
+        ],
+        "cited_doc_ids": [
+          "P11"
+        ],
+        "claim_checks": [
+          {
+            "claim": "P11未涉及保险理赔，",
+            "cited_doc_ids": [],
+            "status": "negative_evidence_reference",
+            "basis": "References explain unavailable scope, not positive policy support"
+          }
+        ],
+        "findings": [
+          {
+            "type": "unsupported_quantity_or_scope",
+            "claim": "可以理赔100元 [P11]",
+            "cited_doc_ids": [
+              "P11"
+            ],
+            "claim_quantities": [
+              {
+                "text": "100元",
+                "dimension": "money",
+                "value": "1E+2",
+                "start": 4,
+                "end": 8,
+                "negated": false
+              }
+            ],
+            "missing_quantities": [
+              {
+                "text": "100元",
+                "dimension": "money",
+                "value": "1E+2",
+                "start": 4,
+                "end": 8,
+                "negated": false
+              }
+            ],
+            "condition": [],
+            "evidence": [
+              {
+                "doc_id": "P11",
+                "text": "模拟锁座有效期 15 分钟"
+              },
+              {
+                "doc_id": "P11",
+                "text": "过期未支付自动释放库存"
+              },
+              {
+                "doc_id": "P11",
+                "text": "下单必须提供与锁座一致的乘客列表"
+              },
+              {
+                "doc_id": "P11",
+                "text": "重复支付不重复扣减库存"
+              }
+            ],
+            "basis": "Numeric value/unit/subject/explicit conditional branch does not match the cited clause"
+          }
+        ],
+        "manual_review": [],
+        "refusal_observed": false,
+        "no_evidence_refusal": null,
+        "conflicts": [],
+        "conflict_disclosed": null,
+        "excluded_user_quotes": [],
+        "full_semantic_faithfulness": "indeterminate",
+        "limits": [
+          "Finite rules do not prove all semantic claims or the completeness of an answer.",
+          "Unknown paraphrases/implicit conditions require B independent review; this is not a model-generated judge."
+        ]
+      },
+      "assertions": {
+        "failure_classification_matches": true,
+        "required_findings_present": true,
+        "original_reply_preserved": true,
+        "full_semantic_faithfulness_not_fabricated": true
+      },
+      "passed": true
+    },
+    {
+      "id": "F50",
+      "purpose": "无引用且新增无来源金额",
+      "input": "解释相关模拟政策",
+      "hits": [
+        {
+          "doc_id": "P11",
+          "title": "锁座与支付有效期",
+          "content": "模拟锁座有效期 15 分钟，过期未支付自动释放库存；下单必须提供与锁座一致的乘客列表。重复支付不重复扣减库存。",
+          "source": "data/policies.md#P11"
+        }
+      ],
+      "reply": "锁座手续费100元。",
+      "events": [],
+      "expected": {
+        "failed": true,
+        "finding_types": [
+          "unsupported_uncited_quantity"
+        ],
+        "full_semantic_faithfulness": "indeterminate"
+      },
+      "actual_assessment": {
+        "schema": "ticket-rag-faithfulness/1",
+        "status": "failed",
+        "original_model_reply": "锁座手续费100元。",
+        "question": "解释相关模拟政策",
+        "allowed_doc_ids": [
+          "P11"
+        ],
+        "cited_doc_ids": [],
+        "claim_checks": [
+          {
+            "claim": "锁座手续费100元",
+            "status": "indeterminate",
+            "reason": "No local doc_id anchors this assertion"
+          }
+        ],
+        "findings": [
+          {
+            "type": "unsupported_uncited_quantity",
+            "claim": "锁座手续费100元",
+            "missing_quantities": [
+              {
+                "text": "100元",
+                "dimension": "money",
+                "value": "1E+2",
+                "start": 5,
+                "end": 9,
+                "negated": false
+              }
+            ],
+            "basis": "Asserted quantity has no matching value/unit anywhere in actual retrieved evidence"
+          }
+        ],
+        "manual_review": [
+          {
+            "claim": "锁座手续费100元",
+            "reason": "no_locatable_citation"
+          }
+        ],
+        "refusal_observed": false,
+        "no_evidence_refusal": null,
+        "conflicts": [],
+        "conflict_disclosed": null,
+        "excluded_user_quotes": [],
+        "full_semantic_faithfulness": "indeterminate",
+        "limits": [
+          "Finite rules do not prove all semantic claims or the completeness of an answer.",
+          "Unknown paraphrases/implicit conditions require B independent review; this is not a model-generated judge."
+        ]
+      },
+      "assertions": {
+        "failure_classification_matches": true,
+        "required_findings_present": true,
+        "original_reply_preserved": true,
+        "full_semantic_faithfulness_not_fabricated": true
+      },
+      "passed": true
+    },
+    {
+      "id": "F51",
+      "purpose": "裸时间条件无法确定",
+      "input": "解释相关模拟政策",
+      "hits": [
+        {
+          "doc_id": "P01",
+          "title": "退票手续费阶梯",
+          "content": "开车前 48 小时以上退票，收取票价 5% 手续费；开车前 24 至 48 小时退票，收取 10%；开车前不足 24 小时退票，收取 20%。已取报销凭证或已改签的车票不退。",
+          "source": "data/policies.md#P01"
+        }
+      ],
+      "reply": "开车前48小时退票收取5%手续费 [P01]。",
+      "events": [],
+      "expected": {
+        "failed": false,
+        "finding_types": [],
+        "full_semantic_faithfulness": "indeterminate"
+      },
+      "actual_assessment": {
+        "schema": "ticket-rag-faithfulness/1",
+        "status": "indeterminate",
+        "original_model_reply": "开车前48小时退票收取5%手续费 [P01]。",
+        "question": "解释相关模拟政策",
+        "allowed_doc_ids": [
+          "P01"
+        ],
+        "cited_doc_ids": [
+          "P01"
+        ],
+        "claim_checks": [
+          {
+            "claim": "开车前48小时退票收取5%手续费 [P01]",
+            "status": "indeterminate",
+            "reason": "Numbers occur across separate evidence clauses; no single bound support"
+          }
+        ],
+        "findings": [],
+        "manual_review": [
+          {
+            "claim": "开车前48小时退票收取5%手续费 [P01]",
+            "reason": "numeric_binding_not_proven"
+          }
+        ],
+        "refusal_observed": false,
+        "no_evidence_refusal": null,
+        "conflicts": [],
+        "conflict_disclosed": null,
+        "excluded_user_quotes": [],
+        "full_semantic_faithfulness": "indeterminate",
+        "limits": [
+          "Finite rules do not prove all semantic claims or the completeness of an answer.",
+          "Unknown paraphrases/implicit conditions require B independent review; this is not a model-generated judge."
+        ]
+      },
+      "assertions": {
+        "failure_classification_matches": true,
+        "required_findings_present": true,
+        "original_reply_preserved": true,
+        "full_semantic_faithfulness_not_fabricated": true
+      },
+      "passed": true
+    },
+    {
+      "id": "F52",
+      "purpose": "假设或不确定期限",
+      "input": "解释相关模拟政策",
+      "hits": [
+        {
+          "doc_id": "P11",
+          "title": "锁座与支付有效期",
+          "content": "模拟锁座有效期 15 分钟，过期未支付自动释放库存；下单必须提供与锁座一致的乘客列表。重复支付不重复扣减库存。",
+          "source": "data/policies.md#P11"
+        }
+      ],
+      "reply": "锁座也许有效30分钟 [P11]。",
+      "events": [],
+      "expected": {
+        "failed": false,
+        "finding_types": [],
+        "full_semantic_faithfulness": "indeterminate"
+      },
+      "actual_assessment": {
+        "schema": "ticket-rag-faithfulness/1",
+        "status": "indeterminate",
+        "original_model_reply": "锁座也许有效30分钟 [P11]。",
+        "question": "解释相关模拟政策",
+        "allowed_doc_ids": [
+          "P11"
+        ],
+        "cited_doc_ids": [
+          "P11"
+        ],
+        "claim_checks": [
+          {
+            "claim": "锁座也许有效30分钟 [P11]",
+            "status": "indeterminate",
+            "reason": "Hedged claim cannot be classified as a definite rule"
+          }
+        ],
+        "findings": [],
+        "manual_review": [
+          {
+            "claim": "锁座也许有效30分钟 [P11]",
+            "reason": "uncertain_modality_requires_review"
+          }
+        ],
+        "refusal_observed": false,
+        "no_evidence_refusal": null,
+        "conflicts": [],
+        "conflict_disclosed": null,
+        "excluded_user_quotes": [],
+        "full_semantic_faithfulness": "indeterminate",
+        "limits": [
+          "Finite rules do not prove all semantic claims or the completeness of an answer.",
+          "Unknown paraphrases/implicit conditions require B independent review; this is not a model-generated judge."
+        ]
+      },
+      "assertions": {
+        "failure_classification_matches": true,
+        "required_findings_present": true,
+        "original_reply_preserved": true,
+        "full_semantic_faithfulness_not_fabricated": true
+      },
+      "passed": true
+    },
+    {
+      "id": "F53",
+      "purpose": "未归属用户的块引用仍要校验",
+      "input": "解释相关模拟政策",
+      "hits": [
+        {
+          "doc_id": "P11",
+          "title": "锁座与支付有效期",
+          "content": "模拟锁座有效期 15 分钟，过期未支付自动释放库存；下单必须提供与锁座一致的乘客列表。重复支付不重复扣减库存。",
+          "source": "data/policies.md#P11"
+        }
+      ],
+      "reply": "> 模拟锁座有效期30分钟 [P11]。",
+      "events": [],
+      "expected": {
+        "failed": true,
+        "finding_types": [
+          "unsupported_quantity_or_scope"
+        ],
+        "full_semantic_faithfulness": "indeterminate"
+      },
+      "actual_assessment": {
+        "schema": "ticket-rag-faithfulness/1",
+        "status": "failed",
+        "original_model_reply": "> 模拟锁座有效期30分钟 [P11]。",
+        "question": "解释相关模拟政策",
+        "allowed_doc_ids": [
+          "P11"
+        ],
+        "cited_doc_ids": [
+          "P11"
+        ],
+        "claim_checks": [],
+        "findings": [
+          {
+            "type": "unsupported_quantity_or_scope",
+            "claim": "模拟锁座有效期30分钟 [P11]",
+            "cited_doc_ids": [
+              "P11"
+            ],
+            "claim_quantities": [
+              {
+                "text": "30分钟",
+                "dimension": "duration",
+                "value": "3E+1",
+                "start": 7,
+                "end": 11,
+                "negated": false
+              }
+            ],
+            "missing_quantities": [
+              {
+                "text": "30分钟",
+                "dimension": "duration",
+                "value": "3E+1",
+                "start": 7,
+                "end": 11,
+                "negated": false
+              }
+            ],
+            "condition": [],
+            "evidence": [
+              {
+                "doc_id": "P11",
+                "text": "模拟锁座有效期 15 分钟"
+              },
+              {
+                "doc_id": "P11",
+                "text": "过期未支付自动释放库存"
+              },
+              {
+                "doc_id": "P11",
+                "text": "下单必须提供与锁座一致的乘客列表"
+              },
+              {
+                "doc_id": "P11",
+                "text": "重复支付不重复扣减库存"
+              }
+            ],
+            "basis": "Numeric value/unit/subject/explicit conditional branch does not match the cited clause"
+          }
+        ],
+        "manual_review": [],
+        "refusal_observed": false,
+        "no_evidence_refusal": null,
+        "conflicts": [],
+        "conflict_disclosed": null,
+        "excluded_user_quotes": [],
+        "full_semantic_faithfulness": "indeterminate",
+        "limits": [
+          "Finite rules do not prove all semantic claims or the completeness of an answer.",
+          "Unknown paraphrases/implicit conditions require B independent review; this is not a model-generated judge."
+        ]
+      },
+      "assertions": {
+        "failure_classification_matches": true,
+        "required_findings_present": true,
+        "original_reply_preserved": true,
+        "full_semantic_faithfulness_not_fabricated": true
+      },
+      "passed": true
+    },
+    {
+      "id": "F54",
+      "purpose": "明确用户块引用不作模型断言",
+      "input": "解释相关模拟政策",
+      "hits": [
+        {
+          "doc_id": "P11",
+          "title": "锁座与支付有效期",
+          "content": "模拟锁座有效期 15 分钟，过期未支付自动释放库存；下单必须提供与锁座一致的乘客列表。重复支付不重复扣减库存。",
+          "source": "data/policies.md#P11"
+        }
+      ],
+      "reply": "用户原话：\n> 模拟锁座有效期30分钟 [P11]。\n请补充您的问题。",
+      "events": [],
+      "expected": {
+        "failed": false,
+        "finding_types": [],
+        "full_semantic_faithfulness": "indeterminate"
+      },
+      "actual_assessment": {
+        "schema": "ticket-rag-faithfulness/1",
+        "status": "indeterminate",
+        "original_model_reply": "用户原话：\n> 模拟锁座有效期30分钟 [P11]。\n请补充您的问题。",
+        "question": "解释相关模拟政策",
+        "allowed_doc_ids": [
+          "P11"
+        ],
+        "cited_doc_ids": [],
+        "claim_checks": [],
+        "findings": [],
+        "manual_review": [],
+        "refusal_observed": false,
+        "no_evidence_refusal": null,
+        "conflicts": [],
+        "conflict_disclosed": null,
+        "excluded_user_quotes": [
+          "> 模拟锁座有效期30分钟 [P11]。"
+        ],
+        "full_semantic_faithfulness": "indeterminate",
+        "limits": [
+          "Finite rules do not prove all semantic claims or the completeness of an answer.",
+          "Unknown paraphrases/implicit conditions require B independent review; this is not a model-generated judge."
+        ]
+      },
+      "assertions": {
+        "failure_classification_matches": true,
+        "required_findings_present": true,
+        "original_reply_preserved": true,
+        "full_semantic_faithfulness_not_fabricated": true
+      },
+      "passed": true
+    },
+    {
+      "id": "F55",
+      "purpose": "数字存在但政策类别错配",
+      "input": "退票需要等待多久？",
+      "hits": [
+        {
+          "doc_id": "P11",
+          "title": "锁座与支付有效期",
+          "content": "模拟锁座有效期 15 分钟，过期未支付自动释放库存；下单必须提供与锁座一致的乘客列表。重复支付不重复扣减库存。",
+          "source": "data/policies.md#P11"
+        }
+      ],
+      "reply": "退票需要等待15分钟 [P11]。",
+      "events": [],
+      "expected": {
+        "failed": true,
+        "finding_types": [
+          "citation_policy_category_mismatch"
+        ],
+        "full_semantic_faithfulness": "indeterminate"
+      },
+      "actual_assessment": {
+        "schema": "ticket-rag-faithfulness/1",
+        "status": "failed",
+        "original_model_reply": "退票需要等待15分钟 [P11]。",
+        "question": "退票需要等待多久？",
+        "allowed_doc_ids": [
+          "P11"
+        ],
+        "cited_doc_ids": [
+          "P11"
+        ],
+        "claim_checks": [
+          {
+            "claim": "退票需要等待15分钟 [P11]",
+            "status": "supported_scoped_quantities",
+            "quantities": [
+              {
+                "text": "15分钟",
+                "dimension": "duration",
+                "value": "15",
+                "start": 6,
+                "end": 10,
+                "negated": false
+              }
+            ],
+            "sources": [
+              {
+                "doc_id": "P11",
+                "evidence_text": "模拟锁座有效期 15 分钟",
+                "source": "data/policies.md#P11"
+              }
+            ],
+            "basis": "Same citation, compatible subjects/explicit interval, quantities with normalized units"
+          }
+        ],
+        "findings": [
+          {
+            "type": "citation_policy_category_mismatch",
+            "claim": "退票需要等待15分钟 [P11]",
+            "policy_topic": "退票",
+            "cited_doc_ids": [
+              "P11"
+            ],
+            "basis": "The stated policy category is absent from the cited clause and document title"
+          }
+        ],
+        "manual_review": [],
+        "refusal_observed": false,
+        "no_evidence_refusal": null,
+        "conflicts": [],
+        "conflict_disclosed": null,
+        "excluded_user_quotes": [],
+        "full_semantic_faithfulness": "indeterminate",
+        "limits": [
+          "Finite rules do not prove all semantic claims or the completeness of an answer.",
+          "Unknown paraphrases/implicit conditions require B independent review; this is not a model-generated judge."
+        ]
+      },
+      "assertions": {
+        "failure_classification_matches": true,
+        "required_findings_present": true,
+        "original_reply_preserved": true,
+        "full_semantic_faithfulness_not_fabricated": true
+      },
+      "passed": true
+    }
+  ],
+  "limits": [
+    "This is A deterministic validation, not B formal evaluation or post-fix Live output.",
+    "Supported-scoped facts do not prove full semantic faithfulness."
+  ]
+}

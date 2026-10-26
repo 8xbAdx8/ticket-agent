@@ -33,3 +33,12 @@
 - 同时发现原Chroma运行索引的data_level0.bin、length.bin、chroma.sqlite3三文件字节变更，发生在会打开正常索引的页面测试期间，与底层读后持久化一致；未独立追踪到具体写进程，不作过度归因。票务业务SQLite、历史Trace、政策/30题、B原件和API预算等其余初始保护文件无变更。原文件未自动恢复或覆盖。
 - 保留现状副本并只在该副本核验：15个文档、元数据、manifest已存向量哈希全部通过；与V3.5真实API向量导出最大误差7.45e-9，逻辑数据一致。事实与前后SHA写入docs/evidence/v351/chroma-retention-incident.json；不能再声称原索引字节完全未变。
 - 为防重复，V3.5.1和被调用的A原V3.5回归入口在每层快照后复制索引/cache到本轮独立输出，再让测试读取副本。新增2项隔离测试；连同原14项检索单元实际pytest16通过。最终回归区分“本轮新增变更”和“初始已发现三文件变更”，不重设初始保护快照掩盖问题。此改动不触及B正式测试断言，也不改已冻结检索算法/保留集结果。
+
+## 最终完整离线回归
+
+- 修复提交74ea359a33539289f62964e8ad8cf75dc824d565。实际运行.venv-v35/Scripts/python.exe scripts/verify_v351_offline.py --out artifacts/runtime/v351-final-isolated-offline-20261026：pytest472通过/0失败/0跳过，另89子测试通过；JUnit561含子测试，不相加。完整unittest472通过。
+- 原DeepSeek环境459通过/13跳过、V3环境384通过/88跳过、V2环境288通过/184跳过，均0失败；原smoke、八变异25审计记录与V3.5的8RAG实验通过。测试范围保留原390并新增82，不改B正式断言。
+- 外网尝试0，模型/Embedding/LangSmith新增请求0；当轮3862保护文件无新增变更。初始3个Chroma运行索引字节变化仍单独披露，未恢复或改初始快照，其逻辑校验通过。旧Embedding5/8、Qwen4/4及原V3.4/正式DeepSeek账均不变。
+- 已保存优化RQ01冻结证据和只读配对方案：两Provider各2次生成、缓存命中0Embedding，仍not_run，不创建新在线额度。若新增48题全量真向量需另5次Embedding批请求，尚未授权。公开证据和七份交接/验收资料在docs/evidence/v351与docs/handoff/v351，成员A有条件交接。
+- 又在独立Chroma与cache副本实际执行RQ01的v351 Hybrid查询，并patch禁止Embedding请求；只命中P11，API0。保存optimized-RQ01-chroma-cache-only.json及acceptance-plan-chroma，作为未来优先冻结源。早期数学重放冻结与方案仍保留，不能将其微小浮点差异当成真实工具数据矛盾或强求同hash。
+- 最终本地密钥核对已通过：在内存比对3个已配置秘密，未发现新报告/代码/证据包含这些值。冻结算法/质量集SHA、旧预算及原测试/契约/变异逐项检查；初始Chroma三文件已知变化仍为显式warning，确认事件后没有新增初始文件变更，不用安全检查通过掩盖留存问题。证据以evidence_index.json逐文件SHA256交付。

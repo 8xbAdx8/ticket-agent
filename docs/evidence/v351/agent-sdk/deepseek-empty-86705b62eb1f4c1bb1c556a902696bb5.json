@@ -1,0 +1,557 @@
+{
+  "schema": "ticket-v351-offline-agent/1",
+  "evidence_mode": "offline_sdk_mock_transport",
+  "real_model_requests": 0,
+  "embedding_requests": 0,
+  "provider": "deepseek",
+  "requested_model": "deepseek-flash",
+  "retrieval_execution": "empty_retrieval_fixture",
+  "question": "票务保险最高赔偿金额是多少？",
+  "tool_call_id": "fixture-policy-deepseek",
+  "request_ids": [
+    "f14eeb29865247dd8d79b37d9e10fe3f",
+    "9e871c12a2f94a39bc4b3b6975021d1e"
+  ],
+  "tool_result_sha256": "f061511733d4acbd1d96013b763f695e2dd4ec4f442bd56c02f657b2b5b1257d",
+  "tool_result": {
+    "question": "票务保险最高赔偿金额是多少？",
+    "hits": [],
+    "count": 0
+  },
+  "original_model_reply": "现有检索证据为空，无法确认这项政策。",
+  "public_trace": {
+    "session_id": "v351-deepseek-e87dbed229db4ad9bc32fe381140486a",
+    "provider": "deepseek_live",
+    "model": "deepseek-flash",
+    "user_msg": "票务保险最高赔偿金额是多少？",
+    "steps": [
+      {
+        "step": 1,
+        "calls": [
+          {
+            "tool": "search_policy",
+            "args": {
+              "question": "票务保险最高赔偿金额是多少？"
+            },
+            "ok": true,
+            "latency_ms": 1,
+            "result_preview": "{\"question\": \"票务保险最高赔偿金额是多少？\", \"hits\": [], \"count\": 0}"
+          }
+        ]
+      }
+    ],
+    "tool_sequence": [
+      "search_policy"
+    ],
+    "reply": "现有检索证据为空，无法确认这项政策。",
+    "finish_reason": "stop",
+    "tokens": {
+      "prompt": 26,
+      "completion": 10
+    },
+    "total_latency_ms": 76
+  },
+  "provider_trace": {
+    "schema": "ticket-live-run/1",
+    "trace_id": "92b2151a9aaa4d33a3802740f9972315",
+    "session_id": "v351-deepseek-e87dbed229db4ad9bc32fe381140486a",
+    "provider": "deepseek_live",
+    "requested_model": "deepseek-flash",
+    "actual_models": [
+      "deepseek-flash"
+    ],
+    "mode": "live",
+    "case_id": "v351-offline-policy-deepseek",
+    "git_sha": "3dc33b830623cdea494d938da926fe5c9ca26f1f",
+    "requested_at": "2026-10-26T03:43:11.610007+00:00",
+    "recorded_at": "2026-10-26T03:43:11.692973+00:00",
+    "user_msg": "票务保险最高赔偿金额是多少？",
+    "reply": "现有检索证据为空，无法确认这项政策。",
+    "finish_reason": "stop",
+    "total_latency_ms": 76,
+    "tokens": {
+      "prompt": 26,
+      "completion": 10
+    },
+    "observed_tokens": {
+      "prompt": 26,
+      "completion": 10
+    },
+    "token_usage_status": "complete",
+    "agent_completed": true,
+    "model_response_received": true,
+    "tool_execution_success": true,
+    "business_success": null,
+    "error": null,
+    "local_trace_saved": true,
+    "local_sidecar_saved": true,
+    "public_trace": {
+      "session_id": "v351-deepseek-e87dbed229db4ad9bc32fe381140486a",
+      "provider": "deepseek_live",
+      "model": "deepseek-flash",
+      "user_msg": "票务保险最高赔偿金额是多少？",
+      "steps": [
+        {
+          "step": 1,
+          "calls": [
+            {
+              "tool": "search_policy",
+              "args": {
+                "question": "票务保险最高赔偿金额是多少？"
+              },
+              "ok": true,
+              "latency_ms": 1,
+              "result_preview": "{\"question\": \"票务保险最高赔偿金额是多少？\", \"hits\": [], \"count\": 0}"
+            }
+          ]
+        }
+      ],
+      "tool_sequence": [
+        "search_policy"
+      ],
+      "reply": "现有检索证据为空，无法确认这项政策。",
+      "finish_reason": "stop",
+      "tokens": {
+        "prompt": 26,
+        "completion": 10
+      },
+      "total_latency_ms": 76
+    },
+    "public_trace_sha256": "e9288fc4735ad2fdc7a1199e9ae1b0da290fe57435a4b2c88d75148339161751",
+    "events": [
+      {
+        "event": "model_start",
+        "model_step": 1,
+        "timestamp": "2026-10-26T03:43:11.645642+00:00"
+      },
+      {
+        "event": "http_request",
+        "request_id": "f14eeb29865247dd8d79b37d9e10fe3f",
+        "provider": "deepseek",
+        "summary": {
+          "model": "deepseek-flash",
+          "message_roles": [
+            "system",
+            "user"
+          ],
+          "returned_tool_call_ids": []
+        },
+        "model_step": 1,
+        "timestamp": "2026-10-26T03:43:11.657390+00:00"
+      },
+      {
+        "event": "http_response",
+        "request_id": "f14eeb29865247dd8d79b37d9e10fe3f",
+        "provider": "deepseek",
+        "http_status": 200,
+        "category": "response_received",
+        "usage": {
+          "prompt_tokens": 13,
+          "completion_tokens": 5,
+          "total_tokens": 18
+        },
+        "model_step": 1,
+        "timestamp": "2026-10-26T03:43:11.662390+00:00"
+      },
+      {
+        "event": "model_response",
+        "model_step": 1,
+        "request_id": "f14eeb29865247dd8d79b37d9e10fe3f",
+        "response_model": "deepseek-flash",
+        "usage": {
+          "input_tokens": 13,
+          "output_tokens": 5,
+          "total_tokens": 18,
+          "input_token_details": {},
+          "output_token_details": {}
+        },
+        "latency_ms": 18,
+        "finish_reason": "tool_calls",
+        "tool_calls": [
+          {
+            "id": "fixture-policy-deepseek",
+            "name": "search_policy",
+            "args": {
+              "question": "票务保险最高赔偿金额是多少？"
+            }
+          }
+        ]
+      },
+      {
+        "event": "model_end",
+        "model_step": 1
+      },
+      {
+        "event": "tool_start",
+        "model_step": 1,
+        "tool": "search_policy",
+        "args": {
+          "question": "票务保险最高赔偿金额是多少？"
+        },
+        "call_id": "fixture-policy-deepseek",
+        "execution_index": 1,
+        "model_requested_tool": "search_policy",
+        "model_requested_args": {
+          "question": "票务保险最高赔偿金额是多少？"
+        }
+      },
+      {
+        "event": "tool_end",
+        "tool": "search_policy",
+        "args": {
+          "question": "票务保险最高赔偿金额是多少？"
+        },
+        "call_id": "fixture-policy-deepseek",
+        "ok": true,
+        "executed": true,
+        "execution_index": 1,
+        "latency_ms": 1,
+        "result": {
+          "question": "票务保险最高赔偿金额是多少？",
+          "hits": [],
+          "count": 0
+        },
+        "parameter_validation": {
+          "status": "valid",
+          "validated_args": {
+            "question": "票务保险最高赔偿金额是多少？"
+          }
+        },
+        "timestamp": "2026-10-26T03:43:11.665391+00:00",
+        "step": 1
+      },
+      {
+        "event": "model_start",
+        "model_step": 2,
+        "timestamp": "2026-10-26T03:43:11.666390+00:00"
+      },
+      {
+        "event": "http_request",
+        "request_id": "9e871c12a2f94a39bc4b3b6975021d1e",
+        "provider": "deepseek",
+        "summary": {
+          "model": "deepseek-flash",
+          "message_roles": [
+            "system",
+            "user",
+            "assistant",
+            "tool"
+          ],
+          "returned_tool_call_ids": [
+            "fixture-policy-deepseek"
+          ]
+        },
+        "model_step": 2,
+        "timestamp": "2026-10-26T03:43:11.678462+00:00"
+      },
+      {
+        "event": "http_response",
+        "request_id": "9e871c12a2f94a39bc4b3b6975021d1e",
+        "provider": "deepseek",
+        "http_status": 200,
+        "category": "response_received",
+        "usage": {
+          "prompt_tokens": 13,
+          "completion_tokens": 5,
+          "total_tokens": 18
+        },
+        "model_step": 2,
+        "timestamp": "2026-10-26T03:43:11.684472+00:00"
+      },
+      {
+        "event": "model_response",
+        "model_step": 2,
+        "request_id": "9e871c12a2f94a39bc4b3b6975021d1e",
+        "response_model": "deepseek-flash",
+        "usage": {
+          "input_tokens": 13,
+          "output_tokens": 5,
+          "total_tokens": 18,
+          "input_token_details": {},
+          "output_token_details": {}
+        },
+        "latency_ms": 18,
+        "finish_reason": "stop",
+        "tool_calls": []
+      },
+      {
+        "event": "model_final",
+        "model_step": 2,
+        "text": "现有检索证据为空，无法确认这项政策。",
+        "reply_consistency": {
+          "schema": "reply-consistency/2",
+          "status": "not_verified",
+          "verdict": "indeterminate",
+          "checked_fields": 0,
+          "identity_checks": 0,
+          "findings": [],
+          "field_checks": [],
+          "indeterminate": [],
+          "ignored": [],
+          "authority_queries": [],
+          "scope": "Explicit ticket fields in labelled prose/tables; not full natural-language or business accuracy"
+        },
+        "rag_answer_check": {
+          "allowed_doc_ids": [],
+          "cited_doc_ids": [],
+          "wrong_citations": [],
+          "citation_status": "indeterminate",
+          "citation_support": "indeterminate",
+          "faithfulness": "indeterminate",
+          "scope": "Document-ID membership only; does not prove the cited passage supports every claim"
+        }
+      },
+      {
+        "event": "model_end",
+        "model_step": 2
+      }
+    ],
+    "remote_status": "not_attempted"
+  },
+  "rag_sidecars": [
+    {
+      "schema": "ticket-rag-retrieval/1",
+      "retrieval_id": "fd2d666405b04ce39f361b8d7e1e9845",
+      "trace_id": "92b2151a9aaa4d33a3802740f9972315",
+      "session_id": "v351-deepseek-e87dbed229db4ad9bc32fe381140486a",
+      "provider": "deepseek_live",
+      "call_id": "fixture-policy-deepseek",
+      "question": "票务保险最高赔偿金额是多少？",
+      "mode": "vector",
+      "hits": [],
+      "embedding_origin": "real_api",
+      "embedding_model": "text-embedding-v4",
+      "index_version": "empty-fixture",
+      "embedding_latency_ms": 0,
+      "total_latency_ms": 0,
+      "embedding_receipts": [],
+      "status": "retrieved",
+      "business_success": null
+    },
+    {
+      "schema": "ticket-rag-answer/1",
+      "trace_id": "92b2151a9aaa4d33a3802740f9972315",
+      "session_id": "v351-deepseek-e87dbed229db4ad9bc32fe381140486a",
+      "provider": "deepseek_live",
+      "model": "deepseek-flash",
+      "original_model_reply": "现有检索证据为空，无法确认这项政策。",
+      "allowed_doc_ids": [],
+      "cited_doc_ids": [],
+      "wrong_citations": [],
+      "citation_status": "indeterminate",
+      "citation_support": "indeterminate",
+      "faithfulness": "indeterminate",
+      "scope": "Document-ID membership only; does not prove the cited passage supports every claim",
+      "business_success": null
+    }
+  ],
+  "model_request_payloads": [
+    {
+      "model": "deepseek-flash",
+      "stream": false,
+      "messages": [
+        {
+          "content": "你是只读的模拟出行咨询助手。当前只支持 query_tickets 查询虚构余票和 search_policy 检索政策。\n不得执行、承诺或主动邀请锁座、候补、下单、支付、取消或订单查询；即使用户要求，也应明确说明能力边界。\n可以说“当前仅支持模拟查票和政策咨询”。政策中可以解释锁座/支付规则，但不代表你能办理。\n具体班次、价格和库存必须来自 query_tickets；政策必须来自 search_policy，注明实际返回的 doc_id。\n相对日期先换算成 YYYY-MM-DD；明确切换高铁/机票时重置不兼容席别，未指定条件时继承上下文，含糊时澄清。\n区分目标席别售罄、存在余票、没有匹配班次；未查询其他席别时不能断言其有票。\n工具失败时如实说明，不得编造结果或声称业务成功。不要展示内部推理内容。\n当前北京时间日期 2026-10-26；业务全部虚构。",
+          "role": "system"
+        },
+        {
+          "content": "票务保险最高赔偿金额是多少？",
+          "role": "user"
+        }
+      ],
+      "max_tokens": 512,
+      "tools": [
+        {
+          "type": "function",
+          "function": {
+            "name": "query_tickets",
+            "description": "查询指定出发地、到达地、日期的车次与余票数量。date 必须是 YYYY-MM-DD 格式，当用户说'下周三''明天'等相对时间时必须先换算成具体日期。",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "from_city": {
+                  "type": "string",
+                  "description": "出发城市，如 北京"
+                },
+                "to_city": {
+                  "type": "string",
+                  "description": "到达城市，如 上海"
+                },
+                "date": {
+                  "type": "string",
+                  "description": "乘车日期，YYYY-MM-DD"
+                },
+                "seat_type": {
+                  "type": "string",
+                  "description": "席别，可选",
+                  "enum": [
+                    "二等座",
+                    "一等座",
+                    "商务座",
+                    "经济舱",
+                    "公务舱"
+                  ]
+                },
+                "kind": {
+                  "type": "string",
+                  "description": "交通方式，可选",
+                  "enum": [
+                    "高铁",
+                    "机票"
+                  ]
+                }
+              },
+              "required": [
+                "from_city",
+                "to_city",
+                "date"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        {
+          "type": "function",
+          "function": {
+            "name": "search_policy",
+            "description": "检索退改签、儿童票、行李、报销凭证等政策知识库。当用户询问规则类问题而非购票操作时使用本工具，回答必须带 doc_id 出处。",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "question": {
+                  "type": "string",
+                  "description": "用户的问题原文"
+                }
+              },
+              "required": [
+                "question"
+              ],
+              "additionalProperties": false
+            }
+          }
+        }
+      ],
+      "thinking": {
+        "type": "disabled"
+      }
+    },
+    {
+      "model": "deepseek-flash",
+      "stream": false,
+      "messages": [
+        {
+          "content": "你是只读的模拟出行咨询助手。当前只支持 query_tickets 查询虚构余票和 search_policy 检索政策。\n不得执行、承诺或主动邀请锁座、候补、下单、支付、取消或订单查询；即使用户要求，也应明确说明能力边界。\n可以说“当前仅支持模拟查票和政策咨询”。政策中可以解释锁座/支付规则，但不代表你能办理。\n具体班次、价格和库存必须来自 query_tickets；政策必须来自 search_policy，注明实际返回的 doc_id。\n相对日期先换算成 YYYY-MM-DD；明确切换高铁/机票时重置不兼容席别，未指定条件时继承上下文，含糊时澄清。\n区分目标席别售罄、存在余票、没有匹配班次；未查询其他席别时不能断言其有票。\n工具失败时如实说明，不得编造结果或声称业务成功。不要展示内部推理内容。\n当前北京时间日期 2026-10-26；业务全部虚构。",
+          "role": "system"
+        },
+        {
+          "content": "票务保险最高赔偿金额是多少？",
+          "role": "user"
+        },
+        {
+          "content": null,
+          "role": "assistant",
+          "tool_calls": [
+            {
+              "type": "function",
+              "id": "fixture-policy-deepseek",
+              "function": {
+                "name": "search_policy",
+                "arguments": "{\"question\": \"票务保险最高赔偿金额是多少？\"}"
+              }
+            }
+          ]
+        },
+        {
+          "content": "{\"question\": \"票务保险最高赔偿金额是多少？\", \"hits\": [], \"count\": 0}",
+          "role": "tool",
+          "tool_call_id": "fixture-policy-deepseek"
+        }
+      ],
+      "max_tokens": 512,
+      "tools": [
+        {
+          "type": "function",
+          "function": {
+            "name": "query_tickets",
+            "description": "查询指定出发地、到达地、日期的车次与余票数量。date 必须是 YYYY-MM-DD 格式，当用户说'下周三''明天'等相对时间时必须先换算成具体日期。",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "from_city": {
+                  "type": "string",
+                  "description": "出发城市，如 北京"
+                },
+                "to_city": {
+                  "type": "string",
+                  "description": "到达城市，如 上海"
+                },
+                "date": {
+                  "type": "string",
+                  "description": "乘车日期，YYYY-MM-DD"
+                },
+                "seat_type": {
+                  "type": "string",
+                  "description": "席别，可选",
+                  "enum": [
+                    "二等座",
+                    "一等座",
+                    "商务座",
+                    "经济舱",
+                    "公务舱"
+                  ]
+                },
+                "kind": {
+                  "type": "string",
+                  "description": "交通方式，可选",
+                  "enum": [
+                    "高铁",
+                    "机票"
+                  ]
+                }
+              },
+              "required": [
+                "from_city",
+                "to_city",
+                "date"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        {
+          "type": "function",
+          "function": {
+            "name": "search_policy",
+            "description": "检索退改签、儿童票、行李、报销凭证等政策知识库。当用户询问规则类问题而非购票操作时使用本工具，回答必须带 doc_id 出处。",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "question": {
+                  "type": "string",
+                  "description": "用户的问题原文"
+                }
+              },
+              "required": [
+                "question"
+              ],
+              "additionalProperties": false
+            }
+          }
+        }
+      ],
+      "thinking": {
+        "type": "disabled"
+      }
+    }
+  ],
+  "assertions": [
+    "two SDK requests, both intercepted by MockTransport",
+    "actual create_agent executes search_policy and returns matching ToolMessage ID",
+    "new RAG route used; no legacy Agent loop",
+    "public ten/five fields unchanged",
+    "provider/public/RAG trace IDs linked",
+    "no Embedding request and no simulated order writes"
+  ],
+  "judgement": "passed",
+  "limits": "The adapter raw provider_trace mode=live labels the SDK execution path, not a real service request; this wrapper marks fixture provenance explicitly."
+}
