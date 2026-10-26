@@ -62,6 +62,21 @@ class MetricsTests(unittest.TestCase):
             self.assertEqual(report['new_embedding_requests_this_command'],0)
             self.assertTrue(report['source_index_unchanged'])
 
+    def test_real_origin_cache_also_requires_receipt_vector_hash(self):
+        from target.embeddings import EmbeddingProvider,EmbeddingSettings
+        with tempfile.TemporaryDirectory() as folder:
+            path=Path(folder)/'cache.db';settings=EmbeddingSettings(base_url='https://dashscope.aliyuncs.com/compatible-mode/v1',dimensions=64,cache=path)
+            p=EmbeddingProvider(settings);vector=[1.0]+[0.0]*63
+            receipt={'origin':'real_api','model':'text-embedding-v4','dimensions':64,'vector_hashes':['wrong-hash']}
+            with closing(sqlite3.connect(path)) as c:
+                c.execute('CREATE TABLE vectors(cache_key TEXT PRIMARY KEY,vector TEXT,receipt TEXT)')
+                c.execute('INSERT INTO vectors VALUES(?,?,?)',(p.cache_key('a'),json.dumps(vector),json.dumps(receipt)));c.commit()
+            self.assertEqual(cache_survey(['a'],settings)['cached_real_queries'],0)
+            receipt['vector_hashes']=[hashlib.sha256(json.dumps(vector,separators=(',',':')).encode()).hexdigest()]
+            with closing(sqlite3.connect(path)) as c:
+                c.execute('UPDATE vectors SET receipt=?',(json.dumps(receipt),));c.commit()
+            self.assertEqual(cache_survey(['a'],settings)['cached_real_queries'],1)
+
 
 class VersionAndFidelityTests(unittest.TestCase):
     def hit(self,version='current'):

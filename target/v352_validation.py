@@ -47,6 +47,8 @@ def cache_survey(texts,settings,source=None):
                         valid=(len(vector)==settings.dimensions and all(type(x) in (int,float) and math.isfinite(x) for x in vector)
                             and sum(x*x for x in vector)>0 and receipt.get('origin')=='real_api'
                             and receipt.get('dimensions')==settings.dimensions and receipt.get('model')==settings.model)
+                        vector_hash=hashlib.sha256(json.dumps(vector,separators=(',',':')).encode()).hexdigest()
+                        valid=valid and vector_hash in receipt.get('vector_hashes',[])
                         if not valid:raise ValueError('invalid_cached_vector')
                         vectors[text]=vector;receipts[text]=receipt
                     except (ValueError,TypeError,KeyError):invalid.append(hashlib.sha256(text.encode()).hexdigest())

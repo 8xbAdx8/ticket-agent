@@ -51,7 +51,7 @@ def environment(values):
 
 
 def execute_pair(*,model_factory=None):
-    from target.v352_validation import AUTH,QUESTION,read,new_json,canonical_hash,embedding_settings
+    from target.v352_validation import AUTH,QUESTION,read,new_json,canonical_hash,embedding_settings,cache_survey
     from target.rag_protection import BASELINE,tree_hashes,hash_tree,copy_workspace
     from target.request_accounting import snapshot
     from target.live_providers import isolated_environment
@@ -59,6 +59,11 @@ def execute_pair(*,model_factory=None):
     import config
     frozen=prepare()
     if hash_tree(tree_hashes(BASELINE))!=frozen['source_tree_sha256']:raise ValueError('immutable_source_changed_since_prepare')
+    from target.rag_store import documents
+    if canonical_hash(documents(ROOT/'data/policies.md'))!=frozen['policy_chunks_sha256']:
+        raise ValueError('policy_corpus_changed_before_generation')
+    if cache_survey([QUESTION],embedding_settings(),AUTH/'prepared/embedding-cache.db')['missing_queries']:
+        raise ValueError('frozen_query_cache_integrity_failed')
     new_json(AUTH/'generation-attempt.json',{'explicit_command_authorization':4,'provider_limits':{'bailian':2,'deepseek':2},
         'evidence_mode':'offline_sdk_stub' if model_factory else 'real_api','tool_result_sha256':frozen['tool_result_sha256']})
     records=[];before=tree_hashes(BASELINE)
@@ -101,7 +106,7 @@ def execute_pair(*,model_factory=None):
             closure=bool(correct and delivered and raw and len([e for e in events if e.get('event')=='model_response'])==2)
             expected_model='qwen3.8-flash' if provider=='bailian' else 'deepseek-flash'
             identities=live.get('actual_models',[])
-            identity_verified=bool(identities and all(m==expected_model or m.startswith(expected_model+'-') for m in identities))
+            identity_verified=bool(identities and all(isinstance(m,str) and (m==expected_model or m.startswith(expected_model+'-')) for m in identities))
             record={'provider':provider,'evidence_mode':'offline_sdk_stub' if model_factory else 'real_api',
                 'status':('protocol_passed_guard_rejected' if error else 'protocol_passed') if closure else 'failed_or_incomplete',
                 'real_function_calling_verified':closure and identity_verified and model_factory is None,
@@ -147,7 +152,7 @@ def main():
         print(json.dumps({'status':'not_run','category':'required_provider_key_missing','new_requests':0}));return 2
     report=execute_pair()
     print(json.dumps({k:v for k,v in report.items() if k!='records'}))
-    return 0 if all(r['protocol_closure'] for r in report['records']) and report['same_system_prompt_verified'] and report['source_index_unchanged'] else 1
+    return 0 if all(r['protocol_closure'] and r['agent_completed'] for r in report['records']) and report['same_system_prompt_verified'] and report['source_index_unchanged'] else 1
 
 
 if __name__=='__main__':raise SystemExit(main())
