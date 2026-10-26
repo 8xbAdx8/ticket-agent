@@ -100,7 +100,10 @@ def build(destination):
     branch = git('branch', '--show-current').decode().strip()
     files = {}
     excluded = []
-    with zipfile.ZipFile(io.BytesIO(git('archive', '--format=zip', 'HEAD'))) as snapshot:
+    # Windows core.autocrlf also affects git archive. Keep committed LF bytes,
+    # especially the policy corpus hash bound to the immutable Chroma manifest.
+    with zipfile.ZipFile(io.BytesIO(git('-c', 'core.autocrlf=false', '-c', 'core.eol=lf',
+                                       'archive', '--format=zip', 'HEAD'))) as snapshot:
         for member in snapshot.infolist():
             if member.is_dir():
                 continue
