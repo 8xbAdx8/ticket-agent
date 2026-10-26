@@ -1,6 +1,14 @@
 # Ticket Agent
 
-## 2026-10-26：V3.5.2 真实双模型RAG验收与原索引保护（当前版本）
+## 2026-10-27：当前团队交接入口
+
+首次使用请读 [先读我_团队交接](先读我_团队交接.md)，其中统一说明安装、双击启动、DeepSeek/百炼/LangSmith Key配置、B测试、C演示、代码导航与当前限制。ZIP包含冻结真实RAG索引与查询缓存，不含真实Key、虚拟环境、个人运行库或Git元数据；版本与文件哈希由打包工具写入根目录清单。
+
+当前包含千问/LangSmith界面修复：Qwen会话切页不再自动切回DeepSeek，费用确认按会话隔离，无执行记录时明确提示不能导出，深浅主题文字可读。应用完整离线回归 **595通过、0失败、0跳过，另94子测试通过**；该修复仅离线与真实浏览器验证，外部请求0。Live仍只有query_tickets/search_policy两个只读工具；双模型历史全文忠实度仍待B人工复核。详见[修复说明](docs/handoff/v352/千问LangSmith界面修复说明.md)。
+
+新解压ZIP安装完整 `requirements-v35-lock.txt` 后，可用 `python scripts/check_team_package.py` 零网络验证，不要求存在.git；本次解压实测结果看ZIP旁 `.verification.json`。日常Web手动对话不设累计请求上限，每次发送可能收费；正式测试必须单独设定授权范围。下方各日期章节保留历史原状，不代表当前在线额度或最新测试数量。
+
+## 2026-10-26：V3.5.2 真实双模型RAG验收与原索引保护（历史版本）
 
 用户明确授权后已实际完成**5次Embedding＋4次生成**：Qwen3.8-Flash、DeepSeek Flash各2次HTTP200，都自主调用search_policy并收到相同Chroma政策P11，实际ToolMessage和系统Prompt hash一致。原回复、保护层、最终展示分别留证；**全文语义忠实度均indeterminate，待B独立复核**，不把工具闭环当准确率100%。
 
