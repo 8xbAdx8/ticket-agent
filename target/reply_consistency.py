@@ -155,6 +155,12 @@ def _parse(reply):
                 ignored.append({'line':number,'text':clause,'reason':'negative_assertion'})
                 if not ids and re.search(r'未查到|没有查到|没有匹配|无匹配',clause):denials.append({'line':number,'text':clause})
                 continue
+            # A request for the user's next query is not a claim about ticket data.
+            # Keep any concrete identity/number or asserted availability in normal validation.
+            if (re.search(r'(?:如果|如需|若|需要|请).{0,60}(?:告诉我|告知我|提供|补充|指定|输入)',clause)
+                    and not ids and not re.search(r'\d|[¥￥]|[一二三四五六七八九十百千万两]+\s*(?:元|分钟|小时|张|天)',clause)
+                    and not re.search(r'查到|查得|查询结果|显示|有票|余票|票价|价格|库存|售罄|(?:出发|到达)(?:时间|时刻)?(?:为|是)',clause)):
+                ignored.append({'line':number,'text':clause,'reason':'non_factual_follow_up'});continue
             pairs=_prose(clause)
             if re.search(UNCERTAIN,clause) and (ids or pairs):
                 unresolved.append({'line':number,'text':clause,'reason':'non_assertive_or_uncertain'});continue
