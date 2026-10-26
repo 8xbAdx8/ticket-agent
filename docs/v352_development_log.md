@@ -50,3 +50,12 @@
 - 首次生成入口Qwen在HTTP前被v352_model_identity_required拦截，派发0次；原因是旧DASHSCOPE_MODEL覆盖AGENT_MODEL。DeepSeek实际2次HTTP200，search_policy执行、真实缓存Chroma结果回传与最终回复闭环完成；原paired-report.json、DeepSeek两条预算记录及Trace全部保留。
 - 最小修复仅在v352隔离环境同时指定DASHSCOPE_MODEL=qwen3.8-flash。新增--resume-unattempted-qwen：必须是Qwen本地模型配置失败且0派发、DeepSeek已完成且共享/单独账2条记录完全一致，才可使用原授权剩余Qwen2；新独占续跑标记和新报告，不创建新预算，不改原报告，不重跑DeepSeek。其他失败或已有Qwen派发一律拒绝续跑。
 - Web分别判断单Provider真实工具闭环和双模型公平对照，0HTTP配置失败不记API失败或Live成功。离线回归入口追加冻结现有V352真实证据/账本hash。两SDK+实际Chroma离线专项12通过、0失败、0跳过，包含旧qwen-plus覆盖、仅Qwen续跑、原记录字节保留和重复续跑拒绝；HTTP全部MockTransport，新增真实请求0。
+
+## 授权额度内完成双模型与全部48题
+
+- 配置/安全续跑提交90f801b88705dd1806f3274123e8bfa6329c76bb。真实Qwen续跑只发2次HTTP200，DeepSeek原2次不重跑，Embedding原5次不重跑；独立共享账4/4、各模型2/2、Embedding5/5，旧账和3933原文件完全不变，重试/LangSmith均0。
+- 两模型都真实选择search_policy(question=锁座后多久必须完成支付？)，从相同冻结Chroma副本检索P11，并在第二个HTTP200请求回传实际ToolMessage；证据规范化hash44f4e38a0d6fb00442dc6b42398a179c62f13f601902ba35ca1a19d0a314363c、系统Prompt hash一致。原模型回复、公共JSONL及旁证逐一核对一致。初次Qwen0HTTP失败保留在paired-report.json，完成后的新记录在paired-report-resumed.json，禁止覆盖原件。
+- 新48题三模式完整实际评估：Keyword Recall@1/3=0.84375/1、MRR0.9375；Vector/Hybrid各0.96875/1、MRR1；无答案均0/32。保留24题Keyword0.6875/1、MRR0.875，Vector/Hybrid0.9375/1、MRR1；开发24题各1/1/1。未更改开发/保留集或质量规则，未根据保留集调参。
+- 实际Token：Embedding504；Qwen输入1921/输出143；DeepSeek输入1878/输出133。费用未知，无可靠账单。Qwen/DeepSeek都回答15分钟、引用P11且无确定性错误，但全文忠实度indeterminate；句级引用关联/语义仍交B人工判定，不宣称总体准确率。
+- 90f801b完整离线回归502通过、0失败、0跳过，另89子测试；旧DeepSeek478通过/24跳过、V3 403通过/99跳过、V2 307通过/195跳过，均0失败，原八变异和八RAG变异通过。原3933文件和已有61个V352运行证据不变，外网尝试0。
+- 交接页面新增优先读取公开本轮实际48题结果，避免B新克隆无runtime报告时误显示旧的未运行指标。实际AppTest5通过（0API），包括无runtime、读取公开新48成绩和未验证模型状态。另建真实索引/新查询缓存ZIP供B离线复验，保留先前基线ZIP，不含密钥、预算或新在线授权。

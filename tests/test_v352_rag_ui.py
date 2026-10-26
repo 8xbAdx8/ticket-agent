@@ -41,6 +41,7 @@ class ProviderViewTests(unittest.TestCase):
         def no_live_fixture(runtime,public):
             return None if Path(runtime).name.startswith('paired-report') else load_evidence(runtime,public)
         with patch.dict(os.environ,env),patch.multiple(config,PROVIDER='mock',ENGINE='legacy'),\
+             patch('web.rag_acceptance.AUTH',config.BASE_DIR/'artifacts/runtime/v352-ui-missing-runtime-fixture'),\
              patch('web.rag_acceptance.load_evidence',side_effect=no_live_fixture),\
              patch('target.embeddings.EmbeddingProvider._request') as embedding,\
              patch('scripts.verify_v352_live.execute_pair') as generation:
@@ -50,4 +51,7 @@ class ProviderViewTests(unittest.TestCase):
             self.assertEqual([e.message for e in app.exception],[])
             self.assertTrue(any('V3.5.2 双模型' in s.value for s in app.subheader))
             self.assertTrue(any('未验证' in m.value for m in app.markdown))
+            quality=next(d.value for d in app.dataframe if '模式' in d.value.columns)
+            self.assertEqual(set(quality['模式']),{'keyword','vector','hybrid'})
+            self.assertEqual(quality.loc[quality['模式']=='vector','Recall@1'].iloc[0],0.9375)
             embedding.assert_not_called();generation.assert_not_called()

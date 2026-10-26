@@ -54,7 +54,9 @@ def render_acceptance():
                      'tool_result_sha256':frozen.get('tool_result_sha256'),'tool_result':frozen.get('tool_result')})
     st.caption('无答案真实复验：本轮尚无记录。历史RQ26与离线拒答测试另列，不据此填写本轮Live拒答率。')
     st.subheader('新增48题：三模式质量与适用样本')
-    evaluation=load_evidence(AUTH/'retrieval-report.json',ROOT/'docs/evidence/v352/retrieval/report.json')
+    evaluation=load_evidence(AUTH/'retrieval-report.json',ROOT/'docs/evidence/v352/live/retrieval48/report.json')
+    if evaluation is None:
+        evaluation=load_evidence(AUTH/'retrieval-report.json',ROOT/'docs/evidence/v352/retrieval/report.json')
     if evaluation:
         split=st.selectbox('V3.5.2 评估集合',['holdout','development','all48'],key='v352_quality_split')
         rows=[]
