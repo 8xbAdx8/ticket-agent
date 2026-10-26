@@ -1,0 +1,35 @@
+{
+  "schema": "ticket-v351-index-retention-incident/1",
+  "phase": "first_full_offline_regression",
+  "initial_baseline": "1b3b6677c571344a35cd344044f5362a90ad88e1",
+  "detected_byte_changes": [
+    {
+      "path": "artifacts/runtime/v35-rag/index/38cad6fc-745e-47ee-ad08-b36fb5cf29a7/data_level0.bin",
+      "before_sha256": "64a492e667675cd243fd22025567ab2c9483b9300a3acf12c222a916cc134bd4",
+      "after_sha256": "9c8f8e8bd55b85624ac67911fbb01195c6beb8e587e8217e3d9e78d9d23b8df5"
+    },
+    {
+      "path": "artifacts/runtime/v35-rag/index/38cad6fc-745e-47ee-ad08-b36fb5cf29a7/length.bin",
+      "before_sha256": "5e8c5f4f00efb276baab2cb43fb824dac60282296811d41fa3362a37bc65989c",
+      "after_sha256": "6d86676aecf7d1ea11c7e7985c9754123c5ae975b83791feeed68bf98667f6f3"
+    },
+    {
+      "path": "artifacts/runtime/v35-rag/index/chroma.sqlite3",
+      "before_sha256": "8034d8507952b5903327e2cd0f2f5d6206a61159d94ecd6ec0700fb8f586e2ed",
+      "after_sha256": "539403976b9d89501506f23e7c696d1381bfbd763f0267fc9cf66ef555c332e7"
+    }
+  ],
+  "cause_assessment": "Occurred during tests that opened the normal Chroma index. Consistent with Chroma read/open internal HNSW/SQLite persistence; exact writer not independently instrumented.",
+  "original_files_restored_or_overwritten": false,
+  "logical_check_performed_on": "Isolated forensic copy only",
+  "manifest_and_stored_vector_hash_checks": "passed",
+  "documents_checked": 15,
+  "index_version": "242aa8199c4a8393ded29751",
+  "contents_metadata_and_vectors_match_original_real_export": true,
+  "maximum_vector_difference": 7.450580596923828e-09,
+  "tickets_sqlite_traces_policies_cases_B_evidence_and_api_budgets": "No hash changes in the remaining initial protected files",
+  "real_embedding_requests": 0,
+  "real_generation_requests": 0,
+  "langsmith_requests": 0,
+  "followup": "Regression now must copy normal index/cache and must report initial changes separately from per-run retention. No automatic restore."
+}

@@ -6,12 +6,26 @@ import os
 from pathlib import Path
 import re
 import subprocess
+import shutil
 import sys
 import xml.etree.ElementTree as ET
 
 ROOT=Path(__file__).resolve().parent.parent
 sys.path.insert(0,str(ROOT/'scripts'))
 from run_deepseek_review_offline import GUARD
+
+
+def isolated_rag_inputs(root,out):
+    """Chroma open/read can persist housekeeping; only tests may use this copy."""
+    inputs={};normal=root/'artifacts/runtime/v35-rag'
+    index=out/'rag-input-copy/index'
+    if (normal/'index').is_dir():shutil.copytree(normal/'index',index)
+    inputs['RAG_INDEX_DIR']=str(index)
+    cache=out/'rag-input-copy/embedding-cache.db'
+    if (normal/'embedding-cache.db').is_file():
+        cache.parent.mkdir(parents=True,exist_ok=True);shutil.copyfile(normal/'embedding-cache.db',cache)
+    inputs['RAG_EMBEDDING_CACHE']=str(cache)
+    return inputs
 
 
 def main(argv=None):
@@ -32,6 +46,8 @@ def main(argv=None):
         files.update(p for p in (ROOT/'artifacts/runtime').rglob('*.db') if not p.is_relative_to(out))
         files.add(ROOT/'docs/contract.md')
         original={p.relative_to(ROOT).as_posix():hashlib.sha256(p.read_bytes()).hexdigest() for p in files}
+    before_run={p:hashlib.sha256((ROOT/p).read_bytes()).hexdigest() for p in original if (ROOT/p).is_file()}
+    initial_changes=[p for p,h in original.items() if before_run.get(p)!=h]
     guard=out/'guard';guard.mkdir();(guard/'sitecustomize.py').write_text(GUARD,encoding='utf-8')
     env=dict(os.environ)
     for name in list(env):
@@ -41,6 +57,7 @@ def main(argv=None):
         AGENT_DB_PATH=str(out/'unused.db'),AGENT_TRACE_DIR=str(out/'unused-traces'),
         PYTHONIOENCODING='utf-8',PYTHONPATH=str(guard)+os.pathsep+str(ROOT),
         TICKET_OFFLINE_GUARD_LOG=str(out/'blocked_network.jsonl'),LANGCHAIN_TRACING_V2='false',LANGSMITH_TRACING='false')
+    env.update(isolated_rag_inputs(ROOT,out))
     def run(name,command):
         proc=subprocess.run(command,cwd=ROOT,env=env,capture_output=True,text=True,encoding='utf-8',timeout=900)
         text=(proc.stdout+proc.stderr).replace(str(ROOT),'<project>').replace(str(Path.home()),'<user>')
@@ -56,13 +73,16 @@ def main(argv=None):
     else:
         old_code,_=run('v35_and_older',[sys.executable,'scripts/verify_v35_offline.py','--out',str(out/'compatibility')])
         compatibility=json.loads((out/'compatibility/report.json').read_text(encoding='utf-8'))
-    changed=[p for p,h in original.items() if not (ROOT/p).is_file() or hashlib.sha256((ROOT/p).read_bytes()).hexdigest()!=h]
+    changed=[p for p,h in before_run.items() if not (ROOT/p).is_file() or hashlib.sha256((ROOT/p).read_bytes()).hexdigest()!=h]
     blocked=sum(len(p.read_text(encoding='utf-8').splitlines()) for p in out.rglob('*blocked*network*.jsonl'))
     result={'schema':'ticket-v351-offline/1','tested_source_head':subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip(),
         'status':'passed' if pytest_code==old_code==0 and (args.current_only or compatibility['status']=='passed') and not changed and not blocked else 'failed',
         'pytest':{'exit_code':pytest_code,'passed_console':int(passed[1]) if passed else None,
                   'subtests_passed_console':int(subtests[1]) if subtests else 0,'junit':counts},
         'compatibility':compatibility,'protected_files':len(original),'changed_original_files':changed,
+        'initial_baseline_changed_before_this_run':initial_changes,
+        'initial_retention_status':'preexisting_runtime_index_byte_changes_not_restored' if initial_changes else 'unchanged',
+        'retention_scope':'status refers to tests and per-run protection; initial baseline findings remain separately visible',
         'blocked_network_attempts':blocked,'real_generation_requests':0,'real_embedding_requests':0,'langsmith_requests':0,
         'new_api_cost':0,'scope':'A offline development regression, not B official scores or post-fix Live acceptance.'}
     (out/'report.json').write_text(json.dumps(result,ensure_ascii=False,indent=2),encoding='utf-8')

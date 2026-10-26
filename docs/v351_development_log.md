@@ -26,3 +26,10 @@
 - 新增6个两Provider SDK往返测试：真实ChatOpenAI/ChatDeepSeek+create_agent、明确MockTransport，实际新search_policy/工具回传、调用参数与call_id、请求UUID、同证据hash、原回复与Trace和十/五字段契约。另2个SDK保护测试把P11=15分钟故意说成45分钟，均明确停止且保存原文，不生成成功公共Trace。
 - 实际pytest上述SDK专项8通过，完整检索/忠实度/SDK与原RAG组合105通过（另2子测试通过），均0失败。新增scripts/prepare_v351_acceptance.py仅输出只读方案，无联网开关：未来建议Qwen2+DeepSeek2生成、缓存命中0Embedding，等待新增授权并绑定固定V3.5.1 profile，不借旧耗尽账本。
 - 新增scripts/verify_v351_offline.py：阻断外网、剥离Key，使用pytest统计全部用例，再执行原V3.5及旧环境矩阵；支持新机器current-only，不依赖未交付的A机保护快照。源文件先编译通过，接下来执行全量回归。
+
+## 第一次全量回归发现与最小修复
+
+- 源码6bcb072首次全量pytest469通过/1失败（另89子测试通过）；失败为新Live入口从空AGENT_RAG_MODE继承空值而非hybrid，原测试断言未改，修复入口以空值采用默认。原多环境及smoke同一新增测试失败，不能计作通过。
+- 同时发现原Chroma运行索引的data_level0.bin、length.bin、chroma.sqlite3三文件字节变更，发生在会打开正常索引的页面测试期间，与底层读后持久化一致；未独立追踪到具体写进程，不作过度归因。票务业务SQLite、历史Trace、政策/30题、B原件和API预算等其余初始保护文件无变更。原文件未自动恢复或覆盖。
+- 保留现状副本并只在该副本核验：15个文档、元数据、manifest已存向量哈希全部通过；与V3.5真实API向量导出最大误差7.45e-9，逻辑数据一致。事实与前后SHA写入docs/evidence/v351/chroma-retention-incident.json；不能再声称原索引字节完全未变。
+- 为防重复，V3.5.1和被调用的A原V3.5回归入口在每层快照后复制索引/cache到本轮独立输出，再让测试读取副本。新增2项隔离测试；连同原14项检索单元实际pytest16通过。最终回归区分“本轮新增变更”和“初始已发现三文件变更”，不重设初始保护快照掩盖问题。此改动不触及B正式测试断言，也不改已冻结检索算法/保留集结果。

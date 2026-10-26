@@ -40,7 +40,7 @@ def isolated_environment(provider, root, *, profile=None):
         "AGENT_MODEL": cfg["model"], "AGENT_BASE_URL": cfg["base_url"], "AGENT_MUTATIONS": "{}",
         "AGENT_DB_PATH": str(root / "tickets.db"), "AGENT_TRACE_DIR": str(root / "traces"),
         "AGENT_USE_HTTP": "0", "AGENT_VECTOR_RAG": "0",
-        "AGENT_RAG_MODE":os.getenv("AGENT_RAG_MODE","hybrid"),"RAG_QUALITY_PROFILE":"v351","RAG_ALLOW_NETWORK":"0",
+        "AGENT_RAG_MODE":os.getenv("AGENT_RAG_MODE") or "hybrid","RAG_QUALITY_PROFILE":"v351","RAG_ALLOW_NETWORK":"0",
         "TICKET_INITIAL_LIVE_BUDGET": str(budget_base / "initial-total.db"),
         "DEEPSEEK_LIVE_TEST_PROFILE": "read_only", "DEEPSEEK_THINKING": "disabled",
         "DEEPSEEK_MAX_REQUESTS": "2" if v34 else "3", "DEEPSEEK_BUDGET_PATH": str(budget_base / "deepseek/requests.db"),
@@ -53,6 +53,6 @@ def isolated_environment(provider, root, *, profile=None):
         env.update(TICKET_API_VALIDATION_PROFILE="v35",AGENT_MODEL="qwen3.8-flash",DASHSCOPE_MODEL="qwen3.8-flash",
             BAILIAN_MAX_REQUESTS="4",BAILIAN_BUDGET_PATH=str(AUTH/"generation.db"),
             TICKET_INITIAL_LIVE_BUDGET=str(AUTH/"generation-total.db"),TICKET_TOTAL_REQUEST_LIMIT="4",
-            BAILIAN_MAX_MODEL_CALLS="2",AGENT_MAX_STEPS="2",AGENT_RAG_MODE=os.getenv("AGENT_RAG_MODE","hybrid"),
+            BAILIAN_MAX_MODEL_CALLS="2",AGENT_MAX_STEPS="2",AGENT_RAG_MODE=os.getenv("AGENT_RAG_MODE") or "hybrid",
             RAG_ALLOW_NETWORK=os.getenv("RAG_ALLOW_NETWORK","0"))
     return env

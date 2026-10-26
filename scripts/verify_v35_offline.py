@@ -6,6 +6,7 @@ import os
 from pathlib import Path
 import re
 import subprocess
+import shutil
 import sys
 
 ROOT=Path(__file__).resolve().parent.parent
@@ -35,6 +36,17 @@ def main():
                AGENT_PROVIDER='mock',AGENT_ENGINE='legacy',AGENT_MODEL='mock-offline',AGENT_RAG_MODE='',RAG_ALLOW_NETWORK='0',
                AGENT_MUTATIONS='{}',TICKET_API_VALIDATION_PROFILE='',LANGSMITH_TRACING='false',LANGCHAIN_TRACING_V2='false',
                AGENT_DB_PATH=str(out/'unused.db'),AGENT_TRACE_DIR=str(out/'unused-traces'))
+    # Chroma may persist housekeeping even on open/read. Regression uses a
+    # private copy created after the protected-input snapshot, never the source.
+    source=Path(env.get('RAG_INDEX_DIR',str(ROOT/'artifacts/runtime/v35-rag/index')))
+    copied=out/'rag-input-copy/index'
+    if source.is_dir():shutil.copytree(source,copied)
+    env['RAG_INDEX_DIR']=str(copied)
+    cache=Path(env.get('RAG_EMBEDDING_CACHE',str(ROOT/'artifacts/runtime/v35-rag/embedding-cache.db')))
+    copied_cache=out/'rag-input-copy/embedding-cache.db'
+    if cache.is_file():
+        copied_cache.parent.mkdir(parents=True,exist_ok=True);shutil.copyfile(cache,copied_cache)
+    env['RAG_EMBEDDING_CACHE']=str(copied_cache)
     runs=[]
     def run(name,argv):
         p=subprocess.run(argv,cwd=ROOT,env=env,capture_output=True,text=True,encoding='utf-8',timeout=600)
