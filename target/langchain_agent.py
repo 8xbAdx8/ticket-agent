@@ -276,6 +276,9 @@ class LangChainAgent:
             from target.deepseek_runtime import READ_ONLY_PROMPT
             # 不继承通用订票/支付指令，避免与只读能力冲突。
             system_prompt = READ_ONLY_PROMPT
+            import os
+            if os.getenv('TICKET_API_VALIDATION_PROFILE')=='v352':
+                system_prompt+='\n本轮是政策验收。政策问题应交给search_policy，question保留用户原句；证据不足明确无法确认，不添加无来源期限、金额或限制。'
         self.checkpointer = InMemorySaver()
         self.graph = create_agent(model=self.model, tools=[adapt_tool(n) for n in names],
                                   system_prompt=system_prompt+f"\n当前北京时间日期 {config.today().isoformat()}；业务全部虚构。"

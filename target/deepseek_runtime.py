@@ -223,6 +223,9 @@ class RequestBudget:
 def guarded_client(settings, *, transport=None):
     if httpx is None:
         raise DeepSeekError("dependency_missing")
+    if os.getenv('TICKET_API_VALIDATION_PROFILE')=='v352':
+        from target.v352_validation import validate_generation_binding
+        validate_generation_binding(settings,'deepseek')
     for name in ("httpx","httpcore"):
         logging.getLogger(name).setLevel(logging.WARNING)
     from target.request_accounting import budget_for, reserve, settle, client_class

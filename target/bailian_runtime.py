@@ -68,7 +68,10 @@ def validate_configuration():
 def guarded_client(settings, *, transport=None):
     import httpx
     address = endpoint()
-    if config.MODEL_NAME=="qwen3.8-flash" and transport is None:
+    if os.getenv('TICKET_API_VALIDATION_PROFILE')=='v352':
+        from target.v352_validation import validate_generation_binding
+        validate_generation_binding(settings,'bailian')
+    elif config.MODEL_NAME=="qwen3.8-flash" and transport is None:
         # All application entry points share the already-authorized V3.5 ledger.
         # A naked Agent()/old launcher must not spend from a historical ledger.
         from target.embeddings import AUTH

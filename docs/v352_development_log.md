@@ -17,3 +17,10 @@
 - 索引保护提交cf9f5b3。新增target/v352_validation.py和scripts/evaluate_v352_rag.py，保持开发/保留数据及V3.5.1规则不变，记录Recall@1/3、MRR、正确文档排名、误召回、适用/N/A/未运行/无法判定。默认只读缓存，只有--run并显式授权5次Embedding才可执行固定独立账，重试0、生成0。
 - 实际默认离线检查48题：真实缓存命中0、缺48条，按10条/批准确需5次新Embedding。Keyword全48的Recall@1=0.84375、Recall@3=1、MRR=0.9375，无答案0/32；保留集与开发集单列。Vector/Hybrid各48未运行，指标为未知null，不以0或旧30成绩填充。未使用旧余3次额度。
 - 忠实度追加可选当前/冻结政策version核验：正向引用旧版本报具体错误，版本缺失待人工，否定说明不冒充正向政策。旧55fixture和原参数调用兼容。新测试首次因自建SQLite夹具未关闭导致Windows清理失败，修复显式关闭连接；非原业务库问题。随后组合pytest77项通过，另2子测试通过，真实请求0。
+
+## 模块三：可显式启动的双模型验收
+
+- 48题/版本模块提交545e97a。新增verify_v352_live.py：普通运行只打印计划，--prepare实际用缓存/Chroma副本冻结P11证据且生成/Embedding0；只有用户手动--run才启用独立V3.5.2固定双账（Qwen2、DeepSeek2、共享4），零重试/零Embedding/零LangSmith。一次attempt标记防止重复运行或别名额度，旧账不改。
+- 新v352 profile在两Runtime构造客户端前校验固定账与显式命令标记；Prompt、检索模式/Top-K/阈值一致。真实工具必须执行新Chroma检索且question/语料/hash匹配，拒绝偷偷用别的问题生成向量。HTTP审计保存实际派发ToolMessage内容与hash；只有同请求HTTP200再加模型响应才能声称证据已回传。
+- 区分协议闭环、Agent结束、原回复、保护层、最终展示和业务成功。SDK桩政策回答45分钟时协议可完整但保护失败停止；不能把模型错误被拦截称作模型答对。默认未授权的real_api报告不创建，Web必须显示未验证。
+- 实际prepare与默认计划完成（0真实请求）；两SDK+实际缓存Chroma的正常配对、错答拦截、超时零重试、纯文本非工具成功、2/2/4预算与禁止无标记入口共6专项通过。连同既有SDK/Provider组合29项通过（另11子测试），证据明确offline_sdk_stub，非Live。本轮未执行--run。

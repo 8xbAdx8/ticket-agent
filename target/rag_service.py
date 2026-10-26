@@ -35,6 +35,13 @@ def retrieve(question,mode=None,*,allow_network=False,k=None,threshold=None):
     started=time.perf_counter();identity=uuid.uuid4().hex
     evidence=None
     try:
+        frozen=None
+        if os.getenv('TICKET_API_VALIDATION_PROFILE')=='v352':
+            from target.v352_validation import AUTH,read,canonical_hash
+            frozen=read(AUTH/'prepared/frozen.json')
+            if question!=frozen['question']:raise ValueError('paired_policy_query_changed_cache_only')
+            if canonical_hash(documents(config.POLICY_PATH))!=frozen['policy_chunks_sha256']:
+                raise ValueError('paired_policy_corpus_changed')
         if mode=='keyword':
             profile=os.getenv('RAG_QUALITY_PROFILE','v351')
             if profile not in ('v35','v351'):raise ValueError('invalid_quality_profile')
@@ -57,6 +64,10 @@ def retrieve(question,mode=None,*,allow_network=False,k=None,threshold=None):
             from target.rag_store import RagError
             evidence['risk_findings']=risks
             raise RagError('rag_evidence_risk')
+        if frozen is not None:
+            actual={'question':question,'hits':evidence['hits'],'count':len(evidence['hits'])}
+            if canonical_hash(actual)!=frozen['tool_result_sha256']:raise ValueError('paired_policy_evidence_changed')
+            evidence['paired_tool_result_sha256']=frozen['tool_result_sha256']
         record={'schema':'ticket-rag-retrieval/1','retrieval_id':identity,**SCOPE.get(),'question':question,
                 **evidence,'status':'retrieved','business_success':None}
     except Exception as exc:

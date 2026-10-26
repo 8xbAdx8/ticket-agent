@@ -55,4 +55,13 @@ def isolated_environment(provider, root, *, profile=None):
             TICKET_INITIAL_LIVE_BUDGET=str(AUTH/"generation-total.db"),TICKET_TOTAL_REQUEST_LIMIT="4",
             BAILIAN_MAX_MODEL_CALLS="2",AGENT_MAX_STEPS="2",AGENT_RAG_MODE=os.getenv("AGENT_RAG_MODE") or "hybrid",
             RAG_ALLOW_NETWORK=os.getenv("RAG_ALLOW_NETWORK","0"))
+    if selected=='v352':
+        from target.v352_validation import AUTH
+        env.update(TICKET_API_VALIDATION_PROFILE='v352',DEEPSEEK_MAX_REQUESTS='2',BAILIAN_MAX_REQUESTS='2',
+            DEEPSEEK_MAX_MODEL_CALLS='2',BAILIAN_MAX_MODEL_CALLS='2',AGENT_MAX_STEPS='2',
+            DEEPSEEK_BUDGET_PATH=str(AUTH/'deepseek-generation.db'),BAILIAN_BUDGET_PATH=str(AUTH/'bailian-generation.db'),
+            TICKET_INITIAL_LIVE_BUDGET=str(AUTH/'generation-total.db'),TICKET_TOTAL_REQUEST_LIMIT='4',
+            AGENT_MODEL='qwen3.8-flash' if provider=='bailian' else 'deepseek-flash',
+            AGENT_RAG_MODE='hybrid',RAG_QUALITY_PROFILE='v351',RAG_TOP_K='3',RAG_VECTOR_THRESHOLD='0.35',RAG_ALLOW_NETWORK='0',
+            LANGCHAIN_TRACING_V2='false',LANGSMITH_TRACING='false')
     return env

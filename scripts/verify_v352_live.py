@@ -1,0 +1,149 @@
+"""Explicit two-provider policy acceptance. Default/--prepare never calls a model."""
+import argparse
+from contextlib import contextmanager
+from dataclasses import replace
+import hashlib
+import importlib
+import json
+import os
+from pathlib import Path
+import shutil
+import sys
+import uuid
+
+ROOT=Path(__file__).resolve().parent.parent;sys.path.insert(0,str(ROOT))
+
+
+def prepare():
+    from target.v352_validation import AUTH,QUESTION,embedding_settings,cached_source,cache_survey,canonical_hash,new_json,read
+    from target.rag_protection import BASELINE,working_index,tree_hashes,hash_tree,logical_snapshot
+    from target.rag_store import documents
+    from target.embeddings import EmbeddingProvider
+    destination=AUTH/'prepared'
+    if (destination/'frozen.json').exists():return read(destination/'frozen.json')
+    settings=embedding_settings();survey=cache_survey([QUESTION],settings,cached_source())
+    if survey['missing_queries']:raise ValueError('policy_query_not_cached_no_embedding_authorized')
+    destination.mkdir(parents=True,exist_ok=False)
+    cache=destination/'embedding-cache.db';shutil.copyfile(cached_source(),cache)
+    provider=EmbeddingProvider(replace(settings,cache=cache))
+    with working_index(BASELINE,provider,parent=destination/'query-work') as (index,receipt):
+        evidence=index.retrieve(QUESTION,'hybrid',3,.35,require_real=True,allow_network=False,quality_profile='v351')
+        logical=logical_snapshot(index)
+    result={'question':QUESTION,'hits':evidence['hits'],'count':len(evidence['hits'])}
+    frozen={'schema':'ticket-v352-frozen-policy/1','question':QUESTION,'mode':'hybrid','quality_profile':'v351','top_k':3,'threshold':.35,
+        'source_tree_sha256':hash_tree(tree_hashes(BASELINE)),'policy_chunks_sha256':canonical_hash(documents(ROOT/'data/policies.md')),
+        'tool_result':result,'tool_result_sha256':canonical_hash(result),'retrieval':evidence,'logical_index':logical,
+        'execution':'actual_cached_chroma_on_copy_no_generation','real_generation_requests':0,'real_embedding_requests':0}
+    new_json(destination/'frozen.json',frozen);return frozen
+
+
+@contextmanager
+def environment(values):
+    import config
+    previous={k:os.environ.get(k) for k in values}
+    os.environ.update(values);importlib.reload(config)
+    try:yield
+    finally:
+        for k,v in previous.items():
+            if v is None:os.environ.pop(k,None)
+            else:os.environ[k]=v
+        importlib.reload(config)
+
+
+def execute_pair(*,model_factory=None):
+    from target.v352_validation import AUTH,QUESTION,read,new_json,canonical_hash,embedding_settings
+    from target.rag_protection import BASELINE,tree_hashes,hash_tree,copy_workspace
+    from target.request_accounting import snapshot
+    from target.live_providers import isolated_environment
+    from target.deepseek_runtime import safe_error
+    import config
+    frozen=prepare()
+    if hash_tree(tree_hashes(BASELINE))!=frozen['source_tree_sha256']:raise ValueError('immutable_source_changed_since_prepare')
+    new_json(AUTH/'generation-attempt.json',{'explicit_command_authorization':4,'provider_limits':{'bailian':2,'deepseek':2},
+        'evidence_mode':'offline_sdk_stub' if model_factory else 'real_api','tool_result_sha256':frozen['tool_result_sha256']})
+    records=[];before=tree_hashes(BASELINE)
+    for provider in ('bailian','deepseek'):
+        root=AUTH/'runs'/provider;root.mkdir(parents=True,exist_ok=False)
+        workspace,_=copy_workspace(BASELINE,root/'chroma-work')
+        shutil.copyfile(AUTH/'prepared/embedding-cache.db',workspace/'embedding-cache.db')
+        env=isolated_environment(provider,root,profile='v352')
+        env.update(RAG_INDEX_DIR=str(workspace/'index'),RAG_EMBEDDING_CACHE=str(workspace/'embedding-cache.db'),
+                   TICKET_CASE_ID='v352-shared-policy',DASHSCOPE_EMBEDDING_BASE_URL=embedding_settings().base_url)
+        with environment(env):
+            from data.seed import build_db
+            from target.agent import Agent
+            from target import bailian_runtime,deepseek_runtime
+            build_db(config.DB_PATH)
+            runtime=bailian_runtime if provider=='bailian' else deepseek_runtime
+            model=None;agent=None;result=None;error=None
+            try:
+                if model_factory:model=model_factory(provider,runtime)
+                agent=Agent(model=model) if model is not None else Agent()
+                result=agent.chat('v352-'+provider+'-'+uuid.uuid4().hex,QUESTION)
+            except Exception as exc:error=safe_error(exc)
+            finally:
+                if model is not None:model.root_client.close()
+                elif agent is not None:
+                    try:agent.langchain_engine.model.root_client.close()
+                    except Exception:pass
+            live=(agent.langchain_engine.last_live_run or {}) if agent is not None else {}
+            events=live.get('events',[])
+            tools=[e for e in events if e.get('event')=='tool_end' and e.get('tool')=='search_policy']
+            payloads=[(e,p) for e in events if e.get('event')=='http_dispatch_evidence' for p in e.get('tool_payloads',[])]
+            received=[p for e,p in payloads if any(r.get('event')=='http_response' and r.get('request_id')==e['request_id'] and r.get('http_status')==200 for r in events)]
+            correct=bool(len(tools)==1 and tools[0].get('ok') and tools[0].get('executed') and canonical_hash(tools[0]['result'])==frozen['tool_result_sha256'])
+            delivered=bool(correct and any(p['parsed_result_sha256']==frozen['tool_result_sha256'] and p['tool_call_id']==tools[0]['call_id'] for p in received))
+            raw=next((e['text'] for e in reversed(events) if e.get('event')=='model_final'),None)
+            ragfile=config.TRACE_DIR/'rag_runs.jsonl'
+            rag=[json.loads(s) for s in ragfile.read_text(encoding='utf-8').splitlines()] if ragfile.exists() else []
+            answer=next((r for r in reversed(rag) if r.get('schema')=='ticket-rag-answer/1'),None)
+            request_count=snapshot(AUTH/(provider+'-generation.db'),2)['reserved_requests']
+            closure=bool(correct and delivered and raw and len([e for e in events if e.get('event')=='model_response'])==2)
+            record={'provider':provider,'evidence_mode':'offline_sdk_stub' if model_factory else 'real_api',
+                'status':('protocol_passed_guard_rejected' if error else 'protocol_passed') if closure else 'failed_or_incomplete',
+                'real_function_calling_verified':closure and model_factory is None,'agent_completed':bool(result and not error),
+                'protocol_closure':closure,'model_response_received':live.get('model_response_received',False),
+                'tool_execution_verified':correct,'tool_result_delivered_with_http200':delivered,
+                'policy_tool_call_count':len(tools),
+                'expected_evidence_sha256':frozen['tool_result_sha256'],'delivered_evidence':received,
+                'original_model_reply':raw,'final_display_result':result['reply'] if result else None,
+                'faithfulness':answer,'public_trace':result,'live_evidence':live,'error':error,
+                'generation_requests':request_count,'real_generation_requests':0 if model_factory else request_count,
+                'generation_latency_ms':sum(e['latency_ms'] for e in events if e.get('event')=='model_response') if any(e.get('event')=='model_response' for e in events) else None,
+                'retrieval_latency_ms':[r.get('total_latency_ms') for r in rag if r.get('schema')=='ticket-rag-retrieval/1'],
+                'tokens':live.get('tokens'),'token_usage_status':live.get('token_usage_status','unknown'),
+                'business_success':None,'automatic_retries':0,'cost':None}
+            new_json(root/'report.json',record);records.append(record)
+    after=tree_hashes(BASELINE)
+    prompt_hashes=[next((e['system_prompt_sha256'] for e in r['live_evidence'].get('events',[]) if e.get('event')=='http_dispatch_evidence'),None) for r in records]
+    report={'schema':'ticket-v352-paired-live/1','evidence_mode':'offline_sdk_stub' if model_factory else 'real_api',
+        'records':records,'same_tool_evidence_verified':all(r['tool_result_delivered_with_http200'] for r in records),
+        'same_system_prompt_verified':all(prompt_hashes) and len(set(prompt_hashes))==1,
+        'source_index_unchanged':before==after,'source_tree_sha256':hash_tree(before),
+        'real_generation_requests':sum(r['real_generation_requests'] for r in records),'generation_limit':4,
+        'real_embedding_requests':0,'langsmith_requests':0,'cost':None,
+        'faithfulness_scope':'Finite checks and manual review, independent of protocol closure; no overall model accuracy inferred.'}
+    new_json(AUTH/'paired-report.json',report);return report
+
+
+def main():
+    parser=argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--prepare',action='store_true',help='Only prepare actual cached evidence, no model or Embedding calls')
+    parser.add_argument('--run',action='store_true',help='Explicit authorization: Qwen<=2 and DeepSeek<=2 generation requests, 4 total')
+    args=parser.parse_args()
+    from target.v352_validation import AUTH,new_json
+    if not args.run:
+        if args.prepare:
+            frozen=prepare();print(json.dumps({'status':'prepared_not_live_verified','evidence_sha256':frozen['tool_result_sha256'],'generation_requests':0,'embedding_requests':0}))
+        else:print(json.dumps({'status':'not_run','required_new_generation_authorization':4,'provider_caps':{'qwen':2,'deepseek':2},'embedding_required_if_cached':0,'max_retries':0}))
+        return 0
+    from target.api_config import bootstrap
+    bootstrap(ROOT)
+    if any(not os.getenv(k,'').strip() for k in ('DASHSCOPE_API_KEY','DEEPSEEK_API_KEY')):
+        print(json.dumps({'status':'not_run','category':'required_provider_key_missing','new_requests':0}));return 2
+    report=execute_pair()
+    print(json.dumps({k:v for k,v in report.items() if k!='records'}))
+    return 0 if all(r['protocol_closure'] for r in report['records']) and report['same_system_prompt_verified'] and report['source_index_unchanged'] else 1
+
+
+if __name__=='__main__':raise SystemExit(main())

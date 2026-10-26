@@ -139,6 +139,20 @@ def reserve(request,budget,provider,body):
     request.extensions["ticket_budget_id"]=identity
     if isinstance(budget,CoordinatedBudget):budget.record(identity,category="dispatched_outcome_unknown",phase="dispatch_started")
     emit({"event":"http_request","request_id":uid,"provider":provider,"summary":summary})
+    if os.getenv('TICKET_API_VALIDATION_PROFILE')=='v352':
+        from target.v352_validation import canonical_hash
+        payloads=[]
+        for message in body.get('messages',[]):
+            if message.get('role')!='tool':continue
+            content=message.get('content')
+            try:parsed=json.loads(content) if isinstance(content,str) else None
+            except ValueError:parsed=None
+            payloads.append({'tool_call_id':message.get('tool_call_id'),'content_sha256':hashlib.sha256(str(content).encode()).hexdigest(),
+                             'parsed_result_sha256':canonical_hash(parsed) if isinstance(parsed,dict) else None,
+                             'tool_result':parsed if isinstance(parsed,dict) else None})
+        emit({'event':'http_dispatch_evidence','request_id':uid,'provider':provider,'tool_payloads':payloads,
+              'system_prompt_sha256':canonical_hash([m for m in body.get('messages',[]) if m.get('role')=='system']),
+              'scope':'Dispatch intent; successful HTTP/model response must be checked separately'})
 
 
 def settle(response,category,body):
