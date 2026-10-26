@@ -92,6 +92,16 @@ class ClaimAuditTests(unittest.TestCase):
     def test_self_contradiction_not_masked_by_one_correct_number(self):
         r=self.audit('预约有效期30分钟[P88]；预约有效期60分钟[P88]。')
         self.assertTrue(r['self_conflicts']);self.assertEqual(r['verdict'],'FAIL')
+    def test_explicit_query_and_modification_claims_require_actual_tools(self):
+        for text in ('我已经查询订单。','我已修改订单。','我已查询政策。','我已查询余票。'):
+            self.assertEqual(check_answer(text,self.hit())['status'],'failed',text)
+        event={'event':'tool_end','tool':'query_order','ok':True,'executed':True}
+        self.assertNotEqual(check_answer('我已查询订单。',self.hit(),events=[event])['status'],'failed')
+    def test_atomic_unknown_is_exposed_in_legacy_manual_review(self):
+        r=check_answer('当前助手仅支持模拟查票和政策咨询，无法实际执行锁座或支付操作。',self.hit())
+        self.assertTrue(any(x['reason']=='atomic_runtime_capability_evidence_missing' for x in r['manual_review']))
+    def test_ticket_result_header_not_misclassified_as_policy_query(self):
+        self.assertNotEqual(check_answer('根据余票查询结果：',self.hit())['status'],'failed')
     def test_real_whole_replies_have_no_missing_requirement_clause(self):
         root=Path(__file__).resolve().parent.parent
         saved=json.loads((root/'docs/evidence/v352/live/paired-report-resumed.json').read_text(encoding='utf-8'))

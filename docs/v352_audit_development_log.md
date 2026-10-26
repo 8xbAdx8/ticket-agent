@@ -13,3 +13,10 @@
 - 新层支持完整数量谓词、有限期限/未支付释放条件、明确新增条件/官方归因/版本或标题错误、同主体自相矛盾；用户引用/否定/不确定措辞分开。原full_semantic_faithfulness保留兼容的indeterminate，新增claim_audit按supported/contradicted/unsupported/indeterminate/not_applicable逐项输出，不覆盖原回答或历史判定。
 - 原模块未检查乘客列表要求，DeepSeek首句的15分钟支持也未证明后续条件。新层核对实际完整回答，两个模型各4条政策事实均可支持；政策查询事件与来源声明另核对。实际成功search_policy足以证明政策咨询能力，但Prompt不能证明其他运行时工具能力，未保存的实际tools schema与绑定证据缺口明确留下，不用“本轮没写操作”推断不可能写操作。
 - 首轮原回归发现新增句级来源绑定从用户引文误继承P99，已修复为先掩码引用再绑定，原失败日志保留；补无句末标点行解析与段落起点，避免静默漏掉header/footer。原55fixture与相关70项保持通过；新增25专项及7指标测试组合102通过、0失败、0跳过，全离线。
+
+## 原始证据重建与执行声明边界
+
+- 检测提交f9767e8已完整离线534通过、0失败、0跳过、89子测试通过；旧环境及两组八变异通过，3933旧文件和62个真实运行证据均不变，网络尝试0。
+- 新增scripts/audit_v352_faithfulness.py，从各次真实运行记录的Git SHA读取历史Prompt源码、按请求的北京时间日期重建SystemMessage，与已保存0fb2deaf...哈希完全匹配；用实际保存的parsed ToolMessage重建序列化文本，精确匹配content_sha256。明确标注重建，不虚构未保存的完整HTTP body/tools schema。
+- 直接读取Chroma独立副本的P11正文/元数据/向量签名，对照原政策、实际tool_end、第二次HTTP派发payload、原JSONL、原模型最终全文；不是用新模型评价旧模型。两Provider同证据/Prompt，历史代码SHA/时间不同需分别披露。
+- 再补明确“已查询订单/政策/余票”“已修改订单”的实际执行事件核验；新原子未知传播到原manual_review，旧数字检查标记仅证明数字绑定而非整句。追加3专项，组合105通过、0失败、0跳过。原模型回复和既有历史indeterminate旁证不改。

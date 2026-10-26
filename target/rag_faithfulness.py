@@ -146,10 +146,11 @@ def _contradicted_restriction(claim,rows):
 
 def _execution_claims(text,events):
     tools={'锁座':'lock_seat','下单':'create_order','创建订单':'create_order','支付':'pay_order',
-           '付款':'pay_order','取消订单':'cancel_order','退票':'cancel_order','退款':'cancel_order'}
+           '付款':'pay_order','取消订单':'cancel_order','退票':'cancel_order','退款':'cancel_order',
+           '查询订单':'query_order','查询政策':'search_policy','查询余票':'query_tickets','修改订单':'modify_order'}
     findings=[];checks=[]
     pattern=re.compile(r'(?:(?:(?:我|我们|系统|订单(?:\s*[A-Za-z0-9_-]+)?|操作)?(?:已经|已)(?:为你|为您|帮你|帮您)?)|成功(?:完成)?)\s*'
-                       r'(?:完成|成功)?\s*(锁座|创建订单|下单|支付|付款|取消订单|退票|退款)')
+                       r'(?:完成|成功)?\s*(锁座|创建订单|下单|支付|付款|取消订单|退票|退款|查询订单|查询政策|查询余票|修改订单)')
     for match in pattern.finditer(text):
         tail=text[match.end():match.end()+12]
         previous=text[max(0,match.start()-12):match.start()]
@@ -298,6 +299,12 @@ def check_answer(reply,hits,*,events=(),question='',policy_versions=None):
         if assertion['verdict'] in ('contradicted','unsupported'):
             findings.append({'type':'atomic_'+assertion['rule'],'claim':assertion['assertion'],
                 'basis':assertion['reason'],'claim_id':assertion['claim_id'],'evidence':assertion['evidence']})
+        elif assertion['verdict']=='indeterminate':
+            unknown.append({'claim':assertion['assertion'],'reason':'atomic_'+assertion['rule'],
+                            'claim_id':assertion['claim_id'],'evidence':assertion['evidence']})
+    for checked in checks:
+        if checked.get('status')=='supported_scoped_quantities':
+            checked['checked_scope']='quantity_bindings_only_not_the_entire_compound_sentence'
     status='failed' if findings else 'indeterminate' if unknown or atomic['verdict']=='INDETERMINATE' or not checks else 'checked_scoped_facts'
     return {'schema':'ticket-rag-faithfulness/1','status':status,'original_model_reply':reply,'question':question,
             'allowed_doc_ids':allowed,'cited_doc_ids':cited,'claim_checks':checks,'findings':findings,

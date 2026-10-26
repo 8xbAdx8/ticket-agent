@@ -182,7 +182,7 @@ def audit_claims(reply,hits,*,events=(),policy_versions=None,capability_evidence
                         label='supported' if value in values else 'contradicted'
                         reason='Payment deadline is bound to cited validity duration; unpaid-on-expiry condition retained';rule='bound_deadline_release'
         output.append({**atom,'claim_id':f'C{n:02}','cited_doc_ids':ids,'citation_binding':binding,'evidence':evidence,
-            'verdict':label,'reason':reason,'rule':rule,'severity':'high' if label in ('contradicted','unsupported') else 'low',
+            'verdict':label,'reason':reason,'rule':rule,'severity':'high' if label in ('contradicted','unsupported') else 'medium' if label=='indeterminate' else 'low',
             'needs_b_review':label in ('indeterminate','contradicted','unsupported')})
     duration_groups={}
     for row in output:
