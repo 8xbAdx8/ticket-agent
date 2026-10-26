@@ -99,9 +99,13 @@ def execute_pair(*,model_factory=None):
             answer=next((r for r in reversed(rag) if r.get('schema')=='ticket-rag-answer/1'),None)
             request_count=snapshot(AUTH/(provider+'-generation.db'),2)['reserved_requests']
             closure=bool(correct and delivered and raw and len([e for e in events if e.get('event')=='model_response'])==2)
+            expected_model='qwen3.8-flash' if provider=='bailian' else 'deepseek-flash'
+            identities=live.get('actual_models',[])
+            identity_verified=bool(identities and all(m==expected_model or m.startswith(expected_model+'-') for m in identities))
             record={'provider':provider,'evidence_mode':'offline_sdk_stub' if model_factory else 'real_api',
                 'status':('protocol_passed_guard_rejected' if error else 'protocol_passed') if closure else 'failed_or_incomplete',
-                'real_function_calling_verified':closure and model_factory is None,'agent_completed':bool(result and not error),
+                'real_function_calling_verified':closure and identity_verified and model_factory is None,
+                'model_identity_verified':identity_verified,'actual_models':identities,'agent_completed':bool(result and not error),
                 'protocol_closure':closure,'model_response_received':live.get('model_response_received',False),
                 'tool_execution_verified':correct,'tool_result_delivered_with_http200':delivered,
                 'policy_tool_call_count':len(tools),

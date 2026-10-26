@@ -16,7 +16,9 @@ def saved(name):
 
 
 def rag_page():
-    header('RAG 知识库','真实向量、政策来源和有限验收。票价/余票仍由query_tickets查询。','V3.5 · 模拟政策')
+    header('RAG 知识库','真实向量、政策来源和有限验收。票价/余票仍由query_tickets查询。','V3.5.2 · 模拟政策')
+    from web.rag_acceptance import render_acceptance
+    render_acceptance()
     model=st.selectbox('RAG 生成模型',['Qwen3.8-Flash Live','DeepSeek Live'],key='rag_generation_model')
     st.caption('模型ID：'+('qwen3.8-flash' if model.startswith('Qwen') else 'deepseek-flash')+' · Embedding：text-embedding-v4')
     try:
@@ -37,7 +39,7 @@ def rag_page():
     k=st.number_input('Top-K',min_value=1,max_value=10,value=3,step=1,key='rag_k')
     threshold=st.slider('向量cosine最低分',min_value=0.0,max_value=1.0,value=0.35,step=0.05,key='rag_threshold')
     question=st.text_input('政策问题',value='锁座后多久必须完成支付？',key='rag_question')
-    consent=st.checkbox('允许本次查询或建索引调用真实Embedding（会计费，受8次独立账本限制）',key='rag_network_consent')
+    consent=st.checkbox('本页只读取缓存；新付费验证请使用V3.5.2显式命令',value=False,disabled=True,key='rag_network_consent')
     offline=os.getenv('TICKET_WEB_OFFLINE_ONLY')=='1'
     if st.button('检索政策证据',key='rag_retrieve'):
         try:
@@ -60,7 +62,7 @@ def rag_page():
         st.caption('vector为cosine，keyword为字词重叠分，hybrid为RRF(k=60)，不同模式分值不能横向当概率。')
         with st.expander('完整检索正文和来源'):
             st.json(result)
-    st.subheader('真实验收回放与质量指标')
+    st.subheader('V3.5 历史真实验收回放与质量指标')
     evaluation=saved('retrieval-evaluation/report.json')
     if evaluation and evaluation.get('metrics'):
         st.dataframe([{'mode':m,**{k:v for k,v in r.items() if k!='rows'}} for m,r in evaluation['metrics'].items()],hide_index=True)

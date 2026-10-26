@@ -25,6 +25,7 @@ def evaluate(out,*,run=False,authorize=0):
     plan={'schema':'ticket-v352-embedding-plan/1','questions':len(cases),'cached_real_queries':survey['cached_real_queries'],
           'missing_queries':len(survey['missing_queries']),'required_new_requests':survey['new_request_upper_bound'],
           'batch_size':10,'fixed_new_limit':5,'generation_requests':0,'max_retries':0,
+          'embedding_model':settings.model,'dimensions':settings.dimensions,'endpoint':settings.base_url,
           'explicit_embedding_authorization':authorize if run else 0}
     new_json(out/'plan.json',plan);print(json.dumps(plan),flush=True)
     before=tree_hashes(BASELINE);error=None
@@ -34,6 +35,9 @@ def evaluate(out,*,run=False,authorize=0):
         from target.api_config import bootstrap
         bootstrap(ROOT)
         if not os.getenv('DASHSCOPE_API_KEY','').strip():raise ValueError('missing_DASHSCOPE_API_KEY')
+        configured=os.getenv('DASHSCOPE_EMBEDDING_BASE_URL',os.getenv('DASHSCOPE_BASE_URL',''))
+        if configured and configured.rstrip('/')!=settings.base_url.rstrip('/'):
+            raise ValueError('embedding_endpoint_differs_frozen_index_migration_required')
         new_json(AUTH/'embedding-attempt.json',{'explicit_command_authorization':5,'schema':'ticket-v352-attempt/1',
             'out':out.relative_to(ROOT).as_posix(),'input_dataset_sha256':{s:hashlib.sha256((ROOT/f'cases/rag_quality_v351_{s}.json').read_bytes()).hexdigest() for s in groups}})
         if not settings.cache.exists():

@@ -69,6 +69,7 @@ def guarded_client(settings, *, transport=None):
     import httpx
     address = endpoint()
     if os.getenv('TICKET_API_VALIDATION_PROFILE')=='v352':
+        if config.MODEL_NAME!='qwen3.8-flash':raise BailianError('v352_model_identity_required')
         from target.v352_validation import validate_generation_binding
         validate_generation_binding(settings,'bailian')
     elif config.MODEL_NAME=="qwen3.8-flash" and transport is None:
