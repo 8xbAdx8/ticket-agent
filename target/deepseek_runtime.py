@@ -226,6 +226,9 @@ def guarded_client(settings, *, transport=None):
     if os.getenv('TICKET_API_VALIDATION_PROFILE')=='v352':
         from target.v352_validation import validate_generation_binding
         validate_generation_binding(settings,'deepseek')
+    elif os.getenv('TICKET_API_VALIDATION_PROFILE')=='interactive':
+        from target.live_providers import validate_manual_binding
+        validate_manual_binding(settings,'deepseek')
     for name in ("httpx","httpcore"):
         logging.getLogger(name).setLevel(logging.WARNING)
     from target.request_accounting import budget_for, reserve, settle, client_class

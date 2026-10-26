@@ -2,7 +2,7 @@
 import uuid
 import streamlit as st
 from web.design import header, empty, escape, PROCESSING
-from web.runtime import Conversation, operation_kind, live_ready
+from web.runtime import Conversation, operation_kind, live_ready, failure_hint
 from web.presentation import ticket_cards, order_card, policy_cards
 
 
@@ -43,8 +43,8 @@ def user_page():
     def new_session():
         return Conversation("user",engine=st.session_state["default_engine"],live=st.session_state["default_live"],
                             live_provider=st.session_state.get("default_provider","deepseek"),
-                            live_model=st.session_state.get("default_live_model"),initial_budget=True)
-    signature=(st.session_state["default_engine"],st.session_state["default_live"],st.session_state.get("default_provider","deepseek"))
+                            live_model=st.session_state.get("default_live_model"),interactive=True)
+    signature=(st.session_state["default_engine"],st.session_state["default_live"],st.session_state.get("default_provider","deepseek"),'manual-live-v1')
     if not sessions:
         sessions.append(new_session())
         st.session_state["user_provider_signature"]=signature
@@ -61,8 +61,6 @@ def user_page():
     live_name="Qwen3.8-Flash" if session.live_provider=="bailian" and session.live_model=="qwen3.8-flash" else session.live_model or "Qwen (兼容旧配置)" if session.live_provider=="bailian" else "DeepSeek"
     header("出行助手","查询模拟余票，了解票务政策。每次回答都以工具结果为依据。",live_name+" Live · 只读" if session.live else "离线 Mock")
     st.caption("真实模型负责理解与工具选择；所有票务数据为模拟。Qwen3.8-Flash已有V3.5真实闭环记录，DeepSeek有历史证据；新会话不等于已验证成功。" if session.live else "当前使用离线规则模型，不产生模型 API 费用。支持 8 个模拟工具。")
-    if session.live and session.initial_budget:
-        st.info("Qwen3.8-Flash沿用V3.5独立4次总账（本轮已用完）；DeepSeek保留原历史预算。RAG查询Embedding另受8次账本与显式网络开关控制，不自动增额。")
     if not session.history:
         st.markdown('<div class="ta-welcome"><h2>下一段旅程，<br>从一句话开始。</h2><p>告诉我出发地、目的地和日期，或直接咨询退改与支付政策。</p></div>',unsafe_allow_html=True)
         a,b=st.columns(2)
@@ -71,7 +69,7 @@ def user_page():
         if b.button("锁座后多久必须完成支付？",width="stretch"):
             st.session_state["user_message"]="锁座后多久必须完成支付？"
     if session.error:
-        st.error("最近一次请求未完成，历史消息仍保留；没有把上次结果当作本次结果。")
+        st.error(failure_hint(session.error['category'])+' 错误类别：'+session.error['category'])
     for previous in session.history:
         with st.chat_message("user",avatar=":material/person:"):
             st.write(previous["user_msg"])
@@ -90,7 +88,9 @@ def user_page():
     with st.form("user_compose"):
         message=st.text_input("输入消息",key="user_message",placeholder="例如：查明天上海到杭州的高铁二等座")
         allow_live=st.checkbox("确认发送真实 "+live_name+" 请求（会产生 API 费用）",key="user_allow_live") if session.live else False
-        send=st.form_submit_button("发送",type="primary",disabled=session.live and not live_ready(session.live_provider))
+        send=st.form_submit_button("发送",type="primary",disabled=session.live and (not live_ready(session.live_provider) or (session.initial_budget and not session.interactive)))
+    if session.live and session.initial_budget and not session.interactive:
+        st.info('该历史验收会话保留供回放。点击“新建会话”进入日常在线模式。')
     if session.live and not live_ready(session.live_provider):
         st.info(live_name+" 未配置完整或本次为离线验收。可查看历史证据；不会自动切换 Mock。")
     if send and message.strip():
@@ -129,7 +129,7 @@ def show_remote_export(session):
     from target.observability import configuration_status,UPLOAD_SCOPE,export_payload
     state=configuration_status()
     with st.expander("LangSmith 可选远端追踪"):
-        st.caption("状态："+state["state"]+"；打开本区域不会上传。")
+        st.caption('状态：'+('已启用脱敏导出，等待本轮导出核验' if state['enabled'] else '脱敏导出未开启')+'；打开本区域不会上传。')
         st.write(UPLOAD_SCOPE)
         run=session.agent.langchain_engine.last_live_run if session.agent and session.agent.langchain_engine else None
         if run:

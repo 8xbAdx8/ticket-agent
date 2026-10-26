@@ -21,6 +21,8 @@ ROOT=Path(__file__).resolve().parent.parent
 
 def build_environment(mode, runtime_root, inherited=None):
     env=dict(os.environ if inherited is None else inherited)
+    if 'TICKET_LANGSMITH_EXPORT_ENABLED' not in env and any(env.get(k,'').lower()=='true' for k in ('LANGCHAIN_TRACING_V2','LANGSMITH_TRACING')):
+        env['TICKET_LANGSMITH_EXPORT_ENABLED']='true'
     original_limit=env.get("DEEPSEEK_MAX_REQUESTS", "0")
     for name in list(env):
         if name.startswith("DEEPSEEK_") and name!="DEEPSEEK_API_KEY":env.pop(name)
@@ -33,10 +35,13 @@ def build_environment(mode, runtime_root, inherited=None):
         STREAMLIT_BROWSER_GATHER_USAGE_STATS="false")
     if mode=="offline":
         env.pop("DEEPSEEK_API_KEY",None)
+        env.pop('DASHSCOPE_API_KEY',None)
+        env.update(TICKET_WEB_OFFLINE_ONLY='1',TICKET_DISABLE_LOCAL_SECRETS='1',TICKET_LANGSMITH_EXPORT_ENABLED='false')
         env.update(AGENT_RAG_MODE="",RAG_ALLOW_NETWORK="0")
         env.update(AGENT_PROVIDER="mock",AGENT_ENGINE="legacy",AGENT_LC_TOOLSET="all",AGENT_MODEL="mock-offline",
                    AGENT_BASE_URL="https://api.deepseek.com")
     elif mode=="live":
+        env.update(TICKET_WEB_OFFLINE_ONLY='0',TICKET_DISABLE_LOCAL_SECRETS='0')
         if "DEEPSEEK_API_KEY" in env:env["DEEPSEEK_API_KEY"]=env["DEEPSEEK_API_KEY"].strip()
         if original_limit not in ("0","1","2","3","4","5"):
             raise ValueError("DEEPSEEK_MAX_REQUESTS 必须是 0—5；0 表示此前授权的手动不限累计次数模式。")
@@ -134,6 +139,9 @@ def main(argv=None):
         if not runtime.is_relative_to(base) or runtime==base:
             raise ValueError("启动数据目录必须是项目 artifacts/runtime 下的独立子目录。")
         env=build_environment(args.mode,runtime)
+        if args.mode=='live':
+            # This launcher opens the daily Web UI, independently of older CLI limits.
+            env.update(DEEPSEEK_MAX_REQUESTS='0',DEEPSEEK_BUDGET_PATH=str(ROOT/'artifacts/runtime/manual-live/deepseek/requests.db'))
         missing=missing_dependencies(args.mode)
         if missing:
             print("缺少运行依赖："+", ".join(missing))
@@ -166,8 +174,8 @@ def main(argv=None):
         print("\n离线模式：Mock，支持全部八个模拟工具，不调用模型 API。" if args.mode=="offline" else
               "\n在线模式：DeepSeek Live，仅模拟查票和政策咨询。点击网页发送才调用真实模型并产生费用。",flush=True)
         if args.mode=="live":
-            print("V3.3 新版模型选择器：DeepSeek/百炼初次合计最多 3 次生成请求，独立记账；"
-                  "一轮工具对话通常需要 2 次。正式 5/5 及旧手动账本不变，零自动重试。",flush=True)
+            print("网页日常对话：DeepSeek/千问使用各自手动账本，不设累计请求次数上限；每次点击发送才产生费用。"
+                  "单轮防循环与零自动重试仍生效，旧验收账本保留。",flush=True)
         print("数据库："+state["database"]+"\nTrace："+state["trace_dir"],flush=True)
         prepare_database(env)
         return serve(env,port,open_browser=not args.no_browser)

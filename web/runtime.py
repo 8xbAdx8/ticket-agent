@@ -63,6 +63,7 @@ class Conversation:
     live_model: str | None = None
     case_id: str | None = None
     initial_budget: bool = False
+    interactive: bool = False
     mutations: dict = field(default_factory=dict)
     root: Path | None = None
     sid: str = field(default_factory=lambda: "web-"+uuid.uuid4().hex[:12])
@@ -103,7 +104,14 @@ class Conversation:
                     MODEL_NAME=model if self.live else "langchain-mock" if self.engine=="langchain" else "mock-offline",
                     BASE_URL=address if self.live else "https://api.deepseek.com", API_KEY=os.getenv(cfg["key_env"],"") if self.live else "")
 
-    def send(self, message, request_id):
+    def send(self,message,request_id):
+        self.error=None
+        try:return self._send(message,request_id)
+        except Exception as exc:
+            if self.error is None:self.error={'type':type(exc).__name__,**safe_error(exc)}
+            raise
+
+    def _send(self, message, request_id):
         if request_id in self.receipts:
             return self.receipts[request_id]
         if self.live and not live_ready(self.live_provider):
@@ -120,7 +128,10 @@ class Conversation:
             env["DEEPSEEK_LIVE_TEST_PROFILE"]="read_only"
             # New provider selector gets separate ledgers and a shared initial-three ceiling.
             # Keep existing explicit DeepSeek launcher settings for compatibility tests/entry.
-            if self.initial_budget or self.live_provider=="bailian":
+            if self.interactive:
+                from target.live_providers import manual_environment
+                env.update(manual_environment(self.live_provider,self.root,model=self.live_model))
+            elif self.initial_budget or self.live_provider=="bailian":
                 from target.live_providers import isolated_environment
                 env.update(isolated_environment(self.live_provider,self.root,
                     profile="v35" if self.live_model=="qwen3.8-flash" else None))
@@ -161,6 +172,7 @@ class Conversation:
                     self.audits.append(self.agent.last_audit_report)
                 raise
 
+
     def export_last(self, *, consent=False, transport=None):
         if not self.agent or not self.agent.langchain_engine or not self.agent.langchain_engine.last_live_run:
             raise ValueError("No saved Live run available")
@@ -178,6 +190,22 @@ class Conversation:
             records=[probe(scenario, save=True, trace_dir=self.trace_dir), probe(scenario, mutant=True, save=True, trace_dir=self.trace_dir)]
         self.audits.extend(records)
         return records
+
+
+def failure_hint(category):
+    messages={
+        'historical_unlinked_ledger_requires_new_validation_pair':'这个历史会话使用了旧验收账本。请新建日常在线会话，历史记录仍可回放。',
+        'request_budget_exhausted':'该验收会话额度已用完。日常使用请新建手动在线会话，旧账不需要清空。',
+        'missing_DEEPSEEK_API_KEY':'未读取到DeepSeek Key，请重新启动在线入口。',
+        'missing_DASHSCOPE_API_KEY':'未读取到千问Key，请核对DASHSCOPE_API_KEY后重新启动。',
+        'authentication_failed':'模型服务拒绝了Key，请检查有效性。',
+        'insufficient_balance':'模型账户余额或可用额度不足。',
+        'timeout':'模型请求超时，本次未自动重试。',
+        'network_connection':'模型网络连接失败，请检查本机网络或代理。',
+        'reply_data_indeterminate':'模型已返回，但回答与工具数据的自动核对未能确定通过；请在Trace查看证据。这不是联网失败。',
+        'reply_tool_mismatch':'模型回答与工具数据不一致，已拦截该回答；请在Trace查看具体字段。',
+        'token_usage_unknown':'模型未提供可核对的Token用量，原始旁证已保留。'}
+    return messages.get(category,'请求未完成，本次未自动重试；可在Trace中查看详细旁证。')
 
 
 def operation_kind(message):

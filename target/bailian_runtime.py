@@ -31,8 +31,9 @@ class Settings(DeepSeekSettings):
                 ledger_path=Path(os.getenv("BAILIAN_BUDGET_PATH", str(cls.ledger_path))))
         except ValueError:
             raise BailianError("invalid_safety_limits") from None
+        interactive=os.getenv('TICKET_API_VALIDATION_PROFILE')=='interactive'
         ceiling=4 if os.getenv("TICKET_API_VALIDATION_PROFILE")=="v35" else 3
-        if not 1 <= settings.max_requests <= ceiling or not 1 <= settings.timeout <= 60 or not 1<=settings.max_model_calls<=4:
+        if not (settings.max_requests==0 if interactive else 1<=settings.max_requests<=ceiling) or not 1 <= settings.timeout <= 60 or not 1<=settings.max_model_calls<=4:
             raise BailianError("invalid_safety_limits")
         formal = config.BASE_DIR / "artifacts/runtime/deepseek-budget/requests.db"
         deep = Path(os.getenv("DEEPSEEK_BUDGET_PATH", str(formal)))
@@ -68,7 +69,10 @@ def validate_configuration():
 def guarded_client(settings, *, transport=None):
     import httpx
     address = endpoint()
-    if os.getenv('TICKET_API_VALIDATION_PROFILE')=='v352':
+    if os.getenv('TICKET_API_VALIDATION_PROFILE')=='interactive':
+        from target.live_providers import validate_manual_binding
+        validate_manual_binding(settings,'bailian')
+    elif os.getenv('TICKET_API_VALIDATION_PROFILE')=='v352':
         if config.MODEL_NAME!='qwen3.8-flash':raise BailianError('v352_model_identity_required')
         from target.v352_validation import validate_generation_binding
         validate_generation_binding(settings,'bailian')

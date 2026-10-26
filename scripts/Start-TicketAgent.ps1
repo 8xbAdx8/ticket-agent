@@ -14,6 +14,19 @@ $env:PYTHONUTF8 = '1'
 if ($Mode -eq 'live' -and [string]::IsNullOrWhiteSpace($env:DEEPSEEK_API_KEY)) {
     $env:DEEPSEEK_API_KEY = [Environment]::GetEnvironmentVariable('DEEPSEEK_API_KEY', 'User')
 }
+if ($Mode -eq 'live') {
+    foreach ($name in @('DASHSCOPE_API_KEY','DASHSCOPE_BASE_URL','DASHSCOPE_MODEL','DEEPSEEK_MODEL','DEEPSEEK_BASE_URL',
+            'LANGCHAIN_API_KEY','LANGCHAIN_ENDPOINT','LANGCHAIN_PROJECT','LANGCHAIN_WORKSPACE_ID',
+            'LANGSMITH_API_KEY','LANGSMITH_ENDPOINT','LANGSMITH_PROJECT','LANGSMITH_WORKSPACE_ID')) {
+        if ([string]::IsNullOrWhiteSpace([Environment]::GetEnvironmentVariable($name,'Process'))) {
+            $configuredValue = [Environment]::GetEnvironmentVariable($name,'User')
+            if (-not [string]::IsNullOrWhiteSpace($configuredValue)) {
+                [Environment]::SetEnvironmentVariable($name,$configuredValue,'Process')
+            }
+        }
+    }
+    Remove-Variable configuredValue -ErrorAction SilentlyContinue
+}
 $pythonPath = $null
 foreach ($folder in @('.venv-v35', '.venv-deepseek', '.venv-v3', '.venv')) {
     $candidate = Join-Path $projectRoot "$folder\Scripts\python.exe"

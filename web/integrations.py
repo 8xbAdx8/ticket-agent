@@ -36,6 +36,7 @@ def registry():
     lc = importlib.util.find_spec("langchain") is not None
     graph = importlib.util.find_spec("langgraph") is not None
     key = bool(os.getenv("DEEPSEEK_API_KEY", "").strip())
+    offline=os.getenv('TICKET_WEB_OFFLINE_ONLY')=='1'
     from target.observability import configuration_status
     from target.live_providers import configuration
     ls = configuration_status()
@@ -43,10 +44,10 @@ def registry():
     from target.tools import TOOL_NAMES
     return [ProviderCapability("Legacy Mock", True, True, "离线可用", "A 基线 / B 独立测试", tuple(TOOL_NAMES), "规则模型，不是自主大模型"),
         ProviderCapability("LangChain Mock", True, lc, "依赖已安装" if lc else "缺少依赖", "B 双引擎独立回归", tuple(TOOL_NAMES), "Mock 模型经真实 create_agent 框架执行"),
-        ProviderCapability("DeepSeek Live", True, key, "已配置但本轮未联网" if key else "未配置", "历史真实证据；V3.3 尚未验证", ("query_tickets", "search_policy"), "默认只读；打开本页不会发送请求"),
+        ProviderCapability("DeepSeek Live", True, key, ("已配置，当前为离线验收" if offline else "已配置，可发送真实请求") if key else "未配置", "V3.5.2已有真实search_policy闭环；当前会话以实际执行记录为准", ("query_tickets", "search_policy"), "日常对话使用独立手动账本；只读，打开本页不发送请求"),
         ProviderCapability("LangGraph 执行增强", True, graph, "已有 create_agent 图执行与 InMemorySaver", "本地 Mock 运行路径已验证", (), "自定义图、持久化 checkpoint、人工 interrupt、失败恢复尚未实现"),
         ProviderCapability("LangSmith", True, ls["key_configured"],
-            {"user_disabled":"用户主动关闭","not_configured":"未配置","configured_unverified":"已配置但未验证"}.get(ls["state"],"配置错误"),
+            {"user_disabled":"脱敏导出未开启","not_configured":"未配置","configured_unverified":"已启用脱敏导出；当前远端待核验"}.get(ls["state"],"配置错误"),
             "以单次导出回执为准；未自动验证", (), "显式确认后仅导出白名单记录，POST + GET 回读验证；本地审计独立保留"),
         ProviderCapability("Qwen3.8-Flash Live", True, bailian["configured"], "已配置，单次状态以证据为准" if bailian["configured"] else "未配置",
             "V3.5已有保存的真实闭环及RAG样本；不代表当前Key实时验证", ("query_tickets","search_policy"), "适配服务：阿里云百炼；模型ID qwen3.8-flash。显式旧模型只作兼容，不回退；独立预算、只读")]
@@ -68,6 +69,12 @@ def integrations_page():
             left.caption(row.availability)
             right.write(row.limits)
             right.caption("验证：" + row.verification + " · 工具：" + (" / ".join(row.tools) or "不适用 / 未开放"))
+    from target.observability import configuration_status,set_export_enabled
+    status=configuration_status()
+    st.caption('LangSmith开关仅控制脱敏白名单导出；SDK自动上传完整会话保持关闭。')
+    if os.getenv('TICKET_WEB_OFFLINE_ONLY')!='1':
+        if st.button('关闭LangSmith脱敏导出' if status['enabled'] else '启用LangSmith脱敏导出',disabled=not status['key_configured']):
+            set_export_enabled(not status['enabled']);st.rerun()
     with st.expander("安装版本与未来配置接口"):
         versions = {}
         for name in ("streamlit", "altair", "langchain", "langgraph", "langchain-deepseek", "langsmith"):

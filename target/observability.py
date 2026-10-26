@@ -14,6 +14,30 @@ from target.diagnostics import sanitize, digest
 
 UPLOAD_SCOPE = ("本轮用户输入、固定只读系统提示、最终回复、两个只读工具的白名单参数及模拟结果、"
                 "模型/用量/耗时/错误类别和本地 Trace ID；不上传完整会话、认证信息、原始思维链、订单或旁证全文。")
+PREFERENCES=Path(__file__).resolve().parent.parent/'artifacts/runtime/ui-preferences.json'
+
+
+def set_export_enabled(enabled):
+    """Project-local switch only; no key, HTTP request or automatic callback."""
+    if type(enabled) is not bool:raise ValueError('boolean_export_switch_required')
+    PREFERENCES.parent.mkdir(parents=True,exist_ok=True)
+    temp=PREFERENCES.with_name(PREFERENCES.name+'.'+uuid.uuid4().hex+'.tmp')
+    temp.write_text(json.dumps({'schema':'ticket-ui-preferences/1','langsmith_export_enabled':enabled}),encoding='utf-8')
+    temp.replace(PREFERENCES)
+    # Let the UI toggle take effect even when the launcher inherited an explicit flag.
+    os.environ['TICKET_LANGSMITH_EXPORT_ENABLED']='true' if enabled else 'false'
+
+
+def export_enabled():
+    explicit=os.getenv('TICKET_LANGSMITH_EXPORT_ENABLED')
+    if explicit is not None:
+        if explicit.lower() not in ('true','false'):raise ValueError('invalid_export_switch')
+        return explicit.lower()=='true'
+    if not (os.getenv('TICKET_OFFLINE_GUARD_LOG') or os.getenv('TICKET_DISABLE_LOCAL_SECRETS')=='1' or os.getenv('TICKET_WEB_OFFLINE_ONLY')=='1') and PREFERENCES.exists():
+        value=json.loads(PREFERENCES.read_text(encoding='utf-8'))['langsmith_export_enabled']
+        if type(value) is not bool:raise ValueError('invalid_export_preference')
+        return value
+    return _setting('LANGCHAIN_TRACING_V2','LANGSMITH_TRACING','false').lower()=='true'
 
 
 def _setting(old, new, default=""):
@@ -25,7 +49,7 @@ def settings():
     key = _setting("LANGCHAIN_API_KEY", "LANGSMITH_API_KEY")
     endpoint = _setting("LANGCHAIN_ENDPOINT", "LANGSMITH_ENDPOINT", "https://api.smith.langchain.com")
     project = _setting("LANGCHAIN_PROJECT", "LANGSMITH_PROJECT", "ticket-agent-v33")
-    enabled = _setting("LANGCHAIN_TRACING_V2", "LANGSMITH_TRACING", "false").lower() == "true"
+    enabled = export_enabled()
     address = urlsplit(endpoint)
     if (address.scheme != "https" or not address.hostname or address.username or address.password
             or address.query or address.fragment or address.path not in ("", "/")):
@@ -39,7 +63,7 @@ def configuration_status():
         return {"state":"not_configured" if not key else "user_disabled" if not enabled else "configured_unverified",
                 "key_configured":bool(key), "enabled":enabled, "endpoint":endpoint, "project":project,
                 "scope":UPLOAD_SCOPE,"automatic_framework_export":False}
-    except ValueError:
+    except (ValueError,KeyError,OSError):
         return {"state":"configuration_error","enabled":False,"key_configured":False,"automatic_framework_export":False}
 
 
