@@ -20,7 +20,9 @@ def scope(**values):
 
 def configured_index():
     from target.rag_store import PolicyIndex,ROOT
-    return PolicyIndex(Path(os.getenv('RAG_INDEX_DIR',str(ROOT/'artifacts/runtime/v35-rag/index'))))
+    from target.rag_protection import is_baseline,ProtectedPolicyIndex
+    path=Path(os.getenv('RAG_INDEX_DIR',str(ROOT/'artifacts/runtime/v35-rag/index')))
+    return ProtectedPolicyIndex(path) if is_baseline(path) else PolicyIndex(path)
 
 
 def retrieve(question,mode=None,*,allow_network=False,k=None,threshold=None):

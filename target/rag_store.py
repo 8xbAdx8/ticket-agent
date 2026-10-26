@@ -71,6 +71,8 @@ class PolicyIndex:
         return {**identity,'index_version':digest(identity)[:24]},chunks
 
     def client(self):
+        from target.rag_protection import is_baseline
+        if is_baseline(self.path):raise RagError('immutable_chroma_baseline_open_forbidden')
         try:
             import chromadb
             from chromadb.config import Settings
@@ -106,6 +108,8 @@ class PolicyIndex:
             return {'state':'unavailable','category':str(exc) if isinstance(exc,RagError) else 'configuration_error','network_requests':0}
 
     def build(self,*,allow_network=False,rebuild=False):
+        from target.rag_protection import is_baseline
+        if is_baseline(self.path):raise RagError('immutable_chroma_baseline_rebuild_forbidden')
         expected,chunks=self.expected()
         if (self.path/'manifest.json').exists() and not rebuild:
             state,_=self.load();return {**state,'reused':True,'new_embedding_requests':0}
