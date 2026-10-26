@@ -15,7 +15,7 @@ AVAILABLE=all(importlib.util.find_spec(n) for n in ('chromadb','langchain_deepse
 
 @unittest.skipUnless(AVAILABLE,'Both SDKs and actual Chroma are required; never paid requests')
 class PairProtocolTests(unittest.TestCase):
-    def exercise(self,behavior):
+    def exercise(self,behavior,resume=False):
         import httpx
         import target.v352_validation as validation
         from scripts.verify_v352_live import execute_pair
@@ -25,9 +25,14 @@ class PairProtocolTests(unittest.TestCase):
         with tempfile.TemporaryDirectory(dir=validation.ROOT/'artifacts/runtime',ignore_cleanup_errors=True) as folder:
             auth=Path(folder)/'authorization'
             env={'DEEPSEEK_API_KEY':'offline-v352-only','DASHSCOPE_API_KEY':'offline-v352-only',
-                'DASHSCOPE_BASE_URL':'https://dashscope.aliyuncs.com/compatible-mode/v1','DASHSCOPE_MODEL':'qwen3.8-flash',
+                'DASHSCOPE_BASE_URL':'https://dashscope.aliyuncs.com/compatible-mode/v1','DASHSCOPE_MODEL':'qwen-plus',
                 'TICKET_DISABLE_LOCAL_SECRETS':'1','LANGCHAIN_TRACING_V2':'false','LANGSMITH_TRACING':'false'}
             def factory(provider,runtime):
+                import config
+                self.assertEqual(config.MODEL_NAME,'qwen3.8-flash' if provider=='bailian' else 'deepseek-flash')
+                if resume and provider=='bailian' and not (auth/'paired-report.json').exists():
+                    from target.deepseek_runtime import DeepSeekError
+                    raise DeepSeekError('v352_model_identity_required')
                 calls=payloads.setdefault(provider,[])
                 model_id='qwen3.8-flash' if provider=='bailian' else 'deepseek-flash'
                 def respond(request):
@@ -55,12 +60,37 @@ class PairProtocolTests(unittest.TestCase):
                     self.assertFalse(row['real_function_calling_verified'])
                 with self.assertRaises(FileExistsError),redirect_stdout(io.StringIO()):execute_pair(model_factory=factory)
                 self.assertEqual(sum(len(rows) for rows in payloads.values()),sum(r['generation_requests'] for r in report['records']))
+                if resume:
+                    original=(auth/'paired-report.json').read_bytes();marker=(auth/'generation-attempt.json').read_bytes()
+                    deep_ledger=(auth/'deepseek-generation.db').read_bytes()
+                    deep_report=(auth/'runs/deepseek/report.json').read_bytes()
+                    self.assertEqual(report['records'][0]['generation_requests'],0)
+                    self.assertEqual(len(payloads['deepseek']),2)
+                    with redirect_stdout(io.StringIO()):report=execute_pair(model_factory=factory,resume_unattempted_qwen=True)
+                    self.assertEqual((auth/'paired-report.json').read_bytes(),original)
+                    self.assertEqual((auth/'generation-attempt.json').read_bytes(),marker)
+                    self.assertEqual((auth/'deepseek-generation.db').read_bytes(),deep_ledger)
+                    self.assertEqual((auth/'runs/deepseek/report.json').read_bytes(),deep_report)
+                    self.assertEqual({k:len(v) for k,v in payloads.items()},{'deepseek':2,'bailian':2})
+                    self.assertTrue((auth/'paired-report-resumed.json').is_file())
+                    self.assertFalse(report['records'][0]['real_function_calling_verified'])
+                    from target.request_accounting import snapshot
+                    self.assertEqual(snapshot(auth/'generation-total.db',4)['reserved_requests'],4)
+                    embedding.assert_not_called()
+                with self.assertRaisesRegex(ValueError,'resume_requires_zero_qwen_dispatch'),redirect_stdout(io.StringIO()):
+                    execute_pair(model_factory=factory,resume_unattempted_qwen=True)
                 output=os.getenv('V352_PROTOCOL_EVIDENCE_OUT')
                 if output:
                     destination=Path(output);destination.mkdir(parents=True,exist_ok=True)
                     from target.diagnostics import sanitize
                     (destination/(behavior+'.json')).write_text(json.dumps(sanitize(report),ensure_ascii=False,indent=2),encoding='utf-8')
                 return report
+
+    def test_local_zero_http_failure_can_only_resume_unused_qwen_budget(self):
+        r=self.exercise('good',resume=True)
+        self.assertTrue(r['same_tool_evidence_verified']);self.assertTrue(r['same_system_prompt_verified'])
+        self.assertEqual(r['real_generation_requests_this_command'],0)
+        self.assertTrue(all(x['protocol_closure'] for x in r['records']))
 
     def test_pair_receives_identical_actual_chroma_tool_results(self):
         r=self.exercise('good')

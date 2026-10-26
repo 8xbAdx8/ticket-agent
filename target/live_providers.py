@@ -64,4 +64,5 @@ def isolated_environment(provider, root, *, profile=None):
             AGENT_MODEL='qwen3.8-flash' if provider=='bailian' else 'deepseek-flash',
             AGENT_RAG_MODE='hybrid',RAG_QUALITY_PROFILE='v351',RAG_TOP_K='3',RAG_VECTOR_THRESHOLD='0.35',RAG_ALLOW_NETWORK='0',
             LANGCHAIN_TRACING_V2='false',LANGSMITH_TRACING='false')
+        if provider=='bailian':env['DASHSCOPE_MODEL']='qwen3.8-flash'
     return env

@@ -26,6 +26,9 @@ def main():
         from target.rag_protection import BASELINE
         files.update(p for p in BASELINE.rglob('*') if p.is_file())
         protected={p.relative_to(ROOT).as_posix():hashlib.sha256(p.read_bytes()).hexdigest() for p in files}
+    from target.v352_validation import AUTH
+    live_protected={p.relative_to(ROOT).as_posix():hashlib.sha256(p.read_bytes()).hexdigest()
+                    for p in AUTH.rglob('*') if p.is_file()}
     guard=out/'guard';guard.mkdir();(guard/'sitecustomize.py').write_text(GUARD,encoding='utf-8')
     env=dict(os.environ)
     for name in list(env):
@@ -53,14 +56,16 @@ def main():
         compatibility=json.loads((out/'compatibility/report.json').read_text(encoding='utf-8'))
     run('retrieval48',[sys.executable,'scripts/evaluate_v352_rag.py','--out',str(out/'retrieval')])
     changed=[p for p,h in protected.items() if not (ROOT/p).is_file() or hashlib.sha256((ROOT/p).read_bytes()).hexdigest()!=h]
+    changed_live=[p for p,h in live_protected.items() if not (ROOT/p).is_file() or hashlib.sha256((ROOT/p).read_bytes()).hexdigest()!=h]
     blocked=sum(len(p.read_text(encoding='utf-8').splitlines()) for p in out.rglob('*blocked*network*.jsonl'))
     result={'schema':'ticket-v352-offline/1','tested_source_head':subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip(),
-        'status':'passed' if all(r['exit_code']==0 for r in runs) and not changed and not blocked and (args.current_only or compatibility['status']=='passed') else 'failed',
+        'status':'passed' if all(r['exit_code']==0 for r in runs) and not changed and not changed_live and not blocked and (args.current_only or compatibility['status']=='passed') else 'failed',
         'pytest':{'passed':int(passed[1]) if passed else None,'subtests_passed':int(subtests[1]) if subtests else 0,'junit':junit},
         'runs':runs,'compatibility':compatibility,'protected_files':len(protected),'changed_original_files':changed,
+        'existing_v352_evidence_files_protected':len(live_protected),'changed_existing_v352_evidence_files':changed_live,
         'source_index_byte_unchanged_this_version':not any('/v35-rag/index/' in p for p in changed),
         'prior_v351_incident_preserved':True,'real_generation_requests':0,'real_embedding_requests':0,'langsmith_requests':0,
-        'blocked_network_attempts':blocked,'scope':'A offline acceptance; missing real vectors and unexecuted Live remain unverified.'}
+        'blocked_network_attempts':blocked,'scope':'A offline acceptance only; real retrieval and Live evidence are reported separately.'}
     (out/'report.json').write_text(json.dumps(result,ensure_ascii=False,indent=2),encoding='utf-8')
     print(json.dumps({k:v for k,v in result.items() if k!='compatibility'}));return 0 if result['status']=='passed' else 1
 

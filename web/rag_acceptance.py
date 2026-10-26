@@ -19,7 +19,9 @@ def provider_view(report,provider):
     record=next((r for r in report.get('records',[]) if r.get('provider')==provider),None)
     if record is None:return {'label':'未验证','record':None,'reason':'该Provider没有本轮记录'}
     verified=bool(record.get('real_function_calling_verified') and record.get('evidence_mode')=='real_api'
-        and report.get('same_tool_evidence_verified') and report.get('same_system_prompt_verified') and report.get('source_index_unchanged'))
+        and record.get('tool_result_delivered_with_http200') and report.get('source_index_unchanged'))
+    if not record.get('real_generation_requests'):
+        return {'label':'未验证（配置阶段失败，0次请求）','record':record,'reason':'没有真实派发，不计API失败或Live成功'}
     return {'label':'真实工具闭环已验证' if verified else '已执行但未通过/未完成','record':record,
             'reason':'协议、证据和回答质量分别判断'}
 
@@ -27,7 +29,9 @@ def provider_view(report,provider):
 def render_acceptance():
     st.subheader('V3.5.2 双模型真实RAG验收')
     st.caption('同一问题：'+QUESTION+' · Hybrid / Top-K 3 / cosine 0.35 / v351规则。刷新与回放不请求API。')
-    report=load_evidence(AUTH/'paired-report.json',ROOT/'docs/evidence/v352/live/paired-report.json')
+    report=load_evidence(AUTH/'paired-report-resumed.json',ROOT/'docs/evidence/v352/live/paired-report-resumed.json')
+    if report is None:report=load_evidence(AUTH/'paired-report.json',ROOT/'docs/evidence/v352/live/paired-report.json')
+    st.caption('双模型同证据/同Prompt对照：'+('已验证' if report and report.get('evidence_mode')=='real_api' and report.get('same_tool_evidence_verified') and report.get('same_system_prompt_verified') else '未完成'))
     cols=st.columns(2)
     for col,provider,name in zip(cols,('bailian','deepseek'),('Qwen3.8-Flash','DeepSeek Flash')):
         view=provider_view(report,provider)

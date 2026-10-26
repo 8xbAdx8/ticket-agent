@@ -50,7 +50,7 @@ def environment(values):
         importlib.reload(config)
 
 
-def execute_pair(*,model_factory=None):
+def execute_pair(*,model_factory=None,resume_unattempted_qwen=False):
     from target.v352_validation import AUTH,QUESTION,read,new_json,canonical_hash,embedding_settings,cache_survey
     from target.rag_protection import BASELINE,tree_hashes,hash_tree,copy_workspace
     from target.request_accounting import snapshot
@@ -64,11 +64,32 @@ def execute_pair(*,model_factory=None):
         raise ValueError('policy_corpus_changed_before_generation')
     if cache_survey([QUESTION],embedding_settings(),AUTH/'prepared/embedding-cache.db')['missing_queries']:
         raise ValueError('frozen_query_cache_integrity_failed')
-    new_json(AUTH/'generation-attempt.json',{'explicit_command_authorization':4,'provider_limits':{'bailian':2,'deepseek':2},
-        'evidence_mode':'offline_sdk_stub' if model_factory else 'real_api','tool_result_sha256':frozen['tool_result_sha256']})
-    records=[];before=tree_hashes(BASELINE)
-    for provider in ('bailian','deepseek'):
-        root=AUTH/'runs'/provider;root.mkdir(parents=True,exist_ok=False)
+    records=[];continued_from=None
+    if resume_unattempted_qwen:
+        previous=read(AUTH/'paired-report.json')
+        qwen=next(r for r in previous['records'] if r['provider']=='bailian')
+        deep=next(r for r in previous['records'] if r['provider']=='deepseek')
+        state=snapshot(AUTH/'generation-total.db',4)
+        deep_state=snapshot(AUTH/'deepseek-generation.db',2)
+        expected_mode='offline_sdk_stub' if model_factory else 'real_api'
+        if (qwen['generation_requests']!=0 or (qwen.get('error') or {}).get('category')!='v352_model_identity_required'
+            or not deep['protocol_closure'] or not deep['agent_completed']
+            or previous.get('evidence_mode')!=expected_mode or deep['generation_requests']!=2
+            or read(AUTH/'generation-attempt.json').get('explicit_command_authorization')!=4
+            or snapshot(AUTH/'bailian-generation.db',2)['reserved_requests']!=0
+            or len(state['requests'])!=2 or any(r['provider']!='deepseek' or r['status']!=200 for r in state['requests'])
+            or state['requests']!=deep_state['requests']):
+            raise ValueError('resume_requires_zero_qwen_dispatch_and_completed_deepseek')
+        continued_from=hashlib.sha256((AUTH/'paired-report.json').read_bytes()).hexdigest()
+        new_json(AUTH/'qwen-unattempted-resume.json',{'reason':'Local configuration rejected before any Qwen HTTP; no API retry',
+            'original_report_sha256':continued_from,'existing_shared_used':2,'remaining_qwen_limit':2,'new_budget_created':False})
+        records=[deep]
+    else:
+        new_json(AUTH/'generation-attempt.json',{'explicit_command_authorization':4,'provider_limits':{'bailian':2,'deepseek':2},
+            'evidence_mode':'offline_sdk_stub' if model_factory else 'real_api','tool_result_sha256':frozen['tool_result_sha256']})
+    before=tree_hashes(BASELINE);new_requests=0
+    for provider in (('bailian',) if resume_unattempted_qwen else ('bailian','deepseek')):
+        root=AUTH/'runs'/(provider+'-resumed' if resume_unattempted_qwen else provider);root.mkdir(parents=True,exist_ok=False)
         workspace,_=copy_workspace(BASELINE,root/'chroma-work')
         shutil.copyfile(AUTH/'prepared/embedding-cache.db',workspace/'embedding-cache.db')
         env=isolated_environment(provider,root,profile='v352')
@@ -103,6 +124,7 @@ def execute_pair(*,model_factory=None):
             rag=[json.loads(s) for s in ragfile.read_text(encoding='utf-8').splitlines()] if ragfile.exists() else []
             answer=next((r for r in reversed(rag) if r.get('schema')=='ticket-rag-answer/1'),None)
             request_count=snapshot(AUTH/(provider+'-generation.db'),2)['reserved_requests']
+            if model_factory is None:new_requests+=request_count
             closure=bool(correct and delivered and raw and len([e for e in events if e.get('event')=='model_response'])==2)
             expected_model='qwen3.8-flash' if provider=='bailian' else 'deepseek-flash'
             identities=live.get('actual_models',[])
@@ -130,17 +152,20 @@ def execute_pair(*,model_factory=None):
         'same_system_prompt_verified':all(prompt_hashes) and len(set(prompt_hashes))==1,
         'source_index_unchanged':before==after,'source_tree_sha256':hash_tree(before),
         'real_generation_requests':sum(r['real_generation_requests'] for r in records),'generation_limit':4,
+        'real_generation_requests_this_command':new_requests,'continued_from_sha256':continued_from,
         'real_embedding_requests':0,'langsmith_requests':0,'cost':None,
         'faithfulness_scope':'Finite checks and manual review, independent of protocol closure; no overall model accuracy inferred.'}
-    new_json(AUTH/'paired-report.json',report);return report
+    new_json(AUTH/('paired-report-resumed.json' if resume_unattempted_qwen else 'paired-report.json'),report);return report
 
 
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--prepare',action='store_true',help='Only prepare actual cached evidence, no model or Embedding calls')
     parser.add_argument('--run',action='store_true',help='Explicit authorization: Qwen<=2 and DeepSeek<=2 generation requests, 4 total')
+    parser.add_argument('--resume-unattempted-qwen',action='store_true',help='Only complete two unused Qwen attempts after a zero-HTTP local model-selection rejection')
     args=parser.parse_args()
     from target.v352_validation import AUTH,new_json
+    if args.resume_unattempted_qwen and not args.run:raise ValueError('resume_requires_explicit_run')
     if not args.run:
         if args.prepare:
             frozen=prepare();print(json.dumps({'status':'prepared_not_live_verified','evidence_sha256':frozen['tool_result_sha256'],'generation_requests':0,'embedding_requests':0}))
@@ -148,9 +173,10 @@ def main():
         return 0
     from target.api_config import bootstrap
     bootstrap(ROOT)
-    if any(not os.getenv(k,'').strip() for k in ('DASHSCOPE_API_KEY','DEEPSEEK_API_KEY')):
+    required=('DASHSCOPE_API_KEY',) if args.resume_unattempted_qwen else ('DASHSCOPE_API_KEY','DEEPSEEK_API_KEY')
+    if any(not os.getenv(k,'').strip() for k in required):
         print(json.dumps({'status':'not_run','category':'required_provider_key_missing','new_requests':0}));return 2
-    report=execute_pair()
+    report=execute_pair(resume_unattempted_qwen=args.resume_unattempted_qwen)
     print(json.dumps({k:v for k,v in report.items() if k!='records'}))
     return 0 if all(r['protocol_closure'] and r['agent_completed'] for r in report['records']) and report['same_system_prompt_verified'] and report['source_index_unchanged'] else 1
 

@@ -43,3 +43,10 @@
 - 五份A/B/C/质量/费用报告与完整证据已写入docs/handoff/v352和docs/evidence/v352。B另获只含历史向量索引/cache的离线基线ZIP，CRC及源文件hash核验通过，不含API预算授权。网页实际截图显示两模型未验证、新旧集合分区，可折叠侧栏阅读。
 - 本轮未执行任何--run。真实双模型需另明确授权4生成；新48题需要另5Embedding。代码和离线可交接，Live与全量向量成绩暂缺，保持有条件交接，不伪造或混用旧成绩。
 - 交付安全检查已在内存比对3个当前配置秘密，并逐一解压扫描基线ZIP成员，未发现这些秘密；3933初始文件、本轮原索引字节和全部旧预算未变。新正式账/attempt没有被创建为已执行，待授权状态如实保存；公开证据以SHA256索引核对。
+
+## 用户追加授权后的首次真实执行与最小配置修复
+
+- 用户明确授权“5次Embedding＋4次生成”，固定新账Embedding5、Qwen2、DeepSeek2/共享4，自动重试0、LangSmith0。旧账不改，authorization.json保存原话和源码a7529f6。实际5次Embedding全部HTTP200，总输入Token504，48条新查询向量均补齐；完整三模式检索已运行，原索引hash不变。
+- 首次生成入口Qwen在HTTP前被v352_model_identity_required拦截，派发0次；原因是旧DASHSCOPE_MODEL覆盖AGENT_MODEL。DeepSeek实际2次HTTP200，search_policy执行、真实缓存Chroma结果回传与最终回复闭环完成；原paired-report.json、DeepSeek两条预算记录及Trace全部保留。
+- 最小修复仅在v352隔离环境同时指定DASHSCOPE_MODEL=qwen3.8-flash。新增--resume-unattempted-qwen：必须是Qwen本地模型配置失败且0派发、DeepSeek已完成且共享/单独账2条记录完全一致，才可使用原授权剩余Qwen2；新独占续跑标记和新报告，不创建新预算，不改原报告，不重跑DeepSeek。其他失败或已有Qwen派发一律拒绝续跑。
+- Web分别判断单Provider真实工具闭环和双模型公平对照，0HTTP配置失败不记API失败或Live成功。离线回归入口追加冻结现有V352真实证据/账本hash。两SDK+实际Chroma离线专项12通过、0失败、0跳过，包含旧qwen-plus覆盖、仅Qwen续跑、原记录字节保留和重复续跑拒绝；HTTP全部MockTransport，新增真实请求0。
