@@ -178,7 +178,7 @@ def _conflicts(hits):
     return [{'field':'lock_expiry_minutes','values':values}] if len(values)>1 else []
 
 
-def check_answer(reply,hits,*,events=(),question=''):
+def check_answer(reply,hits,*,events=(),question='',policy_versions=None):
     """Check only decidable claims against evidence, retaining raw model output.
 
     ``failed`` is an observable contradiction/unsupported asserted action.
@@ -199,6 +199,18 @@ def check_answer(reply,hits,*,events=(),question=''):
         if negative:
             checks.append({'claim':claim,'cited_doc_ids':ids,'status':'negative_evidence_reference','basis':'References explain unavailable scope, not positive policy support'})
             continue
+        if policy_versions:
+            for doc_id in ids:
+                expected_version=policy_versions.get(doc_id)
+                matching=[h for h in hits if h.get('doc_id')==doc_id]
+                for hit in matching:
+                    actual=hit.get('version')
+                    if expected_version and actual and actual!=expected_version:
+                        findings.append({'type':'stale_policy_version','claim':claim,'doc_id':doc_id,
+                            'expected_version':expected_version,'actual_version':actual,
+                            'basis':'Positive citation uses a version different from the frozen/current policy corpus'})
+                    elif expected_version and not actual:
+                        unknown.append({'claim':claim,'doc_id':doc_id,'reason':'policy_version_metadata_missing'})
         all_quantities=_quantities(IDS.sub('',claim));quantities=[q for q in all_quantities if not q['negated']]
         factual=bool(all_quantities or FACT.search(claim)) and not bool(re.search(r'请(?:提供|补充|说明)|[?？]',claim))
         if not factual or (refusal and REFUSAL.search(claim) and not quantities):continue

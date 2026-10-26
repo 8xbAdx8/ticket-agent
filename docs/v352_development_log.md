@@ -11,3 +11,9 @@
 - 新增target/rag_protection.py、scripts/audit_chroma_v352.py、tests/test_v352_chroma_protection.py；修改rag_store/rag_service只将Chroma指向独立副本，直接打开或重建原基线在任何Embedding请求前拒绝。独立UUID目录与缓存防止并行测试共享持久化路径。
 - 实际pytest本模块及原隔离/索引29通过、0失败、0跳过。包含实际Chroma并行两个副本、原文件前后hash、文档/元数据/维度/向量签名、工作副本改写不污染源、零网络与禁止重建。
 - 实际运行audit_chroma_v352.py，依次观察副本初始化、读取、查询、关闭与显式WAL checkpoint；源hash完全不变、15文档逻辑签名一致、重建调用0、真实请求0。报告保留各阶段实际字节变化，不反推历史具体写进程；旧事件不删除、不恢复原文件。
+
+## 模块二：48题缓存审计、完整指标与版本支持
+
+- 索引保护提交cf9f5b3。新增target/v352_validation.py和scripts/evaluate_v352_rag.py，保持开发/保留数据及V3.5.1规则不变，记录Recall@1/3、MRR、正确文档排名、误召回、适用/N/A/未运行/无法判定。默认只读缓存，只有--run并显式授权5次Embedding才可执行固定独立账，重试0、生成0。
+- 实际默认离线检查48题：真实缓存命中0、缺48条，按10条/批准确需5次新Embedding。Keyword全48的Recall@1=0.84375、Recall@3=1、MRR=0.9375，无答案0/32；保留集与开发集单列。Vector/Hybrid各48未运行，指标为未知null，不以0或旧30成绩填充。未使用旧余3次额度。
+- 忠实度追加可选当前/冻结政策version核验：正向引用旧版本报具体错误，版本缺失待人工，否定说明不冒充正向政策。旧55fixture和原参数调用兼容。新测试首次因自建SQLite夹具未关闭导致Windows清理失败，修复显式关闭连接；非原业务库问题。随后组合pytest77项通过，另2子测试通过，真实请求0。

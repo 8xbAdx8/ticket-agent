@@ -92,7 +92,10 @@ def attach_answer(trace,events,reply):
     result=citation_check(reply,hits)
     if os.getenv('RAG_QUALITY_PROFILE','v351')=='v351':
         from target.rag_faithfulness import check_answer
-        check=check_answer(reply,hits,events=events,question=trace.user_msg)
+        import config
+        from target.rag_store import documents
+        versions={h['doc_id']:h['version'] for h in documents(config.POLICY_PATH)}
+        check=check_answer(reply,hits,events=events,question=trace.user_msg,policy_versions=versions)
         wrong=list(dict.fromkeys(d for finding in check['findings'] if finding['type']=='nonexistent_citation' for d in finding['doc_ids']))
         result.update(status=check['status'],wrong_citations=wrong,faithfulness_check=check,
                       citation_status='failed' if wrong else 'checked_ids_match' if check['cited_doc_ids'] else 'indeterminate')
