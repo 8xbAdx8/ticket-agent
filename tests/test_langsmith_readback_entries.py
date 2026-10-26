@@ -89,6 +89,16 @@ class ReadbackEntryTests(unittest.TestCase):
         self.assertTrue(session.latest_remote_receipt()['remote_verified'])
         self.assertFalse(session.remote_receipts[0]['remote_verified'])
 
+    def test_hot_reload_keeps_session_memory_and_adds_current_readback_methods(self):
+        from web.runtime import Conversation,refresh_conversations
+        session=self.session();before=dict(session.__dict__)
+        older=type('Conversation',(),{'__module__':'web.runtime'})
+        session.__class__=older
+        self.assertFalse(hasattr(session,'recheck_export'))
+        refresh_conversations([session])
+        self.assertIs(type(session),Conversation);self.assertEqual(session.__dict__,before)
+        self.assertTrue(callable(session.recheck_export))
+
     def test_web_existing_id_shows_get_only_control_and_never_reposts(self):
         from streamlit.testing.v1 import AppTest
         session=self.session();app=AppTest.from_string(

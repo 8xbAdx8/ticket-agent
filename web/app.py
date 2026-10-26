@@ -12,11 +12,13 @@ import streamlit as st
 import config
 from web.design import theme
 
-from web.runtime import CALL_LOCK
+from web.runtime import CALL_LOCK,refresh_conversations
 
 
 def main():
     st.set_page_config(page_title="Ticket Agent · 质量工作空间", page_icon=":material/travel_explore:", layout="wide", initial_sidebar_state="expanded")
+    refresh_conversations(st.session_state.get('user_sessions',[])+st.session_state.get('lab_archives',[])
+                          +([st.session_state['lab_session']] if 'lab_session' in st.session_state else []))
     st.set_option("client.toolbarMode","minimal")
     st.session_state.setdefault("default_live", config.PROVIDER in ("deepseek","bailian"))
     st.session_state.setdefault("default_engine", config.ENGINE)

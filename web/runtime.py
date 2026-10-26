@@ -24,6 +24,14 @@ LIVE_KEY = config.API_KEY if LIVE_AVAILABLE else ""
 ROOT = config.BASE_DIR
 
 
+def refresh_conversations(sessions):
+    """Streamlit retains old class instances on hot reload; keep their data and new methods."""
+    for session in sessions:
+        old=type(session)
+        if old is not Conversation and (old.__module__,old.__qualname__)==(Conversation.__module__,Conversation.__qualname__):
+            session.__class__=Conversation
+
+
 @contextlib.contextmanager
 def scoped(values, environment=None):
     """All UI model/business calls hold this lock, including configuration restore."""
