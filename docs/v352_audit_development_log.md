@@ -6,3 +6,10 @@
 - 新增scripts/audit_v352_metrics.py和tests/test_v352_metric_audit.py，以Fraction从保存的144条原始模式结果独立重算，不复用生产metrics/排序/去重辅助函数。48题标签与原始逐题结果逐一核对，开发/保留/合计三模式一致、差异0；正样本16、负样本32各自同一集合。Recall为macro文档集合召回，MRR实际为MRR@3首个相关文档倒数，不是Hit@K。
 - 实际运行audit_v352_metrics.py --out artifacts/runtime/v352-faithfulness-audit/metrics；Keyword R@1=27/32、R@3=1、MRR=15/16；Vector/Hybrid R@1=31/32、R@3=MRR=1。HP08预期两份文档，Top1召回1/2但首个相关排名1解释该差异，不改生产公式或标准答案。
 - 新增7项离线数学边界测试全部通过，涵盖多相关文档、首相关第三名、截断、无答案分母、未运行/错误、去重顺序和重复case拒绝。真实请求0。原始成绩与报告保持不变；后续报告将明确MRR@3的截止范围。
+
+## 逐句完整性与确定性检测修复
+
+- 指标提交141a61d。新增target/rag_claim_audit.py，修改rag_faithfulness.py：扩充无数字“必须提供/提交”事实识别，新增保留原文span的断言审计；段末唯一明确来源/同段前缀只负责绑定候选证据，支持结论还必须整句文字/受限同义/单位及条件匹配，不能数字相同就通过整个复合句。
+- 新层支持完整数量谓词、有限期限/未支付释放条件、明确新增条件/官方归因/版本或标题错误、同主体自相矛盾；用户引用/否定/不确定措辞分开。原full_semantic_faithfulness保留兼容的indeterminate，新增claim_audit按supported/contradicted/unsupported/indeterminate/not_applicable逐项输出，不覆盖原回答或历史判定。
+- 原模块未检查乘客列表要求，DeepSeek首句的15分钟支持也未证明后续条件。新层核对实际完整回答，两个模型各4条政策事实均可支持；政策查询事件与来源声明另核对。实际成功search_policy足以证明政策咨询能力，但Prompt不能证明其他运行时工具能力，未保存的实际tools schema与绑定证据缺口明确留下，不用“本轮没写操作”推断不可能写操作。
+- 首轮原回归发现新增句级来源绑定从用户引文误继承P99，已修复为先掩码引用再绑定，原失败日志保留；补无句末标点行解析与段落起点，避免静默漏掉header/footer。原55fixture与相关70项保持通过；新增25专项及7指标测试组合102通过、0失败、0跳过，全离线。

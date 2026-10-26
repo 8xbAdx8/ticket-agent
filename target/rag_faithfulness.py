@@ -20,7 +20,7 @@ REFUSAL = re.compile(r'无法(?:确认|确定|回答|提供)|不能确认|无(?:
                      r'(?:没有|未)(?:检索到|找到|提供|涉及|包含).{0,18}(?:信息|规定|政策|依据|证据|内容)|不在.{0,8}知识库')
 NEGATIVE_SOURCE = re.compile(r'(?:未|不|没有)(?:涉及|包含|提供|覆盖)|不存在|不在.{0,8}(?:证据|文档|结果)')
 FACT = re.compile(r'有效期|手续费|期限|(?:可|需|必须|应当|允许|支持|限制|仅限|不退|不售|不得|不可).{0,12}'
-                  r'(?:退票|改签|支付|取消|打印|购票|购买|免票|携带|报销)|收取|补收|折扣|票价|库存|理赔|赔付')
+                  r'(?:退票|改签|支付|取消|打印|购票|购买|免票|携带|报销|提供|提交)|收取|补收|折扣|票价|库存|理赔|赔付')
 SUBJECT_GROUPS = (('成人','儿童'),('高铁','机票'),('二等座','一等座','商务座'),('经济舱','特价舱'))
 POLICY_TOPICS=('退票','改签','锁座','支付','行李','报销','候补','学生票','儿童票','实名')
 
@@ -292,11 +292,18 @@ def check_answer(reply,hits,*,events=(),question='',policy_versions=None):
         if any(c.get('status','').startswith('supported') for c in checks):
             findings.append({'type':'undisclosed_conflicting_policy','conflicts':conflicts,'basis':'Conflicting actual sources exist but reply selects a numeric rule without disclosure'})
         else:unknown.append({'claim':text,'reason':'conflict_not_explicitly_explained'})
-    status='failed' if findings else 'indeterminate' if unknown or not checks else 'checked_scoped_facts'
+    from target.rag_claim_audit import audit_claims
+    atomic=audit_claims(reply,hits,events=events,policy_versions=policy_versions)
+    for assertion in atomic['assertions']:
+        if assertion['verdict'] in ('contradicted','unsupported'):
+            findings.append({'type':'atomic_'+assertion['rule'],'claim':assertion['assertion'],
+                'basis':assertion['reason'],'claim_id':assertion['claim_id'],'evidence':assertion['evidence']})
+    status='failed' if findings else 'indeterminate' if unknown or atomic['verdict']=='INDETERMINATE' or not checks else 'checked_scoped_facts'
     return {'schema':'ticket-rag-faithfulness/1','status':status,'original_model_reply':reply,'question':question,
             'allowed_doc_ids':allowed,'cited_doc_ids':cited,'claim_checks':checks,'findings':findings,
             'manual_review':unknown,'refusal_observed':refusal,'no_evidence_refusal':refusal and not findings if not hits else None,
             'conflicts':conflicts,'conflict_disclosed':disclosed if conflicts else None,'excluded_user_quotes':excluded,
             'full_semantic_faithfulness':'indeterminate',
+            'claim_audit':atomic,
             'limits':['Finite rules do not prove all semantic claims or the completeness of an answer.',
                       'Unknown paraphrases/implicit conditions require B independent review; this is not a model-generated judge.']}
