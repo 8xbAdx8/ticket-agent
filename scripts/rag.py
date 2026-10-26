@@ -16,6 +16,7 @@ def main():
     p.add_argument('--run',action='store_true',help='Explicit consent to real embedding requests within fixed V3.5 cap')
     p.add_argument('--rebuild',action='store_true')
     p.add_argument('--mode',choices=('keyword','vector','hybrid'),default='hybrid')
+    p.add_argument('--quality-profile',choices=('v35','v351'),default='v351')
     p.add_argument('--question');p.add_argument('--out',type=Path)
     a=p.parse_args()
     from target.api_config import bootstrap
@@ -30,7 +31,12 @@ def main():
         if a.action=='plan':result=plan
         elif a.action=='retrieve' and a.mode=='keyword':
             from target.rag_store import keyword
-            result={'mode':'keyword','question':a.question,'hits':keyword(chunks,a.question or ''),'new_embedding_requests':0}
+            hits=keyword(chunks,a.question or '',k=20);quality={}
+            if a.quality_profile=='v351':
+                from target.rag_relevance import apply_quality
+                quality=apply_quality(a.question or '',hits,[],'keyword')
+                hits=quality['hits']
+            result={'mode':'keyword','question':a.question,'hits':hits,'new_embedding_requests':0,**quality}
         else:
             from target.rag_service import configured_index
             index=configured_index()
@@ -41,7 +47,7 @@ def main():
                 result=index.build(allow_network=a.run,rebuild=a.rebuild) if a.run else {'status':'not_run','plan':plan,'new_embedding_requests':0}
             else:
                 if not a.question:raise ValueError('question_required')
-                result=index.retrieve(a.question,a.mode,allow_network=a.run,require_real=True)
+                result=index.retrieve(a.question,a.mode,allow_network=a.run,require_real=True,quality_profile=a.quality_profile)
         from target.diagnostics import sanitize
         result=sanitize(result)
         if a.out:

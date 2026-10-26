@@ -34,14 +34,23 @@ def retrieve(question,mode=None,*,allow_network=False,k=None,threshold=None):
     evidence=None
     try:
         if mode=='keyword':
-            hits=keyword(documents(config.POLICY_PATH),question,k)
+            profile=os.getenv('RAG_QUALITY_PROFILE','v351')
+            if profile not in ('v35','v351'):raise ValueError('invalid_quality_profile')
+            hits=keyword(documents(config.POLICY_PATH),question,20 if profile=='v351' else k)
+            quality={}
+            if profile=='v351':
+                from target.rag_relevance import apply_quality
+                quality=apply_quality(question,hits,[],'keyword',k)
+                hits=quality['hits']
             evidence={'mode':'keyword','hits':hits,'embedding_model':None,'index_version':None,
-                      'embedding_latency_ms':0,'embedding_receipts':[],'total_latency_ms':round((time.perf_counter()-started)*1000)}
+                      'embedding_latency_ms':0,'embedding_receipts':[],'total_latency_ms':round((time.perf_counter()-started)*1000),**quality}
         else:
             evidence=configured_index().retrieve(question,mode,k,float(threshold if threshold is not None else os.getenv('RAG_VECTOR_THRESHOLD','0.35')),
-                allow_network=allow_network,require_real=config.PROVIDER in ('deepseek','bailian'))
+                allow_network=allow_network,require_real=config.PROVIDER in ('deepseek','bailian'),quality_profile=os.getenv('RAG_QUALITY_PROFILE','v351'))
         from target.rag_faults import evidence_risks
-        risks=evidence_risks(evidence['hits'])
+        # Keep raw evidence visible to risk checks; scope filtering must not
+        # silently hide an injected conflicting/obsolete document.
+        risks=evidence_risks(evidence.get('candidate_hits',evidence['hits']))
         if risks:
             from target.rag_store import RagError
             evidence['risk_findings']=risks
@@ -79,6 +88,13 @@ def attach_answer(trace,events,reply):
     if not calls:return None
     hits=[h for e in calls for h in e.get('result',{}).get('hits',[])]
     result=citation_check(reply,hits)
+    if os.getenv('RAG_QUALITY_PROFILE','v351')=='v351':
+        from target.rag_faithfulness import check_answer
+        check=check_answer(reply,hits,events=events,question=trace.user_msg)
+        wrong=list(dict.fromkeys(d for finding in check['findings'] if finding['type']=='nonexistent_citation' for d in finding['doc_ids']))
+        result.update(status=check['status'],wrong_citations=wrong,faithfulness_check=check,
+                      citation_status='failed' if wrong else 'checked_ids_match' if check['cited_doc_ids'] else 'indeterminate')
     save({'schema':'ticket-rag-answer/1','trace_id':trace.trace_id,'session_id':trace.session_id,
-          'provider':trace.provider,'model':trace.model,'original_model_reply':reply,**result,'business_success':None})
+          'provider':trace.provider,'model':trace.model,'original_model_reply':reply,**result,
+          'business_success':False if result.get('status')=='failed' else None})
     return result

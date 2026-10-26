@@ -130,7 +130,7 @@ class PolicyIndex:
         temp.replace(self.path/'manifest.json');self.load()
         return {**state,'reused':False,'new_embedding_requests':self.provider.budget.snapshot()['used']-before}
 
-    def retrieve(self,question,mode='hybrid',k=3,threshold=0.35,*,allow_network=False,require_real=False):
+    def retrieve(self,question,mode='hybrid',k=3,threshold=0.35,*,allow_network=False,require_real=False,quality_profile='v35'):
         if mode not in ('keyword','vector','hybrid') or not 1<=k<=20 or not -1<=threshold<=1:raise RagError('invalid_retrieval_configuration')
         started=time.perf_counter();_,chunks=self.expected();state=None;vector_hits=[];embedding_ms=0
         lexical=keyword(chunks,question,k=20)
@@ -153,10 +153,16 @@ class PolicyIndex:
                     target=fused.setdefault(item['doc_id'],{**item,'score':0,'fusion_ranks':{}})
                     target['score']+=1/(60+rank);target['fusion_ranks'][label]=rank
             hits=dedup(sorted(fused.values(),key=lambda h:(-h['score'],h['doc_id'])),k)
+        quality={}
+        if quality_profile=='v351':
+            from target.rag_relevance import apply_quality
+            quality=apply_quality(question,lexical,vector_hits,mode,k)
+            hits=quality['hits']
+        elif quality_profile!='v35':raise RagError('invalid_quality_profile')
         evidence={'schema':'ticket-rag-retrieval/1','question':question,'mode':mode,'top_k':k,'vector_threshold':threshold,
                   'embedding_model':self.provider.settings.model if mode!='keyword' else None,
                   'embedding_origin':state['embedding_origin'] if state else 'not_used','index_version':state['index_version'] if state else None,
                   'fusion':'reciprocal_rank_fusion_k60' if mode=='hybrid' else None,'hits':hits,
                   'embedding_latency_ms':embedding_ms,'total_latency_ms':round((time.perf_counter()-started)*1000),
-                  'embedding_receipts':list(self.provider.last_receipts) if mode!='keyword' else []}
+                  'embedding_receipts':list(self.provider.last_receipts) if mode!='keyword' else [],**quality}
         return evidence

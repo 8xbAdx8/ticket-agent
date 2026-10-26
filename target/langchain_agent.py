@@ -337,6 +337,9 @@ class LangChainAgent:
                     if self.deepseek_settings and assessment["wrong_citations"]:
                         from target.deepseek_runtime import DeepSeekError
                         raise DeepSeekError("rag_wrong_citation")
+                    if self.deepseek_settings and assessment.get("status")=="failed":
+                        from target.deepseek_runtime import DeepSeekError
+                        raise DeepSeekError("rag_answer_inconsistent")
             trace.finish(reply,"stop")
         except (ModelStepLimit,GraphRecursionError) as exc:
             reply = "达到最大执行步数，操作尚未完成；请查看工具轨迹。"
