@@ -1,0 +1,66 @@
+{
+  "schema": "ticket-qwen-langsmith-ui-fix/1",
+  "date": "2026-10-27",
+  "branch": "codex/fix-qwen-langsmith-ui",
+  "tested_source_head": "558a5cddea2dce4ed3437499f76aa8a7b5de52ff",
+  "baseline_source_head": "f9b7d4b51cd0af4a324adf21836b488b890a4fd9",
+  "root_cause": "Streamlit removes history-select widget state when the page is unmounted; returning selected index 0 despite Qwen model preference.",
+  "fix": "Separate persistent active-session state; explicit export prerequisites and provider matching; readable native widget theme states.",
+  "original_defect_reproduced_offline": true,
+  "new_tests": [
+    {
+      "class": "tests.test_qwen_langsmith_ui.QwenNavigationTests",
+      "name": "test_empty_qwen_run_has_a_clear_reason_and_disabled_export",
+      "passed": true
+    },
+    {
+      "class": "tests.test_qwen_langsmith_ui.QwenNavigationTests",
+      "name": "test_explicit_history_selection_is_preserved_and_model_is_explained",
+      "passed": true
+    },
+    {
+      "class": "tests.test_qwen_langsmith_ui.QwenNavigationTests",
+      "name": "test_live_fee_consent_does_not_follow_a_different_provider",
+      "passed": true
+    },
+    {
+      "class": "tests.test_qwen_langsmith_ui.QwenNavigationTests",
+      "name": "test_new_qwen_session_stays_active_after_workbench_roundtrip",
+      "passed": true
+    },
+    {
+      "class": "tests.test_qwen_langsmith_ui.QwenNavigationTests",
+      "name": "test_qwen_panel_rejects_another_provider_record_without_export",
+      "passed": true
+    },
+    {
+      "class": "tests.test_qwen_langsmith_ui.QwenNavigationTests",
+      "name": "test_qwen_stays_active_after_opening_integration_center",
+      "passed": true
+    },
+    {
+      "class": "tests.test_qwen_langsmith_ui.QwenExportFlowTests",
+      "name": "test_actual_qwen_sdk_tool_run_can_export_through_web_with_mock_http",
+      "passed": true
+    }
+  ],
+  "pytest": {
+    "passed": 595,
+    "subtests_passed": 94,
+    "junit": {
+      "tests": 689,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  },
+  "compatibility_status": "passed",
+  "real_generation_requests": 0,
+  "real_embedding_requests": 0,
+  "real_langsmith_requests": 0,
+  "qwen_sdk_export_execution_mode": "offline_mock_transport",
+  "protected_original_files": 1638,
+  "changed_original_files": [],
+  "contract_changed": false,
+  "formal_budget_changed": false
+}

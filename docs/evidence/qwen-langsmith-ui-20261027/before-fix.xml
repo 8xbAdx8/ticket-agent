@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="1.814" timestamp="2026-10-27T00:42:21.038973+08:00" hostname="LAPTOP-JRNNDCUQ"><testcase classname="tests.test_qwen_langsmith_ui.QwenNavigationTests" name="test_qwen_stays_active_after_opening_integration_center" time="1.382"><failure message="AssertionError: 'web-a14c53c95b6c' != 'web-8d5d72e4a6f7'&#10;- web-a14c53c95b6c&#10;+ web-8d5d72e4a6f7">self = &lt;test_qwen_langsmith_ui.QwenNavigationTests testMethod=test_qwen_stays_active_after_opening_integration_center&gt;
+
+    def test_qwen_stays_active_after_opening_integration_center(self):
+        from web import runtime
+        with patch.object(runtime,'Agent') as agent:
+            qwen=self.select('Qwen3.8-Flash Live');self.roundtrip()
+            self.assertFalse(self.app.exception)
+&gt;           self.assertEqual(self.active().sid,qwen.sid)
+E           AssertionError: 'web-a14c53c95b6c' != 'web-8d5d72e4a6f7'
+E           - web-a14c53c95b6c
+E           + web-8d5d72e4a6f7
+
+tests\test_qwen_langsmith_ui.py:41: AssertionError</failure></testcase></testsuite></testsuites>

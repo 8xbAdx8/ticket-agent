@@ -1,0 +1,21 @@
+{
+  "mode": "browser_ui_only_no_api",
+  "roundtrip": "Qwen -> integrations -> conversation",
+  "model_selector_preserved": true,
+  "active_model_badge_matches": true,
+  "confirmation_matches": true,
+  "empty_run_reason_visible": true,
+  "export_disabled_without_run": true,
+  "dark_input": {
+    "background": "rgb(24, 30, 42)",
+    "fill": "rgb(233, 237, 245)",
+    "text": "rgb(233, 237, 245)"
+  },
+  "light_input": {
+    "background": "rgb(255, 255, 255)",
+    "fill": "rgb(27, 38, 56)",
+    "text": "rgb(27, 38, 56)"
+  },
+  "real_model_requests": 0,
+  "real_langsmith_requests": 0
+}

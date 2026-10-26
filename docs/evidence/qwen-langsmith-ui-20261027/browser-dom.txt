@@ -1,0 +1,68 @@
+- log
+- log
+- button "keyboard_double_arrow_left":
+  - generic: keyboard_double_arrow_left
+- generic: T
+- generic: Ticket Agent
+- text: 智能体质量工作空间 · V3.5
+- paragraph: 新会话模型
+- combobox "新会话模型": Qwen3.8-Flash Live
+- button "Open":
+- paragraph: 工作空间
+- radiogroup "工作空间":
+  - radio "出行助手" [checked]
+  - paragraph: 出行助手
+  - radio "测试工作台"
+  - paragraph: 测试工作台
+- separator
+- paragraph: 外观
+- radiogroup "外观":
+  - radio "深色" [checked] [active]
+  - paragraph: 深色
+  - radio "浅色"
+  - paragraph: 浅色
+- paragraph: 新会话模型：Qwen3.8-Flash Live · 两工具只读
+- paragraph: 用户与实验会话、模拟库、Trace 分离。B 测试快照只读。
+- button "新建会话":
+  - paragraph: 新建会话
+- paragraph: 历史会话
+- combobox "历史会话": 新对话 · 2
+- button "Open":
+- banner
+- heading "出行助手" [level=1]:
+  - text: 出行助手
+  - link "Link to heading":
+    - /url: "#68713bf4"
+- paragraph: 查询模拟余票，了解票务政策。每次回答都以工具结果为依据。
+- generic: Qwen3.8-Flash Live · 只读
+- paragraph: 真实模型负责理解与工具选择；所有票务数据为模拟。Qwen3.8-Flash已有V3.5真实闭环记录，DeepSeek有历史证据；新会话不等于已验证成功。
+- heading "下一段旅程， 从一句话开始。" [level=2]:
+  - text: 下一段旅程，
+  - text: 从一句话开始。
+  - link "Link to heading":
+    - /url: "#7f5325ec"
+- paragraph: 告诉我出发地、目的地和日期，或直接咨询退改与支付政策。
+- button "查明天上海到杭州的高铁":
+  - generic "查明天上海到杭州的高铁":
+    - paragraph: 查明天上海到杭州的高铁
+- button "锁座后多久必须完成支付？":
+  - generic "锁座后多久必须完成支付？":
+    - paragraph: 锁座后多久必须完成支付？
+- generic "keyboard_arrow_down LangSmith 可选远端追踪":
+  - generic: keyboard_arrow_down
+  - paragraph: LangSmith 可选远端追踪
+- paragraph: 状态：已启用脱敏导出，等待本轮导出核验；打开本区域不会上传。
+- paragraph: 本轮用户输入、固定只读系统提示、最终回复、两个只读工具的白名单参数及模拟结果、模型/用量/耗时/错误类别和本地 Trace ID；不上传完整会话、认证信息、原始思维链、订单或旁证全文。
+- status:
+  - paragraph: 当前 Qwen3.8-Flash 会话还没有已保存的执行记录。请先在下方发送一条消息，模型执行后才能预览并导出到LangSmith。切换模型或打开面板不会产生记录。
+- button "导出本轮并验证远端" [disabled]:
+  - paragraph: 导出本轮并验证远端
+- paragraph: 输入消息
+- textbox "输入消息":
+  - /placeholder: 例如：查明天上海到杭州的高铁二等座
+  - text: 查明天上海到杭州的高铁二等座
+- checkbox "确认发送真实 Qwen3.8-Flash 请求（会产生 API 费用）"
+- paragraph: 确认发送真实 Qwen3.8-Flash 请求（会产生 API 费用）
+- button "发送":
+  - paragraph: 发送
+- paragraph: Ticket Agent V3.5 · 票务业务为虚构模拟 · 正式质量评价由 B 提供 · 页面浏览不发起模型请求
