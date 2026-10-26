@@ -134,8 +134,21 @@ def show_remote_export(session):
         run=session.agent.langchain_engine.last_live_run if session.agent and session.agent.langchain_engine else None
         if run:
             st.json(export_payload(run),expanded=False)
-            agree=st.checkbox("我已检查脱敏内容，允许将以上本轮记录发送至 LangSmith",key="remote_consent_"+session.sid)
-            if st.button("导出本轮并验证远端",disabled=not agree or not state["enabled"],key="remote_export_"+session.sid):
-                session.export_last(consent=True)
+            previous=session.latest_remote_receipt()
+            if previous:
+                labels={'verified':'已核验，远端内容匹配','pending_verification':'已接受，暂时不可读，待验证',
+                        'upload_outcome_unknown':'上传结果未知，先读取原ID核验','failed':'上次核验未通过，原ID保留'}
+                st.caption('远端状态：'+labels.get(previous['remote_status'],previous['remote_status']))
+                st.caption('已有远端运行ID：'+previous['remote_run_id']+'；不重复POST上传。')
+                agree=st.checkbox('允许读取现有远端记录核验（最多3次GET，不重新上传）',key='remote_read_consent_'+session.sid)
+                if st.button('重新核验现有远端记录（仅GET）',disabled=not agree,key='remote_read_'+session.sid):
+                    session.recheck_export(consent=True)
+                    st.rerun()
+            else:
+                agree=st.checkbox("我已检查脱敏内容，允许将以上本轮记录发送至 LangSmith",key="remote_consent_"+session.sid)
+                st.caption('最多1次POST与3次GET；仅202后的404延迟读取，仍不可读则保留待验证。')
+                if st.button("导出本轮并验证远端",disabled=not agree or not state["enabled"],key="remote_export_"+session.sid):
+                    session.export_last(consent=True)
+                    st.rerun()
         if session.remote_receipts:
             st.json(session.remote_receipts[-1])

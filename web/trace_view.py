@@ -146,7 +146,8 @@ def trace_page(runtime_dirs):
     source_dir=entries[i]["source"].parent
     trace_id=entries[i]["record"].get("trace_id")
     for filename,title,id_field in (("provider_runs.jsonl","当前 Live 模型元数据（独立旁证）","trace_id"),
-                                    ("langsmith_exports.jsonl","LangSmith 独立上报回执","local_trace_id")):
+                                    ("langsmith_exports.jsonl","LangSmith 独立上报回执","local_trace_id"),
+                                    ("langsmith_readbacks.jsonl","LangSmith 后续只读核验回执","local_trace_id")):
         path=source_dir/filename
         if path.is_file():
             records,_=read_jsonl(path)

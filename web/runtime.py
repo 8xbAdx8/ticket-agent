@@ -176,10 +176,38 @@ class Conversation:
     def export_last(self, *, consent=False, transport=None):
         if not self.agent or not self.agent.langchain_engine or not self.agent.langchain_engine.last_live_run:
             raise ValueError("No saved Live run available")
+        if self.latest_remote_receipt():
+            raise ValueError("An existing export must be read back, never automatically reposted")
         from target.observability import export_run
         receipt=export_run(self.agent.langchain_engine.last_live_run,consent=consent,trace_dir=self.trace_dir,transport=transport)
         self.remote_receipts.append(receipt)
         return receipt
+
+    def latest_remote_receipt(self):
+        run=self.agent.langchain_engine.last_live_run if self.agent and self.agent.langchain_engine else None
+        if not run:return None
+        from web.evidence import read_jsonl
+        saved,_=read_jsonl(self.trace_dir/'langsmith_readbacks.jsonl')
+        rows=[r for r in [*self.remote_receipts,*saved] if isinstance(r,dict)
+              and r.get('local_trace_id')==run.get('trace_id') and r.get('remote_run_id')
+              and (r.get('post_http_status') in (200,201,202) or r.get('remote_status')=='upload_outcome_unknown'
+                   or r.get('upload_outcome_unknown'))]
+        return max(rows,key=lambda r:r.get('timestamp','')) if rows else None
+
+    def recheck_export(self, *, consent=False, transport=None):
+        receipt=self.latest_remote_receipt()
+        if not receipt:raise ValueError('No existing remote run available')
+        from target.observability import verify_existing,export_payload
+        run=self.agent.langchain_engine.last_live_run
+        payload=export_payload(run)
+        if receipt.get('payload_file'):
+            expected='langsmith_payloads/'+str(uuid.UUID(receipt['remote_run_id']))+'.json'
+            if receipt['payload_file']!=expected:raise ValueError('Invalid frozen export path')
+            payload=json.loads((self.trace_dir/expected).read_text(encoding='utf-8'))
+        result=verify_existing(receipt,payload,consent=consent,transport=transport,
+                               max_read_attempts=3,trace_dir=self.trace_dir)
+        self.remote_receipts.append(result)
+        return result
 
     def concurrency(self, scenario="same_lock_two"):
         if self.mode != "lab":

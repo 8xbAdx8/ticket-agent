@@ -88,9 +88,13 @@ def integrations_page():
         st.json(sanitize({"installed_versions":versions,"bailian":configuration("bailian"),"langsmith":configuration_status()}))
         st.caption(UPLOAD_SCOPE+" 自由文本中的任意姓名等不能保证自动识别，导出前必须人工检查预览。")
     receipts=[r for session in st.session_state.get("user_sessions",[])+st.session_state.get("lab_archives",[]) for r in session.remote_receipts]
+    for session in st.session_state.get('user_sessions',[])+st.session_state.get('lab_archives',[]):
+        latest=session.latest_remote_receipt()
+        if latest:receipts.append(latest)
     if receipts:
-        latest=receipts[-1]
-        st.markdown("**最近远端回执："+{"verified":"已验证","failed":"运行失败","user_disabled":"用户主动关闭"}.get(latest["remote_status"],latest["remote_status"])+"**")
+        latest=max(receipts,key=lambda r:r.get('timestamp',''))
+        st.markdown("**最近远端回执："+{"verified":"已验证","failed":"核验失败","pending_verification":"待验证（暂时不可读）",
+            "upload_outcome_unknown":"上传结果未知，须读取原ID核验","user_disabled":"脱敏导出未开启"}.get(latest["remote_status"],latest["remote_status"])+"**")
         st.json(latest)
     empty("执行图：尚未启用", "当前没有输出显式节点与条件边的完整状态图。保留真实事件时间线，不随机绘制 DAG。")
     st.download_button("下载集成能力声明", export_rows([asdict(r) for r in registry()]), file_name="integration-capabilities.json", mime="application/json")
