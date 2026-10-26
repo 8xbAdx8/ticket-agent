@@ -1,0 +1,282 @@
+{
+  "schema": "ticket-v352-authorized-live-review/1",
+  "status": "passed_evidence_consistency_not_overall_answer_quality",
+  "authorization": "授权两条命令：5次Embedding＋4次生成",
+  "paired_report_sha256": "909f683aee422a4a51ae3a3d79ee2784b6a6a964ab641c48eba8e60560e44c15",
+  "initial_report_sha256": "24a04405fb8cdc75ec4b912ec5d313d50178f96b87874429b3967bd5e2f4b479",
+  "same_evidence_and_system_prompt": true,
+  "records": [
+    {
+      "provider": "deepseek",
+      "actual_models": [
+        "deepseek-flash"
+      ],
+      "trace_id": "2c9a9c4e4f99497c931a48e792c2eb49",
+      "request_ids": [
+        "758654ea29a04eb586ee015b42fc4873",
+        "83b133deaca04cf6a35a33cb6da6db63"
+      ],
+      "tool_call_id": "call_00_LX5gJ0O47st23LmbYFAa6460",
+      "arguments": {
+        "question": "锁座后多久必须完成支付？"
+      },
+      "tool_evidence_sha256": "44f4e38a0d6fb00442dc6b42398a179c62f13f601902ba35ca1a19d0a314363c",
+      "original_reply_preserved": true,
+      "public_trace_matches_disk": true,
+      "ten_and_five_field_contract": true,
+      "real_tool_closure": true,
+      "citation_id_membership": "passed",
+      "automatic_faithfulness": "indeterminate",
+      "manual_claims": [
+        {
+          "claim": "重复支付不会重复扣减库存",
+          "reason": "no_locatable_citation"
+        }
+      ],
+      "business_success": null,
+      "tokens": {
+        "prompt": 1878,
+        "completion": 133
+      },
+      "generation_latency_ms": 12121,
+      "retrieval_latency_ms": [
+        970
+      ],
+      "total_latency_ms": 13161,
+      "isolated_business_rows": {
+        "locks": 0,
+        "orders": 0
+      },
+      "state_changing_tool_calls": 0
+    },
+    {
+      "provider": "bailian",
+      "actual_models": [
+        "qwen3.8-flash"
+      ],
+      "trace_id": "b4c2d6e91b594b24b0e078dfdb7d333d",
+      "request_ids": [
+        "1ed9112f981641588f55a797ab47b9f4",
+        "8f29a799a2eb44b1ba32473e32d48432"
+      ],
+      "tool_call_id": "call_ec7703005c194412ad19200b",
+      "arguments": {
+        "question": "锁座后多久必须完成支付？"
+      },
+      "tool_evidence_sha256": "44f4e38a0d6fb00442dc6b42398a179c62f13f601902ba35ca1a19d0a314363c",
+      "original_reply_preserved": true,
+      "public_trace_matches_disk": true,
+      "ten_and_five_field_contract": true,
+      "real_tool_closure": true,
+      "citation_id_membership": "passed",
+      "automatic_faithfulness": "indeterminate",
+      "manual_claims": [
+        {
+          "claim": "**锁座有效期为 15 分钟 **",
+          "reason": "no_locatable_citation"
+        },
+        {
+          "claim": "- 若在 15 分钟内未完成支付，系统将自动释放已锁定的库存",
+          "reason": "no_locatable_citation"
+        },
+        {
+          "claim": "- 重复支付不会重复扣减库存",
+          "reason": "no_locatable_citation"
+        },
+        {
+          "claim": "📄 来源：《锁座与支付有效期》（doc_id: P11）",
+          "reason": "semantic_support_requires_review"
+        }
+      ],
+      "business_success": null,
+      "tokens": {
+        "prompt": 1921,
+        "completion": 143
+      },
+      "generation_latency_ms": 4984,
+      "retrieval_latency_ms": [
+        633
+      ],
+      "total_latency_ms": 5674,
+      "isolated_business_rows": {
+        "locks": 0,
+        "orders": 0
+      },
+      "state_changing_tool_calls": 0
+    }
+  ],
+  "generation_requests": 4,
+  "embedding_requests": 5,
+  "embedding_tokens": 504,
+  "embedding_receipts": [
+    {
+      "request_id": "5497ed853032465e9dccc9ca67b86b21",
+      "created": "2026-10-26T08:59:59.445783+00:00",
+      "model": "text-embedding-v4",
+      "dimension": 1024,
+      "input_hashes": "[\"02e23a44ec05864404449a038b5412f705d9184d0ffedc997580b9454377f171\", \"7eb08c748ba806357a50249d9ea4bd0c2e4a36f738ae3d9fdaa0bb7c236222bb\", \"a8481c2bebf51e6b967e213427bdd9d75bf8630fbb6c5e5a972040766226e89e\", \"22e5ba15ca1822761ec34f5002a85f47d958bd644dccf6f997e06c398a3f5385\", \"d1327db855014be5c75c65924d6f77ae62e1d112bed08365a95aec99b671f4e6\", \"c39adfe0e6cff2ba983ce1b4aab17cd4e24139b107209321c2ab05a86709529e\", \"ac0fce3232c1ebe7e0d0f40d8b3f8c9f90218aa909e6e02ed61e95a20b0a51fd\", \"4f947a4347685efdb55f3daa1c89fabf98daa4906faf997f05839e281fc5a578\", \"855586a6dbc01cf18ffbc499e827a3c636d0f829934c8213d1c366809f03a80a\", \"559e7a7c48a78d0f4547cd6569c19ca247242fa45a1637cb2fc7c345db0a8465\"]",
+      "batch_size": 10,
+      "origin": "real_api",
+      "status": 200,
+      "server_request_id": "86746e6a-2b69-9e3b-8da2-9002e048b49c",
+      "actual_model": "text-embedding-v4",
+      "tokens": 96,
+      "latency_ms": 2032,
+      "category": "response_received",
+      "response_sha256": "b5e4d4aa78011259d904f01d54726951ff1e73c32b4966076c98f6f42e34ec82",
+      "vector_hashes": "[\"246d4aaef2a02eab84705be610ae8b6730bb45572bcca6546603484d26365ca7\", \"23b47323082a057acb3b6378b8e05ab5202114080ca4f8f43c41cdedac497356\", \"36d692b973d6146d268503d82a7385dbf95226d118e0dd9778f4934a166a3fe8\", \"e0aaa3da58fdb1c83abb1bfbcebc3e2ca00e76895497af671623acee1ace05cf\", \"ebfaf9563c991871da4d8e87d360085ca891b7e1856c22b9ccae28ea82c32869\", \"55e046d8c8f4b75d0a43c6840ddc3be0500d1693bfba421e4116ba9033f97898\", \"db34fc4bf23e76133fcec3d3ebae95f50d67076cbd774fc11629bc22b0a8acda\", \"f39b2b24f3356a32ae9dbe9074a162ca427e933aa5432f3a8b3ac65192136fbd\", \"18da801991a606f00bdaf85da02c6d2778d03fc4954fe6467dabe11bcb084bcc\", \"dc00508adfee7ab0252d68d4ae47f2ec612d981a8358620b9a107072bf7e8f5e\"]"
+    },
+    {
+      "request_id": "8660da9b8b5944689fe508a63a934b26",
+      "created": "2026-10-26T09:00:01.497629+00:00",
+      "model": "text-embedding-v4",
+      "dimension": 1024,
+      "input_hashes": "[\"87b069d8e1a4e9129b586de73f290ee20476da1e48a3bf49962cd0de06fd7f06\", \"1f91d9a59a19f9041cab111018dcd841640bc517d248298227f6805f910d1941\", \"8a9984f44f36af40fd903aec98de17b5966fbe57e02dda0ebcda5cac9684b22f\", \"c982c87eb2c702ba35d03750ed3a18aa8a818a618b3c5e75bd03ae524174585b\", \"45eb85e304ef11ab352254f95ff402a512c6cf27875c95d57ef2783732dcbf66\", \"3a6204b58f870ce4f018379d9654d6f59872cef788cff0202fb737386105ef53\", \"4a2ba491d9c1f50d4372bb931a864dbf1b852d8941323e082de971f5ed3ef040\", \"25c2ea9646d26bd073d9f3aa03e5b45b72ff6a9f05d33b6a448a1992154e20db\", \"e0bb14a15cb2a795800e6ecf9f2f66b825b78292e5d3384cdadd6aafeae312cf\", \"6c9c3579940cd3726149313112146cbabe5b8851a409efad4e740dd9fb017d88\"]",
+      "batch_size": 10,
+      "origin": "real_api",
+      "status": 200,
+      "server_request_id": "833f5579-f681-91f6-861f-1a7036b95241",
+      "actual_model": "text-embedding-v4",
+      "tokens": 101,
+      "latency_ms": 2125,
+      "category": "response_received",
+      "response_sha256": "7931db9460af3d830e91805ffa54af786df5edd0c72527f3b66e69eb21324ea8",
+      "vector_hashes": "[\"95e0b9d3e584325e06347ab79c9e2546f1f6958fe08b158a162c3e83563ee6ed\", \"99c2a262f75b5f8e087bca6fad042918f9894ff87c07baabd2aa803d30430d59\", \"1e74853adebdd6e497ce31aa52e9b782d4960e6ad5a7386e5323f51028cf5aa2\", \"5c34453b72f3a7844b6069adfd4258f8b625affe475056ecd52ba7d53c1d6b1e\", \"f4b47e1b705f1088c9b999afbb3b21232c9fd39cff43eda701aca7cc5197e12a\", \"14af918b18240d38c5687facf70ebd9041aa648539884b9fc0f12907ae52f9ef\", \"2c08cf2f871d4735ba69f50d9f561fedad827ad2fde36a8107649b98d1830af2\", \"43d6765a51401bb6ae01aa9ec63e3d0d26013c174520a9f96b0b7968f6bbbd0b\", \"79e881832a0f22828b0430e6ef161f77ea5b3e7f25d979b3129399eb2c17c5b8\", \"2af0c43538b1374719a2933ee919d259120181306be750389d69022b7ebabd5a\"]"
+    },
+    {
+      "request_id": "778f385a40de4a1aa5ff27a8b29b1390",
+      "created": "2026-10-26T09:00:03.647080+00:00",
+      "model": "text-embedding-v4",
+      "dimension": 1024,
+      "input_hashes": "[\"57257d2a525da335539f367e1ad772a55b22865c7d19ed99430ae8b554c489c5\", \"1850ca4290b3a1a02440522698e4fff1176e0ddf65fa79ef0d3fd3412ac53411\", \"5d09932788b4686559477a5c549c7b8ca45165c1e360de661cc8e46a33948099\", \"1fc187f800b2ddc8c63ab5ac2dbd8e32170662c7ce8f1c67b8b0dbfa087e3dee\", \"557a7a246c9dc58d72802187f2c99de8df78a5eccf8f340ecd0e562c69db63ff\", \"0871f03c171ad3c661a3969d1ccd2f4b277768dc3fef1bdec96bde406f7a95a6\", \"b0d60343a8d2441205b0b590df8b2d05cf5664f8d6b492ba6677147ff4d183dd\", \"8506808d73966be6393329a5fcb96e131fa474bd7b1f570373a6d4e8597bc83c\", \"669bddfb5a7ec5fe1c81c6ab341d55a46e30e82884dacb65020d5c298c033be1\", \"e2808ea805fa73655eef03d52456b4ab353a89a5bc990c3f51e12782a89e3a07\"]",
+      "batch_size": 10,
+      "origin": "real_api",
+      "status": 200,
+      "server_request_id": "ad58edc3-2046-9a74-9a45-1f9c3320dbf4",
+      "actual_model": "text-embedding-v4",
+      "tokens": 108,
+      "latency_ms": 2868,
+      "category": "response_received",
+      "response_sha256": "55df2d4c33a81abe55d7e31cec0f4f9b102f4e35e28513b4792b5b486bb8664e",
+      "vector_hashes": "[\"84afd28f2c0eb05a34fe477b8c58b2ef04db7bbd920edc73b508379087987313\", \"7811afe97fb4692797532379627f446af4c58029f9f24e89aeccff604003b6d3\", \"a1e0388b200dd69a617d1310ae398e4cfc07ec6c7cc0cf292e8c354b06cd981c\", \"f9d23e1b0de67cd1b82e280e1d0fe5cd8ca648d2cc8a04dc65f6b4b8fe6d35a2\", \"6bbe020c41cafd97f73b117f6b220987ab2c09a4517d81c1c8cfd5648bd1715f\", \"e13d45fdc6dd631aa11307f6fc3fb48c682034f832a29d5d31647e708cce5e93\", \"84cd40938f320c076f5612c638c51512bc41ae8226be867809d2d93ce25b895b\", \"063bcf513dcffc148b334f87da4257b16ccb25e82079457f6f1eaea2e6f20ddd\", \"416ff8f54ce173789ac8f6aa3e03fcc2ca26207f10428cd7892e2746ce6b1da6\", \"743d2c830a6f7b67051b35968048ab8e6ad4e709953eb26c82970d250ce9080f\"]"
+    },
+    {
+      "request_id": "8553c02756a8409095c94d1f68b477af",
+      "created": "2026-10-26T09:00:06.536700+00:00",
+      "model": "text-embedding-v4",
+      "dimension": 1024,
+      "input_hashes": "[\"22a39c1d4c6de6b5f65f9cb1fe9bcd92e62f19f3b619764f38a56847cbbbf2eb\", \"d643a2b013bbbf004f3a1043c4aa7ac495fcba4fe4affdbbd96b0e60f035906c\", \"bec0c09fc9d62912c57f66d6890434385ab3f5812679019f736365aca91cffaf\", \"0cdb03e88ebd49cdc0d427a7de02ad2b5d9f2ac74d63ae44a7a18c3526e54d47\", \"790a825e44336a6f4cf701b4efede2bac095cec61294c58fa7ecf2b42766f0cf\", \"ac921b2c548e1c610b3de9f0d227d787d3f546200f5a71685712fe1a5dd3ebf8\", \"30a8e93235692f97c4e9566e31fa8853f9667d7b466c19d06552293d7c8198cd\", \"bfc92bbbad957a2167e5b626a6ba08ef5959f36ec4d096ce030377677611d495\", \"679c589b1b50c6a4d4dc198d12bcf3e67b03dbac17e0b21194b3769368e6278c\", \"13476ecad4b48c2762cdf19dc99a350741de937eb69c7adff5ed2cad5da69f01\"]",
+      "batch_size": 10,
+      "origin": "real_api",
+      "status": 200,
+      "server_request_id": "24eafe32-0aaa-9f62-8d14-4622bc0c3a1b",
+      "actual_model": "text-embedding-v4",
+      "tokens": 98,
+      "latency_ms": 2253,
+      "category": "response_received",
+      "response_sha256": "fb4622474e26bb95b00865cbae171991c12bccdf41c19fdd03c389735f8eb1e6",
+      "vector_hashes": "[\"bd3e2c8e38c68138de43747bc559f5f12de8748a821a046cafc8c50e2ffaa550\", \"44c104995c2c899419b59f5381daeeefed91112ee41ed7f43f7f9e72b9f4fa3f\", \"ebda07591ff72bbad72e80bfe8213446c8cc16ddd1391d8975e8da829070f15d\", \"59da2b47903807708883a3a4ca34a1825f14f81c7a8acb04fe81033b4635a131\", \"debc588c2bc53adb3e014e59c67ac7839c7b680b97c9a8c774c6f3edf5479466\", \"f21afd1207d677139bc2c573e3e2f3a4d1aaa435b2a2d4c49cecb894658f333f\", \"1d3a618ce0f6795406db9344a1ce816ba8ec5ff4f55416707772be4def654880\", \"06b9c97b1e6de7456ca39c7a97b37ec6cbb2054f72acb5744f0ee4c221cb3141\", \"88fb5325d9b26c157b8c5aee29dad31a40a8ea02acca0b8008980183de40612d\", \"741cd5ed71bdbb7590c8cd6e3c338a56dcb093b8802cb9082a50a1cd0f57cc6e\"]"
+    },
+    {
+      "request_id": "22cf132937e84aeaa5526026dc478359",
+      "created": "2026-10-26T09:00:08.812390+00:00",
+      "model": "text-embedding-v4",
+      "dimension": 1024,
+      "input_hashes": "[\"95999c4c4c3c65fc21cf4212639248bd437f4ac9518697c6b45a48e0c6c898cd\", \"f0c963f77eb28495544a6c5022446635a14eb6b643433dd934e99744d9fef262\", \"c882b8034eee1b5c0be793e8d62a54726e10380fcec91c19fc55e080dd3dce50\", \"d68d36071f6f29e2f32999d9d8969064156f3a7870cab031dc4facae1126cc52\", \"836314cb83fad16cae8254d91a51cd4eba4597fde6d2c5fbe9ad41326fad381d\", \"1a518211193ca57dac83c753894fbb14b3eebae61bb805d3369d98f383a8369a\", \"5fa1758c7ddd92d7fc1b2597ea8c406e4b7e7a241db7422c81bff22a2b98afa2\", \"f870c415570e0a85cf6a818340fa8a25a70b6d95c2fbdb7b5e4d9b6bfe16abf9\"]",
+      "batch_size": 8,
+      "origin": "real_api",
+      "status": 200,
+      "server_request_id": "f39d2633-38ba-90c5-81b7-ef959b92cd8f",
+      "actual_model": "text-embedding-v4",
+      "tokens": 101,
+      "latency_ms": 2247,
+      "category": "response_received",
+      "response_sha256": "b95be850e78c2c7f5c34210439dae7a23300f03100ceac3c223dd217bde74ceb",
+      "vector_hashes": "[\"6e89e4030996eac07088a7af8e4e574792a59909b8577b987bdd64e15e8481b7\", \"22cf74dd7b3d031e619a4ec40a24e75b36cdb6f4663daaa69bb78360303d2cd3\", \"932d568d62feb4723b381013acb38cda206f4a1d14e976936b3b60e0c69d0411\", \"cf433128f55ca983ef61943b8ac0b8b909e2a9f35349b65e2755df0f970b8659\", \"56525dd7a4c4e70450c5753b58e3223e903c575b550afb89a727a7e78b291a2a\", \"27afd0bd19105b2f43553f4fdc6fe485810b9827bc6b8cc637f32726c4bd405e\", \"46545026d9f95335496dc8a9fa426012d6ca412f216c90aa51a4f3bab2221bc5\", \"a9a5724c51f825d93b6b5957b9ac823d8eb6d518b2c8b699f20584803d53e138\"]"
+    }
+  ],
+  "shared_ledger": {
+    "reserved_requests": 4,
+    "limit": 4,
+    "requests": [
+      {
+        "id": 1,
+        "request_id": "758654ea29a04eb586ee015b42fc4873",
+        "provider": "deepseek",
+        "created": "2026-10-26T09:02:23.253763+00:00",
+        "status": 200,
+        "category": "response_received",
+        "prompt": 798,
+        "completion": 51,
+        "model": "deepseek-flash",
+        "phase": "settled",
+        "trace_id": "2c9a9c4e4f99497c931a48e792c2eb49",
+        "request_summary": "{\"model\": \"deepseek-flash\", \"message_roles\": [\"system\", \"user\"], \"returned_tool_call_ids\": []}",
+        "settled_at": "2026-10-26T09:02:33.580940+00:00"
+      },
+      {
+        "id": 2,
+        "request_id": "83b133deaca04cf6a35a33cb6da6db63",
+        "provider": "deepseek",
+        "created": "2026-10-26T09:02:34.609631+00:00",
+        "status": 200,
+        "category": "response_received",
+        "prompt": 1080,
+        "completion": 82,
+        "model": "deepseek-flash",
+        "phase": "settled",
+        "trace_id": "2c9a9c4e4f99497c931a48e792c2eb49",
+        "request_summary": "{\"model\": \"deepseek-flash\", \"message_roles\": [\"system\", \"user\", \"assistant\", \"tool\"], \"returned_tool_call_ids\": [\"call_00_LX5gJ0O47st23LmbYFAa6460\"]}",
+        "settled_at": "2026-10-26T09:02:36.338308+00:00"
+      },
+      {
+        "id": 3,
+        "request_id": "8f29a799a2eb44b1ba32473e32d48432",
+        "provider": "bailian",
+        "created": "2026-10-26T09:15:55.015932+00:00",
+        "status": 200,
+        "category": "response_received",
+        "prompt": 801,
+        "completion": 32,
+        "model": "qwen3.8-flash",
+        "phase": "settled",
+        "trace_id": "b4c2d6e91b594b24b0e078dfdb7d333d",
+        "request_summary": "{\"model\": \"qwen3.8-flash\", \"message_roles\": [\"system\", \"user\"], \"returned_tool_call_ids\": []}",
+        "settled_at": "2026-10-26T09:15:57.425987+00:00"
+      },
+      {
+        "id": 4,
+        "request_id": "1ed9112f981641588f55a797ab47b9f4",
+        "provider": "bailian",
+        "created": "2026-10-26T09:15:58.110369+00:00",
+        "status": 200,
+        "category": "response_received",
+        "prompt": 1120,
+        "completion": 111,
+        "model": "qwen3.8-flash",
+        "phase": "settled",
+        "trace_id": "b4c2d6e91b594b24b0e078dfdb7d333d",
+        "request_summary": "{\"model\": \"qwen3.8-flash\", \"message_roles\": [\"system\", \"user\", \"assistant\", \"tool\"], \"returned_tool_call_ids\": [\"call_ec7703005c194412ad19200b\"]}",
+        "settled_at": "2026-10-26T09:16:00.627416+00:00"
+      }
+    ],
+    "unsettled_ids": [],
+    "historical_unlinked": false
+  },
+  "qwen_local_initial_failure_requests": 0,
+  "automatic_retries": 0,
+  "langsmith_requests": 0,
+  "cost": null,
+  "cost_status": "unknown_no_verified_invoice",
+  "protected_files": 3933,
+  "changed_original_files": [],
+  "original_chroma_byte_unchanged": true,
+  "source_tree_sha256": "f65a849870a6a9070920c70c609859538890967fcf0bdd87726094b306648776",
+  "old_formal_budgets_unchanged": true,
+  "old_database_and_trace_unchanged": true,
+  "limitations": [
+    "One policy question per model is not an overall model accuracy sample.",
+    "Document-ID membership is verified, semantic entailment remains indeterminate/manual.",
+    "No new Live no-answer/conflicting-policy/write-operation test was authorized."
+  ]
+}

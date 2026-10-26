@@ -1,19 +1,20 @@
 {
-  "schema": "ticket-v352-delivery/1",
+  "schema": "ticket-v352-delivery/2",
   "date": "2026-10-26",
   "baseline": "07efcd513b89f7f4698e4e73a297e3abcad5476e",
   "branch": "feat/ticket-agent-v352-rag-live-eval",
-  "tested_source": "2fdc340b107d79180adf2351f3e0d3380f2400bb",
-  "handoff": "conditional_pending_new_API_authorization",
+  "tested_source": "8e655fd19e99c0adc406554bf56e8184f49e686d",
+  "handoff": "conditional_B_quality_review_C_acceptance",
   "original_chroma_modified_this_version": false,
   "protected_files_unchanged": 3933,
+  "existing_v352_live_files_unchanged_in_regression": 62,
   "prior_v351_incident_preserved": true,
   "forensic_phase_evidence": "chroma-forensics.json",
   "pytest": {
-    "passed": 499,
+    "passed": 502,
     "subtests_passed": 89,
     "junit": {
-      "tests": 588,
+      "tests": 591,
       "failures": 0,
       "errors": 0,
       "skipped": 0
@@ -23,22 +24,22 @@
     {
       "name": "deepseek_unit",
       "exit_code": 0,
-      "tests": 499,
-      "skipped": 23,
+      "tests": 502,
+      "skipped": 24,
       "log": "deepseek_unit.txt"
     },
     {
       "name": "v3_unit",
       "exit_code": 0,
-      "tests": 499,
-      "skipped": 98,
+      "tests": 502,
+      "skipped": 99,
       "log": "v3_unit.txt"
     },
     {
       "name": "v2_unit",
       "exit_code": 0,
-      "tests": 499,
-      "skipped": 194,
+      "tests": 502,
+      "skipped": 195,
       "log": "v2_unit.txt"
     },
     {
@@ -65,25 +66,25 @@
       },
       "vector": {
         "cases": 24,
-        "answerable_scored": 0,
-        "no_answer_scored": 0,
-        "recall_at_1": null,
-        "recall_at_3": null,
-        "mrr": null,
-        "no_answer_false_recall_rate": null,
-        "not_run_cases": 24,
+        "answerable_scored": 8,
+        "no_answer_scored": 16,
+        "recall_at_1": 1.0,
+        "recall_at_3": 1.0,
+        "mrr": 1.0,
+        "no_answer_false_recall_rate": 0.0,
+        "not_run_cases": 0,
         "indeterminate_cases": 0,
         "not_applicable_recall_mrr_cases": 16
       },
       "hybrid": {
         "cases": 24,
-        "answerable_scored": 0,
-        "no_answer_scored": 0,
-        "recall_at_1": null,
-        "recall_at_3": null,
-        "mrr": null,
-        "no_answer_false_recall_rate": null,
-        "not_run_cases": 24,
+        "answerable_scored": 8,
+        "no_answer_scored": 16,
+        "recall_at_1": 1.0,
+        "recall_at_3": 1.0,
+        "mrr": 1.0,
+        "no_answer_false_recall_rate": 0.0,
+        "not_run_cases": 0,
         "indeterminate_cases": 0,
         "not_applicable_recall_mrr_cases": 16
       }
@@ -103,25 +104,25 @@
       },
       "vector": {
         "cases": 24,
-        "answerable_scored": 0,
-        "no_answer_scored": 0,
-        "recall_at_1": null,
-        "recall_at_3": null,
-        "mrr": null,
-        "no_answer_false_recall_rate": null,
-        "not_run_cases": 24,
+        "answerable_scored": 8,
+        "no_answer_scored": 16,
+        "recall_at_1": 0.9375,
+        "recall_at_3": 1.0,
+        "mrr": 1.0,
+        "no_answer_false_recall_rate": 0.0,
+        "not_run_cases": 0,
         "indeterminate_cases": 0,
         "not_applicable_recall_mrr_cases": 16
       },
       "hybrid": {
         "cases": 24,
-        "answerable_scored": 0,
-        "no_answer_scored": 0,
-        "recall_at_1": null,
-        "recall_at_3": null,
-        "mrr": null,
-        "no_answer_false_recall_rate": null,
-        "not_run_cases": 24,
+        "answerable_scored": 8,
+        "no_answer_scored": 16,
+        "recall_at_1": 0.9375,
+        "recall_at_3": 1.0,
+        "mrr": 1.0,
+        "no_answer_false_recall_rate": 0.0,
+        "not_run_cases": 0,
         "indeterminate_cases": 0,
         "not_applicable_recall_mrr_cases": 16
       }
@@ -141,51 +142,71 @@
       },
       "vector": {
         "cases": 48,
-        "answerable_scored": 0,
-        "no_answer_scored": 0,
-        "recall_at_1": null,
-        "recall_at_3": null,
-        "mrr": null,
-        "no_answer_false_recall_rate": null,
-        "not_run_cases": 48,
+        "answerable_scored": 16,
+        "no_answer_scored": 32,
+        "recall_at_1": 0.96875,
+        "recall_at_3": 1.0,
+        "mrr": 1.0,
+        "no_answer_false_recall_rate": 0.0,
+        "not_run_cases": 0,
         "indeterminate_cases": 0,
         "not_applicable_recall_mrr_cases": 32
       },
       "hybrid": {
         "cases": 48,
-        "answerable_scored": 0,
-        "no_answer_scored": 0,
-        "recall_at_1": null,
-        "recall_at_3": null,
-        "mrr": null,
-        "no_answer_false_recall_rate": null,
-        "not_run_cases": 48,
+        "answerable_scored": 16,
+        "no_answer_scored": 32,
+        "recall_at_1": 0.96875,
+        "recall_at_3": 1.0,
+        "mrr": 1.0,
+        "no_answer_false_recall_rate": 0.0,
+        "not_run_cases": 0,
         "indeterminate_cases": 0,
         "not_applicable_recall_mrr_cases": 32
       }
     }
   },
-  "live_qwen_rag_verified": false,
-  "live_deepseek_rag_verified": false,
-  "live_status": "not_run",
-  "offline_protocol_evidence": "sdk-protocol/final",
-  "new_generation_requests": 0,
-  "new_embedding_requests": 0,
+  "live_qwen_rag_verified": true,
+  "live_deepseek_rag_verified": true,
+  "same_evidence_and_prompt_verified": true,
+  "live_status": "protocol_verified_answer_semantics_indeterminate",
+  "offline_protocol_evidence": "sdk-protocol/authorized-final",
+  "new_generation_requests": 4,
+  "new_embedding_requests": 5,
   "langsmith_requests": 0,
-  "new_API_cost": 0,
-  "future_actual_cost": null,
-  "old_budgets": "unchanged Qwen4/4, formalDeepSeek5/5, Embedding5/8",
-  "required_new_authorization": {
-    "generation_total": 4,
-    "qwen_max": 2,
-    "deepseek_max": 2,
-    "embedding_for_new48": 5,
-    "retries": 0
+  "automatic_retries": 0,
+  "real_tokens": {
+    "qwen": {
+      "prompt": 1921,
+      "completion": 143
+    },
+    "deepseek": {
+      "prompt": 1878,
+      "completion": 133
+    },
+    "embedding": 504
   },
+  "new_API_cost": null,
+  "cost_status": "unknown_without_invoice",
+  "old_budgets": "unchanged Qwen4/4, formalDeepSeek5/5, Embedding5/8",
+  "remaining_authorized_requests": 0,
+  "current_evidence": "live/paired-report-resumed.json",
+  "preserved_preauthorization_summary": "preauthorization-summary.json",
   "evidence_limits": [
-    "New48 vector/hybrid not_run, no genuine query vectors cached.",
-    "No real model comparison or post-fix answer quality observed this round.",
-    "Finite citation/fact checks cannot prove full semantic faithfulness.",
-    "Application protection does not stop external programs from writing files."
-  ]
+    "One policy sample per model, not overall accuracy or statistical latency comparison.",
+    "Citation membership matches P11; semantic support remains indeterminate for both models.",
+    "No Live no-answer/conflicting-policy/write test in this authorization.",
+    "Application index protection does not prevent external file writes.",
+    "Some Git exports/checkouts use CRLF policy bytes. Only a fresh clone may prepare LF after exact hash validation; original files/index are never restored."
+  ],
+  "final_offline_report": "offline/authorized-final/report.json",
+  "fresh_clone_replay": "passed_after_explicit_LF_preparation",
+  "fresh_clone_evidence": "clean-cache-replay.json",
+  "ui_review": {
+    "mode": "offline_replay_of_saved_real_receipts",
+    "model_embedding_langsmith_requests": 0,
+    "non_api_startup_attempts_blocked": 3,
+    "explicit_loopback_binding_after_restart": true,
+    "evidence": "ui/UI_授权后真实证据回放.md"
+  }
 }

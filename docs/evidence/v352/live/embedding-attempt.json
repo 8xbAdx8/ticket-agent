@@ -1,0 +1,9 @@
+{
+  "explicit_command_authorization": 5,
+  "schema": "ticket-v352-attempt/1",
+  "out": "artifacts/runtime/v352-real48-20261026",
+  "input_dataset_sha256": {
+    "development": "37645ac9faea23e8316654566fc5d75f6df3cfabcc7a31a910da81d5bf237925",
+    "holdout": "195b9f441eaaa44b4547b4e01b19f3bbe4062895f90f9258420539286ad81eb1"
+  }
+}

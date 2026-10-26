@@ -1,0 +1,17 @@
+{
+  "schema": "ticket-v352-authorized-live-status/1",
+  "date": "2026-10-26",
+  "evidence_mode": "real_api",
+  "qwen_real_search_policy_roundtrip": true,
+  "deepseek_real_search_policy_roundtrip": true,
+  "same_tool_evidence_verified": true,
+  "same_system_prompt_verified": true,
+  "real_generation_requests": 4,
+  "real_embedding_requests": 5,
+  "langsmith_requests": 0,
+  "cost": null,
+  "semantic_faithfulness": "indeterminate_manual_review",
+  "old_status": "live-status.json (before authorization, preserved)",
+  "current_raw_report": "live/paired-report-resumed.json",
+  "initial_local_failure": "live/paired-report.json"
+}

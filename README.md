@@ -1,21 +1,20 @@
 # Ticket Agent
 
-## 2026-10-26：V3.5.2 RAG端到端验收与原索引保护（当前版本）
+## 2026-10-26：V3.5.2 真实双模型RAG验收与原索引保护（当前版本）
 
-原Chroma基线禁止直接打开/重建，查询和回归只用独立副本，原件前后hash核验。副本取证复现了初始化SQLite写入和首次读取HNSW写入，逻辑内容不变；本轮原索引及3933保护文件均未修改，旧事件保留。
+用户明确授权后已实际完成**5次Embedding＋4次生成**：Qwen3.8-Flash、DeepSeek Flash各2次HTTP200，都自主调用search_policy并收到相同Chroma政策P11，实际ToolMessage和系统Prompt hash一致。原回复、保护层、最终展示分别留证；**全文语义忠实度均indeterminate，待B独立复核**，不把工具闭环当准确率100%。
 
-已准备两模型同问题、同Chroma证据的显式验收，新增ToolMessage实际派发hash、版本/引用检查和Web对照。**本轮真实生成/Embedding/LangSmith均0**，两模型新Live仍未验证。原Qwen4/4、正式DeepSeek5/5、Embedding5/8不变，不借旧额度。
+新48题全部三模式已测：Keyword合计Recall@1/3=.84375/1、MRR=.9375；Vector/Hybrid各.96875/1、MRR1；无答案均0/32。开发/保留各24单列，旧30另列。真实Token：Embedding504，Qwen输入1921/输出143，DeepSeek1878/133；费用未知、重试0、LangSmith0，全部新额度已用完。
 
-新48题Keyword合计Recall@1=0.84375、Recall@3=1、MRR=0.9375、无答案0/32；真实查询缓存缺48条，Vector/Hybrid未运行，需要单独5次Embedding授权。完整pytest499通过、0失败/0跳过，另89子测试通过；旧矩阵与两组变异通过，SDK桩不能算Live。
+原Chroma禁止原地open/build，实际读取/回归使用独立副本，源前后hash。3933原文件和旧账Qwen4/4、正式DeepSeek5/5、Embedding5/8均未变。首轮Qwen配置拒绝0HTTP及修复后仅用剩余2次的记录完整保留。离线502项通过、0失败/0跳过，另89子测试；原矩阵和两组变异通过，SDK桩与Live分开。
 
 ```powershell
-# 以下均不请求模型/Embedding；输出目录必须全新
+# 均为离线复验，输出目录必须全新；不要添加 --run
 .\.venv-v35\Scripts\python.exe scripts/verify_v352_offline.py --current-only --out artifacts/runtime/v352-my-review
 .\.venv-v35\Scripts\python.exe scripts/evaluate_v352_rag.py --out artifacts/runtime/v352-my-quality
-.\.venv-v35\Scripts\python.exe scripts/verify_v352_live.py --prepare
 ```
 
-[A实现/保护报告](docs/handoff/v352/A_V3.5.2_真实RAG与索引保护报告.md) · [B独立测试手册](docs/handoff/v352/B_V3.5.2_独立测试与判定手册.md) · [C双模型演示](docs/handoff/v352/C_V3.5.2_双模型RAG演示说明.md) · [质量指标](docs/handoff/v352/V3.5.2_双模型对照与质量指标.md) · [API预算与执行边界](docs/handoff/v352/V3.5.2_API预算与真实验证记录.md) · [证据摘要](docs/evidence/v352/summary.json)。新机器还需A提供的离线索引/cache基线包，按B手册仅放入全新克隆，不能覆盖旧索引。当前有条件交接，付费命令只在新明确授权后运行。
+[A实现与真实报告](docs/handoff/v352/A_V3.5.2_真实RAG与索引保护报告.md) · [B独立手册/API Key](docs/handoff/v352/B_V3.5.2_独立测试与判定手册.md) · [C演示](docs/handoff/v352/C_V3.5.2_双模型RAG演示说明.md) · [质量指标](docs/handoff/v352/V3.5.2_双模型对照与质量指标.md) · [费用账本](docs/handoff/v352/V3.5.2_API预算与真实验证记录.md) · [最新证据摘要](docs/evidence/v352/summary.json)。B新克隆使用真实RAG离线复验缓存ZIP，禁止覆盖旧索引。页面是已发生真实证据的离线回放，新增Live需再授权。**有条件交接**，正式成绩由B提供。下方章节保留各历史时间背景。
 
 ## 2026-10-26：V3.5.1 RAG质量强化（历史版本）
 

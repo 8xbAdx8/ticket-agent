@@ -1,0 +1,13 @@
+{
+  "schema": "ticket-v352-user-authorization/1",
+  "date": "2026-10-26",
+  "source_head": "a7529f68e6ae16eacccb758ff3f2a751af805635",
+  "explicit_user_reply": "授权两条命令：5次Embedding＋4次生成",
+  "embedding_limit": 5,
+  "qwen_generation_limit": 2,
+  "deepseek_generation_limit": 2,
+  "shared_generation_limit": 4,
+  "max_retries": 0,
+  "old_ledgers_must_remain_unchanged": true,
+  "langsmith_authorized": false
+}

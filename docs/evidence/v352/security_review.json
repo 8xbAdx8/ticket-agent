@@ -1,24 +1,44 @@
 {
-  "schema": "ticket-v352-release-review/1",
-  "checked_at": "2026-10-26T08:53:57.923458+00:00",
-  "source_head": "2fdc340b107d79180adf2351f3e0d3380f2400bb",
-  "scanned_files": 1618,
+  "schema": "ticket-v352-authorized-release-review/1",
+  "checked_at": "2026-10-26T09:33:14.693799+00:00",
+  "source_head": "8e655fd19e99c0adc406554bf56e8184f49e686d",
+  "tested_source_head": "8e655fd19e99c0adc406554bf56e8184f49e686d",
+  "scanned_files": 1758,
   "configured_secrets_checked": 3,
   "findings": [],
   "status": "passed",
   "protected_files": 3933,
   "changed_original_files": [],
-  "existing_tests_contract_mutations_and_business_unchanged": true,
+  "old_tests_contract_business_mutations_corpus_and_relevance_rules_unchanged": true,
   "original_chroma_bytes_unchanged_this_version": true,
   "prior_incident_preserved": true,
-  "baseline_package_members_scanned": true,
-  "new_generation_requests": 0,
-  "new_embedding_requests": 0,
+  "both_baseline_and_real48_package_members_scanned": true,
+  "exported_raw_evidence_byte_matches_originals": true,
+  "new_generation_requests": 4,
+  "new_embedding_requests": 5,
   "langsmith_requests": 0,
-  "local_only": true,
+  "remaining_authorization": 0,
+  "cost": null,
+  "automatic_retries": 0,
+  "local_only_review": true,
+  "regression_non_loopback_attempts": 0,
+  "ui_non_api_public_ip_discovery_blocked": [
+    {
+      "blocked_non_loopback": "8.8.8.8"
+    },
+    {
+      "blocked_non_loopback": "checkip.amazonaws.com"
+    },
+    {
+      "blocked_non_loopback": "checkip.amazonaws.com"
+    }
+  ],
+  "ui_binding": "127.0.0.1:8552",
+  "fresh_clone_replay": "passed_after_explicit_new_clone_policy_LF_preparation",
   "limits": [
-    "Secret matching covers configured values, not all possible unknown credentials.",
-    "Original source is protected by application rules; external writers are outside this process.",
-    "No real paired Live or new48 vector evaluation was executed without authorization."
+    "Secret matching covers configured values, not all unknown credentials.",
+    "Application protection cannot stop external writers.",
+    "One real policy case per provider; full semantic faithfulness remains indeterminate.",
+    "Fresh clone corpus EOL must match the frozen manifest; do not rewrite an existing baseline."
   ]
 }

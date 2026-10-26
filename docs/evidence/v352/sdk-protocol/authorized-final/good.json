@@ -1,0 +1,1120 @@
+{
+  "schema": "ticket-v352-paired-live/1",
+  "evidence_mode": "offline_sdk_stub",
+  "records": [
+    {
+      "provider": "bailian",
+      "evidence_mode": "offline_sdk_stub",
+      "status": "protocol_passed",
+      "real_function_calling_verified": false,
+      "model_identity_verified": true,
+      "actual_models": [
+        "qwen3.8-flash"
+      ],
+      "agent_completed": true,
+      "protocol_closure": true,
+      "model_response_received": true,
+      "tool_execution_verified": true,
+      "tool_result_delivered_with_http200": true,
+      "policy_tool_call_count": 1,
+      "expected_evidence_sha256": "44f4e38a0d6fb00442dc6b42398a179c62f13f601902ba35ca1a19d0a314363c",
+      "delivered_evidence": [
+        {
+          "tool_call_id": "policy-bailian",
+          "content_sha256": "ad04ab53da208080f3819c996266145fdfa39c9a681fa2efa17660e75472f238",
+          "parsed_result_sha256": "44f4e38a0d6fb00442dc6b42398a179c62f13f601902ba35ca1a19d0a314363c",
+          "tool_result": {
+            "question": "锁座后多久必须完成支付？",
+            "hits": [
+              {
+                "doc_id": "P11",
+                "title": "锁座与支付有效期",
+                "source": "data/policies.md#P11",
+                "version": "43aea1ebf3c7b333",
+                "chunk_id": "P11-0000-589c2e46be21",
+                "content": "模拟锁座有效期 15 分钟，过期未支付自动释放库存；下单必须提供与锁座一致的乘客列表。重复支付不重复扣减库存。",
+                "score": 0.01639344262295082,
+                "keyword_score": 1.8708286933869707,
+                "rank": 1,
+                "fusion_ranks": {
+                  "keyword": 1,
+                  "vector": 1
+                },
+                "fusion_weights": {
+                  "keyword": 0.30000000000000004,
+                  "vector": 0.7
+                },
+                "vector_score": 0.8076332211494446
+              }
+            ],
+            "count": 1
+          }
+        }
+      ],
+      "original_model_reply": "模拟锁座有效期15分钟 [P11]。",
+      "final_display_result": "模拟锁座有效期15分钟 [P11]。",
+      "faithfulness": {
+        "schema": "ticket-rag-answer/1",
+        "trace_id": "8c5143b2a4154469bc1de9049e798d35",
+        "session_id": "v352-bailian-e2270d69440f437f8cf9738d9255abc7",
+        "provider": "bailian_live",
+        "model": "qwen3.8-flash",
+        "original_model_reply": "模拟锁座有效期15分钟 [P11]。",
+        "allowed_doc_ids": [
+          "P11"
+        ],
+        "cited_doc_ids": [
+          "P11"
+        ],
+        "wrong_citations": [],
+        "citation_status": "checked_ids_match",
+        "citation_support": "indeterminate",
+        "faithfulness": "indeterminate",
+        "scope": "Document-ID membership only; does not prove the cited passage supports every claim",
+        "status": "checked_scoped_facts",
+        "faithfulness_check": {
+          "schema": "ticket-rag-faithfulness/1",
+          "status": "checked_scoped_facts",
+          "original_model_reply": "模拟锁座有效期15分钟 [P11]。",
+          "question": "锁座后多久必须完成支付？",
+          "allowed_doc_ids": [
+            "P11"
+          ],
+          "cited_doc_ids": [
+            "P11"
+          ],
+          "claim_checks": [
+            {
+              "claim": "模拟锁座有效期15分钟 [P11]",
+              "status": "supported_scoped_quantities",
+              "quantities": [
+                {
+                  "text": "15分钟",
+                  "dimension": "duration",
+                  "value": "15",
+                  "start": 7,
+                  "end": 11,
+                  "negated": false
+                }
+              ],
+              "sources": [
+                {
+                  "doc_id": "P11",
+                  "evidence_text": "模拟锁座有效期 15 分钟",
+                  "source": "data/policies.md#P11"
+                }
+              ],
+              "basis": "Same citation, compatible subjects/explicit interval, quantities with normalized units"
+            }
+          ],
+          "findings": [],
+          "manual_review": [],
+          "refusal_observed": false,
+          "no_evidence_refusal": null,
+          "conflicts": [],
+          "conflict_disclosed": null,
+          "excluded_user_quotes": [],
+          "full_semantic_faithfulness": "indeterminate",
+          "limits": [
+            "Finite rules do not prove all semantic claims or the completeness of an answer.",
+            "Unknown paraphrases/implicit conditions require B independent review; this is not a model-generated judge."
+          ]
+        },
+        "business_success": null
+      },
+      "public_trace": {
+        "session_id": "v352-bailian-e2270d69440f437f8cf9738d9255abc7",
+        "provider": "bailian_live",
+        "model": "qwen3.8-flash",
+        "user_msg": "锁座后多久必须完成支付？",
+        "steps": [
+          {
+            "step": 1,
+            "calls": [
+              {
+                "tool": "search_policy",
+                "args": {
+                  "question": "锁座后多久必须完成支付？"
+                },
+                "ok": true,
+                "latency_ms": 62,
+                "result_preview": "{\"question\": \"锁座后多久必须完成支付？\", \"hits\": [{\"doc_id\": \"P11\", \"title\": \"锁座与支付有效期\", \"source\": \"data/policies.md#P11\", \"version\": \"43aea1ebf3c7b333\", \"chunk_id\": \"P11-0000-589c2e46be21\", \"content\": \"模拟锁座有效期 1..."
+              }
+            ]
+          }
+        ],
+        "tool_sequence": [
+          "search_policy"
+        ],
+        "reply": "模拟锁座有效期15分钟 [P11]。",
+        "finish_reason": "stop",
+        "tokens": {
+          "prompt": 34,
+          "completion": 14
+        },
+        "total_latency_ms": 115
+      },
+      "live_evidence": {
+        "schema": "ticket-live-run/1",
+        "trace_id": "8c5143b2a4154469bc1de9049e798d35",
+        "session_id": "v352-bailian-e2270d69440f437f8cf9738d9255abc7",
+        "provider": "bailian_live",
+        "requested_model": "qwen3.8-flash",
+        "actual_models": [
+          "qwen3.8-flash"
+        ],
+        "mode": "live",
+        "case_id": "v352-shared-policy",
+        "git_sha": "8e655fd19e99c0adc406554bf56e8184f49e686d",
+        "requested_at": "2026-10-26T09:20:44.600126+00:00",
+        "recorded_at": "2026-10-26T09:20:44.723244+00:00",
+        "user_msg": "锁座后多久必须完成支付？",
+        "reply": "模拟锁座有效期15分钟 [P11]。",
+        "finish_reason": "stop",
+        "total_latency_ms": 115,
+        "tokens": {
+          "prompt": 34,
+          "completion": 14
+        },
+        "observed_tokens": {
+          "prompt": 34,
+          "completion": 14
+        },
+        "token_usage_status": "complete",
+        "agent_completed": true,
+        "model_response_received": true,
+        "tool_execution_success": true,
+        "business_success": null,
+        "error": null,
+        "local_trace_saved": true,
+        "local_sidecar_saved": true,
+        "public_trace": {
+          "session_id": "v352-bailian-e2270d69440f437f8cf9738d9255abc7",
+          "provider": "bailian_live",
+          "model": "qwen3.8-flash",
+          "user_msg": "锁座后多久必须完成支付？",
+          "steps": [
+            {
+              "step": 1,
+              "calls": [
+                {
+                  "tool": "search_policy",
+                  "args": {
+                    "question": "锁座后多久必须完成支付？"
+                  },
+                  "ok": true,
+                  "latency_ms": 62,
+                  "result_preview": "{\"question\": \"锁座后多久必须完成支付？\", \"hits\": [{\"doc_id\": \"P11\", \"title\": \"锁座与支付有效期\", \"source\": \"data/policies.md#P11\", \"version\": \"43aea1ebf3c7b333\", \"chunk_id\": \"P11-0000-589c2e46be21\", \"content\": \"模拟锁座有效期 1..."
+                }
+              ]
+            }
+          ],
+          "tool_sequence": [
+            "search_policy"
+          ],
+          "reply": "模拟锁座有效期15分钟 [P11]。",
+          "finish_reason": "stop",
+          "tokens": {
+            "prompt": 34,
+            "completion": 14
+          },
+          "total_latency_ms": 115
+        },
+        "public_trace_sha256": "5ee110b0b1ee30689e768cca77e0551b59713b7076c08b7e2ad2da308ccbf268",
+        "events": [
+          {
+            "event": "model_start",
+            "model_step": 1,
+            "timestamp": "2026-10-26T09:20:44.601116+00:00"
+          },
+          {
+            "event": "http_request",
+            "request_id": "5a78442a1eea40dea5475f39771111dd",
+            "provider": "bailian",
+            "summary": {
+              "model": "qwen3.8-flash",
+              "message_roles": [
+                "system",
+                "user"
+              ],
+              "returned_tool_call_ids": []
+            },
+            "model_step": 1,
+            "timestamp": "2026-10-26T09:20:44.613619+00:00"
+          },
+          {
+            "event": "http_dispatch_evidence",
+            "request_id": "5a78442a1eea40dea5475f39771111dd",
+            "provider": "bailian",
+            "tool_payloads": [],
+            "system_prompt_sha256": "0fb2deafdd7e94f3fd996599e62165ace81d62bee52e4980a6aaa6e3b0096c26",
+            "scope": "Dispatch intent; successful HTTP/model response must be checked separately",
+            "model_step": 1,
+            "timestamp": "2026-10-26T09:20:44.613619+00:00"
+          },
+          {
+            "event": "http_response",
+            "request_id": "5a78442a1eea40dea5475f39771111dd",
+            "provider": "bailian",
+            "http_status": 200,
+            "category": "response_received",
+            "usage": {
+              "prompt_tokens": 17,
+              "completion_tokens": 7,
+              "total_tokens": 24
+            },
+            "model_step": 1,
+            "timestamp": "2026-10-26T09:20:44.621356+00:00"
+          },
+          {
+            "event": "model_response",
+            "model_step": 1,
+            "request_id": "5a78442a1eea40dea5475f39771111dd",
+            "response_model": "qwen3.8-flash",
+            "usage": {
+              "input_tokens": 17,
+              "output_tokens": 7,
+              "total_tokens": 24,
+              "input_token_details": {},
+              "output_token_details": {}
+            },
+            "latency_ms": 20,
+            "finish_reason": "tool_calls",
+            "tool_calls": [
+              {
+                "id": "policy-bailian",
+                "name": "search_policy",
+                "args": {
+                  "question": "锁座后多久必须完成支付？"
+                }
+              }
+            ]
+          },
+          {
+            "event": "model_end",
+            "model_step": 1
+          },
+          {
+            "event": "tool_start",
+            "model_step": 1,
+            "tool": "search_policy",
+            "args": {
+              "question": "锁座后多久必须完成支付？"
+            },
+            "call_id": "policy-bailian",
+            "execution_index": 1,
+            "model_requested_tool": "search_policy",
+            "model_requested_args": {
+              "question": "锁座后多久必须完成支付？"
+            }
+          },
+          {
+            "event": "tool_end",
+            "tool": "search_policy",
+            "args": {
+              "question": "锁座后多久必须完成支付？"
+            },
+            "call_id": "policy-bailian",
+            "ok": true,
+            "executed": true,
+            "execution_index": 1,
+            "latency_ms": 62,
+            "result": {
+              "question": "锁座后多久必须完成支付？",
+              "hits": [
+                {
+                  "doc_id": "P11",
+                  "title": "锁座与支付有效期",
+                  "source": "data/policies.md#P11",
+                  "version": "43aea1ebf3c7b333",
+                  "chunk_id": "P11-0000-589c2e46be21",
+                  "content": "模拟锁座有效期 15 分钟，过期未支付自动释放库存；下单必须提供与锁座一致的乘客列表。重复支付不重复扣减库存。",
+                  "score": 0.01639344262295082,
+                  "keyword_score": 1.8708286933869707,
+                  "rank": 1,
+                  "fusion_ranks": {
+                    "keyword": 1,
+                    "vector": 1
+                  },
+                  "fusion_weights": {
+                    "keyword": 0.30000000000000004,
+                    "vector": 0.7
+                  },
+                  "vector_score": 0.8076332211494446
+                }
+              ],
+              "count": 1
+            },
+            "parameter_validation": {
+              "status": "valid",
+              "validated_args": {
+                "question": "锁座后多久必须完成支付？"
+              }
+            },
+            "timestamp": "2026-10-26T09:20:44.686605+00:00",
+            "step": 1
+          },
+          {
+            "event": "model_start",
+            "model_step": 2,
+            "timestamp": "2026-10-26T09:20:44.688605+00:00"
+          },
+          {
+            "event": "http_request",
+            "request_id": "2ddd897a9a8642c7bf9a678e572e93e2",
+            "provider": "bailian",
+            "summary": {
+              "model": "qwen3.8-flash",
+              "message_roles": [
+                "system",
+                "user",
+                "assistant",
+                "tool"
+              ],
+              "returned_tool_call_ids": [
+                "policy-bailian"
+              ]
+            },
+            "model_step": 2,
+            "timestamp": "2026-10-26T09:20:44.707518+00:00"
+          },
+          {
+            "event": "http_dispatch_evidence",
+            "request_id": "2ddd897a9a8642c7bf9a678e572e93e2",
+            "provider": "bailian",
+            "tool_payloads": [
+              {
+                "tool_call_id": "policy-bailian",
+                "content_sha256": "ad04ab53da208080f3819c996266145fdfa39c9a681fa2efa17660e75472f238",
+                "parsed_result_sha256": "44f4e38a0d6fb00442dc6b42398a179c62f13f601902ba35ca1a19d0a314363c",
+                "tool_result": {
+                  "question": "锁座后多久必须完成支付？",
+                  "hits": [
+                    {
+                      "doc_id": "P11",
+                      "title": "锁座与支付有效期",
+                      "source": "data/policies.md#P11",
+                      "version": "43aea1ebf3c7b333",
+                      "chunk_id": "P11-0000-589c2e46be21",
+                      "content": "模拟锁座有效期 15 分钟，过期未支付自动释放库存；下单必须提供与锁座一致的乘客列表。重复支付不重复扣减库存。",
+                      "score": 0.01639344262295082,
+                      "keyword_score": 1.8708286933869707,
+                      "rank": 1,
+                      "fusion_ranks": {
+                        "keyword": 1,
+                        "vector": 1
+                      },
+                      "fusion_weights": {
+                        "keyword": 0.30000000000000004,
+                        "vector": 0.7
+                      },
+                      "vector_score": 0.8076332211494446
+                    }
+                  ],
+                  "count": 1
+                }
+              }
+            ],
+            "system_prompt_sha256": "0fb2deafdd7e94f3fd996599e62165ace81d62bee52e4980a6aaa6e3b0096c26",
+            "scope": "Dispatch intent; successful HTTP/model response must be checked separately",
+            "model_step": 2,
+            "timestamp": "2026-10-26T09:20:44.707518+00:00"
+          },
+          {
+            "event": "http_response",
+            "request_id": "2ddd897a9a8642c7bf9a678e572e93e2",
+            "provider": "bailian",
+            "http_status": 200,
+            "category": "response_received",
+            "usage": {
+              "prompt_tokens": 17,
+              "completion_tokens": 7,
+              "total_tokens": 24
+            },
+            "model_step": 2,
+            "timestamp": "2026-10-26T09:20:44.713315+00:00"
+          },
+          {
+            "event": "model_response",
+            "model_step": 2,
+            "request_id": "2ddd897a9a8642c7bf9a678e572e93e2",
+            "response_model": "qwen3.8-flash",
+            "usage": {
+              "input_tokens": 17,
+              "output_tokens": 7,
+              "total_tokens": 24,
+              "input_token_details": {},
+              "output_token_details": {}
+            },
+            "latency_ms": 25,
+            "finish_reason": "stop",
+            "tool_calls": []
+          },
+          {
+            "event": "model_final",
+            "model_step": 2,
+            "text": "模拟锁座有效期15分钟 [P11]。",
+            "reply_consistency": {
+              "schema": "reply-consistency/2",
+              "status": "not_verified",
+              "verdict": "indeterminate",
+              "checked_fields": 0,
+              "identity_checks": 0,
+              "findings": [],
+              "field_checks": [],
+              "indeterminate": [],
+              "ignored": [],
+              "authority_queries": [],
+              "scope": "Explicit ticket fields in labelled prose/tables; not full natural-language or business accuracy"
+            },
+            "rag_answer_check": {
+              "allowed_doc_ids": [
+                "P11"
+              ],
+              "cited_doc_ids": [
+                "P11"
+              ],
+              "wrong_citations": [],
+              "citation_status": "checked_ids_match",
+              "citation_support": "indeterminate",
+              "faithfulness": "indeterminate",
+              "scope": "Document-ID membership only; does not prove the cited passage supports every claim",
+              "status": "checked_scoped_facts",
+              "faithfulness_check": {
+                "schema": "ticket-rag-faithfulness/1",
+                "status": "checked_scoped_facts",
+                "original_model_reply": "模拟锁座有效期15分钟 [P11]。",
+                "question": "锁座后多久必须完成支付？",
+                "allowed_doc_ids": [
+                  "P11"
+                ],
+                "cited_doc_ids": [
+                  "P11"
+                ],
+                "claim_checks": [
+                  {
+                    "claim": "模拟锁座有效期15分钟 [P11]",
+                    "status": "supported_scoped_quantities",
+                    "quantities": [
+                      {
+                        "text": "15分钟",
+                        "dimension": "duration",
+                        "value": "15",
+                        "start": 7,
+                        "end": 11,
+                        "negated": false
+                      }
+                    ],
+                    "sources": [
+                      {
+                        "doc_id": "P11",
+                        "evidence_text": "模拟锁座有效期 15 分钟",
+                        "source": "data/policies.md#P11"
+                      }
+                    ],
+                    "basis": "Same citation, compatible subjects/explicit interval, quantities with normalized units"
+                  }
+                ],
+                "findings": [],
+                "manual_review": [],
+                "refusal_observed": false,
+                "no_evidence_refusal": null,
+                "conflicts": [],
+                "conflict_disclosed": null,
+                "excluded_user_quotes": [],
+                "full_semantic_faithfulness": "indeterminate",
+                "limits": [
+                  "Finite rules do not prove all semantic claims or the completeness of an answer.",
+                  "Unknown paraphrases/implicit conditions require B independent review; this is not a model-generated judge."
+                ]
+              }
+            }
+          },
+          {
+            "event": "model_end",
+            "model_step": 2
+          }
+        ],
+        "remote_status": "not_attempted"
+      },
+      "error": null,
+      "generation_requests": 2,
+      "real_generation_requests": 0,
+      "generation_latency_ms": 45,
+      "retrieval_latency_ms": [
+        48
+      ],
+      "tokens": {
+        "prompt": 34,
+        "completion": 14
+      },
+      "token_usage_status": "complete",
+      "business_success": null,
+      "automatic_retries": 0,
+      "cost": null
+    },
+    {
+      "provider": "deepseek",
+      "evidence_mode": "offline_sdk_stub",
+      "status": "protocol_passed",
+      "real_function_calling_verified": false,
+      "model_identity_verified": true,
+      "actual_models": [
+        "deepseek-flash"
+      ],
+      "agent_completed": true,
+      "protocol_closure": true,
+      "model_response_received": true,
+      "tool_execution_verified": true,
+      "tool_result_delivered_with_http200": true,
+      "policy_tool_call_count": 1,
+      "expected_evidence_sha256": "44f4e38a0d6fb00442dc6b42398a179c62f13f601902ba35ca1a19d0a314363c",
+      "delivered_evidence": [
+        {
+          "tool_call_id": "policy-deepseek",
+          "content_sha256": "ad04ab53da208080f3819c996266145fdfa39c9a681fa2efa17660e75472f238",
+          "parsed_result_sha256": "44f4e38a0d6fb00442dc6b42398a179c62f13f601902ba35ca1a19d0a314363c",
+          "tool_result": {
+            "question": "锁座后多久必须完成支付？",
+            "hits": [
+              {
+                "doc_id": "P11",
+                "title": "锁座与支付有效期",
+                "source": "data/policies.md#P11",
+                "version": "43aea1ebf3c7b333",
+                "chunk_id": "P11-0000-589c2e46be21",
+                "content": "模拟锁座有效期 15 分钟，过期未支付自动释放库存；下单必须提供与锁座一致的乘客列表。重复支付不重复扣减库存。",
+                "score": 0.01639344262295082,
+                "keyword_score": 1.8708286933869707,
+                "rank": 1,
+                "fusion_ranks": {
+                  "keyword": 1,
+                  "vector": 1
+                },
+                "fusion_weights": {
+                  "keyword": 0.30000000000000004,
+                  "vector": 0.7
+                },
+                "vector_score": 0.8076332211494446
+              }
+            ],
+            "count": 1
+          }
+        }
+      ],
+      "original_model_reply": "模拟锁座有效期15分钟 [P11]。",
+      "final_display_result": "模拟锁座有效期15分钟 [P11]。",
+      "faithfulness": {
+        "schema": "ticket-rag-answer/1",
+        "trace_id": "30163e76b973487d9dcc2a636c6fb900",
+        "session_id": "v352-deepseek-5a785989284c44dca8a18284ff681299",
+        "provider": "deepseek_live",
+        "model": "deepseek-flash",
+        "original_model_reply": "模拟锁座有效期15分钟 [P11]。",
+        "allowed_doc_ids": [
+          "P11"
+        ],
+        "cited_doc_ids": [
+          "P11"
+        ],
+        "wrong_citations": [],
+        "citation_status": "checked_ids_match",
+        "citation_support": "indeterminate",
+        "faithfulness": "indeterminate",
+        "scope": "Document-ID membership only; does not prove the cited passage supports every claim",
+        "status": "checked_scoped_facts",
+        "faithfulness_check": {
+          "schema": "ticket-rag-faithfulness/1",
+          "status": "checked_scoped_facts",
+          "original_model_reply": "模拟锁座有效期15分钟 [P11]。",
+          "question": "锁座后多久必须完成支付？",
+          "allowed_doc_ids": [
+            "P11"
+          ],
+          "cited_doc_ids": [
+            "P11"
+          ],
+          "claim_checks": [
+            {
+              "claim": "模拟锁座有效期15分钟 [P11]",
+              "status": "supported_scoped_quantities",
+              "quantities": [
+                {
+                  "text": "15分钟",
+                  "dimension": "duration",
+                  "value": "15",
+                  "start": 7,
+                  "end": 11,
+                  "negated": false
+                }
+              ],
+              "sources": [
+                {
+                  "doc_id": "P11",
+                  "evidence_text": "模拟锁座有效期 15 分钟",
+                  "source": "data/policies.md#P11"
+                }
+              ],
+              "basis": "Same citation, compatible subjects/explicit interval, quantities with normalized units"
+            }
+          ],
+          "findings": [],
+          "manual_review": [],
+          "refusal_observed": false,
+          "no_evidence_refusal": null,
+          "conflicts": [],
+          "conflict_disclosed": null,
+          "excluded_user_quotes": [],
+          "full_semantic_faithfulness": "indeterminate",
+          "limits": [
+            "Finite rules do not prove all semantic claims or the completeness of an answer.",
+            "Unknown paraphrases/implicit conditions require B independent review; this is not a model-generated judge."
+          ]
+        },
+        "business_success": null
+      },
+      "public_trace": {
+        "session_id": "v352-deepseek-5a785989284c44dca8a18284ff681299",
+        "provider": "deepseek_live",
+        "model": "deepseek-flash",
+        "user_msg": "锁座后多久必须完成支付？",
+        "steps": [
+          {
+            "step": 1,
+            "calls": [
+              {
+                "tool": "search_policy",
+                "args": {
+                  "question": "锁座后多久必须完成支付？"
+                },
+                "ok": true,
+                "latency_ms": 51,
+                "result_preview": "{\"question\": \"锁座后多久必须完成支付？\", \"hits\": [{\"doc_id\": \"P11\", \"title\": \"锁座与支付有效期\", \"source\": \"data/policies.md#P11\", \"version\": \"43aea1ebf3c7b333\", \"chunk_id\": \"P11-0000-589c2e46be21\", \"content\": \"模拟锁座有效期 1..."
+              }
+            ]
+          }
+        ],
+        "tool_sequence": [
+          "search_policy"
+        ],
+        "reply": "模拟锁座有效期15分钟 [P11]。",
+        "finish_reason": "stop",
+        "tokens": {
+          "prompt": 34,
+          "completion": 14
+        },
+        "total_latency_ms": 105
+      },
+      "live_evidence": {
+        "schema": "ticket-live-run/1",
+        "trace_id": "30163e76b973487d9dcc2a636c6fb900",
+        "session_id": "v352-deepseek-5a785989284c44dca8a18284ff681299",
+        "provider": "deepseek_live",
+        "requested_model": "deepseek-flash",
+        "actual_models": [
+          "deepseek-flash"
+        ],
+        "mode": "live",
+        "case_id": "v352-shared-policy",
+        "git_sha": "8e655fd19e99c0adc406554bf56e8184f49e686d",
+        "requested_at": "2026-10-26T09:20:44.785844+00:00",
+        "recorded_at": "2026-10-26T09:20:44.905466+00:00",
+        "user_msg": "锁座后多久必须完成支付？",
+        "reply": "模拟锁座有效期15分钟 [P11]。",
+        "finish_reason": "stop",
+        "total_latency_ms": 105,
+        "tokens": {
+          "prompt": 34,
+          "completion": 14
+        },
+        "observed_tokens": {
+          "prompt": 34,
+          "completion": 14
+        },
+        "token_usage_status": "complete",
+        "agent_completed": true,
+        "model_response_received": true,
+        "tool_execution_success": true,
+        "business_success": null,
+        "error": null,
+        "local_trace_saved": true,
+        "local_sidecar_saved": true,
+        "public_trace": {
+          "session_id": "v352-deepseek-5a785989284c44dca8a18284ff681299",
+          "provider": "deepseek_live",
+          "model": "deepseek-flash",
+          "user_msg": "锁座后多久必须完成支付？",
+          "steps": [
+            {
+              "step": 1,
+              "calls": [
+                {
+                  "tool": "search_policy",
+                  "args": {
+                    "question": "锁座后多久必须完成支付？"
+                  },
+                  "ok": true,
+                  "latency_ms": 51,
+                  "result_preview": "{\"question\": \"锁座后多久必须完成支付？\", \"hits\": [{\"doc_id\": \"P11\", \"title\": \"锁座与支付有效期\", \"source\": \"data/policies.md#P11\", \"version\": \"43aea1ebf3c7b333\", \"chunk_id\": \"P11-0000-589c2e46be21\", \"content\": \"模拟锁座有效期 1..."
+                }
+              ]
+            }
+          ],
+          "tool_sequence": [
+            "search_policy"
+          ],
+          "reply": "模拟锁座有效期15分钟 [P11]。",
+          "finish_reason": "stop",
+          "tokens": {
+            "prompt": 34,
+            "completion": 14
+          },
+          "total_latency_ms": 105
+        },
+        "public_trace_sha256": "bb7229efe47aaa8f72f169a18ccf387fffcfec8b567cc7b9d623f40c6e95111b",
+        "events": [
+          {
+            "event": "model_start",
+            "model_step": 1,
+            "timestamp": "2026-10-26T09:20:44.787854+00:00"
+          },
+          {
+            "event": "http_request",
+            "request_id": "afef6416d77f4a48b7b2f83bc0787f47",
+            "provider": "deepseek",
+            "summary": {
+              "model": "deepseek-flash",
+              "message_roles": [
+                "system",
+                "user"
+              ],
+              "returned_tool_call_ids": []
+            },
+            "model_step": 1,
+            "timestamp": "2026-10-26T09:20:44.803307+00:00"
+          },
+          {
+            "event": "http_dispatch_evidence",
+            "request_id": "afef6416d77f4a48b7b2f83bc0787f47",
+            "provider": "deepseek",
+            "tool_payloads": [],
+            "system_prompt_sha256": "0fb2deafdd7e94f3fd996599e62165ace81d62bee52e4980a6aaa6e3b0096c26",
+            "scope": "Dispatch intent; successful HTTP/model response must be checked separately",
+            "model_step": 1,
+            "timestamp": "2026-10-26T09:20:44.803307+00:00"
+          },
+          {
+            "event": "http_response",
+            "request_id": "afef6416d77f4a48b7b2f83bc0787f47",
+            "provider": "deepseek",
+            "http_status": 200,
+            "category": "response_received",
+            "usage": {
+              "prompt_tokens": 17,
+              "completion_tokens": 7,
+              "total_tokens": 24
+            },
+            "model_step": 1,
+            "timestamp": "2026-10-26T09:20:44.808678+00:00"
+          },
+          {
+            "event": "model_response",
+            "model_step": 1,
+            "request_id": "afef6416d77f4a48b7b2f83bc0787f47",
+            "response_model": "deepseek-flash",
+            "usage": {
+              "input_tokens": 17,
+              "output_tokens": 7,
+              "total_tokens": 24,
+              "input_token_details": {},
+              "output_token_details": {}
+            },
+            "latency_ms": 21,
+            "finish_reason": "tool_calls",
+            "tool_calls": [
+              {
+                "id": "policy-deepseek",
+                "name": "search_policy",
+                "args": {
+                  "question": "锁座后多久必须完成支付？"
+                }
+              }
+            ]
+          },
+          {
+            "event": "model_end",
+            "model_step": 1
+          },
+          {
+            "event": "tool_start",
+            "model_step": 1,
+            "tool": "search_policy",
+            "args": {
+              "question": "锁座后多久必须完成支付？"
+            },
+            "call_id": "policy-deepseek",
+            "execution_index": 1,
+            "model_requested_tool": "search_policy",
+            "model_requested_args": {
+              "question": "锁座后多久必须完成支付？"
+            }
+          },
+          {
+            "event": "tool_end",
+            "tool": "search_policy",
+            "args": {
+              "question": "锁座后多久必须完成支付？"
+            },
+            "call_id": "policy-deepseek",
+            "ok": true,
+            "executed": true,
+            "execution_index": 1,
+            "latency_ms": 51,
+            "result": {
+              "question": "锁座后多久必须完成支付？",
+              "hits": [
+                {
+                  "doc_id": "P11",
+                  "title": "锁座与支付有效期",
+                  "source": "data/policies.md#P11",
+                  "version": "43aea1ebf3c7b333",
+                  "chunk_id": "P11-0000-589c2e46be21",
+                  "content": "模拟锁座有效期 15 分钟，过期未支付自动释放库存；下单必须提供与锁座一致的乘客列表。重复支付不重复扣减库存。",
+                  "score": 0.01639344262295082,
+                  "keyword_score": 1.8708286933869707,
+                  "rank": 1,
+                  "fusion_ranks": {
+                    "keyword": 1,
+                    "vector": 1
+                  },
+                  "fusion_weights": {
+                    "keyword": 0.30000000000000004,
+                    "vector": 0.7
+                  },
+                  "vector_score": 0.8076332211494446
+                }
+              ],
+              "count": 1
+            },
+            "parameter_validation": {
+              "status": "valid",
+              "validated_args": {
+                "question": "锁座后多久必须完成支付？"
+              }
+            },
+            "timestamp": "2026-10-26T09:20:44.862568+00:00",
+            "step": 1
+          },
+          {
+            "event": "model_start",
+            "model_step": 2,
+            "timestamp": "2026-10-26T09:20:44.862568+00:00"
+          },
+          {
+            "event": "http_request",
+            "request_id": "6975200cd93a47499e4fddb5badfd6dc",
+            "provider": "deepseek",
+            "summary": {
+              "model": "deepseek-flash",
+              "message_roles": [
+                "system",
+                "user",
+                "assistant",
+                "tool"
+              ],
+              "returned_tool_call_ids": [
+                "policy-deepseek"
+              ]
+            },
+            "model_step": 2,
+            "timestamp": "2026-10-26T09:20:44.879217+00:00"
+          },
+          {
+            "event": "http_dispatch_evidence",
+            "request_id": "6975200cd93a47499e4fddb5badfd6dc",
+            "provider": "deepseek",
+            "tool_payloads": [
+              {
+                "tool_call_id": "policy-deepseek",
+                "content_sha256": "ad04ab53da208080f3819c996266145fdfa39c9a681fa2efa17660e75472f238",
+                "parsed_result_sha256": "44f4e38a0d6fb00442dc6b42398a179c62f13f601902ba35ca1a19d0a314363c",
+                "tool_result": {
+                  "question": "锁座后多久必须完成支付？",
+                  "hits": [
+                    {
+                      "doc_id": "P11",
+                      "title": "锁座与支付有效期",
+                      "source": "data/policies.md#P11",
+                      "version": "43aea1ebf3c7b333",
+                      "chunk_id": "P11-0000-589c2e46be21",
+                      "content": "模拟锁座有效期 15 分钟，过期未支付自动释放库存；下单必须提供与锁座一致的乘客列表。重复支付不重复扣减库存。",
+                      "score": 0.01639344262295082,
+                      "keyword_score": 1.8708286933869707,
+                      "rank": 1,
+                      "fusion_ranks": {
+                        "keyword": 1,
+                        "vector": 1
+                      },
+                      "fusion_weights": {
+                        "keyword": 0.30000000000000004,
+                        "vector": 0.7
+                      },
+                      "vector_score": 0.8076332211494446
+                    }
+                  ],
+                  "count": 1
+                }
+              }
+            ],
+            "system_prompt_sha256": "0fb2deafdd7e94f3fd996599e62165ace81d62bee52e4980a6aaa6e3b0096c26",
+            "scope": "Dispatch intent; successful HTTP/model response must be checked separately",
+            "model_step": 2,
+            "timestamp": "2026-10-26T09:20:44.879217+00:00"
+          },
+          {
+            "event": "http_response",
+            "request_id": "6975200cd93a47499e4fddb5badfd6dc",
+            "provider": "deepseek",
+            "http_status": 200,
+            "category": "response_received",
+            "usage": {
+              "prompt_tokens": 17,
+              "completion_tokens": 7,
+              "total_tokens": 24
+            },
+            "model_step": 2,
+            "timestamp": "2026-10-26T09:20:44.887269+00:00"
+          },
+          {
+            "event": "model_response",
+            "model_step": 2,
+            "request_id": "6975200cd93a47499e4fddb5badfd6dc",
+            "response_model": "deepseek-flash",
+            "usage": {
+              "input_tokens": 17,
+              "output_tokens": 7,
+              "total_tokens": 24,
+              "input_token_details": {},
+              "output_token_details": {}
+            },
+            "latency_ms": 24,
+            "finish_reason": "stop",
+            "tool_calls": []
+          },
+          {
+            "event": "model_final",
+            "model_step": 2,
+            "text": "模拟锁座有效期15分钟 [P11]。",
+            "reply_consistency": {
+              "schema": "reply-consistency/2",
+              "status": "not_verified",
+              "verdict": "indeterminate",
+              "checked_fields": 0,
+              "identity_checks": 0,
+              "findings": [],
+              "field_checks": [],
+              "indeterminate": [],
+              "ignored": [],
+              "authority_queries": [],
+              "scope": "Explicit ticket fields in labelled prose/tables; not full natural-language or business accuracy"
+            },
+            "rag_answer_check": {
+              "allowed_doc_ids": [
+                "P11"
+              ],
+              "cited_doc_ids": [
+                "P11"
+              ],
+              "wrong_citations": [],
+              "citation_status": "checked_ids_match",
+              "citation_support": "indeterminate",
+              "faithfulness": "indeterminate",
+              "scope": "Document-ID membership only; does not prove the cited passage supports every claim",
+              "status": "checked_scoped_facts",
+              "faithfulness_check": {
+                "schema": "ticket-rag-faithfulness/1",
+                "status": "checked_scoped_facts",
+                "original_model_reply": "模拟锁座有效期15分钟 [P11]。",
+                "question": "锁座后多久必须完成支付？",
+                "allowed_doc_ids": [
+                  "P11"
+                ],
+                "cited_doc_ids": [
+                  "P11"
+                ],
+                "claim_checks": [
+                  {
+                    "claim": "模拟锁座有效期15分钟 [P11]",
+                    "status": "supported_scoped_quantities",
+                    "quantities": [
+                      {
+                        "text": "15分钟",
+                        "dimension": "duration",
+                        "value": "15",
+                        "start": 7,
+                        "end": 11,
+                        "negated": false
+                      }
+                    ],
+                    "sources": [
+                      {
+                        "doc_id": "P11",
+                        "evidence_text": "模拟锁座有效期 15 分钟",
+                        "source": "data/policies.md#P11"
+                      }
+                    ],
+                    "basis": "Same citation, compatible subjects/explicit interval, quantities with normalized units"
+                  }
+                ],
+                "findings": [],
+                "manual_review": [],
+                "refusal_observed": false,
+                "no_evidence_refusal": null,
+                "conflicts": [],
+                "conflict_disclosed": null,
+                "excluded_user_quotes": [],
+                "full_semantic_faithfulness": "indeterminate",
+                "limits": [
+                  "Finite rules do not prove all semantic claims or the completeness of an answer.",
+                  "Unknown paraphrases/implicit conditions require B independent review; this is not a model-generated judge."
+                ]
+              }
+            }
+          },
+          {
+            "event": "model_end",
+            "model_step": 2
+          }
+        ],
+        "remote_status": "not_attempted"
+      },
+      "error": null,
+      "generation_requests": 2,
+      "real_generation_requests": 0,
+      "generation_latency_ms": 45,
+      "retrieval_latency_ms": [
+        48
+      ],
+      "tokens": {
+        "prompt": 34,
+        "completion": 14
+      },
+      "token_usage_status": "complete",
+      "business_success": null,
+      "automatic_retries": 0,
+      "cost": null
+    }
+  ],
+  "same_tool_evidence_verified": true,
+  "same_system_prompt_verified": true,
+  "source_index_unchanged": true,
+  "source_tree_sha256": "f65a849870a6a9070920c70c609859538890967fcf0bdd87726094b306648776",
+  "real_generation_requests": 0,
+  "generation_limit": 4,
+  "real_generation_requests_this_command": 0,
+  "continued_from_sha256": null,
+  "real_embedding_requests": 0,
+  "langsmith_requests": 0,
+  "cost": null,
+  "faithfulness_scope": "Finite checks and manual review, independent of protocol closure; no overall model accuracy inferred."
+}

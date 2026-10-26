@@ -1,0 +1,7 @@
+{
+  "reason": "Local configuration rejected before any Qwen HTTP; no API retry",
+  "original_report_sha256": "24a04405fb8cdc75ec4b912ec5d313d50178f96b87874429b3967bd5e2f4b479",
+  "existing_shared_used": 2,
+  "remaining_qwen_limit": 2,
+  "new_budget_created": false
+}
