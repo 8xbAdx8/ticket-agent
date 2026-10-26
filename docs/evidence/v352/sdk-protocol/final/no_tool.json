@@ -1,0 +1,386 @@
+{
+  "schema": "ticket-v352-paired-live/1",
+  "evidence_mode": "offline_sdk_stub",
+  "records": [
+    {
+      "provider": "bailian",
+      "evidence_mode": "offline_sdk_stub",
+      "status": "failed_or_incomplete",
+      "real_function_calling_verified": false,
+      "model_identity_verified": true,
+      "actual_models": [
+        "qwen3.8-flash"
+      ],
+      "agent_completed": true,
+      "protocol_closure": false,
+      "model_response_received": true,
+      "tool_execution_verified": false,
+      "tool_result_delivered_with_http200": false,
+      "policy_tool_call_count": 0,
+      "expected_evidence_sha256": "44f4e38a0d6fb00442dc6b42398a179c62f13f601902ba35ca1a19d0a314363c",
+      "delivered_evidence": [],
+      "original_model_reply": "当前无法确认这项政策。",
+      "final_display_result": "当前无法确认这项政策。",
+      "faithfulness": null,
+      "public_trace": {
+        "session_id": "v352-bailian-e8cd17fd92104708b465625077b42951",
+        "provider": "bailian_live",
+        "model": "qwen3.8-flash",
+        "user_msg": "锁座后多久必须完成支付？",
+        "steps": [],
+        "tool_sequence": [],
+        "reply": "当前无法确认这项政策。",
+        "finish_reason": "stop",
+        "tokens": {
+          "prompt": 17,
+          "completion": 7
+        },
+        "total_latency_ms": 41
+      },
+      "live_evidence": {
+        "schema": "ticket-live-run/1",
+        "trace_id": "a3b075c25dd54f4c884a05cf639e2922",
+        "session_id": "v352-bailian-e8cd17fd92104708b465625077b42951",
+        "provider": "bailian_live",
+        "requested_model": "qwen3.8-flash",
+        "actual_models": [
+          "qwen3.8-flash"
+        ],
+        "mode": "live",
+        "case_id": "v352-shared-policy",
+        "git_sha": "2fdc340b107d79180adf2351f3e0d3380f2400bb",
+        "requested_at": "2026-10-26T08:41:57.183366+00:00",
+        "recorded_at": "2026-10-26T08:41:57.233263+00:00",
+        "user_msg": "锁座后多久必须完成支付？",
+        "reply": "当前无法确认这项政策。",
+        "finish_reason": "stop",
+        "total_latency_ms": 41,
+        "tokens": {
+          "prompt": 17,
+          "completion": 7
+        },
+        "observed_tokens": {
+          "prompt": 17,
+          "completion": 7
+        },
+        "token_usage_status": "complete",
+        "agent_completed": true,
+        "model_response_received": true,
+        "tool_execution_success": null,
+        "business_success": null,
+        "error": null,
+        "local_trace_saved": true,
+        "local_sidecar_saved": true,
+        "public_trace": {
+          "session_id": "v352-bailian-e8cd17fd92104708b465625077b42951",
+          "provider": "bailian_live",
+          "model": "qwen3.8-flash",
+          "user_msg": "锁座后多久必须完成支付？",
+          "steps": [],
+          "tool_sequence": [],
+          "reply": "当前无法确认这项政策。",
+          "finish_reason": "stop",
+          "tokens": {
+            "prompt": 17,
+            "completion": 7
+          },
+          "total_latency_ms": 41
+        },
+        "public_trace_sha256": "caaed044d0bed934004d1f9978c30e96fdd626c9e5a18f64502abe92db46fa7c",
+        "events": [
+          {
+            "event": "model_start",
+            "model_step": 1,
+            "timestamp": "2026-10-26T08:41:57.185911+00:00"
+          },
+          {
+            "event": "http_request",
+            "request_id": "c6a2110a2e65467383be4dcce4ae8563",
+            "provider": "bailian",
+            "summary": {
+              "model": "qwen3.8-flash",
+              "message_roles": [
+                "system",
+                "user"
+              ],
+              "returned_tool_call_ids": []
+            },
+            "model_step": 1,
+            "timestamp": "2026-10-26T08:41:57.209986+00:00"
+          },
+          {
+            "event": "http_dispatch_evidence",
+            "request_id": "c6a2110a2e65467383be4dcce4ae8563",
+            "provider": "bailian",
+            "tool_payloads": [],
+            "system_prompt_sha256": "0fb2deafdd7e94f3fd996599e62165ace81d62bee52e4980a6aaa6e3b0096c26",
+            "scope": "Dispatch intent; successful HTTP/model response must be checked separately",
+            "model_step": 1,
+            "timestamp": "2026-10-26T08:41:57.211250+00:00"
+          },
+          {
+            "event": "http_response",
+            "request_id": "c6a2110a2e65467383be4dcce4ae8563",
+            "provider": "bailian",
+            "http_status": 200,
+            "category": "response_received",
+            "usage": {
+              "prompt_tokens": 17,
+              "completion_tokens": 7,
+              "total_tokens": 24
+            },
+            "model_step": 1,
+            "timestamp": "2026-10-26T08:41:57.221834+00:00"
+          },
+          {
+            "event": "model_response",
+            "model_step": 1,
+            "request_id": "c6a2110a2e65467383be4dcce4ae8563",
+            "response_model": "qwen3.8-flash",
+            "usage": {
+              "input_tokens": 17,
+              "output_tokens": 7,
+              "total_tokens": 24,
+              "input_token_details": {},
+              "output_token_details": {}
+            },
+            "latency_ms": 36,
+            "finish_reason": "stop",
+            "tool_calls": []
+          },
+          {
+            "event": "model_final",
+            "model_step": 1,
+            "text": "当前无法确认这项政策。",
+            "reply_consistency": {
+              "schema": "reply-consistency/2",
+              "status": "not_verified",
+              "verdict": "indeterminate",
+              "checked_fields": 0,
+              "identity_checks": 0,
+              "findings": [],
+              "field_checks": [],
+              "indeterminate": [],
+              "ignored": [],
+              "authority_queries": [],
+              "scope": "Explicit ticket fields in labelled prose/tables; not full natural-language or business accuracy"
+            }
+          },
+          {
+            "event": "model_end",
+            "model_step": 1
+          }
+        ],
+        "remote_status": "not_attempted"
+      },
+      "error": null,
+      "generation_requests": 1,
+      "real_generation_requests": 0,
+      "generation_latency_ms": 36,
+      "retrieval_latency_ms": [],
+      "tokens": {
+        "prompt": 17,
+        "completion": 7
+      },
+      "token_usage_status": "complete",
+      "business_success": null,
+      "automatic_retries": 0,
+      "cost": null
+    },
+    {
+      "provider": "deepseek",
+      "evidence_mode": "offline_sdk_stub",
+      "status": "failed_or_incomplete",
+      "real_function_calling_verified": false,
+      "model_identity_verified": true,
+      "actual_models": [
+        "deepseek-flash"
+      ],
+      "agent_completed": true,
+      "protocol_closure": false,
+      "model_response_received": true,
+      "tool_execution_verified": false,
+      "tool_result_delivered_with_http200": false,
+      "policy_tool_call_count": 0,
+      "expected_evidence_sha256": "44f4e38a0d6fb00442dc6b42398a179c62f13f601902ba35ca1a19d0a314363c",
+      "delivered_evidence": [],
+      "original_model_reply": "当前无法确认这项政策。",
+      "final_display_result": "当前无法确认这项政策。",
+      "faithfulness": null,
+      "public_trace": {
+        "session_id": "v352-deepseek-32b152e56a4143ef99f214eb0fb9d979",
+        "provider": "deepseek_live",
+        "model": "deepseek-flash",
+        "user_msg": "锁座后多久必须完成支付？",
+        "steps": [],
+        "tool_sequence": [],
+        "reply": "当前无法确认这项政策。",
+        "finish_reason": "stop",
+        "tokens": {
+          "prompt": 17,
+          "completion": 7
+        },
+        "total_latency_ms": 38
+      },
+      "live_evidence": {
+        "schema": "ticket-live-run/1",
+        "trace_id": "546a728e668b457c93654540ea7ea23d",
+        "session_id": "v352-deepseek-32b152e56a4143ef99f214eb0fb9d979",
+        "provider": "deepseek_live",
+        "requested_model": "deepseek-flash",
+        "actual_models": [
+          "deepseek-flash"
+        ],
+        "mode": "live",
+        "case_id": "v352-shared-policy",
+        "git_sha": "2fdc340b107d79180adf2351f3e0d3380f2400bb",
+        "requested_at": "2026-10-26T08:41:57.314528+00:00",
+        "recorded_at": "2026-10-26T08:41:57.364820+00:00",
+        "user_msg": "锁座后多久必须完成支付？",
+        "reply": "当前无法确认这项政策。",
+        "finish_reason": "stop",
+        "total_latency_ms": 38,
+        "tokens": {
+          "prompt": 17,
+          "completion": 7
+        },
+        "observed_tokens": {
+          "prompt": 17,
+          "completion": 7
+        },
+        "token_usage_status": "complete",
+        "agent_completed": true,
+        "model_response_received": true,
+        "tool_execution_success": null,
+        "business_success": null,
+        "error": null,
+        "local_trace_saved": true,
+        "local_sidecar_saved": true,
+        "public_trace": {
+          "session_id": "v352-deepseek-32b152e56a4143ef99f214eb0fb9d979",
+          "provider": "deepseek_live",
+          "model": "deepseek-flash",
+          "user_msg": "锁座后多久必须完成支付？",
+          "steps": [],
+          "tool_sequence": [],
+          "reply": "当前无法确认这项政策。",
+          "finish_reason": "stop",
+          "tokens": {
+            "prompt": 17,
+            "completion": 7
+          },
+          "total_latency_ms": 38
+        },
+        "public_trace_sha256": "8d4e537f4c62a948c37a7bd0c5535bde895888a23a7031d30576fd2b3e62e427",
+        "events": [
+          {
+            "event": "model_start",
+            "model_step": 1,
+            "timestamp": "2026-10-26T08:41:57.317543+00:00"
+          },
+          {
+            "event": "http_request",
+            "request_id": "06d55baec1c6465fa2b82e928ee6b696",
+            "provider": "deepseek",
+            "summary": {
+              "model": "deepseek-flash",
+              "message_roles": [
+                "system",
+                "user"
+              ],
+              "returned_tool_call_ids": []
+            },
+            "model_step": 1,
+            "timestamp": "2026-10-26T08:41:57.340166+00:00"
+          },
+          {
+            "event": "http_dispatch_evidence",
+            "request_id": "06d55baec1c6465fa2b82e928ee6b696",
+            "provider": "deepseek",
+            "tool_payloads": [],
+            "system_prompt_sha256": "0fb2deafdd7e94f3fd996599e62165ace81d62bee52e4980a6aaa6e3b0096c26",
+            "scope": "Dispatch intent; successful HTTP/model response must be checked separately",
+            "model_step": 1,
+            "timestamp": "2026-10-26T08:41:57.340166+00:00"
+          },
+          {
+            "event": "http_response",
+            "request_id": "06d55baec1c6465fa2b82e928ee6b696",
+            "provider": "deepseek",
+            "http_status": 200,
+            "category": "response_received",
+            "usage": {
+              "prompt_tokens": 17,
+              "completion_tokens": 7,
+              "total_tokens": 24
+            },
+            "model_step": 1,
+            "timestamp": "2026-10-26T08:41:57.350677+00:00"
+          },
+          {
+            "event": "model_response",
+            "model_step": 1,
+            "request_id": "06d55baec1c6465fa2b82e928ee6b696",
+            "response_model": "deepseek-flash",
+            "usage": {
+              "input_tokens": 17,
+              "output_tokens": 7,
+              "total_tokens": 24,
+              "input_token_details": {},
+              "output_token_details": {}
+            },
+            "latency_ms": 33,
+            "finish_reason": "stop",
+            "tool_calls": []
+          },
+          {
+            "event": "model_final",
+            "model_step": 1,
+            "text": "当前无法确认这项政策。",
+            "reply_consistency": {
+              "schema": "reply-consistency/2",
+              "status": "not_verified",
+              "verdict": "indeterminate",
+              "checked_fields": 0,
+              "identity_checks": 0,
+              "findings": [],
+              "field_checks": [],
+              "indeterminate": [],
+              "ignored": [],
+              "authority_queries": [],
+              "scope": "Explicit ticket fields in labelled prose/tables; not full natural-language or business accuracy"
+            }
+          },
+          {
+            "event": "model_end",
+            "model_step": 1
+          }
+        ],
+        "remote_status": "not_attempted"
+      },
+      "error": null,
+      "generation_requests": 1,
+      "real_generation_requests": 0,
+      "generation_latency_ms": 33,
+      "retrieval_latency_ms": [],
+      "tokens": {
+        "prompt": 17,
+        "completion": 7
+      },
+      "token_usage_status": "complete",
+      "business_success": null,
+      "automatic_retries": 0,
+      "cost": null
+    }
+  ],
+  "same_tool_evidence_verified": false,
+  "same_system_prompt_verified": true,
+  "source_index_unchanged": true,
+  "source_tree_sha256": "f65a849870a6a9070920c70c609859538890967fcf0bdd87726094b306648776",
+  "real_generation_requests": 0,
+  "generation_limit": 4,
+  "real_embedding_requests": 0,
+  "langsmith_requests": 0,
+  "cost": null,
+  "faithfulness_scope": "Finite checks and manual review, independent of protocol closure; no overall model accuracy inferred."
+}

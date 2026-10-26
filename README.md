@@ -1,6 +1,23 @@
 # Ticket Agent
 
-## 2026-10-26：V3.5.1 RAG质量强化（当前版本）
+## 2026-10-26：V3.5.2 RAG端到端验收与原索引保护（当前版本）
+
+原Chroma基线禁止直接打开/重建，查询和回归只用独立副本，原件前后hash核验。副本取证复现了初始化SQLite写入和首次读取HNSW写入，逻辑内容不变；本轮原索引及3933保护文件均未修改，旧事件保留。
+
+已准备两模型同问题、同Chroma证据的显式验收，新增ToolMessage实际派发hash、版本/引用检查和Web对照。**本轮真实生成/Embedding/LangSmith均0**，两模型新Live仍未验证。原Qwen4/4、正式DeepSeek5/5、Embedding5/8不变，不借旧额度。
+
+新48题Keyword合计Recall@1=0.84375、Recall@3=1、MRR=0.9375、无答案0/32；真实查询缓存缺48条，Vector/Hybrid未运行，需要单独5次Embedding授权。完整pytest499通过、0失败/0跳过，另89子测试通过；旧矩阵与两组变异通过，SDK桩不能算Live。
+
+```powershell
+# 以下均不请求模型/Embedding；输出目录必须全新
+.\.venv-v35\Scripts\python.exe scripts/verify_v352_offline.py --current-only --out artifacts/runtime/v352-my-review
+.\.venv-v35\Scripts\python.exe scripts/evaluate_v352_rag.py --out artifacts/runtime/v352-my-quality
+.\.venv-v35\Scripts\python.exe scripts/verify_v352_live.py --prepare
+```
+
+[A实现/保护报告](docs/handoff/v352/A_V3.5.2_真实RAG与索引保护报告.md) · [B独立测试手册](docs/handoff/v352/B_V3.5.2_独立测试与判定手册.md) · [C双模型演示](docs/handoff/v352/C_V3.5.2_双模型RAG演示说明.md) · [质量指标](docs/handoff/v352/V3.5.2_双模型对照与质量指标.md) · [API预算与执行边界](docs/handoff/v352/V3.5.2_API预算与真实验证记录.md) · [证据摘要](docs/evidence/v352/summary.json)。新机器还需A提供的离线索引/cache基线包，按B手册仅放入全新克隆，不能覆盖旧索引。当前有条件交接，付费命令只在新明确授权后运行。
+
+## 2026-10-26：V3.5.1 RAG质量强化（历史版本）
 
 新增有限政策范围/缺失条件门控、向量主导的加权RRF、逐句出处与数值/条件检查及两Provider政策工具往返的SDK离线验证。原30题保持不变，另冻结开发/保留集各24题；不修改B正式断言。真实API新增 **0**，旧Embedding **5/8**、Qwen生成 **4/4**不变。
 

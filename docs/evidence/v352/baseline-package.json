@@ -1,0 +1,20 @@
+{
+  "path": "artifacts/deliverables/Ticket-Agent_V3.5.2_离线RAG基线_20261026.zip",
+  "sha256": "cbb0793b948561aebe0d7ce03b11db7c00c0b590728833a1b2f8b08207ff9e13",
+  "bytes": 559485,
+  "files": {
+    "artifacts/runtime/v35-rag/index/38cad6fc-745e-47ee-ad08-b36fb5cf29a7/data_level0.bin": "9c8f8e8bd55b85624ac67911fbb01195c6beb8e587e8217e3d9e78d9d23b8df5",
+    "artifacts/runtime/v35-rag/index/38cad6fc-745e-47ee-ad08-b36fb5cf29a7/header.bin": "bf12d4486518c7addf488cb4854526902c78e91951990e1e2f4e055cec814e5d",
+    "artifacts/runtime/v35-rag/index/38cad6fc-745e-47ee-ad08-b36fb5cf29a7/length.bin": "6d86676aecf7d1ea11c7e7985c9754123c5ae975b83791feeed68bf98667f6f3",
+    "artifacts/runtime/v35-rag/index/38cad6fc-745e-47ee-ad08-b36fb5cf29a7/link_lists.bin": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "artifacts/runtime/v35-rag/index/chroma.sqlite3": "539403976b9d89501506f23e7c696d1381bfbd763f0267fc9cf66ef555c332e7",
+    "artifacts/runtime/v35-rag/index/manifest.json": "177aa83e1e86e1be1d729e456cfa1e58977ea798c6e7a642e77e3e3ba3eadc03",
+    "artifacts/runtime/v35-rag/embedding-cache.db": "c14c73ccf94a071e56226cf61f0534223005653ac5b64b07dce90564ba768e71"
+  },
+  "zip_crc_verified": true,
+  "source_files_unchanged": true,
+  "contains": "Historical genuine vector index/cache only, no API budgets or credentials",
+  "installation": "Fresh clone only, never overwrite an existing baseline",
+  "generation_requests": 0,
+  "embedding_requests": 0
+}

@@ -1,0 +1,24 @@
+{
+  "schema": "ticket-v352-release-review/1",
+  "checked_at": "2026-10-26T08:53:57.923458+00:00",
+  "source_head": "2fdc340b107d79180adf2351f3e0d3380f2400bb",
+  "scanned_files": 1618,
+  "configured_secrets_checked": 3,
+  "findings": [],
+  "status": "passed",
+  "protected_files": 3933,
+  "changed_original_files": [],
+  "existing_tests_contract_mutations_and_business_unchanged": true,
+  "original_chroma_bytes_unchanged_this_version": true,
+  "prior_incident_preserved": true,
+  "baseline_package_members_scanned": true,
+  "new_generation_requests": 0,
+  "new_embedding_requests": 0,
+  "langsmith_requests": 0,
+  "local_only": true,
+  "limits": [
+    "Secret matching covers configured values, not all possible unknown credentials.",
+    "Original source is protected by application rules; external writers are outside this process.",
+    "No real paired Live or new48 vector evaluation was executed without authorization."
+  ]
+}

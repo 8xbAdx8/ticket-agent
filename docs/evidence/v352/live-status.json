@@ -1,0 +1,19 @@
+{
+  "schema": "ticket-v352-live-status/1",
+  "date": "2026-10-26",
+  "status": "not_run_new_authorization_required",
+  "providers": {
+    "qwen3.8-flash": "未验证",
+    "deepseek-flash": "未验证"
+  },
+  "real_generation_requests": 0,
+  "real_embedding_requests": 0,
+  "planned_caps": {
+    "qwen_generation": 2,
+    "deepseek_generation": 2,
+    "total_generation": 4,
+    "embedding_for_new48": 5
+  },
+  "existing_budgets": "unchanged: Qwen4/4, formal DeepSeek5/5, Embedding5/8",
+  "scope": "Only prepared cached Chroma and SDK offline protocol tests have run. No new Live success is asserted."
+}
