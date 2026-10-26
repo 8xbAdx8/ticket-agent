@@ -1,0 +1,46 @@
+{
+  "schema": "ticket-langsmith-official-protocol/1",
+  "checked_date": "2026-10-27",
+  "sources": [
+    "https://api.smith.langchain.com/openapi.json",
+    "https://docs.langchain.com/langsmith/trace-with-api",
+    "https://docs.langchain.com/langsmith/smithdb-sdk-migration-runs"
+  ],
+  "openapi_extract_sha256": "463faa7d0d01812ba78f7d305f252ee448f387bbcdfb5efb1ca7499162ce0fd2",
+  "create": {
+    "canonical_path": "/api/v1/runs",
+    "documented_short_path": "/runs",
+    "method": "POST",
+    "operation": "Queues a single run for ingestion",
+    "accepted_status": 202,
+    "id_origin": "client-supplied request.id",
+    "acknowledgement_guarantees_run_id": false
+  },
+  "read_used": {
+    "path": "/runs/{run_id}",
+    "method": "GET",
+    "canonical_version": "v1",
+    "installed_sdk_uses_same_short_path": true,
+    "real_existing_readback_status": 200,
+    "required_extra_project_query_for_this_legacy_backend": false,
+    "explicit_workspace_header_was_configured": false
+  },
+  "v2_future_migration": {
+    "path": "/api/v2/runs/{run_id}",
+    "requires": "project_id",
+    "field_projection": "selects defaults to ID only; full validation requires INPUTS, OUTPUTS, EXTRA, METADATA etc.",
+    "start_time": "optional for direct v2 retrieval",
+    "live_tested": false
+  },
+  "polling": {
+    "engineering_limit_not_a_service_SLA": 3,
+    "delays_seconds": [
+      0,
+      1,
+      2
+    ],
+    "only_after": "accepted 202 followed by GET 404",
+    "post_retry": false,
+    "service_visibility_latency_guarantee": "unknown"
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "action": "readback_only",
+  "remote_verified": true,
+  "remote_status": "verified",
+  "http_requests": 1,
+  "upload_attempts": 0,
+  "generation_requests": 0,
+  "timestamp": "2026-10-26T16:08:48.210617+00:00",
+  "verification_id": "76c7bfb566d143368b8163351f643255",
+  "remote_run_id": "c7200cf1-ecea-4f8e-bd3b-bd9d4e30c37d",
+  "local_trace_id": "350a018f0c3846da95e685d8ab6eda86",
+  "verification_origin": "remote_http",
+  "post_http_status": 202,
+  "payload_sha256": "d835e0322d0bd1ca33652a3159ca720b2895f984dcc8d6197d28732dec319d68",
+  "project": "ticket-agent-v33-review",
+  "endpoint": "https://api.smith.langchain.com",
+  "workspace_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "http_attempts": [
+    {
+      "attempt_id": "76c7bfb566d143368b8163351f643255:1",
+      "method": "GET",
+      "path": "/runs/c7200cf1-ecea-4f8e-bd3b-bd9d4e30c37d",
+      "timestamp": "2026-10-26T16:08:48.470018+00:00",
+      "http_status": 200,
+      "response_body_sha256": "59f658bbec8992db809d4d01d716922411447a8c940a2ced7bd3517f8e957cdc",
+      "response_correlation": {},
+      "response_json_type": "dict",
+      "response_fields_present": [
+        "id",
+        "error",
+        "status"
+      ],
+      "latency_ms": 5563
+    }
+  ],
+  "get_http_status": 200,
+  "readback_matches": {
+    "id": true,
+    "inputs": true,
+    "outputs": true,
+    "metadata": true
+  },
+  "receipt_saved": true
+}

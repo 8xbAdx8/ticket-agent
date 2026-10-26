@@ -1,0 +1,197 @@
+{
+  "cases": [
+    {
+      "class": "tests.test_langsmith_readback.LangSmithReadbackTests",
+      "name": "test_202_acknowledgement_needs_no_response_id_and_get_checks_payload",
+      "status": "passed"
+    },
+    {
+      "class": "tests.test_langsmith_readback.LangSmithReadbackTests",
+      "name": "test_202_then_temporary_404_then_200_only_polls_get",
+      "status": "passed"
+    },
+    {
+      "class": "tests.test_langsmith_readback.LangSmithReadbackTests",
+      "name": "test_changed_payload_never_sends",
+      "status": "passed"
+    },
+    {
+      "class": "tests.test_langsmith_readback.LangSmithReadbackTests",
+      "name": "test_changed_workspace_never_sends",
+      "status": "passed"
+    },
+    {
+      "class": "tests.test_langsmith_readback.LangSmithReadbackTests",
+      "name": "test_existing_run_404_is_pending_without_implicit_polling",
+      "status": "passed"
+    },
+    {
+      "class": "tests.test_langsmith_readback.LangSmithReadbackTests",
+      "name": "test_existing_run_default_is_one_get_and_no_post",
+      "status": "passed"
+    },
+    {
+      "class": "tests.test_langsmith_readback.LangSmithReadbackTests",
+      "name": "test_existing_run_explicit_polling_has_same_id_and_zero_post",
+      "status": "passed"
+    },
+    {
+      "class": "tests.test_langsmith_readback.LangSmithReadbackTests",
+      "name": "test_frozen_payload_and_original_record_are_preserved",
+      "status": "passed"
+    },
+    {
+      "class": "tests.test_langsmith_readback.LangSmithReadbackTests",
+      "name": "test_get_401_stops_as_authentication_failed",
+      "status": "passed"
+    },
+    {
+      "class": "tests.test_langsmith_readback.LangSmithReadbackTests",
+      "name": "test_get_403_stops_as_permission_denied",
+      "status": "passed"
+    },
+    {
+      "class": "tests.test_langsmith_readback.LangSmithReadbackTests",
+      "name": "test_get_429_is_pending_without_retry",
+      "status": "passed"
+    },
+    {
+      "class": "tests.test_langsmith_readback.LangSmithReadbackTests",
+      "name": "test_get_500_is_pending_without_retry",
+      "status": "passed"
+    },
+    {
+      "class": "tests.test_langsmith_readback.LangSmithReadbackTests",
+      "name": "test_get_503_is_pending_without_retry",
+      "status": "passed"
+    },
+    {
+      "class": "tests.test_langsmith_readback.LangSmithReadbackTests",
+      "name": "test_get_timeout_is_pending_and_never_retries",
+      "status": "passed"
+    },
+    {
+      "class": "tests.test_langsmith_readback.LangSmithReadbackTests",
+      "name": "test_invalid_attempt_budget_never_sends",
+      "status": "passed"
+    },
+    {
+      "class": "tests.test_langsmith_readback.LangSmithReadbackTests",
+      "name": "test_invalid_readback_json_fails_without_raw_response_log",
+      "status": "passed"
+    },
+    {
+      "class": "tests.test_langsmith_readback.LangSmithReadbackTests",
+      "name": "test_invalid_readback_shape_fails",
+      "status": "passed"
+    },
+    {
+      "class": "tests.test_langsmith_readback.LangSmithReadbackTests",
+      "name": "test_legacy_201_missing_run_stops_without_assuming_async",
+      "status": "passed"
+    },
+    {
+      "class": "tests.test_langsmith_readback.LangSmithReadbackTests",
+      "name": "test_missing_consent_never_sends",
+      "status": "passed"
+    },
+    {
+      "class": "tests.test_langsmith_readback.LangSmithReadbackTests",
+      "name": "test_persistent_404_is_pending_and_stops_after_three_gets",
+      "status": "passed"
+    },
+    {
+      "class": "tests.test_langsmith_readback.LangSmithReadbackTests",
+      "name": "test_post_permission_failure_does_not_get_or_retry",
+      "status": "passed"
+    },
+    {
+      "class": "tests.test_langsmith_readback.LangSmithReadbackTests",
+      "name": "test_post_timeout_has_unknown_outcome_and_never_reposts",
+      "status": "passed"
+    },
+    {
+      "class": "tests.test_langsmith_readback.LangSmithReadbackTests",
+      "name": "test_same_hash_but_tampered_metadata_is_not_verified",
+      "status": "passed"
+    },
+    {
+      "class": "tests.test_langsmith_readback.LangSmithReadbackTests",
+      "name": "test_unknown_post_outcome_can_be_rechecked_without_new_upload",
+      "status": "passed"
+    },
+    {
+      "class": "tests.test_langsmith_readback.LangSmithReadbackTests",
+      "name": "test_wrong_outputs_are_not_verified",
+      "status": "passed"
+    },
+    {
+      "class": "tests.test_langsmith_readback.LangSmithReadbackTests",
+      "name": "test_wrong_post_response_id_is_not_adopted",
+      "status": "passed"
+    },
+    {
+      "class": "tests.test_langsmith_readback.LangSmithReadbackTests",
+      "name": "test_wrong_remote_id_is_not_verified",
+      "status": "passed"
+    },
+    {
+      "class": "tests.test_langsmith_readback_entries.ReadbackEntryTests",
+      "name": "test_cli_404_preserves_pending_state_and_default_one_get_limit",
+      "status": "passed"
+    },
+    {
+      "class": "tests.test_langsmith_readback_entries.ReadbackEntryTests",
+      "name": "test_cli_default_is_zero_http_preflight",
+      "status": "passed"
+    },
+    {
+      "class": "tests.test_langsmith_readback_entries.ReadbackEntryTests",
+      "name": "test_cli_result_write_failure_never_reports_zero_http_after_get",
+      "status": "passed"
+    },
+    {
+      "class": "tests.test_langsmith_readback_entries.ReadbackEntryTests",
+      "name": "test_cli_run_is_exactly_one_get_and_preserves_old_receipt",
+      "status": "passed"
+    },
+    {
+      "class": "tests.test_langsmith_readback_entries.ReadbackEntryTests",
+      "name": "test_existing_export_cannot_be_reposted_from_runtime",
+      "status": "passed"
+    },
+    {
+      "class": "tests.test_langsmith_readback_entries.ReadbackEntryTests",
+      "name": "test_frozen_export_prevents_prompt_or_projection_drift",
+      "status": "passed"
+    },
+    {
+      "class": "tests.test_langsmith_readback_entries.ReadbackEntryTests",
+      "name": "test_frozen_path_cannot_escape_trace_directory",
+      "status": "passed"
+    },
+    {
+      "class": "tests.test_langsmith_readback_entries.ReadbackEntryTests",
+      "name": "test_hot_reload_keeps_session_memory_and_adds_current_readback_methods",
+      "status": "passed"
+    },
+    {
+      "class": "tests.test_langsmith_readback_entries.ReadbackEntryTests",
+      "name": "test_runtime_readback_saves_new_receipt_without_mutating_original",
+      "status": "passed"
+    },
+    {
+      "class": "tests.test_langsmith_readback_entries.ReadbackEntryTests",
+      "name": "test_saved_readback_is_available_after_page_rerender",
+      "status": "passed"
+    },
+    {
+      "class": "tests.test_langsmith_readback_entries.ReadbackEntryTests",
+      "name": "test_web_existing_id_shows_get_only_control_and_never_reposts",
+      "status": "passed"
+    }
+  ],
+  "passed": 38,
+  "failed": 0,
+  "skipped": 0
+}

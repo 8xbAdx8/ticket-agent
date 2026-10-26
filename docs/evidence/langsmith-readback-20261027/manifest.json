@@ -1,0 +1,23 @@
+{
+  "schema": "ticket-langsmith-evidence-manifest/1",
+  "remote_run_id": "c7200cf1-ecea-4f8e-bd3b-bd9d4e30c37d",
+  "local_trace_id": "350a018f0c3846da95e685d8ab6eda86",
+  "project": "ticket-agent-v33-review",
+  "original_receipt_path": "artifacts/runtime/v33/user/web-710e38159bc3/traces/langsmith_exports.jsonl",
+  "source_provider_path": "artifacts/runtime/v33/user/web-710e38159bc3/traces/provider_runs.jsonl",
+  "new_readback_path": "artifacts/runtime/v33/user/web-710e38159bc3/traces/langsmith_readbacks.jsonl",
+  "expected_payload_path": "artifacts/runtime/langsmith-readback-20261026/expected-filtered-payload.json",
+  "expected_payload_sha256": "d835e0322d0bd1ca33652a3159ca720b2895f984dcc8d6197d28732dec319d68",
+  "remote_get_requests": 2,
+  "new_post_requests": 0,
+  "new_generation_requests": 0,
+  "new_embedding_requests": 0,
+  "model_tokens_this_task": 0,
+  "langsmith_cost": null,
+  "langsmith_cost_status": "unknown",
+  "public_openapi_document_gets": 1,
+  "api_response_body_preserved_as_hash_only": true,
+  "original_receipt_path_sha256": "d92d2c17bfc3a8426ab3a758eda233dca5a74e4719cc789dd022a2af7349391f",
+  "source_provider_path_sha256": "3bdc9ab1618d320d2a46eafb5960e22b6eea6bf688915ebc11e7fd97d8a97bb6",
+  "new_readback_path_sha256": "b74dc90a7e2d57f86244b9e0ea9c62fbf1839c4adb74cdc6da55863848a2f285"
+}
