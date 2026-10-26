@@ -1,11 +1,14 @@
 """Explicit, filtered LangSmith REST export. Never a framework auto-tracing callback.
 
-Two synchronous HTTP operations per attempt: create one completed run, read it back.
-No background batching, retry, project auto-provisioning, or automatic full-audit upload.
+One POST at most, then bounded readback of that same client-supplied run ID.
+Only an accepted asynchronous write followed by 404 permits delayed GET polling.
+No POST retry, background batching, project provisioning or automatic audit upload.
 """
 import json
+import hashlib
 import os
 import re
+import time
 import uuid
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -107,15 +110,126 @@ def export_payload(record):
     return scrub(safe)
 
 
-def export_run(record, *, consent=False, trace_dir=None, transport=None):
+MAX_READ_ATTEMPTS = 3
+READBACK_DELAYS = (0, 1, 2)
+
+
+def _error(category, status=None):
+    return {"category": category, "http_status": status}
+
+
+def _http_category(status):
+    return {400:"invalid_request",401:"authentication_failed",403:"permission_denied",
+            404:"run_not_readable",409:"conflict",422:"invalid_parameters",
+            429:"rate_limited"}.get(status, "remote_server_error" if status >= 500 else "http_error")
+
+
+def _exchange(client, method, url, headers, receipt, body=None):
+    """Safe per-request evidence; never saves authentication or response text."""
+    receipt["http_requests"] += 1
+    attempt={"attempt_id":receipt["verification_id"]+":"+str(receipt["http_requests"]),
+             "method":method,"path":urlsplit(url).path,"timestamp":datetime.now(timezone.utc).isoformat()}
+    receipt.setdefault("http_attempts",[]).append(attempt)
+    start=time.perf_counter()
+    try:
+        response=client.request(method,url,headers=headers,**({"json":body} if body is not None else {}))
+        attempt.update(http_status=response.status_code,response_body_sha256=hashlib.sha256(response.content).hexdigest(),
+            response_correlation={k:v for k,v in response.headers.items()
+                if k.lower() in ("x-request-id","x-correlation-id","x-langsmith-request-id","cf-ray")
+                and re.fullmatch(r"[\w.:/-]{1,200}",v)})
+        try:
+            data=response.json()
+            attempt["response_json_type"]=type(data).__name__
+            if isinstance(data,dict):
+                attempt["response_fields_present"]=[k for k in ("id","message","detail","error","status","type","title") if k in data]
+        except ValueError:attempt["response_json_type"]="invalid_json"
+        return response
+    except Exception as exc:
+        from target.deepseek_runtime import safe_error
+        attempt["error"]=safe_error(exc)
+        receipt["error"]=attempt["error"]
+        return None
+    finally:
+        attempt["latency_ms"]=round((time.perf_counter()-start)*1000)
+
+
+def _readback(client, endpoint, run_id, headers, payload, receipt, attempts):
+    """Polling is exclusively GET after 202+404; all other failures stop immediately."""
+    asynchronous=receipt.get("post_http_status")==202
+    for index in range(attempts):
+        if index:time.sleep(READBACK_DELAYS[index])
+        response=_exchange(client,"GET",endpoint+"/runs/"+run_id,headers,receipt)
+        receipt["get_http_status"]=response.status_code if response is not None else None
+        if response is None:
+            receipt["remote_status"]="pending_verification"
+            return
+        status=response.status_code
+        if status==404 and (asynchronous or receipt.get("upload_outcome_unknown")):
+            receipt.update(remote_status="pending_verification",error=_error("run_not_readable",404))
+            if asynchronous and index+1<attempts:continue
+            return
+        if status!=200:
+            receipt.update(remote_status="pending_verification" if status==429 or status>=500 else "failed",
+                           error=_error(_http_category(status),status))
+            return
+        try:
+            remote=response.json()
+            if not isinstance(remote,dict):raise ValueError("invalid_object")
+            extra=remote.get("extra") or {}
+            if not isinstance(extra,dict):raise ValueError("invalid_extra")
+            metadata=extra.get("metadata") or {}
+            if not isinstance(metadata,dict):raise ValueError("invalid_metadata")
+            expected={**payload["metadata"],"payload_sha256":digest(payload)}
+            matches={"id":str(remote.get("id"))==run_id,"inputs":remote.get("inputs")==payload["inputs"],
+                     "outputs":remote.get("outputs")==payload["outputs"],
+                     "metadata":all(k in metadata and metadata[k]==v for k,v in expected.items())}
+        except (ValueError,TypeError,KeyError):
+            receipt.update(remote_status="failed",error=_error("invalid_readback_response",200))
+            return
+        receipt["readback_matches"]=matches
+        if not all(matches.values()):
+            receipt.update(remote_status="failed",error=_error("remote_readback_mismatch",200))
+            return
+        receipt.pop("error",None)
+        receipt.update(remote_status="verified",remote_verified=True)
+        return
+
+
+def _headers(key):
+    headers={"x-api-key":key}
+    workspace=_setting("LANGCHAIN_WORKSPACE_ID","LANGSMITH_WORKSPACE_ID")
+    if workspace:headers["x-tenant-id"]=workspace
+    return headers,hashlib.sha256(workspace.encode()).hexdigest()
+
+
+def _save(receipt,trace_dir,filename):
+    receipt=sanitize(receipt)
+    if trace_dir:
+        try:
+            path=Path(trace_dir)/filename
+            path.parent.mkdir(parents=True,exist_ok=True)
+            receipt["receipt_saved"]=True
+            with path.open("a",encoding="utf-8") as f:f.write(json.dumps(receipt,ensure_ascii=False)+"\n")
+        except OSError:receipt["receipt_saved"]=False
+    return receipt
+
+
+def _validate_attempts(attempts):
+    if type(attempts) is not int or not 1<=attempts<=MAX_READ_ATTEMPTS:
+        raise ValueError("readback_attempts_must_be_between_1_and_3")
+
+
+def export_run(record, *, consent=False, trace_dir=None, transport=None, max_read_attempts=MAX_READ_ATTEMPTS):
     """Returns a separate receipt. Never edits record or the Agent's public business result."""
     receipt={"local_trace_id":record.get("trace_id"),"local_trace_saved":record.get("local_trace_saved",False),
              "local_sidecar_saved":record.get("local_sidecar_saved",False),
              "provider":record.get("provider"),
              "remote_status":"not_attempted","remote_verified":False,"http_requests":0,
-             "generation_requests":0,"timestamp":datetime.now(timezone.utc).isoformat()}
+             "generation_requests":0,"upload_attempts":0,"verification_id":uuid.uuid4().hex,
+             "timestamp":datetime.now(timezone.utc).isoformat()}
     receipt["verification_origin"]="offline_transport_fixture" if transport is not None else "remote_http"
     try:
+        _validate_attempts(max_read_attempts)
         key, endpoint, project, enabled=settings()
         if not enabled:
             receipt["remote_status"]="user_disabled"
@@ -131,7 +245,14 @@ def export_run(record, *, consent=False, trace_dir=None, transport=None):
                 raise ValueError("filtered_export_too_large")
             import httpx
             run_id=str(uuid.uuid4())
-            receipt.update(remote_run_id=run_id,project=project,endpoint=endpoint,payload_sha256=digest(payload))
+            headers,workspace_hash=_headers(key)
+            receipt.update(remote_run_id=run_id,id_source="client_supplied",project=project,endpoint=endpoint,
+                           payload_sha256=digest(payload),workspace_sha256=workspace_hash)
+            if trace_dir:
+                frozen=Path(trace_dir)/"langsmith_payloads"/(run_id+".json")
+                frozen.parent.mkdir(parents=True,exist_ok=True)
+                with frozen.open("x",encoding="utf-8") as f:json.dump(payload,f,ensure_ascii=False)
+                receipt["payload_file"]="langsmith_payloads/"+run_id+".json"
             end=datetime.now(timezone.utc)
             start=end-timedelta(milliseconds=record.get("total_latency_ms") or 0)
             body={"id":run_id,"name":"Ticket Agent synthetic observability check" if record.get("mode")=="synthetic" else "Ticket Agent filtered Live run","run_type":"chain",
@@ -140,64 +261,64 @@ def export_run(record, *, consent=False, trace_dir=None, transport=None):
                 "extra":{"metadata":{**payload["metadata"],"payload_sha256":digest(payload)}}}
             # No SDK/global tracing: prevent implicit /info probes, callbacks, retry or batching.
             with httpx.Client(timeout=5,follow_redirects=False,transport=transport) as client:
-                headers={"x-api-key":key}
-                workspace=_setting("LANGCHAIN_WORKSPACE_ID","LANGSMITH_WORKSPACE_ID")
-                if workspace: headers["x-tenant-id"]=workspace
-                receipt["http_requests"]+=1
-                response=client.post(endpoint+"/runs",headers=headers,json=body)
-                receipt["post_http_status"]=response.status_code
-                response.raise_for_status()
-                receipt["remote_status"]="accepted_unverified"
-                receipt["http_requests"]+=1
-                response=client.get(endpoint+"/runs/"+run_id,headers=headers)
-                receipt["get_http_status"]=response.status_code
-                response.raise_for_status()
-                remote=response.json()
-                if (str(remote.get("id"))!=run_id or remote.get("inputs")!=body["inputs"]
-                        or remote.get("outputs")!=body["outputs"]
-                        or (remote.get("extra") or {}).get("metadata",{}).get("payload_sha256")!=digest(payload)):
-                    raise ValueError("remote_readback_mismatch")
-                receipt.update(remote_status="verified",remote_verified=True)
+                receipt["upload_attempts"]=1
+                response=_exchange(client,"POST",endpoint+"/runs",headers,receipt,body)
+                if response is None:
+                    receipt["remote_status"]="upload_outcome_unknown"
+                else:
+                    receipt["post_http_status"]=response.status_code
+                    if response.status_code not in (200,201,202):
+                        receipt.update(remote_status="failed",error=_error(_http_category(response.status_code),response.status_code))
+                    else:
+                        receipt["remote_status"]="accepted_unverified"
+                        # The Run ID is supplied in the request. 202 acknowledgement has
+                        # no guaranteed server-generated ID; never adopt an unrelated one.
+                        try:ack=response.json()
+                        except ValueError:ack=None
+                        ack_id=ack.get("id") if isinstance(ack,dict) else None
+                        receipt["post_response_id_present"]=ack_id is not None
+                        if ack_id is not None and str(ack_id)!=run_id:
+                            receipt.update(remote_status="failed",error=_error("post_response_id_mismatch",response.status_code))
+                        else:
+                            _readback(client,endpoint,run_id,headers,payload,receipt,
+                                      max_read_attempts if response.status_code==202 else 1)
     except Exception as exc:
         from target.deepseek_runtime import safe_error
-        receipt.update(remote_status="failed",error=safe_error(exc))
-    receipt=sanitize(receipt)
-    if trace_dir:
-        try:
-            path=Path(trace_dir)/"langsmith_exports.jsonl"
-            path.parent.mkdir(parents=True,exist_ok=True)
-            with path.open("a",encoding="utf-8") as f: f.write(json.dumps(receipt,ensure_ascii=False)+"\n")
-        except OSError:
-            receipt["receipt_saved"]=False
-    return receipt
+        receipt.update(remote_status="failed",error=_error(str(exc)) if type(exc) is ValueError and str(exc) in (
+            "filtered_export_too_large","readback_attempts_must_be_between_1_and_3") else safe_error(exc))
+    return _save(receipt,trace_dir,"langsmith_exports.jsonl")
 
 
-def verify_existing(receipt,payload,*,consent=False,transport=None):
-    """One explicitly authorized GET of an accepted run. Never POSTs or retries."""
+def verify_existing(receipt,payload,*,consent=False,transport=None,max_read_attempts=1,trace_dir=None):
+    """Read an existing ID, one GET by default. Explicit UI polling allows at most 3."""
     result={"action":"readback_only","remote_verified":False,"remote_status":"not_attempted",
         "http_requests":0,"upload_attempts":0,"generation_requests":0,"timestamp":datetime.now(timezone.utc).isoformat(),
-        "remote_run_id":receipt.get("remote_run_id"),"local_trace_id":receipt.get("local_trace_id"),
+        "verification_id":uuid.uuid4().hex,"remote_run_id":receipt.get("remote_run_id"),"local_trace_id":receipt.get("local_trace_id"),
         "verification_origin":"offline_transport_fixture" if transport is not None else "remote_http"}
     if not consent:return {**result,"remote_status":"consent_required"}
     try:
+        _validate_attempts(max_read_attempts)
         key,endpoint,project,_=settings()
         if not key:return {**result,"remote_status":"not_configured"}
         if endpoint!=receipt.get("endpoint") or project!=receipt.get("project") or digest(payload)!=receipt.get("payload_sha256"):
             raise ValueError("original_receipt_and_preview_required")
         run_id=str(uuid.UUID(receipt["remote_run_id"]))
-        if receipt.get("post_http_status") not in (200,201,202):raise ValueError("accepted_run_required")
+        accepted=receipt.get("post_http_status") in (200,201,202)
+        if not accepted and receipt.get("remote_status")!="upload_outcome_unknown":raise ValueError("accepted_run_required")
         import httpx
-        headers={"x-api-key":key}; workspace=_setting("LANGCHAIN_WORKSPACE_ID","LANGSMITH_WORKSPACE_ID")
-        if workspace:headers["x-tenant-id"]=workspace
+        headers,workspace_hash=_headers(key)
+        if receipt.get("workspace_sha256") and receipt["workspace_sha256"]!=workspace_hash:
+            raise ValueError("original_workspace_required")
+        result.update(post_http_status=receipt.get("post_http_status"),payload_sha256=digest(payload),
+                      project=project,endpoint=endpoint,workspace_sha256=workspace_hash)
+        if not accepted:result["upload_outcome_unknown"]=True
+        if receipt.get("payload_file"):result["payload_file"]=receipt["payload_file"]
         with httpx.Client(timeout=5,follow_redirects=False,transport=transport) as client:
-            result["http_requests"]=1
-            response=client.get(endpoint+"/runs/"+run_id,headers=headers)
-            result["get_http_status"]=response.status_code;response.raise_for_status();remote=response.json()
-        if (str(remote.get("id"))!=run_id or remote.get("inputs")!=payload["inputs"] or remote.get("outputs")!=payload["outputs"]
-                or (remote.get("extra") or {}).get("metadata",{}).get("payload_sha256")!=digest(payload)):
-            raise ValueError("remote_readback_mismatch")
-        result.update(remote_status="verified",remote_verified=True,payload_sha256=digest(payload),project=project,endpoint=endpoint)
+            _readback(client,endpoint,run_id,headers,payload,result,max_read_attempts if accepted else 1)
     except Exception as exc:
         from target.deepseek_runtime import safe_error
-        result.update(remote_status="failed",error=safe_error(exc))
-    return sanitize(result)
+        category=str(exc) if type(exc) is ValueError and str(exc) in (
+            "original_receipt_and_preview_required","accepted_run_required","original_workspace_required",
+            "readback_attempts_must_be_between_1_and_3") else None
+        result.update(remote_status="failed",error=_error(category) if category else safe_error(exc))
+    return _save(result,trace_dir,"langsmith_readbacks.jsonl")
