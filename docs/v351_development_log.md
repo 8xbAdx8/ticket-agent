@@ -19,3 +19,10 @@
 - 原PolicyIndex低层默认v35以兼容历史调用；显式新rag_service默认v351，旧Mock未设AGENT_RAG_MODE时保留原实现。新版Live入口显式hybrid/v351/cache-only，不自动嵌入新查询。CLI提供显式quality-profile，原评估原件不改。
 - attach_answer整合字段级忠实度；错引沿用rag_wrong_citation，其余明确不一致报rag_answer_inconsistent，保存原回复和失败旁证、不伪造成功公共Trace。未知语义保留indeterminate。
 - 实际pytest检索/原索引与原Agent RAG39项通过；开发集三候选阈值均保留8个正向控制并拒绝16个负样本，保守选0.0。原30回归发现“还能退吗”省略退票漏识别，保留初次结果，修复自然语言省略后复核：Keyword Recall0.980769/MRR0.961538，Vector/Hybrid均1；无答案三路0/4。这是缓存真实向量离线重放，不是新的Live验证。保留集仍未评分，冻结本模块后执行一次。
+
+## 模块三：Agent往返与保留集验收
+
+- 检索模块冻结85e2f1b7dabbd8352c1d1626295d8d43625f5902，随后唯一一次正式保留集评估，selection先独占写入再读保留集，三份算法源码SHA不变。保留集8正/16负：Recall1、MRR0.875、负样本误召回0/16；HP02、HP06正确文档仍居第二，不据此调参。新48问题的Vector/Hybrid仍not_run，没有真实查询向量。实际结果artifacts/runtime/v351-quality-final-20261026，初次开发集漏召回原件保留。
+- 新增6个两Provider SDK往返测试：真实ChatOpenAI/ChatDeepSeek+create_agent、明确MockTransport，实际新search_policy/工具回传、调用参数与call_id、请求UUID、同证据hash、原回复与Trace和十/五字段契约。另2个SDK保护测试把P11=15分钟故意说成45分钟，均明确停止且保存原文，不生成成功公共Trace。
+- 实际pytest上述SDK专项8通过，完整检索/忠实度/SDK与原RAG组合105通过（另2子测试通过），均0失败。新增scripts/prepare_v351_acceptance.py仅输出只读方案，无联网开关：未来建议Qwen2+DeepSeek2生成、缓存命中0Embedding，等待新增授权并绑定固定V3.5.1 profile，不借旧耗尽账本。
+- 新增scripts/verify_v351_offline.py：阻断外网、剥离Key，使用pytest统计全部用例，再执行原V3.5及旧环境矩阵；支持新机器current-only，不依赖未交付的A机保护快照。源文件先编译通过，接下来执行全量回归。
