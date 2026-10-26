@@ -116,7 +116,10 @@ def build(destination):
     if sha(raw) != manifest['sha256']:
         raise ValueError('frozen_cache_archive_hash_mismatch')
     with zipfile.ZipFile(io.BytesIO(raw)) as cached:
-        if set(cached.namelist()) != set(manifest['files']) or cached.testzip():
+        # The frozen archive also carries two human-readable metadata files;
+        # the team package supplies its own entry guide and file manifest.
+        metadata = {'V352_真实缓存使用前必读.md', 'V352_真实缓存文件哈希.json'}
+        if set(cached.namelist()) != set(manifest['files']) | metadata or cached.testzip():
             raise ValueError('frozen_cache_archive_members_mismatch')
         for name, expected in manifest['files'].items():
             data = cached.read(name)
