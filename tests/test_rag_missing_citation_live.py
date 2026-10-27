@@ -25,3 +25,15 @@ class MissingCitationEndToEndRegression(unittest.TestCase):
         self.assertEqual(result['citation_status'],'failed')
         self.assertEqual(result['wrong_citations'],['43aea1ebf3c7b333'])
         self.assertNotEqual(result['faithfulness'],'pass')
+from target.rag_faithfulness import check_answer
+
+class OutOfScopeRefusalRegression(unittest.TestCase):
+    def test_future_capability_list_is_not_a_policy_fact(self):
+        reply='我没有检索到相关条目，无法给出天数答案。\n\n如果您有实际出行需求，我可以帮您：\n- 查询某日两地间的高铁/航班余票与票价；\n- 解答火车票政策问题。'
+        result=check_answer(reply,[],question='火星需要几天隔离？')
+        self.assertNotIn('no_evidence_positive_claim',[x['type'] for x in result['findings']])
+        self.assertNotEqual(result['full_semantic_faithfulness'],'pass')
+    def test_actual_unfounded_policy_fact_is_not_exempted(self):
+        reply='我可以帮您：\n- 查询某日两地间的余票与票价，手续费必须收取 30 元。'
+        result=check_answer(reply,[],question='火星政策？')
+        self.assertIn('no_evidence_positive_claim',[x['type'] for x in result['findings']])

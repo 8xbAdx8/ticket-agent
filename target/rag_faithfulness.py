@@ -80,6 +80,18 @@ def _clauses(text):
     return result
 
 
+def _future_query_offer(claim, text, start):
+    """Recognize only a query-offer list item; never suppress facts or actions."""
+    if not re.fullmatch(r'-\s*查询(?:某日|某天|指定日期|两地)[^，,。；;\n]{0,50}(?:余票|票价)(?:与票价)?', claim):
+        return False
+    if _quantities(claim) or re.search(r'已|成功|必须|需要|可售|有票|无票|收取|支付|手续费', claim):
+        return False
+    lines=text[:start].splitlines()
+    while lines and re.match(r'^\s*-\s',lines[-1]):
+        lines.pop()
+    return bool(lines and re.search(r'(?:我|本助手)(?:可以|能够)帮(?:您|你)?[：:]\s*$',lines[-1]))
+
+
 def _added_constraints(claim,evidence):
     # Only finite, explicit extra requirements with concrete objects can be
     # disproved by this small closed policy corpus. Other wording stays unknown.
@@ -212,6 +224,9 @@ def check_answer(reply,hits,*,events=(),question='',policy_versions=None):
                             'basis':'Positive citation uses a version different from the frozen/current policy corpus'})
                     elif expected_version and not actual:
                         unknown.append({'claim':claim,'doc_id':doc_id,'reason':'policy_version_metadata_missing'})
+        if _future_query_offer(claim,text,clause['start']):
+            unknown.append({'claim':claim,'reason':'future_capability_offer_not_policy_fact'})
+            continue
         all_quantities=_quantities(IDS.sub('',claim));quantities=[q for q in all_quantities if not q['negated']]
         factual=bool(all_quantities or FACT.search(claim)) and not bool(re.search(r'请(?:提供|补充|说明)|[?？]',claim))
         if not factual or (refusal and REFUSAL.search(claim) and not quantities):continue
