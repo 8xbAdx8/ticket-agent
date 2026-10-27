@@ -167,13 +167,27 @@ def _parse(reply):
                 continue
             if re.search(TRAIN,text):
                 unresolved.append({'line':number,'text':original,'reason':'unrecognised_table'});continue
-        for clause in re.split(r'[。！？；;]|但是|而是|但(?=实际|查询|查到)|(?<=[，,])(?=实际|\s*[GDCZTKYS]\d)',text):
+        for clause in re.split(r'[。！？；;]|但是|而是|但(?=实际|查询|查到)|[，,](?=\s*(?:可能|也许))|(?<=[，,])(?=实际|查到|查询结果显示|\s*[GDCZTKYS]\d)',text):
             ids=list(dict.fromkeys(re.findall(TRAIN,clause)))
+            scoped_denial=re.fullmatch(r'\s*(?:查询结果|本次查询结果)(?:里|中)?没有\s*('+TRAIN+r')(?:\s*(?:这个车次|车次))?\s*[，,]?\s*',clause)
+            if scoped_denial:
+                denials.append({'line':number,'text':clause,'predicate':'train_absent_from_query_result','train_no':scoped_denial[1]})
+                pending=None;continue
+            continuation=re.fullmatch(r'\s*(?:因此|所以)查不到\s*('+TRAIN+r')(?:\s*(?:这个车次|车次))?\s*',clause)
+            if continuation:
+                if any(d.get('predicate')=='train_absent_from_query_result' and d.get('train_no')==continuation[1] for d in denials):
+                    ignored.append({'line':number,'text':clause,'reason':'repeated_scoped_denial'})
+                else:
+                    unresolved.append({'line':number,'text':clause,'reason':'negative_train_scope_unknown'})
+                pending=None;continue
             if re.match(r'^\s*(?:用户(?:刚才|之前|刚刚)?(?:说|提到|询问|输入|问)|[您你](?:刚才|之前|刚刚)?(?:说|提到|问)|原话)',clause):
                 ignored.append({'line':number,'text':clause,'reason':'user_attribution'});continue
             if re.search(DENIAL,clause):
                 ignored.append({'line':number,'text':clause,'reason':'negative_assertion'})
-                if not ids and re.search(r'未查到|没有查到|没有匹配|无匹配',clause):denials.append({'line':number,'text':clause})
+                if re.search(r'政策|知识库',clause) and (ids or re.search(r'车次|班次|余票|票价|席别|售罄|'+SEAT,clause)):
+                    unresolved.append({'line':number,'text':clause,'reason':'mixed_policy_and_ticket_claim'})
+                elif not ids and re.search(r'未查到|没有查到|没有匹配|无匹配',clause):
+                    denials.append({'line':number,'text':clause,'predicate':'policy_empty_result' if re.search(r'政策|知识库',clause) else None})
                 continue
             # A request for the user's next query is not a claim about ticket data.
             # Keep any concrete identity/number or asserted availability in normal validation.
@@ -228,6 +242,9 @@ def _parse(reply):
 
 def check(reply,events):
     rows,queries=_authority(events)
+    policy_queries=[e for e in (events or []) if isinstance(e,dict) and e.get('event')=='tool_end'
+                    and e.get('tool')=='search_policy' and e.get('ok') is True and e.get('executed') is True
+                    and isinstance(e.get('result'),dict) and isinstance(e['result'].get('hits'),list)]
     records,ignored,unresolved,denials=_parse(reply)
     findings,checks=[],[]
     def uncertain(record,reason,**extra):
@@ -273,7 +290,24 @@ def check(reply,events):
                            'line':record['line'],'authority_sources':sources})
             if not matched:fail(record,f,v,[authority[f]],sources=sources)
     for denial in denials:
-        if denial.get('predicate')=='counted_all_available':
+        if denial.get('predicate')=='policy_empty_result':
+            if len(policy_queries)!=1 or policy_queries[0]['result']['hits']:
+                uncertain(denial,'policy_empty_result_scope_unknown')
+            else:
+                checks.append({'field':'policy_search_result','claimed':'no_hits','matched':True,
+                               'comparison':'policy_tool_returned_no_hits','line':denial['line'],
+                               'authority_sources':[{'call_id':policy_queries[0].get('call_id')}]})
+        elif denial.get('predicate')=='train_absent_from_query_result':
+            if len(queries)!=1:
+                uncertain(denial,'negative_train_scope_unknown')
+            else:
+                ids=sorted({r['values']['train_no'] for r in rows})
+                matched=denial['train_no'] not in ids
+                checks.append({'field':'train_no','claimed':denial['train_no'],'matched':matched,
+                               'comparison':'train_absent_from_query_result','line':denial['line'],
+                               'authority_sources':queries})
+                if not matched:fail({'claims':[],**denial},'train_no',denial['train_no'],ids,'negative_train_mismatch',queries)
+        elif denial.get('predicate')=='counted_all_available':
             ids=denial['listed_trains']; seat=denial['seat_type']
             selected=[[r for r in rows if r['values'].get('train_no')==train and r['values'].get('seat_type')==seat] for train in ids]
             if len(queries)!=1 or len(ids)!=denial['count'] or not ids or any(len(items)!=1 for items in selected):

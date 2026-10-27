@@ -9,8 +9,48 @@ from target.diagnostics import evaluate
 FIXTURE=json.loads((Path(__file__).parent/'fixtures/live_lab_three_trains.json').read_text(encoding='utf-8'))
 CLARIFY=json.loads((Path(__file__).parent/'fixtures/live_lab_qwen_clarification.json').read_text(encoding='utf-8'))
 QWEN_AGGREGATE=json.loads((Path(__file__).parent/'fixtures/live_lab_qwen_aggregate.json').read_text(encoding='utf-8'))
+DENIED=json.loads((Path(__file__).parent/'fixtures/live_lab_denied_train.json').read_text(encoding='utf-8'))
+POLICY_EMPTY=json.loads((Path(__file__).parent/'fixtures/live_lab_empty_policy.json').read_text(encoding='utf-8'))
 
 class AggregateAvailabilityAudit(unittest.TestCase):
+    def test_policy_empty_is_not_a_ticket_empty_claim(self):
+        result=check(POLICY_EMPTY['reply'],POLICY_EMPTY['events'])
+        self.assertFalse(any(r['reason']=='empty_result_scope_unknown' for r in result['indeterminate']))
+        self.assertTrue(any(c.get('comparison')=='policy_tool_returned_no_hits' for c in result['field_checks']))
+
+    def test_policy_empty_evidence_must_exist_and_ticket_claims_still_checked(self):
+        msg='查询政策知识库，没有检索到任何政策，返回结果无匹配。'
+        self.assertEqual(check(msg,[])['status'],'indeterminate')
+        self.assertEqual(check(msg,POLICY_EMPTY['events']*2)['status'],'indeterminate')
+        nonempty=copy.deepcopy(POLICY_EMPTY['events']);nonempty[0]['result']['hits']=[{'doc_id':'P01','content':'test'}]
+        self.assertEqual(check(msg,nonempty)['status'],'indeterminate')
+        ticket=check(msg+' 查到 G9999 车次有余票。',POLICY_EMPTY['events'])
+        self.assertEqual(ticket['status'],'indeterminate')
+        self.assertTrue(any(r['reason']=='no_successful_authority' for r in ticket['indeterminate']))
+        same=check('查询政策知识库，没有检索到任何政策，返回结果无匹配，但是查到 G9999 车次有余票。',POLICY_EMPTY['events'])
+        self.assertTrue(any(r['reason']=='no_successful_authority' for r in same['indeterminate']))
+
+    def test_real_explicit_result_denial_is_not_an_affirmation(self):
+        result=check(DENIED['reply'],DENIED['events'])
+        self.assertFalse(any(f.get('claimed')=='G9999' and f['error_type']=='unreturned_train' for f in result['findings']))
+        self.assertTrue(any(c.get('comparison')=='train_absent_from_query_result' for c in result['field_checks']))
+
+    def test_denial_requires_query_and_cannot_hide_affirmative_claim(self):
+        denied='查询结果里没有 G9999 这个车次。'
+        self.assertEqual(check(denied,[])['status'],'indeterminate')
+        self.assertEqual(check(denied,DENIED['events']*2)['status'],'indeterminate')
+        contradiction=check(denied.replace('G9999','G7301'),DENIED['events'])
+        self.assertEqual(contradiction['status'],'failed')
+        self.assertTrue(any(f['error_type']=='negative_train_mismatch' for f in contradiction['findings']))
+        asserted=check(denied+'查到 G9998 有余票。',DENIED['events'])
+        self.assertEqual(asserted['status'],'failed')
+        self.assertTrue(any(f.get('claimed')=='G9998' for f in asserted['findings']))
+        same_sentence=check('查询结果里没有 G9999 这个车次，但是查到 G9998 有余票。',DENIED['events'])
+        self.assertTrue(any(f.get('claimed')=='G9998' for f in same_sentence['findings']))
+        self.assertFalse(any(f.get('claimed')=='G9999' and f['error_type']=='unreturned_train' for f in same_sentence['findings']))
+        # A broad statement about the entire database is not the same as absence in a query result.
+        self.assertNotEqual(check('数据库里没有 G9999 这个车次。',DENIED['events'])['status'],'checked_fields_match')
+
     def test_real_qwen_grouped_train_cell_not_a_fictitious_train(self):
         result=check(QWEN_AGGREGATE['reply'],QWEN_AGGREGATE['events'])
         self.assertFalse(any(f['claimed']=='G101/G102/G103' and f['error_type']=='unreturned_train' for f in result['findings']))
