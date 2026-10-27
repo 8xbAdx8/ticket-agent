@@ -6,7 +6,7 @@ from datetime import timedelta
 import streamlit as st
 import config
 from web.design import header, empty
-from web.runtime import Conversation, live_ready, LIVE_AVAILABLE, scoped
+from web.runtime import Conversation, live_ready, LIVE_AVAILABLE, scoped, tool_failure_hint
 from web.evidence import MUTATIONS, cases
 from web.conversation import execute, show_business, show_remote_export
 from web.trace_view import show_record
@@ -131,7 +131,7 @@ def lab_page():
             if guarded_fault:
                 st.info('变异已注入，实验被业务或调用上限保护终止；请查看下方 Trace。结果不是购票成功。错误类别：'+session.error['category'])
             else:
-                st.error("上次执行失败：" + session.error["category"] + "；未自动重试，也没有把旧结果作为新结果。")
+                st.error(tool_failure_hint(session) or "上次执行失败：" + session.error["category"] + "；未自动重试，也没有把旧结果作为新结果。")
         if live:
             show_remote_export(session)
         if session.history and not session.error:

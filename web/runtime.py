@@ -258,6 +258,26 @@ def failure_hint(category):
     return messages.get(category,'请求未完成，本次未自动重试；可在Trace中查看详细旁证。')
 
 
+def tool_failure_hint(session):
+    """Expose only known safe backend errors; never render arbitrary exception text."""
+    if not session.error or session.error.get('category') != 'tool_execution_failed' or not session.audits:
+        return None
+    events = (session.audits[-1].get('fault_report') or {}).get('executions') or []
+    safe = {
+        '当前消息未明确授权该操作，请明确说明订票、支付、退票或候补请求。',
+        '本轮没有该 lock_id 的成功锁座记录，请先锁座再创建订单。',
+        '无法确认该订单是用户指定或最近工具结果中的订单，请明确提供本人订单号。',
+        '本轮已成功锁座，不重复占用库存；请先检查已返回的锁座结果。',
+        '余票不足', '订单不存在', '锁座已过期，请重新 lock_seat',
+    }
+    for event in reversed(events):
+        result = event.get('result') if isinstance(event, dict) else None
+        reason = result.get('error') if isinstance(result, dict) else None
+        if reason in safe:
+            return '模拟操作未完成：' + reason + ' 请检查当前订单状态后再决定下一步。'
+    return None
+
+
 def operation_kind(message):
     """UI confirmation aid only. Existing backend authorization remains authoritative."""
     import re
@@ -265,6 +285,9 @@ def operation_kind(message):
         return None
     if re.search(r"不要|别|不想|不能|不需要", message):
         return None
+    from target.write_authorization import selection_details
+    if selection_details(message):
+        return '模拟锁座'
     if re.search(r"支付|付款|退票|退掉|取消订单|候补|抢票|监控|锁座|下单|订票|我要买|我想买|买票|帮我订|^(?:请)?订|购买",message):
         return "模拟业务操作"
     return None

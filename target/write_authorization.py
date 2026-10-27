@@ -65,14 +65,82 @@ def order_reference(message: str, messages) -> set[str]:
     return set()
 
 
+def selection_details(message: str):
+    """A bounded selection is not by itself permission to buy or pay."""
+    if re.search(QUESTION + r'|不要|别|不想|取消|假设|如果|举例|[“”"「」]', message):
+        return None
+    trains = re.findall(r'(?<![A-Za-z0-9])(?:[GDCZTKYS]\d{1,6}|[A-Z]{2}\d{3,6})(?![A-Za-z0-9])', message)
+    seats = re.findall(r'二等座|一等座|商务座|经济舱|公务舱', message)
+    passenger = re.search(r'乘客(?:姓名)?[：:\s]*([\u4e00-\u9fff]{2,8})(?:[，,。！!\s]|$)', message)
+    if len(trains) != 1 or len(seats) != 1 or not passenger:
+        return None
+    return {'train_no': trains[0], 'seat_type': seats[0], 'passengers': [passenger.group(1)]}
+
+
+def selection_lock_authorized(message, messages, args):
+    selection = selection_details(message)
+    if not selection or any(args.get(k) != v for k, v in selection.items()):
+        return False
+    # The model must use an actual prior query result rather than inventing a
+    # train or date; backend inventory remains the final authority for stock.
+    matching_query = False
+    for item in reversed(messages):
+        if getattr(item, 'type', None) != 'tool' or getattr(item, 'name', None) != 'query_tickets':
+            continue
+        try:
+            result = json.loads(item.content)
+        except (ValueError, TypeError):
+            continue
+        if not isinstance(result, dict) or not isinstance(result.get('trains'), list):
+            continue
+        if any(isinstance(row, dict) and row.get('train_no') == selection['train_no']
+               and row.get('seat_type') == selection['seat_type'] and row.get('date') == args.get('date')
+               for row in result['trains']):
+            matching_query = True
+            break
+    if not matching_query:
+        return False
+    human = [getattr(m, 'content', '') for m in messages if getattr(m, 'type', None) == 'human']
+    if human and human[-1] == message:
+        human.pop()
+    # A recent explicit user intention is required, and any subsequent user
+    # cancellation or refusal invalidates it. Assistant text grants no authority.
+    for text in reversed(human[-8:]):
+        if not isinstance(text, str):
+            return False
+        if re.search(r'不要|别|不想|不需要|不再|暂不|先不|不买|不订|取消|放弃|停止|算了', text):
+            return False
+        if 'create_order' in permissions(text):
+            return True
+    return False
+
+
+def recent_lock_reference(messages, args):
+    """Only the latest successful real tool result may supply a prior lock."""
+    for item in reversed(messages):
+        if getattr(item, 'type', None) != 'tool' or getattr(item, 'name', None) != 'lock_seat':
+            continue
+        try:
+            result = json.loads(item.content)
+        except (ValueError, TypeError):
+            continue
+        if isinstance(result, dict) and result.get('lock_id') and not result.get('error'):
+            return (args.get('lock_id') == result['lock_id'] and
+                    args.get('passenger_ids') == result.get('passengers'))
+    return False
+
+
 def denial(name, args, context, messages) -> str | None:
     if name not in WRITE_TOOLS:
         return None
-    if name not in permissions(context.user_message):
+    selection_lock = name == 'lock_seat' and selection_lock_authorized(context.user_message, messages, args)
+    confirm_order = (name == 'create_order' and
+                     bool(re.fullmatch(r'(?:请)?确认(?:创建)?(?:模拟)?订单|(?:请)?确认下单', context.user_message.strip().rstrip('。！! '))))
+    if name not in permissions(context.user_message) and not selection_lock and not confirm_order:
         return "当前消息未明确授权该操作，请明确说明订票、支付、退票或候补请求。"
     if name == "lock_seat" and context.lock_ids:
         return "本轮已成功锁座，不重复占用库存；请先检查已返回的锁座结果。"
-    if name == "create_order" and args.get("lock_id") not in context.lock_ids:
+    if name == "create_order" and args.get("lock_id") not in context.lock_ids and not (confirm_order and recent_lock_reference(messages, args)):
         return "本轮没有该 lock_id 的成功锁座记录，请先锁座再创建订单。"
     if name in {"pay_order", "cancel_order"} and args.get("order_id") not in order_reference(context.user_message, messages):
         return "无法确认该订单是用户指定或最近工具结果中的订单，请明确提供本人订单号。"

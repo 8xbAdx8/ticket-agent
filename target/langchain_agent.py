@@ -287,6 +287,7 @@ class LangChainAgent:
                                   "支付/退票使用用户指定或最近工具结果订单；不明确时先澄清。"
                                   "\n这是隔离的虚构票务沙箱，不连接真实售票或支付。当前模拟账户的联系号码为 "
                                   + config.CURRENT_USER_PHONE + "；仅使用用户明确提供的模拟乘客姓名。"
+                                  "用户仅补充车次、席别及乘客时，只能根据已有查询结果锁座；创建订单要等用户明确确认下单。"
                                   "候补工具仅返回模拟任务，不会后台持续监控或推送通知，不得声称会自动通知。"),
                                   middleware=[ContractMiddleware()],context_schema=TurnContext,
                                   checkpointer=self.checkpointer)

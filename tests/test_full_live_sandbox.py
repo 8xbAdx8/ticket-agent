@@ -58,3 +58,38 @@ class LiveSandboxRoundTrip(unittest.TestCase):
   for m in clients:m.client._client.close()
  def test_deepseek(self):self.run_provider('deepseek')
  def test_qwen(self):self.run_provider('bailian')
+ def test_multiturn_selection_then_explicit_order_and_payment(self):
+  root=Path('artifacts/runtime')/('multiturn-offline-'+__import__('uuid').uuid4().hex)
+  day=(config.today()+timedelta(days=2)).isoformat()
+  calls=[];clients=[]
+  def respond(req):
+   body=json.loads(req.content);calls.append(body);messages=body['messages'];last=messages[-1]
+   user=next(m['content'] for m in reversed(messages) if m['role']=='user')
+   tool=None;args={}
+   if last['role']=='user':
+    if user=='查后天北京到广州的高铁':
+     tool='query_tickets';args={'from_city':'北京','to_city':'广州','date':day,'kind':'高铁','seat_type':'二等座'}
+    elif user=='G702 二等座，乘客张三':
+     tool='lock_seat';args={'train_no':'G702','date':day,'seat_type':'二等座','passengers':['张三']}
+    elif user=='确认下单':
+     lock=next(json.loads(m['content'])['lock_id'] for m in reversed(messages) if m['role']=='tool' and 'lock_id' in json.loads(m['content']))
+     tool='create_order';args={'lock_id':lock,'passenger_ids':['张三'],'contact':config.CURRENT_USER_PHONE}
+    elif user=='支付刚才的订单':
+     order=next(json.loads(m['content'])['order_id'] for m in reversed(messages) if m['role']=='tool' and 'order_id' in json.loads(m['content']))
+     tool='pay_order';args={'order_id':order}
+   msg={'content':'请确认下一步，具体状态以模拟工具结果为准。'} if not tool else {'content':None,'tool_calls':[{'id':'mt-'+str(len(calls)),'type':'function','function':{'name':tool,'arguments':json.dumps(args,ensure_ascii=False)}}]}
+   return httpx.Response(200,json={'id':'offline-fixture','object':'chat.completion','created':1,'model':config.MODEL_NAME,'choices':[{'index':0,'message':{'role':'assistant',**msg},'finish_reason':'tool_calls' if tool else 'stop'}],'usage':{'prompt_tokens':13,'completion_tokens':5,'total_tokens':18}})
+  original=deepseek_runtime.make_model
+  def factory(settings):
+   model=original(settings,transport=httpx.MockTransport(respond));clients.append(model);return model
+  env={'DEEPSEEK_API_KEY':'offline-test','TICKET_API_USAGE_DIR':str(root/'usage'),'LANGCHAIN_TRACING_V2':'false','LANGSMITH_TRACING':'false','TICKET_DISABLE_LOCAL_SECRETS':'1'}
+  s=Conversation('user',engine='langchain',live=True,live_provider='deepseek',root=root,full_tools=True)
+  with patch.dict(os.environ,env),patch('web.runtime.live_ready',return_value=True),patch.object(deepseek_runtime,'make_model',side_effect=factory):
+   self.assertEqual(s.send('我要买票','intent')['tool_sequence'],[])
+   self.assertEqual(s.send('查后天北京到广州的高铁','query')['tool_sequence'],['query_tickets'])
+   self.assertEqual(s.send('G702 二等座，乘客张三','select')['tool_sequence'],['lock_seat'])
+   self.assertEqual(s.send('确认下单','order')['tool_sequence'],['create_order'])
+   self.assertEqual(s.results[-1][-1]['result']['status'],'pending')
+   self.assertEqual(s.send('支付刚才的订单','pay')['tool_sequence'],['pay_order'])
+   self.assertEqual(s.results[-1][-1]['result']['status'],'paid')
+  for model in clients:model.client._client.close()

@@ -2,7 +2,7 @@
 import uuid
 import streamlit as st
 from web.design import header, empty, escape, PROCESSING
-from web.runtime import Conversation, operation_kind, live_ready, failure_hint
+from web.runtime import Conversation, operation_kind, live_ready, failure_hint, tool_failure_hint
 from web.presentation import ticket_cards, order_card, policy_cards
 
 
@@ -33,7 +33,8 @@ def execute(session, message, request_id):
     except Exception:
         from target.reply_consistency import failure_notice
         notice=failure_notice(session.error["category"]) if session.error else None
-        st.error((notice or "请求未完成；未自动重试。")+(" 错误类别："+session.error["category"] if session.error else "请核对模式与输入。"))
+        detail=tool_failure_hint(session)
+        st.error((detail or notice or "请求未完成；未自动重试。")+(" 错误类别："+session.error["category"] if session.error else "请核对模式与输入。"))
     finally:
         processing.empty()
 
@@ -83,7 +84,7 @@ def user_page():
         if b.button("锁座后多久必须完成支付？",width="stretch"):
             st.session_state["user_message"]="锁座后多久必须完成支付？"
     if session.error:
-        st.error(failure_hint(session.error['category'])+' 错误类别：'+session.error['category'])
+        st.error((tool_failure_hint(session) or failure_hint(session.error['category']))+' 错误类别：'+session.error['category'])
     for previous in session.history:
         with st.chat_message("user",avatar=":material/person:"):
             st.write(previous["user_msg"])
