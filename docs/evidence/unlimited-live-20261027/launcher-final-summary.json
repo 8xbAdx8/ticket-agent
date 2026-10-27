@@ -1,0 +1,170 @@
+{
+  "schema": "ticket-unlimited-offline/1",
+  "status": "passed",
+  "tested_source_commit": "02785600c5618f2dd03ab5c401c05afa66c0c626",
+  "pytest": {
+    "passed": 665,
+    "subtests_passed": 101,
+    "junit": {
+      "tests": 766,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  },
+  "runs": [
+    {
+      "name": "pytest",
+      "exit_code": 0
+    },
+    {
+      "name": "compatibility",
+      "exit_code": 0
+    },
+    {
+      "name": "retrieval48",
+      "exit_code": 0
+    }
+  ],
+  "compatibility": {
+    "schema": "ticket-v35-offline/1",
+    "tested_source_head": "02785600c5618f2dd03ab5c401c05afa66c0c626",
+    "status": "passed",
+    "runs": [
+      {
+        "name": "v35_full_unit",
+        "exit_code": 0,
+        "collected": 665,
+        "skipped": 0
+      },
+      {
+        "name": "old_environment_regression",
+        "exit_code": 0,
+        "collected": null,
+        "skipped": 0
+      },
+      {
+        "name": "rag_eight_mutations",
+        "exit_code": 0,
+        "collected": null,
+        "skipped": 0
+      }
+    ],
+    "old_environment_regression": {
+      "status": "passed",
+      "tested_source_head": "02785600c5618f2dd03ab5c401c05afa66c0c626",
+      "timestamp": "2026-10-27T09:54:54.356374+00:00",
+      "scope": "A offline validation; not B V3.3 formal acceptance or new Live evidence",
+      "credentials_removed_from_children": true,
+      "external_python_network_blocked": true,
+      "blocked_network_attempts": 0,
+      "real_api_requests": 0,
+      "real_api_tokens": null,
+      "new_api_cost": 0,
+      "cost_basis": "No remote generation requests",
+      "protected_files": 1594,
+      "protected_files_unchanged": true,
+      "changed_original_files": [],
+      "runs": [
+        {
+          "name": "all_environments",
+          "exit_code": 0,
+          "expected_exit_code": 0,
+          "passed": true
+        },
+        {
+          "name": "v32_audit_matrix",
+          "exit_code": 0,
+          "expected_exit_code": 0,
+          "passed": true
+        },
+        {
+          "name": "offline_preflight",
+          "exit_code": 0,
+          "expected_exit_code": 0,
+          "passed": true
+        },
+        {
+          "name": "live_missing_key_preflight",
+          "exit_code": 2,
+          "expected_exit_code": 2,
+          "passed": true
+        },
+        {
+          "name": "live_fake_key_preflight",
+          "exit_code": 0,
+          "expected_exit_code": 0,
+          "passed": true
+        }
+      ],
+      "environment_regression": {
+        "status": "passed",
+        "scope": "A offline regression, not B official 100 cases",
+        "real_keys_removed_from_children": true,
+        "non_loopback_python_network_blocked": true,
+        "blocked_network_attempts": 0,
+        "new_deepseek_api_requests": 0,
+        "production_budget_and_live_evidence_unchanged": true,
+        "checked_file_count": 361,
+        "runs": [
+          {
+            "name": "deepseek_unit",
+            "exit_code": 0,
+            "tests": 665,
+            "skipped": 24,
+            "log": "deepseek_unit.txt"
+          },
+          {
+            "name": "v3_unit",
+            "exit_code": 0,
+            "tests": 665,
+            "skipped": 139,
+            "log": "v3_unit.txt"
+          },
+          {
+            "name": "v2_unit",
+            "exit_code": 0,
+            "tests": 665,
+            "skipped": 275,
+            "log": "v2_unit.txt"
+          },
+          {
+            "name": "mock_smoke",
+            "exit_code": 0,
+            "tests": null,
+            "skipped": 0,
+            "log": "mock_smoke.txt"
+          }
+        ]
+      },
+      "audit_matrix_records": 25,
+      "labelled_detector_samples": 8,
+      "limits": [
+        "Fake Key preflight is not credential or account validation",
+        "SDK stubs are not Live runs",
+        "B raw assertions and evidence not executed or changed",
+        "Browser screenshots are recorded separately"
+      ]
+    },
+    "protected_files": 4623,
+    "changed_original_files": [],
+    "real_embedding_requests": 0,
+    "real_generation_requests": 0,
+    "langsmith_requests": 0,
+    "blocked_network_attempts": 0,
+    "scope": "A offline regression. Real V3.5 evidence is separate; offline stubs do not count as Live."
+  },
+  "protected_files": 4680,
+  "changed_original_files": [],
+  "blocked_network_attempts": 0,
+  "real_model_requests": 0,
+  "real_embedding_requests": 0,
+  "langsmith_requests": 0,
+  "usage_policy": "unlimited_usage_only",
+  "scope": "A current-policy offline regression; not a new Live model result or B formal grade",
+  "task_start_retention": {
+    "files_checked": 13570,
+    "changed_original_files": [],
+    "snapshot_sha256": "8b08da77201778109360ff4f51ed834f7cb332d2b6e29e7c28be71011f629097"
+  }
+}

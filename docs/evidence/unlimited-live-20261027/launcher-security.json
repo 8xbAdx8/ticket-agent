@@ -1,0 +1,19 @@
+{
+  "status": "passed",
+  "files": 1859,
+  "configured_credentials_checked": true,
+  "nested_office_zip_checked": true,
+  "scope": "All package-eligible tracked source/docs/evidence and this task new handoff files. User untracked ZIP excluded. Existing real .env not printed or exported.",
+  "real_model_requests": 0,
+  "real_embedding_requests": 0,
+  "langsmith_requests": 0,
+  "source_commit": "02785600c5618f2dd03ab5c401c05afa66c0c626",
+  "tracked_real_env_files": [],
+  "staged_content_scan": {
+    "status": "passed",
+    "files": 8,
+    "configured_credentials_checked": true,
+    "nested_office_zip_checked": true,
+    "scope": "known credentials, token patterns and private keys; image text is not OCR-scanned"
+  }
+}
