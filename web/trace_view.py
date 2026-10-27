@@ -1,5 +1,7 @@
 """Auditable event viewer; no guessed intermediate stages or internal reasoning."""
 import json
+import re
+from pathlib import Path
 import streamlit as st
 from web.design import header, kpis, empty, escape, panel_title,table
 from web.evidence import audit_catalog, diff_values, export_rows, read_jsonl
@@ -123,9 +125,8 @@ def show_record(audit,public=None,key="trace"):
 def trace_page(runtime_dirs):
     header("Trace 分析","从原始调用到独立判定。每条事件都可以展开核对。","只读回放")
     entries=audit_catalog(runtime_dirs)
-    scope=st.radio("证据范围",["当前工作空间","历史离线自测","公共历史 Trace"],horizontal=True,key="trace_scope")
+    scope=st.radio("证据范围",["当前工作空间","历史离线自测","公共历史 Trace","本地实验按会话ID回放"],horizontal=True,key="trace_scope")
     if scope=="公共历史 Trace":
-        from pathlib import Path
         import config
         paths=[config.TRACE_DIR/"traces.jsonl",Path(config.BASE_DIR)/"docs/evidence/mock_traces.jsonl"]
         paths=[p for p in paths if p.is_file()]
@@ -146,7 +147,23 @@ def trace_page(runtime_dirs):
                 audit=linked[0] if linked else {}
             show_record(audit,records[i],"public_replay")
         return
-    entries=[e for e in entries if e["kind"]==scope]
+    if scope=="本地实验按会话ID回放":
+        import config
+        sid=st.text_input("实验会话 ID",placeholder="例如 web-0123456789ab").strip()
+        st.caption("填写实验页面显示的会话 ID；只读该实验的本地证据，不恢复模型上下文或重新执行。")
+        if not sid:return
+        if not re.fullmatch(r"web-[0-9a-f]{12}",sid):
+            st.warning("会话 ID 格式无效，请填写实验页显示的 web- 开头编号。")
+            return
+        runtime=(Path(config.BASE_DIR)/"artifacts/runtime").resolve()
+        base=(runtime/"v33/lab").resolve()
+        folder=(base/sid/"traces").resolve()
+        if not base.is_relative_to(runtime) or not folder.is_relative_to(base):
+            st.error("实验路径超出本地运行目录，无法读取。")
+            return
+        entries=[e for e in audit_catalog([folder]) if e["kind"]=="当前工作空间"]
+    else:
+        entries=[e for e in entries if e["kind"]==scope]
     entries.sort(key=lambda e:e["record"].get("timestamp", ""))
     if not entries:
         empty("暂无该范围的审计记录","先在测试实验室执行离线案例，或切换到历史离线自测。不会自动重跑。")
