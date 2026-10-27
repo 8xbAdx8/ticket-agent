@@ -101,6 +101,21 @@ class RagPageTests(unittest.TestCase):
 
 
 class PreflightTests(unittest.TestCase):
+    def test_legacy_audit_unreadable_history_is_unknown_and_never_admission(self):
+        import tempfile
+        from scripts import verify_v34_live
+        with tempfile.TemporaryDirectory() as directory:
+            root=Path(directory)
+            old=root/'artifacts/runtime/v33-live-providers/deepseek/requests.db'
+            old.parent.mkdir(parents=True)
+            raw=b'corrupt historical ledger: do not repair'
+            old.write_bytes(raw)
+            with patch.object(verify_v34_live,'ROOT',root):
+                result=verify_v34_live.old_reconciliation()
+            self.assertIsNone(result['provider_total'])
+            self.assertFalse(result['identity_linkage_verified'])
+            self.assertEqual(old.read_bytes(),raw)
+
     def test_both_cli_profiles_ignore_obsolete_count_settings_without_requests(self):
         directory=ROOT/'artifacts/runtime'/('unlimited-cli-'+uuid.uuid4().hex)
         env=dict(os.environ,TICKET_DISABLE_LOCAL_SECRETS='1',DEEPSEEK_API_KEY='offline-cli-key',

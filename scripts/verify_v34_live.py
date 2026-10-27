@@ -1,4 +1,4 @@
-"""V3.4 one-shot acceptance: 2 DeepSeek + 2 Bailian, one separately consented synthetic upload."""
+"""Legacy audit CLI using current usage-only model accounting; remote export stays explicit."""
 import argparse
 import hashlib
 import importlib.metadata
@@ -50,7 +50,9 @@ def old_reconciliation():
     base=ROOT/'artifacts/runtime/v33-live-providers'
     group=snapshot(base/'initial-total.db',3)
     providers={p:snapshot(base/p/'requests.db',3) for p in ('deepseek','bailian')}
-    return {'shared':group,'providers':providers,'provider_total':sum(r['reserved_requests'] for r in providers.values()),
+    counts=[r['reserved_requests'] for r in providers.values()]
+    total=sum(counts) if all(isinstance(n,int) for n in counts) else None
+    return {'shared':group,'providers':providers,'provider_total':total,
             'identity_linkage_verified':False,'historical_unknowns_released':0,
             'conclusion':'No shared request IDs; matching counts/timestamps do not prove per-request identity. Original ledgers unchanged.'}
 
@@ -88,7 +90,7 @@ def prepare():
 def run_provider(provider,row):
     from target.deepseek_runtime import safe_error
     from target.live_providers import isolated_environment
-    from target.request_accounting import snapshot
+    from target.request_accounting import budget_for,snapshot
     from web.runtime import scoped
     from data.seed import build_db
     from target.agent import Agent
@@ -98,7 +100,7 @@ def run_provider(provider,row):
         API_KEY=os.environ['DEEPSEEK_API_KEY' if provider=='deepseek' else 'DASHSCOPE_API_KEY'],
         DB_PATH=case/'tickets.db',TRACE_DIR=case/'traces',MAX_STEPS=2,USE_HTTP_MOCK=False,USE_VECTOR_RAG=False)
     env.update(TICKET_CASE_ID='v34-query-'+provider,LANGCHAIN_TRACING_V2='false',LANGSMITH_TRACING='false')
-    result=None;record=None;error=None
+    result=None;record=None;error=None;usage=None
     with scoped(values,env):
         try:
             if values['DB_PATH'].exists():raise ValueError('fresh_simulated_database_required')
@@ -107,6 +109,13 @@ def run_provider(provider,row):
             try:result=agent.chat('v34-'+provider+'-'+uuid.uuid4().hex[:12],'查明天上海到杭州的高铁二等座，请列出有余票的车次；以工具结果为依据。')
             finally:record=agent.langchain_engine.last_live_run
         except Exception as exc:error=safe_error(exc)
+        try:
+            from target import deepseek_runtime,bailian_runtime
+            runtime=deepseek_runtime if provider=='deepseek' else bailian_runtime
+            usage=budget_for(runtime.Settings.from_env(),provider).snapshot()
+        except Exception:
+            # Usage display is never an admission condition or a business result.
+            usage={'request_count':None,'recording_status':'unavailable','limit':None}
     events=(record or {}).get('events',[])
     tools=[e for e in events if e.get('event')=='tool_end']
     requests=[e for e in events if e.get('event')=='http_request']
@@ -121,7 +130,8 @@ def run_provider(provider,row):
         'agent_completed':bool(result and result['finish_reason']=='stop' and not error),'error':error,
         'new_requests':len(requests),'tokens':(record or {}).get('tokens'),'observed_tokens':(record or {}).get('observed_tokens'),
         'cost':None,'cost_basis':'No authoritative price/billing evidence','public_trace':result,'live_record':record,
-        'provider_budget':snapshot(AUTH/provider/'requests.db',2)}
+        'usage_policy':'unlimited_usage_only','usage':usage,
+        'historical_provider_ledger':snapshot(ROOT/'artifacts/runtime/v34-api-audit/authorization-20261025'/provider/'requests.db',2)}
     write(AUTH/provider/'result.json',output)
     return output
 
