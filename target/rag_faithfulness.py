@@ -227,6 +227,11 @@ def check_answer(reply,hits,*,events=(),question='',policy_versions=None):
         if _future_query_offer(claim,text,clause['start']):
             unknown.append({'claim':claim,'reason':'future_capability_offer_not_policy_fact'})
             continue
+        # A numbered input prompt with an explicitly illustrative date is not
+        # a claim about an existing policy, trip or booking.
+        if re.fullmatch(r'\s*\d+[.、]\s*乘车/乘机日期[（(]如[“"\']?\d{1,2}月\d{1,2}日[”"\']?[）)]\s*',claim):
+            unknown.append({'claim':claim,'reason':'requested_date_example_not_policy_fact'})
+            continue
         all_quantities=_quantities(IDS.sub('',claim));quantities=[q for q in all_quantities if not q['negated']]
         factual=bool(all_quantities or FACT.search(claim)) and not bool(re.search(r'请(?:提供|补充|说明)|[?？]',claim))
         if not factual or (refusal and REFUSAL.search(claim) and not quantities):continue

@@ -193,8 +193,16 @@ def _parse(reply):
                 r'\s*(?:如果|若|如需).{0,45}(?:告诉我|提供|补充).{0,30}'
                 r'(?:我(?:可以|会|帮您|帮你)|可以)(?:为您|为你)?(?:查询|查看|查找)'
                 r'(?:车次|班次|余票|票价)(?:[与和、/](?:车次|班次|余票|票价))*\s*',clause)
+            # Asking for missing information before a possible future lookup
+            # does not assert that any ticket is currently available.
+            stock_question_offer=re.fullmatch(
+                r'\s*(?:如果您愿意|如果你愿意)[，,]\s*(?:可以)?(?:告诉我|提供|补充)'
+                r'(?:以下信息|行程信息)[，,]\s*我(?:先)?帮(?:您|你)(?:模拟)?'
+                r'(?:查|查询)(?:一下)?有没有余票(?:[，,]供(?:您|你)参考)?[：:]?\s*',clause)
             concrete=re.search(TRAIN+r'|\d|[¥￥]|[一二三四五六七八九十两百千万]+\s*(?:张|元|趟|分钟|小时|天)'
                                r'|有票|有余票|售罄|(?:已|已经|成功|完成).{0,12}(?:查询|锁座|下单|支付|取消)',clause)
+            if stock_question_offer:
+                ignored.append({'line':number,'text':clause,'reason':'future_query_offer'});continue
             if future_offer and not concrete:
                 ignored.append({'line':number,'text':clause,'reason':'future_query_offer'});continue
             # A similar offer with an extra statement must not disappear from
