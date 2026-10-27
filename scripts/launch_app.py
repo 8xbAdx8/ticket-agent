@@ -17,6 +17,10 @@ import webbrowser
 from contextlib import closing
 
 ROOT=Path(__file__).resolve().parent.parent
+# Executing scripts/launch_app.py directly puts scripts/, not the project root,
+# on sys.path. The double-click launcher uses this direct entry point.
+if str(ROOT) not in sys.path:
+    sys.path.insert(0,str(ROOT))
 
 
 def build_environment(mode, runtime_root, inherited=None):
@@ -136,6 +140,11 @@ def main(argv=None):
         base=(ROOT/"artifacts/runtime").resolve()
         if not runtime.is_relative_to(base) or runtime==base:
             raise ValueError("启动数据目录必须是项目 artifacts/runtime 下的独立子目录。")
+        # Support the documented local .env without importing it in offline mode.
+        # Windows user variables are also refreshed by the PowerShell wrapper.
+        if args.mode=='live' and Path(os.getenv('TICKET_ENV_FILE',str(ROOT/'.env'))).is_file():
+            from target.api_config import bootstrap
+            bootstrap(ROOT)
         env=build_environment(args.mode,runtime)
         if args.mode=='live':
             # This launcher opens the daily Web UI, independently of older CLI limits.
@@ -146,6 +155,12 @@ def main(argv=None):
             print('请在项目目录运行：.\\.venv-deepseek\\Scripts\\python.exe -m pip install -r requirements-deepseek-lock.txt')
             return 1
         key_present=bool(env.get("DEEPSEEK_API_KEY","").strip())
+        if args.mode=='live' and not key_present and env.get('DASHSCOPE_API_KEY','').strip():
+            # A Qwen-only setup can open the same online UI without a fake DeepSeek key.
+            env.update(AGENT_PROVIDER='bailian',AGENT_MODEL=env.get('DASHSCOPE_MODEL','qwen3.8-flash'),
+                       AGENT_BASE_URL=env.get('DASHSCOPE_BASE_URL',''))
+            key_present=True
+        missing_endpoint=args.mode=='live' and env['AGENT_PROVIDER']=='bailian' and not env.get('DASHSCOPE_BASE_URL','').strip()
         if args.mode=="live" and not key_present and not args.check_only and sys.stdin.isatty():
             key=getpass.getpass("请输入 DeepSeek API Key（隐藏输入，仅本次启动使用，不保存）：").strip()
             if key:env["DEEPSEEK_API_KEY"]=key
@@ -157,17 +172,21 @@ def main(argv=None):
         if args.mode=="live":
             from target.api_usage import provider_usage
             state.update(request_limit=None,usage_policy='unlimited_usage_only',
-                         usage=provider_usage('deepseek'),historical_budgets_used_for_admission=False)
+                         usage=provider_usage(env['AGENT_PROVIDER']),historical_budgets_used_for_admission=False)
         if args.check_only:
-            state["status"]="missing_key" if args.mode=="live" and not key_present else "passed"
+            state["status"]="missing_key" if args.mode=="live" and not key_present else "missing_bailian_base_url" if missing_endpoint else "passed"
             print(json.dumps(state,ensure_ascii=False))
-            return 2 if state["status"]=="missing_key" else 0
+            return 0 if state["status"]=="passed" else 2
+        if missing_endpoint:
+            print("DASHSCOPE_BASE_URL 未配置；请设置与百炼账号地域及套餐匹配的兼容地址。没有发送模型请求。")
+            return 2
         if args.mode=="live" and not key_present:
             print("DEEPSEEK_API_KEY 未配置；请重新双击在线入口并在窗口隐藏输入 Key。没有发送模型请求。")
             return 2
         port=available_port(args.port if args.port is not None else (8501 if args.mode=="offline" else 8502),exact=args.port is not None)
         print("\n离线模式：Mock，支持全部八个模拟工具，不调用模型 API。" if args.mode=="offline" else
-              "\n在线模式：DeepSeek Live，仅模拟查票和政策咨询。点击网页发送才调用真实模型并产生费用。",flush=True)
+              "\n在线模式："+('Qwen3.8-Flash Live' if env['AGENT_PROVIDER']=='bailian' else 'DeepSeek Live')+
+              "，仅模拟查票和政策咨询。点击网页发送才调用真实模型并产生费用。",flush=True)
         if args.mode=="live":
             print("所有Live入口：DeepSeek/千问/Embedding不设本地累计请求次数上限；每次显式发送才可能产生费用。"
                   "单轮防循环与零自动重试仍生效，旧验收账本保留。",flush=True)
