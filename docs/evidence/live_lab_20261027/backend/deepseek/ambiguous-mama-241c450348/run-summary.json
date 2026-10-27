@@ -1,0 +1,596 @@
+{
+  "time": "2026-10-27T14:49:15.122452+00:00",
+  "provider": "deepseek",
+  "expected_model": "deepseek-flash",
+  "case": "ambiguous-mama",
+  "input": "妈妈",
+  "record": {
+    "session_id": "web-6d6e00b6555d",
+    "provider": "deepseek_live",
+    "model": "deepseek-flash",
+    "user_msg": "妈妈",
+    "steps": [],
+    "tool_sequence": [],
+    "reply": "您好，我在。请问需要查询哪条线路的车票或机票？可以说一下出发城市、到达城市和日期，我帮您查询虚构余票；如果是退改签、儿童票等规则问题，我也可以帮您检索政策。当前仅支持模拟查票和政策咨询。",
+    "finish_reason": "stop",
+    "tokens": {
+      "prompt": 756,
+      "completion": 60
+    },
+    "total_latency_ms": 1451
+  },
+  "error": null,
+  "audit": {
+    "schema_version": "ticket-agent-audit/3.2",
+    "trace_id": "1ea1c2a9b8ae4d3c9976f50c245859b5",
+    "timestamp": "2026-10-27T14:49:15.077899+00:00",
+    "provider": "deepseek_live",
+    "model": "deepseek-flash",
+    "public_trace": {
+      "session_id": "web-6d6e00b6555d",
+      "provider": "deepseek_live",
+      "model": "deepseek-flash",
+      "user_msg": "妈妈",
+      "steps": [],
+      "tool_sequence": [],
+      "reply": "您好，我在。请问需要查询哪条线路的车票或机票？可以说一下出发城市、到达城市和日期，我帮您查询虚构余票；如果是退改签、儿童票等规则问题，我也可以帮您检索政策。当前仅支持模拟查票和政策咨询。",
+      "finish_reason": "stop",
+      "tokens": {
+        "prompt": 756,
+        "completion": 60
+      },
+      "total_latency_ms": 1451
+    },
+    "public_trace_sha256": "d8a476d1e8275acdba983a9c4083e7544009f224c730afb0801b351c4be5d165",
+    "contract_returned": true,
+    "fault_report": {
+      "run_id": "1ea1c2a9b8ae4d3c9976f50c245859b5",
+      "session_id": "web-6d6e00b6555d",
+      "mode": "deepseek_live",
+      "mutations": {},
+      "injection_events": [],
+      "executions": [],
+      "model_requests": [
+        {
+          "model_step": 1,
+          "tool_calls": [],
+          "final_text": "您好，我在。请问需要查询哪条线路的车票或机票？可以说一下出发城市、到达城市和日期，我帮您查询虚构余票；如果是退改签、儿童票等规则问题，我也可以帮您检索政策。当前仅支持模拟查票和政策咨询。"
+        }
+      ],
+      "finish_reason": "stop",
+      "error": null,
+      "assessment": {
+        "agent_defect_detected": null,
+        "agent_recovered": null,
+        "note": "由B根据原始轨迹和预先定义的期望独立判定，不等同于注入成功"
+      }
+    },
+    "mutation_events": [
+      {
+        "mutation_id": "M1",
+        "event_id": "39379439618a4cc1a252b7f2339e91c4",
+        "mutation_name": "date_offset",
+        "enabled": false,
+        "applicable": null,
+        "status": "disabled",
+        "injection_stage": null,
+        "target": null,
+        "before": null,
+        "after": null,
+        "reason": "explicitly disabled",
+        "related_step": null,
+        "related_tool_call_id": null,
+        "timestamp": "2026-10-27T14:49:15.077899+00:00",
+        "evidence_ref": "audit:1ea1c2a9b8ae4d3c9976f50c245859b5"
+      },
+      {
+        "mutation_id": "M2",
+        "event_id": "602e89d2171545c6b4e57bb1a657d488",
+        "mutation_name": "skip_lock",
+        "enabled": false,
+        "applicable": null,
+        "status": "disabled",
+        "injection_stage": null,
+        "target": null,
+        "before": null,
+        "after": null,
+        "reason": "explicitly disabled",
+        "related_step": null,
+        "related_tool_call_id": null,
+        "timestamp": "2026-10-27T14:49:15.077899+00:00",
+        "evidence_ref": "audit:1ea1c2a9b8ae4d3c9976f50c245859b5"
+      },
+      {
+        "mutation_id": "M3",
+        "event_id": "64b3f8a986594c4a9ca9eefa353a3f68",
+        "mutation_name": "repeat_call",
+        "enabled": false,
+        "applicable": null,
+        "status": "disabled",
+        "injection_stage": null,
+        "target": null,
+        "before": null,
+        "after": null,
+        "reason": "explicitly disabled",
+        "related_step": null,
+        "related_tool_call_id": null,
+        "timestamp": "2026-10-27T14:49:15.077899+00:00",
+        "evidence_ref": "audit:1ea1c2a9b8ae4d3c9976f50c245859b5"
+      },
+      {
+        "mutation_id": "M4",
+        "event_id": "46d44e9c9af64ea894176a56d64152ed",
+        "mutation_name": "infinite_loop",
+        "enabled": false,
+        "applicable": null,
+        "status": "disabled",
+        "injection_stage": null,
+        "target": null,
+        "before": null,
+        "after": null,
+        "reason": "explicitly disabled",
+        "related_step": null,
+        "related_tool_call_id": null,
+        "timestamp": "2026-10-27T14:49:15.077899+00:00",
+        "evidence_ref": "audit:1ea1c2a9b8ae4d3c9976f50c245859b5"
+      },
+      {
+        "mutation_id": "M5",
+        "event_id": "cc52910d922f4e469f3bce1b9bb1d8c2",
+        "mutation_name": "route_error",
+        "enabled": false,
+        "applicable": null,
+        "status": "disabled",
+        "injection_stage": null,
+        "target": null,
+        "before": null,
+        "after": null,
+        "reason": "explicitly disabled",
+        "related_step": null,
+        "related_tool_call_id": null,
+        "timestamp": "2026-10-27T14:49:15.077899+00:00",
+        "evidence_ref": "audit:1ea1c2a9b8ae4d3c9976f50c245859b5"
+      },
+      {
+        "mutation_id": "M6",
+        "event_id": "53dff7b95ca748958308f5d923cce6f2",
+        "mutation_name": "no_citation",
+        "enabled": false,
+        "applicable": null,
+        "status": "disabled",
+        "injection_stage": null,
+        "target": null,
+        "before": null,
+        "after": null,
+        "reason": "explicitly disabled",
+        "related_step": null,
+        "related_tool_call_id": null,
+        "timestamp": "2026-10-27T14:49:15.077899+00:00",
+        "evidence_ref": "audit:1ea1c2a9b8ae4d3c9976f50c245859b5"
+      },
+      {
+        "mutation_id": "M7",
+        "event_id": "6d655cdc089a47bdb540993755de4fc7",
+        "mutation_name": "hallucinated_train",
+        "enabled": false,
+        "applicable": null,
+        "status": "disabled",
+        "injection_stage": null,
+        "target": null,
+        "before": null,
+        "after": null,
+        "reason": "explicitly disabled",
+        "related_step": null,
+        "related_tool_call_id": null,
+        "timestamp": "2026-10-27T14:49:15.077899+00:00",
+        "evidence_ref": "audit:1ea1c2a9b8ae4d3c9976f50c245859b5"
+      },
+      {
+        "mutation_id": "M8",
+        "event_id": "532d2bda39f4471a83a9eb0894771965",
+        "mutation_name": "concurrent_duplicate_order",
+        "enabled": false,
+        "applicable": null,
+        "status": "disabled",
+        "injection_stage": null,
+        "target": null,
+        "before": null,
+        "after": null,
+        "reason": "explicitly disabled",
+        "related_step": null,
+        "related_tool_call_id": null,
+        "timestamp": "2026-10-27T14:49:15.077899+00:00",
+        "evidence_ref": "audit:1ea1c2a9b8ae4d3c9976f50c245859b5"
+      }
+    ],
+    "framework_events": [
+      {
+        "event": "model_start",
+        "model_step": 1,
+        "timestamp": "2026-10-27T14:49:13.628401+00:00"
+      },
+      {
+        "event": "http_request",
+        "request_id": "a9f889d54f7e48e398b4f64ab6a19d02",
+        "provider": "deepseek",
+        "summary": {
+          "model": "deepseek-flash",
+          "message_roles": [
+            "system",
+            "user"
+          ],
+          "returned_tool_call_ids": []
+        },
+        "dispatch_snapshot": {
+          "bound_tools": [
+            "query_tickets",
+            "search_policy"
+          ],
+          "tool_schemas_sha256": "e04c245e3c1c2409f992bb934056993a784347ad9c96a36f53622c58b4c8b0b0",
+          "tool_schema_sha256": {
+            "query_tickets": "f05ba6de74d05a5ac0dbb1cca852b0c255bfa2eb3a99a3ebd6f7d232b6165566",
+            "search_policy": "df5348ddbbf379f9979ee5c641001fb0b798f9af97aa3d2cec3feea5fbf57ebd"
+          },
+          "system_prompt_sha256": "c2197ba4d71a4e4b45c2773f1336b3795c4ce81837e499b2f9250376f4ffdcc9",
+          "tool_permission": [
+            "query_tickets",
+            "search_policy"
+          ],
+          "scope": "HTTP dispatch intent; not evidence of response or tool execution"
+        },
+        "model_step": 1,
+        "timestamp": "2026-10-27T14:49:13.671469+00:00"
+      },
+      {
+        "event": "http_response",
+        "request_id": "a9f889d54f7e48e398b4f64ab6a19d02",
+        "provider": "deepseek",
+        "http_status": 200,
+        "category": "response_received",
+        "usage": {
+          "prompt_tokens": 756,
+          "completion_tokens": 60,
+          "total_tokens": 816,
+          "prompt_tokens_details": {
+            "cached_tokens": 512
+          },
+          "prompt_cache_hit_tokens": 512,
+          "prompt_cache_miss_tokens": 244
+        },
+        "model_step": 1,
+        "timestamp": "2026-10-27T14:49:15.047651+00:00"
+      },
+      {
+        "event": "model_response",
+        "model_step": 1,
+        "request_id": "a9f889d54f7e48e398b4f64ab6a19d02",
+        "response_model": "deepseek-flash",
+        "usage": {
+          "input_tokens": 756,
+          "output_tokens": 60,
+          "total_tokens": 816,
+          "input_token_details": {
+            "cache_read": 512
+          },
+          "output_token_details": {}
+        },
+        "latency_ms": 1429,
+        "finish_reason": "stop",
+        "tool_calls": []
+      },
+      {
+        "event": "model_final",
+        "model_step": 1,
+        "text": "您好，我在。请问需要查询哪条线路的车票或机票？可以说一下出发城市、到达城市和日期，我帮您查询虚构余票；如果是退改签、儿童票等规则问题，我也可以帮您检索政策。当前仅支持模拟查票和政策咨询。",
+        "reply_consistency": {
+          "schema": "reply-consistency/2",
+          "status": "not_verified",
+          "verdict": "indeterminate",
+          "checked_fields": 0,
+          "identity_checks": 0,
+          "findings": [],
+          "field_checks": [],
+          "indeterminate": [],
+          "ignored": [],
+          "authority_queries": [],
+          "scope": "Explicit ticket fields in labelled prose/tables; not full natural-language or business accuracy"
+        }
+      },
+      {
+        "event": "model_end",
+        "model_step": 1
+      }
+    ],
+    "authority": {
+      "available": true,
+      "trains": [
+        "CA4101",
+        "CA4102",
+        "CA4103",
+        "CZ8001",
+        "CZ8002",
+        "CZ8003",
+        "D1901",
+        "D1902",
+        "D1903",
+        "D2301",
+        "D2302",
+        "D2303",
+        "G101",
+        "G102",
+        "G103",
+        "G1101",
+        "G1102",
+        "G1103",
+        "G20001",
+        "G20002",
+        "G20003",
+        "G20101",
+        "G20102",
+        "G20103",
+        "G20201",
+        "G20202",
+        "G20203",
+        "G20301",
+        "G20302",
+        "G20303",
+        "G20401",
+        "G20402",
+        "G20403",
+        "G20501",
+        "G20502",
+        "G20503",
+        "G20601",
+        "G20602",
+        "G20603",
+        "G20701",
+        "G20702",
+        "G20703",
+        "G20801",
+        "G20802",
+        "G20803",
+        "G20901",
+        "G20902",
+        "G20903",
+        "G21001",
+        "G21002",
+        "G21003",
+        "G21101",
+        "G21102",
+        "G21103",
+        "G21201",
+        "G21202",
+        "G21203",
+        "G21301",
+        "G21302",
+        "G21303",
+        "G21401",
+        "G21402",
+        "G21403",
+        "G21501",
+        "G21502",
+        "G21503",
+        "G21601",
+        "G21602",
+        "G21603",
+        "G21701",
+        "G21702",
+        "G21703",
+        "G21801",
+        "G21802",
+        "G21803",
+        "G21901",
+        "G21902",
+        "G21903",
+        "G22001",
+        "G22002",
+        "G22003",
+        "G22101",
+        "G22102",
+        "G22103",
+        "G22201",
+        "G22202",
+        "G22203",
+        "G22301",
+        "G22302",
+        "G22303",
+        "G701",
+        "G702",
+        "G703",
+        "G7301",
+        "G7302",
+        "G7303",
+        "HU6201",
+        "HU6202",
+        "HU6203",
+        "MU5301",
+        "MU5302",
+        "MU5303",
+        "ZH9001",
+        "ZH9002",
+        "ZH9003"
+      ],
+      "orders": [],
+      "locks": [],
+      "source": "isolated SQLite read-only snapshot"
+    },
+    "raw_model_reply": "您好，我在。请问需要查询哪条线路的车票或机票？可以说一下出发城市、到达城市和日期，我帮您查询虚构余票；如果是退改签、儿童票等规则问题，我也可以帮您检索政策。当前仅支持模拟查票和政策咨询。",
+    "error": null,
+    "token_usage_evidence": {
+      "status": "reported",
+      "completeness": "complete",
+      "reported": {
+        "prompt": 756,
+        "completion": 60
+      },
+      "observed": {
+        "prompt": 756,
+        "completion": 60
+      },
+      "note": "来自本轮模型响应元数据，与业务是否成功分别判定；SDK桩不是新真实API用量，费用仍以账单为准。"
+    },
+    "judgement": {
+      "case_id": "1ea1c2a9b8ae4d3c9976f50c245859b5",
+      "expected_behavior": "parameters, source truth, routing and order invariants hold",
+      "actual_behavior": {
+        "user_requested_date": null,
+        "model_original_dates": [],
+        "actual_query_dates": [],
+        "model_tool_requests": 0,
+        "python_executions": 0,
+        "unknown_execution_attempts": 0,
+        "duplicate_executions": [],
+        "monitor_executions": 0,
+        "finish_reason": "stop"
+      },
+      "assertions": [
+        {
+          "assertion": "reply_train_authority",
+          "result": "pass",
+          "passed": true,
+          "failure_reason": null,
+          "evidence_refs": [
+            "audit:1ea1c2a9b8ae4d3c9976f50c245859b5#/authority",
+            "audit:1ea1c2a9b8ae4d3c9976f50c245859b5#/judgement/hallucination"
+          ]
+        },
+        {
+          "assertion": "one_order_per_lock",
+          "result": "pass",
+          "passed": true,
+          "failure_reason": null,
+          "evidence_refs": [
+            "audit:1ea1c2a9b8ae4d3c9976f50c245859b5#/authority/orders"
+          ]
+        }
+      ],
+      "hallucination": {
+        "status": "clear",
+        "hallucination_detected": false,
+        "findings": [],
+        "limits": "finite statement rules; no general semantic accuracy claim"
+      },
+      "dimensions": {
+        "injection_applied": null,
+        "platform_defect_detected": null,
+        "agent_anomaly_recognized": null,
+        "agent_recovered": null,
+        "safe_stop": false,
+        "business_correct": null
+      },
+      "quality_verdict": "indeterminate",
+      "failure_reasons": [],
+      "indeterminate_reasons": [
+        "没有实际工具执行；澄清/闲聊不自动判失败，也不据此认定业务成功。"
+      ],
+      "scope": "deterministic tool/database/explicit-claim assertions; unknown semantic recognition/recovery remains null"
+    },
+    "test_case_label": "ambiguous-mama",
+    "public_trace_hash_scope": "original public contract before sidecar personal-data masking"
+  },
+  "events": [
+    {
+      "event": "model_start",
+      "model_step": 1,
+      "timestamp": "2026-10-27T14:49:13.628401+00:00"
+    },
+    {
+      "event": "http_request",
+      "request_id": "a9f889d54f7e48e398b4f64ab6a19d02",
+      "provider": "deepseek",
+      "summary": {
+        "model": "deepseek-flash",
+        "message_roles": [
+          "system",
+          "user"
+        ],
+        "returned_tool_call_ids": []
+      },
+      "dispatch_snapshot": {
+        "bound_tools": [
+          "query_tickets",
+          "search_policy"
+        ],
+        "tool_schemas_sha256": "e04c245e3c1c2409f992bb934056993a784347ad9c96a36f53622c58b4c8b0b0",
+        "tool_schema_sha256": {
+          "query_tickets": "f05ba6de74d05a5ac0dbb1cca852b0c255bfa2eb3a99a3ebd6f7d232b6165566",
+          "search_policy": "df5348ddbbf379f9979ee5c641001fb0b798f9af97aa3d2cec3feea5fbf57ebd"
+        },
+        "system_prompt_sha256": "c2197ba4d71a4e4b45c2773f1336b3795c4ce81837e499b2f9250376f4ffdcc9",
+        "tool_permission": [
+          "query_tickets",
+          "search_policy"
+        ],
+        "scope": "HTTP dispatch intent; not evidence of response or tool execution"
+      },
+      "model_step": 1,
+      "timestamp": "2026-10-27T14:49:13.671469+00:00"
+    },
+    {
+      "event": "http_response",
+      "request_id": "a9f889d54f7e48e398b4f64ab6a19d02",
+      "provider": "deepseek",
+      "http_status": 200,
+      "category": "response_received",
+      "usage": {
+        "prompt_tokens": 756,
+        "completion_tokens": 60,
+        "total_tokens": 816,
+        "prompt_tokens_details": {
+          "cached_tokens": 512
+        },
+        "prompt_cache_hit_tokens": 512,
+        "prompt_cache_miss_tokens": 244
+      },
+      "model_step": 1,
+      "timestamp": "2026-10-27T14:49:15.047651+00:00"
+    },
+    {
+      "event": "model_response",
+      "model_step": 1,
+      "request_id": "a9f889d54f7e48e398b4f64ab6a19d02",
+      "response_model": "deepseek-flash",
+      "usage": {
+        "input_tokens": 756,
+        "output_tokens": 60,
+        "total_tokens": 816,
+        "input_token_details": {
+          "cache_read": 512
+        },
+        "output_token_details": {}
+      },
+      "latency_ms": 1429,
+      "finish_reason": "stop",
+      "tool_calls": []
+    },
+    {
+      "event": "model_final",
+      "model_step": 1,
+      "text": "您好，我在。请问需要查询哪条线路的车票或机票？可以说一下出发城市、到达城市和日期，我帮您查询虚构余票；如果是退改签、儿童票等规则问题，我也可以帮您检索政策。当前仅支持模拟查票和政策咨询。",
+      "reply_consistency": {
+        "schema": "reply-consistency/2",
+        "status": "not_verified",
+        "verdict": "indeterminate",
+        "checked_fields": 0,
+        "identity_checks": 0,
+        "findings": [],
+        "field_checks": [],
+        "indeterminate": [],
+        "ignored": [],
+        "authority_queries": [],
+        "scope": "Explicit ticket fields in labelled prose/tables; not full natural-language or business accuracy"
+      }
+    },
+    {
+      "event": "model_end",
+      "model_step": 1
+    }
+  ],
+  "actual_models": [
+    "deepseek-flash"
+  ],
+  "root": "artifacts\\runtime\\live-lab-audit-20261027\\backend\\deepseek\\ambiguous-mama-241c450348",
+  "generation_requests": 1,
+  "embedding_requests": 0,
+  "langsmith_requests": 0
+}

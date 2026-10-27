@@ -11,3 +11,4 @@ docs/handoff/v352/audit/*.json -text
 # This document quotes the original model output, including Markdown line breaks.
 docs/handoff/v3/V3.4.1_DeepSeek与百炼历史证据对照表.md whitespace=-blank-at-eol
 docs/evidence/test_lab_audit/** -text whitespace=cr-at-eol
+docs/evidence/live_lab_20261027/** -text whitespace=cr-at-eol

@@ -1,0 +1,14 @@
+{
+  "schema": "ticket-chroma-copy/1",
+  "source_tree_sha256": "f65a849870a6a9070920c70c609859538890967fcf0bdd87726094b306648776",
+  "source_files": {
+    "38cad6fc-745e-47ee-ad08-b36fb5cf29a7/data_level0.bin": "9c8f8e8bd55b85624ac67911fbb01195c6beb8e587e8217e3d9e78d9d23b8df5",
+    "38cad6fc-745e-47ee-ad08-b36fb5cf29a7/header.bin": "bf12d4486518c7addf488cb4854526902c78e91951990e1e2f4e055cec814e5d",
+    "38cad6fc-745e-47ee-ad08-b36fb5cf29a7/length.bin": "6d86676aecf7d1ea11c7e7985c9754123c5ae975b83791feeed68bf98667f6f3",
+    "38cad6fc-745e-47ee-ad08-b36fb5cf29a7/link_lists.bin": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "chroma.sqlite3": "539403976b9d89501506f23e7c696d1381bfbd763f0267fc9cf66ef555c332e7",
+    "manifest.json": "177aa83e1e86e1be1d729e456cfa1e58977ea798c6e7a642e77e3e3ba3eadc03"
+  },
+  "copy_files_match": true,
+  "workspace_id": "79c74d3ba7f3401896d087e2786f69b8"
+}

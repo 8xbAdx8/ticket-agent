@@ -1,0 +1,815 @@
+{
+  "scope": "only backend agent; browser requests tracked separately",
+  "models": {
+    "deepseek": {
+      "requests": 29,
+      "input_tokens_known_sum": 26716,
+      "output_tokens_known_sum": 3440,
+      "usage_unknown_runs": 0
+    },
+    "bailian": {
+      "requests": 33,
+      "input_tokens_known_sum": 30201,
+      "output_tokens_known_sum": 4145,
+      "usage_unknown_runs": 0
+    }
+  },
+  "embedding_requests": 0,
+  "langsmith_requests": 0,
+  "cost": null,
+  "rows": [
+    {
+      "provider": "bailian",
+      "case": "ambiguous-mama",
+      "model": [
+        "qwen3.8-flash"
+      ],
+      "trace_id": "1ec9b36de2904e4cb8d877c9bcbfbc75",
+      "requests": 1,
+      "input_tokens": 759,
+      "output_tokens": 40,
+      "error": null,
+      "tools": [],
+      "quality": "indeterminate",
+      "reasons": [],
+      "root": "artifacts\\runtime\\live-lab-audit-20261027\\backend\\bailian\\ambiguous-mama-4abbe67380",
+      "snapshot_count": 1
+    },
+    {
+      "provider": "bailian",
+      "case": "ambiguous-ticket",
+      "model": [
+        "qwen3.8-flash"
+      ],
+      "trace_id": "0d80a541bb3946c5aa2e986c0481068c",
+      "requests": 1,
+      "input_tokens": 761,
+      "output_tokens": 168,
+      "error": {
+        "type": "BailianError",
+        "category": "reply_data_indeterminate",
+        "http_status": null
+      },
+      "tools": [],
+      "quality": "indeterminate",
+      "reasons": [],
+      "root": "artifacts\\runtime\\live-lab-audit-20261027\\backend\\bailian\\ambiguous-ticket-2f3aa3c2b7",
+      "snapshot_count": 1
+    },
+    {
+      "provider": "bailian",
+      "case": "ambiguous-ticket-after",
+      "model": [
+        "qwen3.8-flash"
+      ],
+      "trace_id": "c6eefec14f624cedb06dbb3d6895a7b4",
+      "requests": 1,
+      "input_tokens": 761,
+      "output_tokens": 84,
+      "error": null,
+      "tools": [],
+      "quality": "indeterminate",
+      "reasons": [],
+      "root": "artifacts\\runtime\\live-lab-audit-20261027\\backend\\bailian\\ambiguous-ticket-after-b0b578451b",
+      "snapshot_count": 1
+    },
+    {
+      "provider": "bailian",
+      "case": "ambiguous-tomorrow",
+      "model": [
+        "qwen3.8-flash"
+      ],
+      "trace_id": "b8059bab1a5d4777887e3dfe4e81a8ca",
+      "requests": 2,
+      "input_tokens": 2438,
+      "output_tokens": 462,
+      "error": {
+        "type": "BailianError",
+        "category": "reply_tool_mismatch",
+        "http_status": null
+      },
+      "tools": [
+        "query_tickets"
+      ],
+      "quality": "fail",
+      "reasons": [
+        "Agent执行异常：reply_tool_mismatch"
+      ],
+      "root": "artifacts\\runtime\\live-lab-audit-20261027\\backend\\bailian\\ambiguous-tomorrow-1c375a62de",
+      "snapshot_count": 2
+    },
+    {
+      "provider": "bailian",
+      "case": "ambiguous-tomorrow-after",
+      "model": [
+        "qwen3.8-flash"
+      ],
+      "trace_id": "076d99a6328a42b68429d8e9561d873d",
+      "requests": 1,
+      "input_tokens": 762,
+      "output_tokens": 116,
+      "error": null,
+      "tools": [],
+      "quality": "indeterminate",
+      "reasons": [],
+      "root": "artifacts\\runtime\\live-lab-audit-20261027\\backend\\bailian\\ambiguous-tomorrow-after-ba58396481",
+      "snapshot_count": 1
+    },
+    {
+      "provider": "bailian",
+      "case": "edge-empty",
+      "model": [
+        "qwen3.8-flash"
+      ],
+      "trace_id": "7320ae931aaa4857ad9b870ba345b377",
+      "requests": 2,
+      "input_tokens": 1664,
+      "output_tokens": 225,
+      "error": {
+        "type": "BailianError",
+        "category": "reply_data_indeterminate",
+        "http_status": null
+      },
+      "tools": [
+        "query_tickets"
+      ],
+      "quality": "fail",
+      "reasons": [
+        "model argument error before execution",
+        "actual query date differs from user requirement"
+      ],
+      "root": "artifacts\\runtime\\live-lab-audit-20261027\\backend\\bailian\\edge-empty-f8115d4b97",
+      "snapshot_count": 2
+    },
+    {
+      "provider": "bailian",
+      "case": "edge-no-answer",
+      "model": [
+        "qwen3.8-flash"
+      ],
+      "trace_id": "f10641de83ad4bd3bc07498c9c2eac4d",
+      "requests": 2,
+      "input_tokens": 1607,
+      "output_tokens": 179,
+      "error": {
+        "type": "BailianError",
+        "category": "rag_answer_inconsistent",
+        "http_status": null
+      },
+      "tools": [
+        "search_policy"
+      ],
+      "quality": "fail",
+      "reasons": [
+        "Agent执行异常：rag_answer_inconsistent"
+      ],
+      "root": "artifacts\\runtime\\live-lab-audit-20261027\\backend\\bailian\\edge-no-answer-46795d0201",
+      "snapshot_count": 2
+    },
+    {
+      "provider": "bailian",
+      "case": "edge-no-answer-after",
+      "model": [
+        "qwen3.8-flash"
+      ],
+      "trace_id": "18769a44cc5e4d58b0415bafc0c4f81c",
+      "requests": 2,
+      "input_tokens": 1607,
+      "output_tokens": 183,
+      "error": {
+        "type": "BailianError",
+        "category": "reply_data_indeterminate",
+        "http_status": null
+      },
+      "tools": [
+        "search_policy"
+      ],
+      "quality": "indeterminate",
+      "reasons": [],
+      "root": "artifacts\\runtime\\live-lab-audit-20261027\\backend\\bailian\\edge-no-answer-after-aa33df94f2",
+      "snapshot_count": 2
+    },
+    {
+      "provider": "bailian",
+      "case": "edge-unavailable-train",
+      "model": [
+        "qwen3.8-flash"
+      ],
+      "trace_id": "60c21251e47747cca7ee20fd04570f3b",
+      "requests": 2,
+      "input_tokens": 1937,
+      "output_tokens": 292,
+      "error": {
+        "type": "BailianError",
+        "category": "reply_data_indeterminate",
+        "http_status": null
+      },
+      "tools": [
+        "query_tickets"
+      ],
+      "quality": "indeterminate",
+      "reasons": [],
+      "root": "artifacts\\runtime\\live-lab-audit-20261027\\backend\\bailian\\edge-unavailable-train-a0213c1ab2",
+      "snapshot_count": 2
+    },
+    {
+      "provider": "bailian",
+      "case": "edge-write",
+      "model": [
+        "qwen3.8-flash"
+      ],
+      "trace_id": "60e741e4108c4268a145468122da1cb5",
+      "requests": 1,
+      "input_tokens": 771,
+      "output_tokens": 21,
+      "error": null,
+      "tools": [],
+      "quality": "indeterminate",
+      "reasons": [],
+      "root": "artifacts\\runtime\\live-lab-audit-20261027\\backend\\bailian\\edge-write-713822ba71",
+      "snapshot_count": 1
+    },
+    {
+      "provider": "bailian",
+      "case": "mutation-date_offset",
+      "model": [
+        "qwen3.8-flash"
+      ],
+      "trace_id": "399c13607fb84498aff235639da82925",
+      "requests": 2,
+      "input_tokens": 1926,
+      "output_tokens": 347,
+      "error": {
+        "type": "BailianError",
+        "category": "reply_tool_mismatch",
+        "http_status": null
+      },
+      "tools": [
+        "query_tickets"
+      ],
+      "quality": "fail",
+      "reasons": [
+        "actual query date differs from user requirement",
+        "Agent执行异常：reply_tool_mismatch"
+      ],
+      "root": "artifacts\\runtime\\live-lab-audit-20261027\\backend\\bailian\\mutation-date_offset-b4a24bf173",
+      "snapshot_count": 2
+    },
+    {
+      "provider": "bailian",
+      "case": "mutation-hallucinated_train",
+      "model": [
+        "qwen3.8-flash"
+      ],
+      "trace_id": "d80c1addbcf14dd0b9d767d3d7f5f745",
+      "requests": 2,
+      "input_tokens": 2015,
+      "output_tokens": 332,
+      "error": null,
+      "tools": [
+        "query_tickets"
+      ],
+      "quality": "fail",
+      "reasons": [
+        "reply asserts unsupported or ambiguous trains",
+        "tool-visible trains not in authoritative database"
+      ],
+      "root": "artifacts\\runtime\\live-lab-audit-20261027\\backend\\bailian\\mutation-hallucinated_train-113476b386",
+      "snapshot_count": 2
+    },
+    {
+      "provider": "bailian",
+      "case": "mutation-no_citation",
+      "model": [
+        "qwen3.8-flash"
+      ],
+      "trace_id": "cb26fb7f997f405fbe149f921ee29f09",
+      "requests": 2,
+      "input_tokens": 1769,
+      "output_tokens": 207,
+      "error": {
+        "type": "BailianError",
+        "category": "unavailable_policy_citation",
+        "http_status": null
+      },
+      "tools": [
+        "search_policy"
+      ],
+      "quality": "fail",
+      "reasons": [
+        "model-visible policy result has missing citation",
+        "Agent执行异常：unavailable_policy_citation"
+      ],
+      "root": "artifacts\\runtime\\live-lab-audit-20261027\\backend\\bailian\\mutation-no_citation-bb18a73b68",
+      "snapshot_count": 2
+    },
+    {
+      "provider": "bailian",
+      "case": "mutation-repeat_call",
+      "model": [
+        "qwen3.8-flash"
+      ],
+      "trace_id": "57a26aafb002430bb890b63f5ace2f1d",
+      "requests": 2,
+      "input_tokens": 1923,
+      "output_tokens": 299,
+      "error": {
+        "type": "BailianError",
+        "category": "reply_data_indeterminate",
+        "http_status": null
+      },
+      "tools": [
+        "query_tickets",
+        "query_tickets"
+      ],
+      "quality": "fail",
+      "reasons": [
+        "one model request caused repeated backend execution"
+      ],
+      "root": "artifacts\\runtime\\live-lab-audit-20261027\\backend\\bailian\\mutation-repeat_call-c83562a8f2",
+      "snapshot_count": 2
+    },
+    {
+      "provider": "bailian",
+      "case": "mutation-route_error",
+      "model": [
+        "qwen3.8-flash"
+      ],
+      "trace_id": "21dbd79ea2a34b25941761a54e37c6ff",
+      "requests": 2,
+      "input_tokens": 2443,
+      "output_tokens": 375,
+      "error": {
+        "type": "BailianError",
+        "category": "read_only_capability_violation",
+        "http_status": null
+      },
+      "tools": [
+        "query_tickets"
+      ],
+      "quality": "fail",
+      "reasons": [
+        "policy request executed a different tool",
+        "policy-only question executed ticket search without policy search",
+        "Agent执行异常：read_only_capability_violation"
+      ],
+      "root": "artifacts\\runtime\\live-lab-audit-20261027\\backend\\bailian\\mutation-route_error-d1c129b42b",
+      "snapshot_count": 2
+    },
+    {
+      "provider": "bailian",
+      "case": "query",
+      "model": [
+        "qwen3.8-flash"
+      ],
+      "trace_id": "0c2c027d6de14e2490a5b434f8f68441",
+      "requests": 2,
+      "input_tokens": 1923,
+      "output_tokens": 299,
+      "error": null,
+      "tools": [
+        "query_tickets"
+      ],
+      "quality": "pass",
+      "reasons": [],
+      "root": "artifacts\\runtime\\live-lab-audit-20261027\\backend\\bailian\\query-b58e64ffab",
+      "snapshot_count": 2
+    },
+    {
+      "provider": "deepseek",
+      "case": "ambiguous-mama",
+      "model": [
+        "deepseek-flash"
+      ],
+      "trace_id": "1ea1c2a9b8ae4d3c9976f50c245859b5",
+      "requests": 1,
+      "input_tokens": 756,
+      "output_tokens": 60,
+      "error": null,
+      "tools": [],
+      "quality": "indeterminate",
+      "reasons": [],
+      "root": "artifacts\\runtime\\live-lab-audit-20261027\\backend\\deepseek\\ambiguous-mama-241c450348",
+      "snapshot_count": 1
+    },
+    {
+      "provider": "deepseek",
+      "case": "ambiguous-ticket",
+      "model": [
+        "deepseek-flash"
+      ],
+      "trace_id": "cbea75a0c4814027bd88f990387696d8",
+      "requests": 1,
+      "input_tokens": 758,
+      "output_tokens": 85,
+      "error": null,
+      "tools": [],
+      "quality": "indeterminate",
+      "reasons": [],
+      "root": "artifacts\\runtime\\live-lab-audit-20261027\\backend\\deepseek\\ambiguous-ticket-f07ea25d8e",
+      "snapshot_count": 1
+    },
+    {
+      "provider": "deepseek",
+      "case": "ambiguous-tomorrow",
+      "model": [
+        "deepseek-flash"
+      ],
+      "trace_id": "a6370d43febf4632ad9b86ca5f7f1860",
+      "requests": 1,
+      "input_tokens": 759,
+      "output_tokens": 74,
+      "error": null,
+      "tools": [],
+      "quality": "indeterminate",
+      "reasons": [],
+      "root": "artifacts\\runtime\\live-lab-audit-20261027\\backend\\deepseek\\ambiguous-tomorrow-29720d4736",
+      "snapshot_count": 1
+    },
+    {
+      "provider": "deepseek",
+      "case": "edge-empty",
+      "model": [
+        "deepseek-flash"
+      ],
+      "trace_id": "c73f01e7cd624e10af525680721d0c92",
+      "requests": 2,
+      "input_tokens": 1675,
+      "output_tokens": 223,
+      "error": {
+        "type": "DeepSeekError",
+        "category": "reply_data_indeterminate",
+        "http_status": null
+      },
+      "tools": [
+        "query_tickets"
+      ],
+      "quality": "fail",
+      "reasons": [
+        "model argument error before execution",
+        "actual query date differs from user requirement"
+      ],
+      "root": "artifacts\\runtime\\live-lab-audit-20261027\\backend\\deepseek\\edge-empty-5f9a58cdbf",
+      "snapshot_count": 2
+    },
+    {
+      "provider": "deepseek",
+      "case": "edge-no-answer",
+      "model": [
+        "deepseek-flash"
+      ],
+      "trace_id": "99ba91b026b148b39fc354301f70b23d",
+      "requests": 1,
+      "input_tokens": 767,
+      "output_tokens": 55,
+      "error": null,
+      "tools": [],
+      "quality": "indeterminate",
+      "reasons": [],
+      "root": "artifacts\\runtime\\live-lab-audit-20261027\\backend\\deepseek\\edge-no-answer-a8a095784e",
+      "snapshot_count": 1
+    },
+    {
+      "provider": "deepseek",
+      "case": "edge-unavailable-train",
+      "model": [
+        "deepseek-flash"
+      ],
+      "trace_id": "b071da602f4b4f68ab7ac86df05df6ca",
+      "requests": 2,
+      "input_tokens": 1926,
+      "output_tokens": 297,
+      "error": {
+        "type": "DeepSeekError",
+        "category": "reply_tool_mismatch",
+        "http_status": null
+      },
+      "tools": [
+        "query_tickets"
+      ],
+      "quality": "fail",
+      "reasons": [
+        "Agent执行异常：reply_tool_mismatch"
+      ],
+      "root": "artifacts\\runtime\\live-lab-audit-20261027\\backend\\deepseek\\edge-unavailable-train-702349038e",
+      "snapshot_count": 2
+    },
+    {
+      "provider": "deepseek",
+      "case": "edge-write",
+      "model": [
+        "deepseek-flash"
+      ],
+      "trace_id": "56c5c76ae45e48348cd8a7db66d71e6c",
+      "requests": 1,
+      "input_tokens": 766,
+      "output_tokens": 103,
+      "error": null,
+      "tools": [],
+      "quality": "indeterminate",
+      "reasons": [],
+      "root": "artifacts\\runtime\\live-lab-audit-20261027\\backend\\deepseek\\edge-write-386ee71dd3",
+      "snapshot_count": 1
+    },
+    {
+      "provider": "deepseek",
+      "case": "mutation-date_offset",
+      "model": [
+        "deepseek-flash"
+      ],
+      "trace_id": "e95c5ededfec4483b0aae809d9831f1e",
+      "requests": 2,
+      "input_tokens": 1916,
+      "output_tokens": 362,
+      "error": {
+        "type": "DeepSeekError",
+        "category": "reply_data_indeterminate",
+        "http_status": null
+      },
+      "tools": [
+        "query_tickets"
+      ],
+      "quality": "fail",
+      "reasons": [
+        "actual query date differs from user requirement"
+      ],
+      "root": "artifacts\\runtime\\live-lab-audit-20261027\\backend\\deepseek\\mutation-date_offset-a61ce74963",
+      "snapshot_count": 2
+    },
+    {
+      "provider": "deepseek",
+      "case": "mutation-hallucinated_train",
+      "model": [
+        "deepseek-flash"
+      ],
+      "trace_id": "cc6d42f58b414c3ab22988e7f49bc0ac",
+      "requests": 2,
+      "input_tokens": 2000,
+      "output_tokens": 297,
+      "error": null,
+      "tools": [
+        "query_tickets"
+      ],
+      "quality": "fail",
+      "reasons": [
+        "reply asserts unsupported or ambiguous trains",
+        "tool-visible trains not in authoritative database"
+      ],
+      "root": "artifacts\\runtime\\live-lab-audit-20261027\\backend\\deepseek\\mutation-hallucinated_train-e495f58c42",
+      "snapshot_count": 2
+    },
+    {
+      "provider": "deepseek",
+      "case": "mutation-no-citation-after",
+      "model": [
+        "deepseek-flash"
+      ],
+      "trace_id": "82aea39f0fec434196ba8580f1788bed",
+      "requests": 2,
+      "input_tokens": 1738,
+      "output_tokens": 146,
+      "error": {
+        "type": "DeepSeekError",
+        "category": "unavailable_policy_citation",
+        "http_status": null
+      },
+      "tools": [
+        "search_policy"
+      ],
+      "quality": "fail",
+      "reasons": [
+        "model-visible policy result has missing citation",
+        "Agent执行异常：unavailable_policy_citation"
+      ],
+      "root": "artifacts\\runtime\\live-lab-audit-20261027\\backend\\deepseek\\mutation-no-citation-after-476e1ae259",
+      "snapshot_count": 2
+    },
+    {
+      "provider": "deepseek",
+      "case": "mutation-no_citation",
+      "model": [
+        "deepseek-flash"
+      ],
+      "trace_id": "dab4d8286cba4d8e88aae7e707aaa81b",
+      "requests": 2,
+      "input_tokens": 1741,
+      "output_tokens": 152,
+      "error": {
+        "type": "DeepSeekError",
+        "category": "client_error",
+        "http_status": null
+      },
+      "tools": [
+        "search_policy"
+      ],
+      "quality": "fail",
+      "reasons": [
+        "model-visible policy result has missing citation",
+        "Agent执行异常：client_error"
+      ],
+      "root": "artifacts\\runtime\\live-lab-audit-20261027\\backend\\deepseek\\mutation-no_citation-f37a570dff",
+      "snapshot_count": 2
+    },
+    {
+      "provider": "deepseek",
+      "case": "mutation-repeat_call",
+      "model": [
+        "deepseek-flash"
+      ],
+      "trace_id": "bcb5ba5391dd445a82398b7082e066d8",
+      "requests": 2,
+      "input_tokens": 1916,
+      "output_tokens": 268,
+      "error": null,
+      "tools": [
+        "query_tickets",
+        "query_tickets"
+      ],
+      "quality": "fail",
+      "reasons": [
+        "one model request caused repeated backend execution"
+      ],
+      "root": "artifacts\\runtime\\live-lab-audit-20261027\\backend\\deepseek\\mutation-repeat_call-1e27c4bbb4",
+      "snapshot_count": 2
+    },
+    {
+      "provider": "deepseek",
+      "case": "mutation-route_error",
+      "model": [
+        "deepseek-flash"
+      ],
+      "trace_id": "4f80cbb0636f44ee87ab2c7e84bf1df8",
+      "requests": 2,
+      "input_tokens": 2355,
+      "output_tokens": 307,
+      "error": {
+        "type": "DeepSeekError",
+        "category": "read_only_capability_violation",
+        "http_status": null
+      },
+      "tools": [
+        "query_tickets"
+      ],
+      "quality": "fail",
+      "reasons": [
+        "policy request executed a different tool",
+        "policy-only question executed ticket search without policy search",
+        "Agent执行异常：read_only_capability_violation"
+      ],
+      "root": "artifacts\\runtime\\live-lab-audit-20261027\\backend\\deepseek\\mutation-route_error-2e0ea69420",
+      "snapshot_count": 2
+    },
+    {
+      "provider": "deepseek",
+      "case": "query",
+      "model": [
+        "deepseek-flash"
+      ],
+      "trace_id": "accacab2b9f848a4866ac7244f9b2aae",
+      "requests": 2,
+      "input_tokens": 1916,
+      "output_tokens": 284,
+      "error": null,
+      "tools": [
+        "query_tickets"
+      ],
+      "quality": "pass",
+      "reasons": [],
+      "root": "artifacts\\runtime\\live-lab-audit-20261027\\backend\\deepseek\\query-aacf28e05b",
+      "snapshot_count": 0
+    },
+    {
+      "provider": "deepseek",
+      "case": "query-after",
+      "model": [
+        "deepseek-flash"
+      ],
+      "trace_id": "3d2f8a75f5c7424eb7f93f75a78f3e37",
+      "requests": 2,
+      "input_tokens": 1929,
+      "output_tokens": 310,
+      "error": {
+        "type": "DeepSeekError",
+        "category": "reply_data_indeterminate",
+        "http_status": null
+      },
+      "tools": [
+        "query_tickets"
+      ],
+      "quality": "indeterminate",
+      "reasons": [],
+      "root": "artifacts\\runtime\\live-lab-audit-20261027\\backend\\deepseek\\query-after-5ed34d488b",
+      "snapshot_count": 2
+    },
+    {
+      "provider": "bailian",
+      "case": "rag-paired-chroma",
+      "model": [
+        "qwen3.8-flash"
+      ],
+      "trace_id": "4ef97570b5394c66b768f5452cde22e3",
+      "requests": 2,
+      "input_tokens": 1921,
+      "output_tokens": 124,
+      "error": null,
+      "tools": [
+        "search_policy"
+      ],
+      "quality": "indeterminate",
+      "reasons": [],
+      "root": "artifacts/runtime/live-lab-audit-20261027/backend/rag-pair",
+      "snapshot_count": 2
+    },
+    {
+      "provider": "deepseek",
+      "case": "rag-paired-chroma",
+      "model": [
+        "deepseek-flash"
+      ],
+      "trace_id": "d73a503f282e43888f1221993abb9601",
+      "requests": 2,
+      "input_tokens": 1872,
+      "output_tokens": 132,
+      "error": null,
+      "tools": [
+        "search_policy"
+      ],
+      "quality": "indeterminate",
+      "reasons": [],
+      "root": "artifacts/runtime/live-lab-audit-20261027/backend/rag-pair",
+      "snapshot_count": 2
+    },
+    {
+      "provider": "deepseek",
+      "case": "edge-unavailable-train-after",
+      "model": [
+        "deepseek-flash"
+      ],
+      "trace_id": "3547c56ca910421aa677367c8d985b3a",
+      "requests": 2,
+      "input_tokens": 1926,
+      "output_tokens": 285,
+      "error": {
+        "type": "DeepSeekError",
+        "category": "reply_data_indeterminate",
+        "http_status": null
+      },
+      "tools": [
+        "query_tickets"
+      ],
+      "quality": "indeterminate",
+      "reasons": [],
+      "root": "artifacts\\runtime\\live-lab-audit-20261027\\backend\\deepseek\\edge-unavailable-train-after-d222db4f2f",
+      "snapshot_count": 2,
+      "source_head_at_execution": "328f39f"
+    },
+    {
+      "provider": "bailian",
+      "case": "edge-no-answer-after2",
+      "model": [
+        "qwen3.8-flash"
+      ],
+      "trace_id": "6a8129505d5b4d20b96a8e39c36db92c",
+      "requests": 2,
+      "input_tokens": 1607,
+      "output_tokens": 140,
+      "error": {
+        "type": "BailianError",
+        "category": "reply_data_indeterminate",
+        "http_status": null
+      },
+      "tools": [
+        "search_policy"
+      ],
+      "quality": "indeterminate",
+      "reasons": [],
+      "root": "artifacts\\runtime\\live-lab-audit-20261027\\backend\\bailian\\edge-no-answer-after2-115e26de16",
+      "snapshot_count": 2,
+      "source_head_at_execution": "328f39f"
+    },
+    {
+      "provider": "bailian",
+      "case": "edge-no-answer-after3",
+      "model": [
+        "qwen3.8-flash"
+      ],
+      "trace_id": "ee896511ec984cc1910948e21229e016",
+      "requests": 2,
+      "input_tokens": 1607,
+      "output_tokens": 252,
+      "error": {
+        "type": "BailianError",
+        "category": "reply_data_indeterminate",
+        "http_status": null
+      },
+      "tools": [
+        "search_policy"
+      ],
+      "quality": "indeterminate",
+      "reasons": [],
+      "root": "artifacts\\runtime\\live-lab-audit-20261027\\backend\\bailian\\edge-no-answer-after3-a7836f1298",
+      "snapshot_count": 2,
+      "source_head_at_execution": "e5688aa"
+    }
+  ]
+}

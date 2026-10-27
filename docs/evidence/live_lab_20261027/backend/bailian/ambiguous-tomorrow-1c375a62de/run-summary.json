@@ -1,0 +1,3263 @@
+{
+  "time": "2026-10-27T14:49:47.742507+00:00",
+  "provider": "bailian",
+  "expected_model": "qwen3.8-flash",
+  "case": "ambiguous-tomorrow",
+  "input": "明天还有票吗",
+  "record": null,
+  "error": {
+    "type": "BailianError",
+    "category": "reply_tool_mismatch",
+    "http_status": null
+  },
+  "audit": {
+    "schema_version": "ticket-agent-audit/3.2",
+    "trace_id": "b8059bab1a5d4777887e3dfe4e81a8ca",
+    "timestamp": "2026-10-27T14:49:47.685999+00:00",
+    "provider": "bailian_live",
+    "model": "qwen3.8-flash",
+    "public_trace": {
+      "session_id": "web-c96fdea90610",
+      "provider": "bailian_live",
+      "model": "qwen3.8-flash",
+      "user_msg": "明天还有票吗",
+      "steps": [
+        {
+          "step": 1,
+          "calls": [
+            {
+              "tool": "query_tickets",
+              "args": {
+                "from_city": "北京",
+                "date": "2026-10-28",
+                "to_city": "上海"
+              },
+              "ok": true,
+              "latency_ms": 2,
+              "result_preview": "{\"trains\": [{\"kind\": \"高铁\", \"train_no\": \"G101\", \"from_city\": \"北京\", \"to_city\": \"上海\", \"date\": \"2026-10-28\", \"depart\": \"06:00\", \"arrive\": \"11:00\", \"seat_type\": \"一等座\", \"price\": 884.8, \"seats_left\": 195}, {..."
+            }
+          ]
+        }
+      ],
+      "tool_sequence": [
+        "query_tickets"
+      ],
+      "reply": "模型生成结果与工具数据不一致，已拦截该回答；请查看工具结果与字段级证据。",
+      "finish_reason": "stop",
+      "tokens": {
+        "prompt": 2438,
+        "completion": 462
+      },
+      "total_latency_ms": 9993
+    },
+    "public_trace_sha256": "d1c5974484bda3e7b177c41d7213c5bc21c367393d58973c66118e54903a3f21",
+    "contract_returned": false,
+    "fault_report": {
+      "run_id": "b8059bab1a5d4777887e3dfe4e81a8ca",
+      "session_id": "web-c96fdea90610",
+      "mode": "bailian_live",
+      "mutations": {},
+      "injection_events": [],
+      "executions": [
+        {
+          "event": "tool_end",
+          "tool": "query_tickets",
+          "args": {
+            "from_city": "北京",
+            "date": "2026-10-28",
+            "to_city": "上海"
+          },
+          "call_id": "call_7c93552cc4024ef9a71b6da3",
+          "ok": true,
+          "executed": true,
+          "execution_index": 1,
+          "latency_ms": 2,
+          "result": {
+            "trains": [
+              {
+                "kind": "高铁",
+                "train_no": "G101",
+                "from_city": "北京",
+                "to_city": "上海",
+                "date": "2026-10-28",
+                "depart": "06:00",
+                "arrive": "11:00",
+                "seat_type": "一等座",
+                "price": 884.8,
+                "seats_left": 195
+              },
+              {
+                "kind": "高铁",
+                "train_no": "G102",
+                "from_city": "北京",
+                "to_city": "上海",
+                "date": "2026-10-28",
+                "depart": "09:17",
+                "arrive": "14:17",
+                "seat_type": "一等座",
+                "price": 884.8,
+                "seats_left": 172
+              },
+              {
+                "kind": "高铁",
+                "train_no": "G103",
+                "from_city": "北京",
+                "to_city": "上海",
+                "date": "2026-10-28",
+                "depart": "12:34",
+                "arrive": "17:34",
+                "seat_type": "一等座",
+                "price": 884.8,
+                "seats_left": 57
+              },
+              {
+                "kind": "高铁",
+                "train_no": "G101",
+                "from_city": "北京",
+                "to_city": "上海",
+                "date": "2026-10-28",
+                "depart": "06:00",
+                "arrive": "11:00",
+                "seat_type": "商务座",
+                "price": 1659.0,
+                "seats_left": 4
+              },
+              {
+                "kind": "高铁",
+                "train_no": "G103",
+                "from_city": "北京",
+                "to_city": "上海",
+                "date": "2026-10-28",
+                "depart": "12:34",
+                "arrive": "17:34",
+                "seat_type": "商务座",
+                "price": 1659.0,
+                "seats_left": 3
+              },
+              {
+                "kind": "高铁",
+                "train_no": "G101",
+                "from_city": "北京",
+                "to_city": "上海",
+                "date": "2026-10-28",
+                "depart": "06:00",
+                "arrive": "11:00",
+                "seat_type": "二等座",
+                "price": 553.0,
+                "seats_left": 0
+              },
+              {
+                "kind": "高铁",
+                "train_no": "G102",
+                "from_city": "北京",
+                "to_city": "上海",
+                "date": "2026-10-28",
+                "depart": "09:17",
+                "arrive": "14:17",
+                "seat_type": "二等座",
+                "price": 553.0,
+                "seats_left": 0
+              },
+              {
+                "kind": "高铁",
+                "train_no": "G102",
+                "from_city": "北京",
+                "to_city": "上海",
+                "date": "2026-10-28",
+                "depart": "09:17",
+                "arrive": "14:17",
+                "seat_type": "商务座",
+                "price": 1659.0,
+                "seats_left": 0
+              },
+              {
+                "kind": "高铁",
+                "train_no": "G103",
+                "from_city": "北京",
+                "to_city": "上海",
+                "date": "2026-10-28",
+                "depart": "12:34",
+                "arrive": "17:34",
+                "seat_type": "二等座",
+                "price": 553.0,
+                "seats_left": 0
+              }
+            ],
+            "count": 9
+          },
+          "parameter_validation": {
+            "status": "valid",
+            "validated_args": {
+              "from_city": "北京",
+              "date": "2026-10-28",
+              "to_city": "上海"
+            }
+          },
+          "timestamp": "2026-10-27T14:49:39.248857+00:00",
+          "step": 1,
+          "original_result": {
+            "trains": [
+              {
+                "kind": "高铁",
+                "train_no": "G101",
+                "from_city": "北京",
+                "to_city": "上海",
+                "date": "2026-10-28",
+                "depart": "06:00",
+                "arrive": "11:00",
+                "seat_type": "一等座",
+                "price": 884.8,
+                "seats_left": 195
+              },
+              {
+                "kind": "高铁",
+                "train_no": "G102",
+                "from_city": "北京",
+                "to_city": "上海",
+                "date": "2026-10-28",
+                "depart": "09:17",
+                "arrive": "14:17",
+                "seat_type": "一等座",
+                "price": 884.8,
+                "seats_left": 172
+              },
+              {
+                "kind": "高铁",
+                "train_no": "G103",
+                "from_city": "北京",
+                "to_city": "上海",
+                "date": "2026-10-28",
+                "depart": "12:34",
+                "arrive": "17:34",
+                "seat_type": "一等座",
+                "price": 884.8,
+                "seats_left": 57
+              },
+              {
+                "kind": "高铁",
+                "train_no": "G101",
+                "from_city": "北京",
+                "to_city": "上海",
+                "date": "2026-10-28",
+                "depart": "06:00",
+                "arrive": "11:00",
+                "seat_type": "商务座",
+                "price": 1659.0,
+                "seats_left": 4
+              },
+              {
+                "kind": "高铁",
+                "train_no": "G103",
+                "from_city": "北京",
+                "to_city": "上海",
+                "date": "2026-10-28",
+                "depart": "12:34",
+                "arrive": "17:34",
+                "seat_type": "商务座",
+                "price": 1659.0,
+                "seats_left": 3
+              },
+              {
+                "kind": "高铁",
+                "train_no": "G101",
+                "from_city": "北京",
+                "to_city": "上海",
+                "date": "2026-10-28",
+                "depart": "06:00",
+                "arrive": "11:00",
+                "seat_type": "二等座",
+                "price": 553.0,
+                "seats_left": 0
+              },
+              {
+                "kind": "高铁",
+                "train_no": "G102",
+                "from_city": "北京",
+                "to_city": "上海",
+                "date": "2026-10-28",
+                "depart": "09:17",
+                "arrive": "14:17",
+                "seat_type": "二等座",
+                "price": 553.0,
+                "seats_left": 0
+              },
+              {
+                "kind": "高铁",
+                "train_no": "G102",
+                "from_city": "北京",
+                "to_city": "上海",
+                "date": "2026-10-28",
+                "depart": "09:17",
+                "arrive": "14:17",
+                "seat_type": "商务座",
+                "price": 1659.0,
+                "seats_left": 0
+              },
+              {
+                "kind": "高铁",
+                "train_no": "G103",
+                "from_city": "北京",
+                "to_city": "上海",
+                "date": "2026-10-28",
+                "depart": "12:34",
+                "arrive": "17:34",
+                "seat_type": "二等座",
+                "price": 553.0,
+                "seats_left": 0
+              }
+            ],
+            "count": 9
+          }
+        }
+      ],
+      "model_requests": [
+        {
+          "model_step": 1,
+          "tool_calls": [
+            {
+              "name": "query_tickets",
+              "args": {
+                "from_city": "北京",
+                "date": "2026-10-28",
+                "to_city": "上海"
+              },
+              "id": "call_7c93552cc4024ef9a71b6da3",
+              "type": "tool_call"
+            }
+          ],
+          "final_text": null
+        },
+        {
+          "model_step": 2,
+          "tool_calls": [],
+          "final_text": "**有票**，但二等座已全部售罄。\n\n明天（2026-10-28）北京 → 上海 余票情况：\n\n| 车次 | 时间 | 席别 | 票价 | 余票 |\n|---|---|---|---|---|\n| G101 | 06:00 → 11:00 | 一等座 | ¥884.8 | 195 |\n| G102 | 09:17 → 14:17 | 一等座 | ¥884.8 | 172 |\n| G103 | 12:34 → 17:34 | 一等座 | ¥884.8 | 57 |\n| G101 | 06:00 → 11:00 | 商务座 | ¥1659.0 | 4 |\n| G103 | 12:34 → 17:34 | 商务座 | ¥1659.0 | 3 |\n| G102 | 09:17 → 14:17 | 商务座 | ¥1659.0 | **0（售罄）** |\n| G101/G102/G103 | — | 二等座 | ¥553.0 | **0（全部售罄）** |\n\n几点说明：\n- **二等座三趟车均无余票**；如可接受升席，一等座余量充足，商务座仅剩个位数。\n- 我默认按北京→上海查询的——如果你的出发地/目的地不是这两个城市，告诉我我再查一次。\n- 当前仅支持模拟查票和政策咨询，无法锁座、下单或支付。"
+        }
+      ],
+      "finish_reason": "stop",
+      "error": {
+        "category": "reply_tool_mismatch",
+        "http_status": null
+      },
+      "assessment": {
+        "agent_defect_detected": null,
+        "agent_recovered": null,
+        "note": "由B根据原始轨迹和预先定义的期望独立判定，不等同于注入成功"
+      }
+    },
+    "mutation_events": [
+      {
+        "mutation_id": "M1",
+        "event_id": "36a9aba955bf4fb6a3ff53050ef8faf9",
+        "mutation_name": "date_offset",
+        "enabled": false,
+        "applicable": null,
+        "status": "disabled",
+        "injection_stage": null,
+        "target": null,
+        "before": null,
+        "after": null,
+        "reason": "explicitly disabled",
+        "related_step": null,
+        "related_tool_call_id": null,
+        "timestamp": "2026-10-27T14:49:47.685999+00:00",
+        "evidence_ref": "audit:b8059bab1a5d4777887e3dfe4e81a8ca"
+      },
+      {
+        "mutation_id": "M2",
+        "event_id": "41d17abf9dce45e79a5f2f5af0638676",
+        "mutation_name": "skip_lock",
+        "enabled": false,
+        "applicable": null,
+        "status": "disabled",
+        "injection_stage": null,
+        "target": null,
+        "before": null,
+        "after": null,
+        "reason": "explicitly disabled",
+        "related_step": null,
+        "related_tool_call_id": null,
+        "timestamp": "2026-10-27T14:49:47.685999+00:00",
+        "evidence_ref": "audit:b8059bab1a5d4777887e3dfe4e81a8ca"
+      },
+      {
+        "mutation_id": "M3",
+        "event_id": "b5e0a808758746119ea3a9aeb937e769",
+        "mutation_name": "repeat_call",
+        "enabled": false,
+        "applicable": null,
+        "status": "disabled",
+        "injection_stage": null,
+        "target": null,
+        "before": null,
+        "after": null,
+        "reason": "explicitly disabled",
+        "related_step": null,
+        "related_tool_call_id": null,
+        "timestamp": "2026-10-27T14:49:47.685999+00:00",
+        "evidence_ref": "audit:b8059bab1a5d4777887e3dfe4e81a8ca"
+      },
+      {
+        "mutation_id": "M4",
+        "event_id": "cb68f8fa80a54b96adeb997c7b250b6a",
+        "mutation_name": "infinite_loop",
+        "enabled": false,
+        "applicable": null,
+        "status": "disabled",
+        "injection_stage": null,
+        "target": null,
+        "before": null,
+        "after": null,
+        "reason": "explicitly disabled",
+        "related_step": null,
+        "related_tool_call_id": null,
+        "timestamp": "2026-10-27T14:49:47.685999+00:00",
+        "evidence_ref": "audit:b8059bab1a5d4777887e3dfe4e81a8ca"
+      },
+      {
+        "mutation_id": "M5",
+        "event_id": "45d7fea09c874ea6880e3a39c3e9a3f2",
+        "mutation_name": "route_error",
+        "enabled": false,
+        "applicable": null,
+        "status": "disabled",
+        "injection_stage": null,
+        "target": null,
+        "before": null,
+        "after": null,
+        "reason": "explicitly disabled",
+        "related_step": null,
+        "related_tool_call_id": null,
+        "timestamp": "2026-10-27T14:49:47.685999+00:00",
+        "evidence_ref": "audit:b8059bab1a5d4777887e3dfe4e81a8ca"
+      },
+      {
+        "mutation_id": "M6",
+        "event_id": "a2a0d6a34e7c4589ab69c55575d1b380",
+        "mutation_name": "no_citation",
+        "enabled": false,
+        "applicable": null,
+        "status": "disabled",
+        "injection_stage": null,
+        "target": null,
+        "before": null,
+        "after": null,
+        "reason": "explicitly disabled",
+        "related_step": null,
+        "related_tool_call_id": null,
+        "timestamp": "2026-10-27T14:49:47.685999+00:00",
+        "evidence_ref": "audit:b8059bab1a5d4777887e3dfe4e81a8ca"
+      },
+      {
+        "mutation_id": "M7",
+        "event_id": "8a6e81129f944a33b203cdc6ab78ece7",
+        "mutation_name": "hallucinated_train",
+        "enabled": false,
+        "applicable": null,
+        "status": "disabled",
+        "injection_stage": null,
+        "target": null,
+        "before": null,
+        "after": null,
+        "reason": "explicitly disabled",
+        "related_step": null,
+        "related_tool_call_id": null,
+        "timestamp": "2026-10-27T14:49:47.685999+00:00",
+        "evidence_ref": "audit:b8059bab1a5d4777887e3dfe4e81a8ca"
+      },
+      {
+        "mutation_id": "M8",
+        "event_id": "31692b3c35944556ac6652ed7251f07d",
+        "mutation_name": "concurrent_duplicate_order",
+        "enabled": false,
+        "applicable": null,
+        "status": "disabled",
+        "injection_stage": null,
+        "target": null,
+        "before": null,
+        "after": null,
+        "reason": "explicitly disabled",
+        "related_step": null,
+        "related_tool_call_id": null,
+        "timestamp": "2026-10-27T14:49:47.685999+00:00",
+        "evidence_ref": "audit:b8059bab1a5d4777887e3dfe4e81a8ca"
+      }
+    ],
+    "framework_events": [
+      {
+        "event": "model_start",
+        "model_step": 1,
+        "timestamp": "2026-10-27T14:49:37.698396+00:00"
+      },
+      {
+        "event": "http_request",
+        "request_id": "f7714a284e154e66aee221623c42a088",
+        "provider": "bailian",
+        "summary": {
+          "model": "qwen3.8-flash",
+          "message_roles": [
+            "system",
+            "user"
+          ],
+          "returned_tool_call_ids": []
+        },
+        "dispatch_snapshot": {
+          "bound_tools": [
+            "query_tickets",
+            "search_policy"
+          ],
+          "tool_schemas_sha256": "e04c245e3c1c2409f992bb934056993a784347ad9c96a36f53622c58b4c8b0b0",
+          "tool_schema_sha256": {
+            "query_tickets": "f05ba6de74d05a5ac0dbb1cca852b0c255bfa2eb3a99a3ebd6f7d232b6165566",
+            "search_policy": "df5348ddbbf379f9979ee5c641001fb0b798f9af97aa3d2cec3feea5fbf57ebd"
+          },
+          "system_prompt_sha256": "c2197ba4d71a4e4b45c2773f1336b3795c4ce81837e499b2f9250376f4ffdcc9",
+          "tool_permission": [
+            "query_tickets",
+            "search_policy"
+          ],
+          "scope": "HTTP dispatch intent; not evidence of response or tool execution"
+        },
+        "model_step": 1,
+        "timestamp": "2026-10-27T14:49:37.742877+00:00"
+      },
+      {
+        "event": "http_response",
+        "request_id": "f7714a284e154e66aee221623c42a088",
+        "provider": "bailian",
+        "http_status": 200,
+        "category": "response_received",
+        "usage": {
+          "completion_tokens": 59,
+          "prompt_tokens": 762,
+          "prompt_tokens_details": {
+            "cached_tokens": 0,
+            "text_tokens": 762
+          },
+          "total_tokens": 821
+        },
+        "model_step": 1,
+        "timestamp": "2026-10-27T14:49:39.239655+00:00"
+      },
+      {
+        "event": "model_response",
+        "model_step": 1,
+        "request_id": "f7714a284e154e66aee221623c42a088",
+        "response_model": "qwen3.8-flash",
+        "usage": {
+          "input_tokens": 762,
+          "output_tokens": 59,
+          "total_tokens": 821,
+          "input_token_details": {
+            "cache_read": 0
+          },
+          "output_token_details": {}
+        },
+        "latency_ms": 1546,
+        "finish_reason": "tool_calls",
+        "tool_calls": [
+          {
+            "id": "call_7c93552cc4024ef9a71b6da3",
+            "name": "query_tickets",
+            "args": {
+              "from_city": "北京",
+              "date": "2026-10-28",
+              "to_city": "上海"
+            }
+          }
+        ]
+      },
+      {
+        "event": "model_end",
+        "model_step": 1
+      },
+      {
+        "event": "tool_start",
+        "model_step": 1,
+        "tool": "query_tickets",
+        "args": {
+          "from_city": "北京",
+          "date": "2026-10-28",
+          "to_city": "上海"
+        },
+        "call_id": "call_7c93552cc4024ef9a71b6da3",
+        "execution_index": 1,
+        "model_requested_tool": "query_tickets",
+        "model_requested_args": {
+          "from_city": "北京",
+          "date": "2026-10-28",
+          "to_city": "上海"
+        }
+      },
+      {
+        "event": "tool_end",
+        "tool": "query_tickets",
+        "args": {
+          "from_city": "北京",
+          "date": "2026-10-28",
+          "to_city": "上海"
+        },
+        "call_id": "call_7c93552cc4024ef9a71b6da3",
+        "ok": true,
+        "executed": true,
+        "execution_index": 1,
+        "latency_ms": 2,
+        "result": {
+          "trains": [
+            {
+              "kind": "高铁",
+              "train_no": "G101",
+              "from_city": "北京",
+              "to_city": "上海",
+              "date": "2026-10-28",
+              "depart": "06:00",
+              "arrive": "11:00",
+              "seat_type": "一等座",
+              "price": 884.8,
+              "seats_left": 195
+            },
+            {
+              "kind": "高铁",
+              "train_no": "G102",
+              "from_city": "北京",
+              "to_city": "上海",
+              "date": "2026-10-28",
+              "depart": "09:17",
+              "arrive": "14:17",
+              "seat_type": "一等座",
+              "price": 884.8,
+              "seats_left": 172
+            },
+            {
+              "kind": "高铁",
+              "train_no": "G103",
+              "from_city": "北京",
+              "to_city": "上海",
+              "date": "2026-10-28",
+              "depart": "12:34",
+              "arrive": "17:34",
+              "seat_type": "一等座",
+              "price": 884.8,
+              "seats_left": 57
+            },
+            {
+              "kind": "高铁",
+              "train_no": "G101",
+              "from_city": "北京",
+              "to_city": "上海",
+              "date": "2026-10-28",
+              "depart": "06:00",
+              "arrive": "11:00",
+              "seat_type": "商务座",
+              "price": 1659.0,
+              "seats_left": 4
+            },
+            {
+              "kind": "高铁",
+              "train_no": "G103",
+              "from_city": "北京",
+              "to_city": "上海",
+              "date": "2026-10-28",
+              "depart": "12:34",
+              "arrive": "17:34",
+              "seat_type": "商务座",
+              "price": 1659.0,
+              "seats_left": 3
+            },
+            {
+              "kind": "高铁",
+              "train_no": "G101",
+              "from_city": "北京",
+              "to_city": "上海",
+              "date": "2026-10-28",
+              "depart": "06:00",
+              "arrive": "11:00",
+              "seat_type": "二等座",
+              "price": 553.0,
+              "seats_left": 0
+            },
+            {
+              "kind": "高铁",
+              "train_no": "G102",
+              "from_city": "北京",
+              "to_city": "上海",
+              "date": "2026-10-28",
+              "depart": "09:17",
+              "arrive": "14:17",
+              "seat_type": "二等座",
+              "price": 553.0,
+              "seats_left": 0
+            },
+            {
+              "kind": "高铁",
+              "train_no": "G102",
+              "from_city": "北京",
+              "to_city": "上海",
+              "date": "2026-10-28",
+              "depart": "09:17",
+              "arrive": "14:17",
+              "seat_type": "商务座",
+              "price": 1659.0,
+              "seats_left": 0
+            },
+            {
+              "kind": "高铁",
+              "train_no": "G103",
+              "from_city": "北京",
+              "to_city": "上海",
+              "date": "2026-10-28",
+              "depart": "12:34",
+              "arrive": "17:34",
+              "seat_type": "二等座",
+              "price": 553.0,
+              "seats_left": 0
+            }
+          ],
+          "count": 9
+        },
+        "parameter_validation": {
+          "status": "valid",
+          "validated_args": {
+            "from_city": "北京",
+            "date": "2026-10-28",
+            "to_city": "上海"
+          }
+        },
+        "timestamp": "2026-10-27T14:49:39.248857+00:00",
+        "step": 1
+      },
+      {
+        "event": "model_start",
+        "model_step": 2,
+        "timestamp": "2026-10-27T14:49:39.249870+00:00"
+      },
+      {
+        "event": "http_request",
+        "request_id": "4fb64239b1664c3ba160800786610621",
+        "provider": "bailian",
+        "summary": {
+          "model": "qwen3.8-flash",
+          "message_roles": [
+            "system",
+            "user",
+            "assistant",
+            "tool"
+          ],
+          "returned_tool_call_ids": [
+            "call_7c93552cc4024ef9a71b6da3"
+          ]
+        },
+        "dispatch_snapshot": {
+          "bound_tools": [
+            "query_tickets",
+            "search_policy"
+          ],
+          "tool_schemas_sha256": "e04c245e3c1c2409f992bb934056993a784347ad9c96a36f53622c58b4c8b0b0",
+          "tool_schema_sha256": {
+            "query_tickets": "f05ba6de74d05a5ac0dbb1cca852b0c255bfa2eb3a99a3ebd6f7d232b6165566",
+            "search_policy": "df5348ddbbf379f9979ee5c641001fb0b798f9af97aa3d2cec3feea5fbf57ebd"
+          },
+          "system_prompt_sha256": "c2197ba4d71a4e4b45c2773f1336b3795c4ce81837e499b2f9250376f4ffdcc9",
+          "tool_permission": [
+            "query_tickets",
+            "search_policy"
+          ],
+          "scope": "HTTP dispatch intent; not evidence of response or tool execution"
+        },
+        "model_step": 2,
+        "timestamp": "2026-10-27T14:49:39.253368+00:00"
+      },
+      {
+        "event": "http_response",
+        "request_id": "4fb64239b1664c3ba160800786610621",
+        "provider": "bailian",
+        "http_status": 200,
+        "category": "response_received",
+        "usage": {
+          "completion_tokens": 403,
+          "prompt_tokens": 1676,
+          "prompt_tokens_details": {
+            "cached_tokens": 0,
+            "text_tokens": 1676
+          },
+          "total_tokens": 2079
+        },
+        "model_step": 2,
+        "timestamp": "2026-10-27T14:49:47.671719+00:00"
+      },
+      {
+        "event": "model_response",
+        "model_step": 2,
+        "request_id": "4fb64239b1664c3ba160800786610621",
+        "response_model": "qwen3.8-flash",
+        "usage": {
+          "input_tokens": 1676,
+          "output_tokens": 403,
+          "total_tokens": 2079,
+          "input_token_details": {
+            "cache_read": 0
+          },
+          "output_token_details": {}
+        },
+        "latency_ms": 8422,
+        "finish_reason": "stop",
+        "tool_calls": []
+      },
+      {
+        "event": "model_final",
+        "model_step": 2,
+        "text": "**有票**，但二等座已全部售罄。\n\n明天（2026-10-28）北京 → 上海 余票情况：\n\n| 车次 | 时间 | 席别 | 票价 | 余票 |\n|---|---|---|---|---|\n| G101 | 06:00 → 11:00 | 一等座 | ¥884.8 | 195 |\n| G102 | 09:17 → 14:17 | 一等座 | ¥884.8 | 172 |\n| G103 | 12:34 → 17:34 | 一等座 | ¥884.8 | 57 |\n| G101 | 06:00 → 11:00 | 商务座 | ¥1659.0 | 4 |\n| G103 | 12:34 → 17:34 | 商务座 | ¥1659.0 | 3 |\n| G102 | 09:17 → 14:17 | 商务座 | ¥1659.0 | **0（售罄）** |\n| G101/G102/G103 | — | 二等座 | ¥553.0 | **0（全部售罄）** |\n\n几点说明：\n- **二等座三趟车均无余票**；如可接受升席，一等座余量充足，商务座仅剩个位数。\n- 我默认按北京→上海查询的——如果你的出发地/目的地不是这两个城市，告诉我我再查一次。\n- 当前仅支持模拟查票和政策咨询，无法锁座、下单或支付。",
+        "reply_consistency": {
+          "schema": "reply-consistency/2",
+          "status": "failed",
+          "verdict": "inconsistent",
+          "checked_fields": 23,
+          "identity_checks": 6,
+          "findings": [
+            {
+              "train_no": "G101/G102/G103",
+              "field": "train_no",
+              "claimed": "G101/G102/G103",
+              "tool_value": null,
+              "tool_values": [
+                "G101",
+                "G102",
+                "G103"
+              ],
+              "error_type": "unreturned_train",
+              "line": 13,
+              "text": "| G101/G102/G103 | — | 二等座 | ¥553.0 | **0（全部售罄）** |",
+              "authority_sources": [
+                {
+                  "event_index": 6,
+                  "rows": 9,
+                  "call_id": "call_7c93552cc4024ef9a71b6da3",
+                  "args": {
+                    "from_city": "北京",
+                    "date": "2026-10-28",
+                    "to_city": "上海"
+                  }
+                }
+              ]
+            }
+          ],
+          "field_checks": [
+            {
+              "train_no": "G101",
+              "identity": {
+                "train_no": "G101",
+                "date": "2026-10-28",
+                "from_city": "北京",
+                "to_city": "上海",
+                "seat_type": "一等座",
+                "kind": "高铁"
+              },
+              "field": "train_no",
+              "claimed": "G101",
+              "tool_value": "G101",
+              "matched": true,
+              "comparison": "equal",
+              "line": 7,
+              "authority_sources": [
+                {
+                  "event_index": 6,
+                  "call_id": "call_7c93552cc4024ef9a71b6da3",
+                  "args": {
+                    "from_city": "北京",
+                    "date": "2026-10-28",
+                    "to_city": "上海"
+                  }
+                }
+              ]
+            },
+            {
+              "train_no": "G101",
+              "identity": {
+                "train_no": "G101",
+                "date": "2026-10-28",
+                "from_city": "北京",
+                "to_city": "上海",
+                "seat_type": "一等座",
+                "kind": "高铁"
+              },
+              "field": "seat_type",
+              "claimed": "一等座",
+              "tool_value": "一等座",
+              "matched": true,
+              "comparison": "equal",
+              "line": 7,
+              "authority_sources": [
+                {
+                  "event_index": 6,
+                  "call_id": "call_7c93552cc4024ef9a71b6da3",
+                  "args": {
+                    "from_city": "北京",
+                    "date": "2026-10-28",
+                    "to_city": "上海"
+                  }
+                }
+              ]
+            },
+            {
+              "train_no": "G101",
+              "identity": {
+                "train_no": "G101",
+                "date": "2026-10-28",
+                "from_city": "北京",
+                "to_city": "上海",
+                "seat_type": "一等座",
+                "kind": "高铁"
+              },
+              "field": "price",
+              "claimed": "884.8",
+              "tool_value": "884.8",
+              "matched": true,
+              "comparison": "equal",
+              "line": 7,
+              "authority_sources": [
+                {
+                  "event_index": 6,
+                  "call_id": "call_7c93552cc4024ef9a71b6da3",
+                  "args": {
+                    "from_city": "北京",
+                    "date": "2026-10-28",
+                    "to_city": "上海"
+                  }
+                }
+              ]
+            },
+            {
+              "train_no": "G101",
+              "identity": {
+                "train_no": "G101",
+                "date": "2026-10-28",
+                "from_city": "北京",
+                "to_city": "上海",
+                "seat_type": "一等座",
+                "kind": "高铁"
+              },
+              "field": "seats_left",
+              "claimed": 195,
+              "tool_value": 195,
+              "matched": true,
+              "comparison": "equal",
+              "line": 7,
+              "authority_sources": [
+                {
+                  "event_index": 6,
+                  "call_id": "call_7c93552cc4024ef9a71b6da3",
+                  "args": {
+                    "from_city": "北京",
+                    "date": "2026-10-28",
+                    "to_city": "上海"
+                  }
+                }
+              ]
+            },
+            {
+              "train_no": "G101",
+              "identity": {
+                "train_no": "G101",
+                "date": "2026-10-28",
+                "from_city": "北京",
+                "to_city": "上海",
+                "seat_type": "一等座",
+                "kind": "高铁"
+              },
+              "field": "date",
+              "claimed": "2026-10-28",
+              "tool_value": "2026-10-28",
+              "matched": true,
+              "comparison": "equal",
+              "line": 7,
+              "authority_sources": [
+                {
+                  "event_index": 6,
+                  "call_id": "call_7c93552cc4024ef9a71b6da3",
+                  "args": {
+                    "from_city": "北京",
+                    "date": "2026-10-28",
+                    "to_city": "上海"
+                  }
+                }
+              ]
+            },
+            {
+              "train_no": "G102",
+              "identity": {
+                "train_no": "G102",
+                "date": "2026-10-28",
+                "from_city": "北京",
+                "to_city": "上海",
+                "seat_type": "一等座",
+                "kind": "高铁"
+              },
+              "field": "train_no",
+              "claimed": "G102",
+              "tool_value": "G102",
+              "matched": true,
+              "comparison": "equal",
+              "line": 8,
+              "authority_sources": [
+                {
+                  "event_index": 6,
+                  "call_id": "call_7c93552cc4024ef9a71b6da3",
+                  "args": {
+                    "from_city": "北京",
+                    "date": "2026-10-28",
+                    "to_city": "上海"
+                  }
+                }
+              ]
+            },
+            {
+              "train_no": "G102",
+              "identity": {
+                "train_no": "G102",
+                "date": "2026-10-28",
+                "from_city": "北京",
+                "to_city": "上海",
+                "seat_type": "一等座",
+                "kind": "高铁"
+              },
+              "field": "seat_type",
+              "claimed": "一等座",
+              "tool_value": "一等座",
+              "matched": true,
+              "comparison": "equal",
+              "line": 8,
+              "authority_sources": [
+                {
+                  "event_index": 6,
+                  "call_id": "call_7c93552cc4024ef9a71b6da3",
+                  "args": {
+                    "from_city": "北京",
+                    "date": "2026-10-28",
+                    "to_city": "上海"
+                  }
+                }
+              ]
+            },
+            {
+              "train_no": "G102",
+              "identity": {
+                "train_no": "G102",
+                "date": "2026-10-28",
+                "from_city": "北京",
+                "to_city": "上海",
+                "seat_type": "一等座",
+                "kind": "高铁"
+              },
+              "field": "price",
+              "claimed": "884.8",
+              "tool_value": "884.8",
+              "matched": true,
+              "comparison": "equal",
+              "line": 8,
+              "authority_sources": [
+                {
+                  "event_index": 6,
+                  "call_id": "call_7c93552cc4024ef9a71b6da3",
+                  "args": {
+                    "from_city": "北京",
+                    "date": "2026-10-28",
+                    "to_city": "上海"
+                  }
+                }
+              ]
+            },
+            {
+              "train_no": "G102",
+              "identity": {
+                "train_no": "G102",
+                "date": "2026-10-28",
+                "from_city": "北京",
+                "to_city": "上海",
+                "seat_type": "一等座",
+                "kind": "高铁"
+              },
+              "field": "seats_left",
+              "claimed": 172,
+              "tool_value": 172,
+              "matched": true,
+              "comparison": "equal",
+              "line": 8,
+              "authority_sources": [
+                {
+                  "event_index": 6,
+                  "call_id": "call_7c93552cc4024ef9a71b6da3",
+                  "args": {
+                    "from_city": "北京",
+                    "date": "2026-10-28",
+                    "to_city": "上海"
+                  }
+                }
+              ]
+            },
+            {
+              "train_no": "G102",
+              "identity": {
+                "train_no": "G102",
+                "date": "2026-10-28",
+                "from_city": "北京",
+                "to_city": "上海",
+                "seat_type": "一等座",
+                "kind": "高铁"
+              },
+              "field": "date",
+              "claimed": "2026-10-28",
+              "tool_value": "2026-10-28",
+              "matched": true,
+              "comparison": "equal",
+              "line": 8,
+              "authority_sources": [
+                {
+                  "event_index": 6,
+                  "call_id": "call_7c93552cc4024ef9a71b6da3",
+                  "args": {
+                    "from_city": "北京",
+                    "date": "2026-10-28",
+                    "to_city": "上海"
+                  }
+                }
+              ]
+            },
+            {
+              "train_no": "G103",
+              "identity": {
+                "train_no": "G103",
+                "date": "2026-10-28",
+                "from_city": "北京",
+                "to_city": "上海",
+                "seat_type": "一等座",
+                "kind": "高铁"
+              },
+              "field": "train_no",
+              "claimed": "G103",
+              "tool_value": "G103",
+              "matched": true,
+              "comparison": "equal",
+              "line": 9,
+              "authority_sources": [
+                {
+                  "event_index": 6,
+                  "call_id": "call_7c93552cc4024ef9a71b6da3",
+                  "args": {
+                    "from_city": "北京",
+                    "date": "2026-10-28",
+                    "to_city": "上海"
+                  }
+                }
+              ]
+            },
+            {
+              "train_no": "G103",
+              "identity": {
+                "train_no": "G103",
+                "date": "2026-10-28",
+                "from_city": "北京",
+                "to_city": "上海",
+                "seat_type": "一等座",
+                "kind": "高铁"
+              },
+              "field": "seat_type",
+              "claimed": "一等座",
+              "tool_value": "一等座",
+              "matched": true,
+              "comparison": "equal",
+              "line": 9,
+              "authority_sources": [
+                {
+                  "event_index": 6,
+                  "call_id": "call_7c93552cc4024ef9a71b6da3",
+                  "args": {
+                    "from_city": "北京",
+                    "date": "2026-10-28",
+                    "to_city": "上海"
+                  }
+                }
+              ]
+            },
+            {
+              "train_no": "G103",
+              "identity": {
+                "train_no": "G103",
+                "date": "2026-10-28",
+                "from_city": "北京",
+                "to_city": "上海",
+                "seat_type": "一等座",
+                "kind": "高铁"
+              },
+              "field": "price",
+              "claimed": "884.8",
+              "tool_value": "884.8",
+              "matched": true,
+              "comparison": "equal",
+              "line": 9,
+              "authority_sources": [
+                {
+                  "event_index": 6,
+                  "call_id": "call_7c93552cc4024ef9a71b6da3",
+                  "args": {
+                    "from_city": "北京",
+                    "date": "2026-10-28",
+                    "to_city": "上海"
+                  }
+                }
+              ]
+            },
+            {
+              "train_no": "G103",
+              "identity": {
+                "train_no": "G103",
+                "date": "2026-10-28",
+                "from_city": "北京",
+                "to_city": "上海",
+                "seat_type": "一等座",
+                "kind": "高铁"
+              },
+              "field": "seats_left",
+              "claimed": 57,
+              "tool_value": 57,
+              "matched": true,
+              "comparison": "equal",
+              "line": 9,
+              "authority_sources": [
+                {
+                  "event_index": 6,
+                  "call_id": "call_7c93552cc4024ef9a71b6da3",
+                  "args": {
+                    "from_city": "北京",
+                    "date": "2026-10-28",
+                    "to_city": "上海"
+                  }
+                }
+              ]
+            },
+            {
+              "train_no": "G103",
+              "identity": {
+                "train_no": "G103",
+                "date": "2026-10-28",
+                "from_city": "北京",
+                "to_city": "上海",
+                "seat_type": "一等座",
+                "kind": "高铁"
+              },
+              "field": "date",
+              "claimed": "2026-10-28",
+              "tool_value": "2026-10-28",
+              "matched": true,
+              "comparison": "equal",
+              "line": 9,
+              "authority_sources": [
+                {
+                  "event_index": 6,
+                  "call_id": "call_7c93552cc4024ef9a71b6da3",
+                  "args": {
+                    "from_city": "北京",
+                    "date": "2026-10-28",
+                    "to_city": "上海"
+                  }
+                }
+              ]
+            },
+            {
+              "train_no": "G101",
+              "identity": {
+                "train_no": "G101",
+                "date": "2026-10-28",
+                "from_city": "北京",
+                "to_city": "上海",
+                "seat_type": "商务座",
+                "kind": "高铁"
+              },
+              "field": "train_no",
+              "claimed": "G101",
+              "tool_value": "G101",
+              "matched": true,
+              "comparison": "equal",
+              "line": 10,
+              "authority_sources": [
+                {
+                  "event_index": 6,
+                  "call_id": "call_7c93552cc4024ef9a71b6da3",
+                  "args": {
+                    "from_city": "北京",
+                    "date": "2026-10-28",
+                    "to_city": "上海"
+                  }
+                }
+              ]
+            },
+            {
+              "train_no": "G101",
+              "identity": {
+                "train_no": "G101",
+                "date": "2026-10-28",
+                "from_city": "北京",
+                "to_city": "上海",
+                "seat_type": "商务座",
+                "kind": "高铁"
+              },
+              "field": "seat_type",
+              "claimed": "商务座",
+              "tool_value": "商务座",
+              "matched": true,
+              "comparison": "equal",
+              "line": 10,
+              "authority_sources": [
+                {
+                  "event_index": 6,
+                  "call_id": "call_7c93552cc4024ef9a71b6da3",
+                  "args": {
+                    "from_city": "北京",
+                    "date": "2026-10-28",
+                    "to_city": "上海"
+                  }
+                }
+              ]
+            },
+            {
+              "train_no": "G101",
+              "identity": {
+                "train_no": "G101",
+                "date": "2026-10-28",
+                "from_city": "北京",
+                "to_city": "上海",
+                "seat_type": "商务座",
+                "kind": "高铁"
+              },
+              "field": "price",
+              "claimed": "1659",
+              "tool_value": "1659",
+              "matched": true,
+              "comparison": "equal",
+              "line": 10,
+              "authority_sources": [
+                {
+                  "event_index": 6,
+                  "call_id": "call_7c93552cc4024ef9a71b6da3",
+                  "args": {
+                    "from_city": "北京",
+                    "date": "2026-10-28",
+                    "to_city": "上海"
+                  }
+                }
+              ]
+            },
+            {
+              "train_no": "G101",
+              "identity": {
+                "train_no": "G101",
+                "date": "2026-10-28",
+                "from_city": "北京",
+                "to_city": "上海",
+                "seat_type": "商务座",
+                "kind": "高铁"
+              },
+              "field": "seats_left",
+              "claimed": 4,
+              "tool_value": 4,
+              "matched": true,
+              "comparison": "equal",
+              "line": 10,
+              "authority_sources": [
+                {
+                  "event_index": 6,
+                  "call_id": "call_7c93552cc4024ef9a71b6da3",
+                  "args": {
+                    "from_city": "北京",
+                    "date": "2026-10-28",
+                    "to_city": "上海"
+                  }
+                }
+              ]
+            },
+            {
+              "train_no": "G101",
+              "identity": {
+                "train_no": "G101",
+                "date": "2026-10-28",
+                "from_city": "北京",
+                "to_city": "上海",
+                "seat_type": "商务座",
+                "kind": "高铁"
+              },
+              "field": "date",
+              "claimed": "2026-10-28",
+              "tool_value": "2026-10-28",
+              "matched": true,
+              "comparison": "equal",
+              "line": 10,
+              "authority_sources": [
+                {
+                  "event_index": 6,
+                  "call_id": "call_7c93552cc4024ef9a71b6da3",
+                  "args": {
+                    "from_city": "北京",
+                    "date": "2026-10-28",
+                    "to_city": "上海"
+                  }
+                }
+              ]
+            },
+            {
+              "train_no": "G103",
+              "identity": {
+                "train_no": "G103",
+                "date": "2026-10-28",
+                "from_city": "北京",
+                "to_city": "上海",
+                "seat_type": "商务座",
+                "kind": "高铁"
+              },
+              "field": "train_no",
+              "claimed": "G103",
+              "tool_value": "G103",
+              "matched": true,
+              "comparison": "equal",
+              "line": 11,
+              "authority_sources": [
+                {
+                  "event_index": 6,
+                  "call_id": "call_7c93552cc4024ef9a71b6da3",
+                  "args": {
+                    "from_city": "北京",
+                    "date": "2026-10-28",
+                    "to_city": "上海"
+                  }
+                }
+              ]
+            },
+            {
+              "train_no": "G103",
+              "identity": {
+                "train_no": "G103",
+                "date": "2026-10-28",
+                "from_city": "北京",
+                "to_city": "上海",
+                "seat_type": "商务座",
+                "kind": "高铁"
+              },
+              "field": "seat_type",
+              "claimed": "商务座",
+              "tool_value": "商务座",
+              "matched": true,
+              "comparison": "equal",
+              "line": 11,
+              "authority_sources": [
+                {
+                  "event_index": 6,
+                  "call_id": "call_7c93552cc4024ef9a71b6da3",
+                  "args": {
+                    "from_city": "北京",
+                    "date": "2026-10-28",
+                    "to_city": "上海"
+                  }
+                }
+              ]
+            },
+            {
+              "train_no": "G103",
+              "identity": {
+                "train_no": "G103",
+                "date": "2026-10-28",
+                "from_city": "北京",
+                "to_city": "上海",
+                "seat_type": "商务座",
+                "kind": "高铁"
+              },
+              "field": "price",
+              "claimed": "1659",
+              "tool_value": "1659",
+              "matched": true,
+              "comparison": "equal",
+              "line": 11,
+              "authority_sources": [
+                {
+                  "event_index": 6,
+                  "call_id": "call_7c93552cc4024ef9a71b6da3",
+                  "args": {
+                    "from_city": "北京",
+                    "date": "2026-10-28",
+                    "to_city": "上海"
+                  }
+                }
+              ]
+            },
+            {
+              "train_no": "G103",
+              "identity": {
+                "train_no": "G103",
+                "date": "2026-10-28",
+                "from_city": "北京",
+                "to_city": "上海",
+                "seat_type": "商务座",
+                "kind": "高铁"
+              },
+              "field": "seats_left",
+              "claimed": 3,
+              "tool_value": 3,
+              "matched": true,
+              "comparison": "equal",
+              "line": 11,
+              "authority_sources": [
+                {
+                  "event_index": 6,
+                  "call_id": "call_7c93552cc4024ef9a71b6da3",
+                  "args": {
+                    "from_city": "北京",
+                    "date": "2026-10-28",
+                    "to_city": "上海"
+                  }
+                }
+              ]
+            },
+            {
+              "train_no": "G103",
+              "identity": {
+                "train_no": "G103",
+                "date": "2026-10-28",
+                "from_city": "北京",
+                "to_city": "上海",
+                "seat_type": "商务座",
+                "kind": "高铁"
+              },
+              "field": "date",
+              "claimed": "2026-10-28",
+              "tool_value": "2026-10-28",
+              "matched": true,
+              "comparison": "equal",
+              "line": 11,
+              "authority_sources": [
+                {
+                  "event_index": 6,
+                  "call_id": "call_7c93552cc4024ef9a71b6da3",
+                  "args": {
+                    "from_city": "北京",
+                    "date": "2026-10-28",
+                    "to_city": "上海"
+                  }
+                }
+              ]
+            },
+            {
+              "train_no": "G102",
+              "identity": {
+                "train_no": "G102",
+                "date": "2026-10-28",
+                "from_city": "北京",
+                "to_city": "上海",
+                "seat_type": "商务座",
+                "kind": "高铁"
+              },
+              "field": "train_no",
+              "claimed": "G102",
+              "tool_value": "G102",
+              "matched": true,
+              "comparison": "equal",
+              "line": 12,
+              "authority_sources": [
+                {
+                  "event_index": 6,
+                  "call_id": "call_7c93552cc4024ef9a71b6da3",
+                  "args": {
+                    "from_city": "北京",
+                    "date": "2026-10-28",
+                    "to_city": "上海"
+                  }
+                }
+              ]
+            },
+            {
+              "train_no": "G102",
+              "identity": {
+                "train_no": "G102",
+                "date": "2026-10-28",
+                "from_city": "北京",
+                "to_city": "上海",
+                "seat_type": "商务座",
+                "kind": "高铁"
+              },
+              "field": "seat_type",
+              "claimed": "商务座",
+              "tool_value": "商务座",
+              "matched": true,
+              "comparison": "equal",
+              "line": 12,
+              "authority_sources": [
+                {
+                  "event_index": 6,
+                  "call_id": "call_7c93552cc4024ef9a71b6da3",
+                  "args": {
+                    "from_city": "北京",
+                    "date": "2026-10-28",
+                    "to_city": "上海"
+                  }
+                }
+              ]
+            },
+            {
+              "train_no": "G102",
+              "identity": {
+                "train_no": "G102",
+                "date": "2026-10-28",
+                "from_city": "北京",
+                "to_city": "上海",
+                "seat_type": "商务座",
+                "kind": "高铁"
+              },
+              "field": "price",
+              "claimed": "1659",
+              "tool_value": "1659",
+              "matched": true,
+              "comparison": "equal",
+              "line": 12,
+              "authority_sources": [
+                {
+                  "event_index": 6,
+                  "call_id": "call_7c93552cc4024ef9a71b6da3",
+                  "args": {
+                    "from_city": "北京",
+                    "date": "2026-10-28",
+                    "to_city": "上海"
+                  }
+                }
+              ]
+            },
+            {
+              "train_no": "G102",
+              "identity": {
+                "train_no": "G102",
+                "date": "2026-10-28",
+                "from_city": "北京",
+                "to_city": "上海",
+                "seat_type": "商务座",
+                "kind": "高铁"
+              },
+              "field": "date",
+              "claimed": "2026-10-28",
+              "tool_value": "2026-10-28",
+              "matched": true,
+              "comparison": "equal",
+              "line": 12,
+              "authority_sources": [
+                {
+                  "event_index": 6,
+                  "call_id": "call_7c93552cc4024ef9a71b6da3",
+                  "args": {
+                    "from_city": "北京",
+                    "date": "2026-10-28",
+                    "to_city": "上海"
+                  }
+                }
+              ]
+            }
+          ],
+          "indeterminate": [
+            {
+              "line": 1,
+              "text": "有票，但二等座已全部售罄",
+              "reason": "unscoped_factual_claim"
+            },
+            {
+              "line": 16,
+              "text": "- 二等座三趟车均无余票",
+              "reason": "unscoped_factual_claim"
+            },
+            {
+              "line": 12,
+              "text": "| G102 | 09:17 → 14:17 | 商务座 | ¥1659.0 | **0（售罄）** |",
+              "reason": "unsupported_or_invalid_value",
+              "field": "seats_left",
+              "claimed": "0（售罄）"
+            },
+            {
+              "line": 13,
+              "text": "| G101/G102/G103 | — | 二等座 | ¥553.0 | **0（全部售罄）** |",
+              "reason": "unsupported_or_invalid_value",
+              "field": "seats_left",
+              "claimed": "0（全部售罄）"
+            }
+          ],
+          "ignored": [
+            {
+              "line": 17,
+              "text": "- 我默认按北京→上海查询的——如果你的出发地/目的地不是这两个城市，告诉我我再查一次",
+              "reason": "negative_assertion"
+            }
+          ],
+          "authority_queries": [
+            {
+              "event_index": 6,
+              "rows": 9,
+              "call_id": "call_7c93552cc4024ef9a71b6da3",
+              "args": {
+                "from_city": "北京",
+                "date": "2026-10-28",
+                "to_city": "上海"
+              }
+            }
+          ],
+          "scope": "Explicit ticket fields in labelled prose/tables; not full natural-language or business accuracy"
+        }
+      },
+      {
+        "event": "model_end",
+        "model_step": 2
+      },
+      {
+        "event": "agent_error",
+        "category": "reply_tool_mismatch",
+        "http_status": null,
+        "exception_type": "DeepSeekError",
+        "phase": "reply_validation"
+      }
+    ],
+    "authority": {
+      "available": true,
+      "trains": [
+        "CA4101",
+        "CA4102",
+        "CA4103",
+        "CZ8001",
+        "CZ8002",
+        "CZ8003",
+        "D1901",
+        "D1902",
+        "D1903",
+        "D2301",
+        "D2302",
+        "D2303",
+        "G101",
+        "G102",
+        "G103",
+        "G1101",
+        "G1102",
+        "G1103",
+        "G20001",
+        "G20002",
+        "G20003",
+        "G20101",
+        "G20102",
+        "G20103",
+        "G20201",
+        "G20202",
+        "G20203",
+        "G20301",
+        "G20302",
+        "G20303",
+        "G20401",
+        "G20402",
+        "G20403",
+        "G20501",
+        "G20502",
+        "G20503",
+        "G20601",
+        "G20602",
+        "G20603",
+        "G20701",
+        "G20702",
+        "G20703",
+        "G20801",
+        "G20802",
+        "G20803",
+        "G20901",
+        "G20902",
+        "G20903",
+        "G21001",
+        "G21002",
+        "G21003",
+        "G21101",
+        "G21102",
+        "G21103",
+        "G21201",
+        "G21202",
+        "G21203",
+        "G21301",
+        "G21302",
+        "G21303",
+        "G21401",
+        "G21402",
+        "G21403",
+        "G21501",
+        "G21502",
+        "G21503",
+        "G21601",
+        "G21602",
+        "G21603",
+        "G21701",
+        "G21702",
+        "G21703",
+        "G21801",
+        "G21802",
+        "G21803",
+        "G21901",
+        "G21902",
+        "G21903",
+        "G22001",
+        "G22002",
+        "G22003",
+        "G22101",
+        "G22102",
+        "G22103",
+        "G22201",
+        "G22202",
+        "G22203",
+        "G22301",
+        "G22302",
+        "G22303",
+        "G701",
+        "G702",
+        "G703",
+        "G7301",
+        "G7302",
+        "G7303",
+        "HU6201",
+        "HU6202",
+        "HU6203",
+        "MU5301",
+        "MU5302",
+        "MU5303",
+        "ZH9001",
+        "ZH9002",
+        "ZH9003"
+      ],
+      "orders": [],
+      "locks": [],
+      "source": "isolated SQLite read-only snapshot"
+    },
+    "raw_model_reply": "**有票**，但二等座已全部售罄。\n\n明天（2026-10-28）北京 → 上海 余票情况：\n\n| 车次 | 时间 | 席别 | 票价 | 余票 |\n|---|---|---|---|---|\n| G101 | 06:00 → 11:00 | 一等座 | ¥884.8 | 195 |\n| G102 | 09:17 → 14:17 | 一等座 | ¥884.8 | 172 |\n| G103 | 12:34 → 17:34 | 一等座 | ¥884.8 | 57 |\n| G101 | 06:00 → 11:00 | 商务座 | ¥1659.0 | 4 |\n| G103 | 12:34 → 17:34 | 商务座 | ¥1659.0 | 3 |\n| G102 | 09:17 → 14:17 | 商务座 | ¥1659.0 | **0（售罄）** |\n| G101/G102/G103 | — | 二等座 | ¥553.0 | **0（全部售罄）** |\n\n几点说明：\n- **二等座三趟车均无余票**；如可接受升席，一等座余量充足，商务座仅剩个位数。\n- 我默认按北京→上海查询的——如果你的出发地/目的地不是这两个城市，告诉我我再查一次。\n- 当前仅支持模拟查票和政策咨询，无法锁座、下单或支付。",
+    "error": {
+      "category": "reply_tool_mismatch",
+      "http_status": null
+    },
+    "token_usage_evidence": {
+      "status": "reported",
+      "completeness": "complete",
+      "reported": {
+        "prompt": 2438,
+        "completion": 462
+      },
+      "observed": {
+        "prompt": 2438,
+        "completion": 462
+      },
+      "note": "来自本轮模型响应元数据，与业务是否成功分别判定；SDK桩不是新真实API用量，费用仍以账单为准。"
+    },
+    "judgement": {
+      "case_id": "b8059bab1a5d4777887e3dfe4e81a8ca",
+      "expected_behavior": "parameters, source truth, routing and order invariants hold",
+      "actual_behavior": {
+        "user_requested_date": "2026-10-28",
+        "model_original_dates": [
+          "2026-10-28"
+        ],
+        "actual_query_dates": [
+          "2026-10-28"
+        ],
+        "model_tool_requests": 1,
+        "python_executions": 1,
+        "unknown_execution_attempts": 0,
+        "duplicate_executions": [],
+        "monitor_executions": 0,
+        "finish_reason": "stop"
+      },
+      "assertions": [
+        {
+          "assertion": "reply_train_authority",
+          "result": "pass",
+          "passed": true,
+          "failure_reason": null,
+          "evidence_refs": [
+            "audit:b8059bab1a5d4777887e3dfe4e81a8ca#/authority",
+            "audit:b8059bab1a5d4777887e3dfe4e81a8ca#/judgement/hallucination"
+          ]
+        },
+        {
+          "assertion": "model_original_date_matches_user",
+          "result": "pass",
+          "passed": true,
+          "failure_reason": null,
+          "evidence_refs": [
+            "audit:b8059bab1a5d4777887e3dfe4e81a8ca#/fault_report/model_requests",
+            "audit:b8059bab1a5d4777887e3dfe4e81a8ca#/judgement/actual_behavior/user_requested_date"
+          ]
+        },
+        {
+          "assertion": "executed_query_date_matches_user",
+          "result": "pass",
+          "passed": true,
+          "failure_reason": null,
+          "evidence_refs": [
+            "audit:b8059bab1a5d4777887e3dfe4e81a8ca#/fault_report/executions",
+            "audit:b8059bab1a5d4777887e3dfe4e81a8ca#/judgement/actual_behavior/user_requested_date"
+          ]
+        },
+        {
+          "assertion": "no_extra_execution_per_model_call",
+          "result": "pass",
+          "passed": true,
+          "failure_reason": null,
+          "evidence_refs": [
+            "audit:b8059bab1a5d4777887e3dfe4e81a8ca#/fault_report/model_requests",
+            "audit:b8059bab1a5d4777887e3dfe4e81a8ca#/fault_report/executions"
+          ]
+        },
+        {
+          "assertion": "query_result_train_authority",
+          "result": "pass",
+          "passed": true,
+          "failure_reason": null,
+          "evidence_refs": [
+            "audit:b8059bab1a5d4777887e3dfe4e81a8ca#/authority",
+            "audit:b8059bab1a5d4777887e3dfe4e81a8ca#/fault_report/executions"
+          ]
+        },
+        {
+          "assertion": "one_order_per_lock",
+          "result": "pass",
+          "passed": true,
+          "failure_reason": null,
+          "evidence_refs": [
+            "audit:b8059bab1a5d4777887e3dfe4e81a8ca#/authority/orders"
+          ]
+        }
+      ],
+      "hallucination": {
+        "status": "clear",
+        "hallucination_detected": false,
+        "findings": [
+          {
+            "train": "G101",
+            "classification": "supported_claim",
+            "fragment": "| G101 | 06:00 → 11:00 | 一等座 | ¥884.8 | 195 |",
+            "in_authority": true,
+            "mentioned_by_user": false,
+            "basis": "compare explicit assertion with authoritative trains and original valid query results"
+          },
+          {
+            "train": "G102",
+            "classification": "supported_claim",
+            "fragment": "| G102 | 09:17 → 14:17 | 一等座 | ¥884.8 | 172 |",
+            "in_authority": true,
+            "mentioned_by_user": false,
+            "basis": "compare explicit assertion with authoritative trains and original valid query results"
+          },
+          {
+            "train": "G103",
+            "classification": "supported_claim",
+            "fragment": "| G103 | 12:34 → 17:34 | 一等座 | ¥884.8 | 57 |",
+            "in_authority": true,
+            "mentioned_by_user": false,
+            "basis": "compare explicit assertion with authoritative trains and original valid query results"
+          },
+          {
+            "train": "G101",
+            "classification": "supported_claim",
+            "fragment": "| G101 | 06:00 → 11:00 | 商务座 | ¥1659.0 | 4 |",
+            "in_authority": true,
+            "mentioned_by_user": false,
+            "basis": "compare explicit assertion with authoritative trains and original valid query results"
+          },
+          {
+            "train": "G103",
+            "classification": "supported_claim",
+            "fragment": "| G103 | 12:34 → 17:34 | 商务座 | ¥1659.0 | 3 |",
+            "in_authority": true,
+            "mentioned_by_user": false,
+            "basis": "compare explicit assertion with authoritative trains and original valid query results"
+          },
+          {
+            "train": "G102",
+            "classification": "supported_claim",
+            "fragment": "| G102 | 09:17 → 14:17 | 商务座 | ¥1659.0 | **0（售罄）** ",
+            "in_authority": true,
+            "mentioned_by_user": false,
+            "basis": "compare explicit assertion with authoritative trains and original valid query results"
+          },
+          {
+            "train": "G101",
+            "classification": "supported_claim",
+            "fragment": "| G101/G102/G103 | — | 二等座 | ¥553.0 | **0（全部售罄）** |",
+            "in_authority": true,
+            "mentioned_by_user": false,
+            "basis": "compare explicit assertion with authoritative trains and original valid query results"
+          },
+          {
+            "train": "G102",
+            "classification": "supported_claim",
+            "fragment": "| G101/G102/G103 | — | 二等座 | ¥553.0 | **0（全部售罄）** |",
+            "in_authority": true,
+            "mentioned_by_user": false,
+            "basis": "compare explicit assertion with authoritative trains and original valid query results"
+          },
+          {
+            "train": "G103",
+            "classification": "supported_claim",
+            "fragment": "| G101/G102/G103 | — | 二等座 | ¥553.0 | **0（全部售罄）** |",
+            "in_authority": true,
+            "mentioned_by_user": false,
+            "basis": "compare explicit assertion with authoritative trains and original valid query results"
+          }
+        ],
+        "limits": "finite statement rules; no general semantic accuracy claim"
+      },
+      "dimensions": {
+        "injection_applied": null,
+        "platform_defect_detected": false,
+        "agent_anomaly_recognized": null,
+        "agent_recovered": null,
+        "safe_stop": false,
+        "business_correct": false
+      },
+      "quality_verdict": "fail",
+      "failure_reasons": [
+        "Agent执行异常：reply_tool_mismatch"
+      ],
+      "indeterminate_reasons": [],
+      "scope": "deterministic tool/database/explicit-claim assertions; unknown semantic recognition/recovery remains null"
+    },
+    "test_case_label": "ambiguous-tomorrow",
+    "public_trace_hash_scope": "original public contract before sidecar personal-data masking"
+  },
+  "events": [
+    {
+      "event": "model_start",
+      "model_step": 1,
+      "timestamp": "2026-10-27T14:49:37.698396+00:00"
+    },
+    {
+      "event": "http_request",
+      "request_id": "f7714a284e154e66aee221623c42a088",
+      "provider": "bailian",
+      "summary": {
+        "model": "qwen3.8-flash",
+        "message_roles": [
+          "system",
+          "user"
+        ],
+        "returned_tool_call_ids": []
+      },
+      "dispatch_snapshot": {
+        "bound_tools": [
+          "query_tickets",
+          "search_policy"
+        ],
+        "tool_schemas_sha256": "e04c245e3c1c2409f992bb934056993a784347ad9c96a36f53622c58b4c8b0b0",
+        "tool_schema_sha256": {
+          "query_tickets": "f05ba6de74d05a5ac0dbb1cca852b0c255bfa2eb3a99a3ebd6f7d232b6165566",
+          "search_policy": "df5348ddbbf379f9979ee5c641001fb0b798f9af97aa3d2cec3feea5fbf57ebd"
+        },
+        "system_prompt_sha256": "c2197ba4d71a4e4b45c2773f1336b3795c4ce81837e499b2f9250376f4ffdcc9",
+        "tool_permission": [
+          "query_tickets",
+          "search_policy"
+        ],
+        "scope": "HTTP dispatch intent; not evidence of response or tool execution"
+      },
+      "model_step": 1,
+      "timestamp": "2026-10-27T14:49:37.742877+00:00"
+    },
+    {
+      "event": "http_response",
+      "request_id": "f7714a284e154e66aee221623c42a088",
+      "provider": "bailian",
+      "http_status": 200,
+      "category": "response_received",
+      "usage": {
+        "completion_tokens": 59,
+        "prompt_tokens": 762,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "text_tokens": 762
+        },
+        "total_tokens": 821
+      },
+      "model_step": 1,
+      "timestamp": "2026-10-27T14:49:39.239655+00:00"
+    },
+    {
+      "event": "model_response",
+      "model_step": 1,
+      "request_id": "f7714a284e154e66aee221623c42a088",
+      "response_model": "qwen3.8-flash",
+      "usage": {
+        "input_tokens": 762,
+        "output_tokens": 59,
+        "total_tokens": 821,
+        "input_token_details": {
+          "cache_read": 0
+        },
+        "output_token_details": {}
+      },
+      "latency_ms": 1546,
+      "finish_reason": "tool_calls",
+      "tool_calls": [
+        {
+          "id": "call_7c93552cc4024ef9a71b6da3",
+          "name": "query_tickets",
+          "args": {
+            "from_city": "北京",
+            "date": "2026-10-28",
+            "to_city": "上海"
+          }
+        }
+      ]
+    },
+    {
+      "event": "model_end",
+      "model_step": 1
+    },
+    {
+      "event": "tool_start",
+      "model_step": 1,
+      "tool": "query_tickets",
+      "args": {
+        "from_city": "北京",
+        "date": "2026-10-28",
+        "to_city": "上海"
+      },
+      "call_id": "call_7c93552cc4024ef9a71b6da3",
+      "execution_index": 1,
+      "model_requested_tool": "query_tickets",
+      "model_requested_args": {
+        "from_city": "北京",
+        "date": "2026-10-28",
+        "to_city": "上海"
+      }
+    },
+    {
+      "event": "tool_end",
+      "tool": "query_tickets",
+      "args": {
+        "from_city": "北京",
+        "date": "2026-10-28",
+        "to_city": "上海"
+      },
+      "call_id": "call_7c93552cc4024ef9a71b6da3",
+      "ok": true,
+      "executed": true,
+      "execution_index": 1,
+      "latency_ms": 2,
+      "result": {
+        "trains": [
+          {
+            "kind": "高铁",
+            "train_no": "G101",
+            "from_city": "北京",
+            "to_city": "上海",
+            "date": "2026-10-28",
+            "depart": "06:00",
+            "arrive": "11:00",
+            "seat_type": "一等座",
+            "price": 884.8,
+            "seats_left": 195
+          },
+          {
+            "kind": "高铁",
+            "train_no": "G102",
+            "from_city": "北京",
+            "to_city": "上海",
+            "date": "2026-10-28",
+            "depart": "09:17",
+            "arrive": "14:17",
+            "seat_type": "一等座",
+            "price": 884.8,
+            "seats_left": 172
+          },
+          {
+            "kind": "高铁",
+            "train_no": "G103",
+            "from_city": "北京",
+            "to_city": "上海",
+            "date": "2026-10-28",
+            "depart": "12:34",
+            "arrive": "17:34",
+            "seat_type": "一等座",
+            "price": 884.8,
+            "seats_left": 57
+          },
+          {
+            "kind": "高铁",
+            "train_no": "G101",
+            "from_city": "北京",
+            "to_city": "上海",
+            "date": "2026-10-28",
+            "depart": "06:00",
+            "arrive": "11:00",
+            "seat_type": "商务座",
+            "price": 1659.0,
+            "seats_left": 4
+          },
+          {
+            "kind": "高铁",
+            "train_no": "G103",
+            "from_city": "北京",
+            "to_city": "上海",
+            "date": "2026-10-28",
+            "depart": "12:34",
+            "arrive": "17:34",
+            "seat_type": "商务座",
+            "price": 1659.0,
+            "seats_left": 3
+          },
+          {
+            "kind": "高铁",
+            "train_no": "G101",
+            "from_city": "北京",
+            "to_city": "上海",
+            "date": "2026-10-28",
+            "depart": "06:00",
+            "arrive": "11:00",
+            "seat_type": "二等座",
+            "price": 553.0,
+            "seats_left": 0
+          },
+          {
+            "kind": "高铁",
+            "train_no": "G102",
+            "from_city": "北京",
+            "to_city": "上海",
+            "date": "2026-10-28",
+            "depart": "09:17",
+            "arrive": "14:17",
+            "seat_type": "二等座",
+            "price": 553.0,
+            "seats_left": 0
+          },
+          {
+            "kind": "高铁",
+            "train_no": "G102",
+            "from_city": "北京",
+            "to_city": "上海",
+            "date": "2026-10-28",
+            "depart": "09:17",
+            "arrive": "14:17",
+            "seat_type": "商务座",
+            "price": 1659.0,
+            "seats_left": 0
+          },
+          {
+            "kind": "高铁",
+            "train_no": "G103",
+            "from_city": "北京",
+            "to_city": "上海",
+            "date": "2026-10-28",
+            "depart": "12:34",
+            "arrive": "17:34",
+            "seat_type": "二等座",
+            "price": 553.0,
+            "seats_left": 0
+          }
+        ],
+        "count": 9
+      },
+      "parameter_validation": {
+        "status": "valid",
+        "validated_args": {
+          "from_city": "北京",
+          "date": "2026-10-28",
+          "to_city": "上海"
+        }
+      },
+      "timestamp": "2026-10-27T14:49:39.248857+00:00",
+      "step": 1
+    },
+    {
+      "event": "model_start",
+      "model_step": 2,
+      "timestamp": "2026-10-27T14:49:39.249870+00:00"
+    },
+    {
+      "event": "http_request",
+      "request_id": "4fb64239b1664c3ba160800786610621",
+      "provider": "bailian",
+      "summary": {
+        "model": "qwen3.8-flash",
+        "message_roles": [
+          "system",
+          "user",
+          "assistant",
+          "tool"
+        ],
+        "returned_tool_call_ids": [
+          "call_7c93552cc4024ef9a71b6da3"
+        ]
+      },
+      "dispatch_snapshot": {
+        "bound_tools": [
+          "query_tickets",
+          "search_policy"
+        ],
+        "tool_schemas_sha256": "e04c245e3c1c2409f992bb934056993a784347ad9c96a36f53622c58b4c8b0b0",
+        "tool_schema_sha256": {
+          "query_tickets": "f05ba6de74d05a5ac0dbb1cca852b0c255bfa2eb3a99a3ebd6f7d232b6165566",
+          "search_policy": "df5348ddbbf379f9979ee5c641001fb0b798f9af97aa3d2cec3feea5fbf57ebd"
+        },
+        "system_prompt_sha256": "c2197ba4d71a4e4b45c2773f1336b3795c4ce81837e499b2f9250376f4ffdcc9",
+        "tool_permission": [
+          "query_tickets",
+          "search_policy"
+        ],
+        "scope": "HTTP dispatch intent; not evidence of response or tool execution"
+      },
+      "model_step": 2,
+      "timestamp": "2026-10-27T14:49:39.253368+00:00"
+    },
+    {
+      "event": "http_response",
+      "request_id": "4fb64239b1664c3ba160800786610621",
+      "provider": "bailian",
+      "http_status": 200,
+      "category": "response_received",
+      "usage": {
+        "completion_tokens": 403,
+        "prompt_tokens": 1676,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "text_tokens": 1676
+        },
+        "total_tokens": 2079
+      },
+      "model_step": 2,
+      "timestamp": "2026-10-27T14:49:47.671719+00:00"
+    },
+    {
+      "event": "model_response",
+      "model_step": 2,
+      "request_id": "4fb64239b1664c3ba160800786610621",
+      "response_model": "qwen3.8-flash",
+      "usage": {
+        "input_tokens": 1676,
+        "output_tokens": 403,
+        "total_tokens": 2079,
+        "input_token_details": {
+          "cache_read": 0
+        },
+        "output_token_details": {}
+      },
+      "latency_ms": 8422,
+      "finish_reason": "stop",
+      "tool_calls": []
+    },
+    {
+      "event": "model_final",
+      "model_step": 2,
+      "text": "**有票**，但二等座已全部售罄。\n\n明天（2026-10-28）北京 → 上海 余票情况：\n\n| 车次 | 时间 | 席别 | 票价 | 余票 |\n|---|---|---|---|---|\n| G101 | 06:00 → 11:00 | 一等座 | ¥884.8 | 195 |\n| G102 | 09:17 → 14:17 | 一等座 | ¥884.8 | 172 |\n| G103 | 12:34 → 17:34 | 一等座 | ¥884.8 | 57 |\n| G101 | 06:00 → 11:00 | 商务座 | ¥1659.0 | 4 |\n| G103 | 12:34 → 17:34 | 商务座 | ¥1659.0 | 3 |\n| G102 | 09:17 → 14:17 | 商务座 | ¥1659.0 | **0（售罄）** |\n| G101/G102/G103 | — | 二等座 | ¥553.0 | **0（全部售罄）** |\n\n几点说明：\n- **二等座三趟车均无余票**；如可接受升席，一等座余量充足，商务座仅剩个位数。\n- 我默认按北京→上海查询的——如果你的出发地/目的地不是这两个城市，告诉我我再查一次。\n- 当前仅支持模拟查票和政策咨询，无法锁座、下单或支付。",
+      "reply_consistency": {
+        "schema": "reply-consistency/2",
+        "status": "failed",
+        "verdict": "inconsistent",
+        "checked_fields": 23,
+        "identity_checks": 6,
+        "findings": [
+          {
+            "train_no": "G101/G102/G103",
+            "field": "train_no",
+            "claimed": "G101/G102/G103",
+            "tool_value": null,
+            "tool_values": [
+              "G101",
+              "G102",
+              "G103"
+            ],
+            "error_type": "unreturned_train",
+            "line": 13,
+            "text": "| G101/G102/G103 | — | 二等座 | ¥553.0 | **0（全部售罄）** |",
+            "authority_sources": [
+              {
+                "event_index": 6,
+                "rows": 9,
+                "call_id": "call_7c93552cc4024ef9a71b6da3",
+                "args": {
+                  "from_city": "北京",
+                  "date": "2026-10-28",
+                  "to_city": "上海"
+                }
+              }
+            ]
+          }
+        ],
+        "field_checks": [
+          {
+            "train_no": "G101",
+            "identity": {
+              "train_no": "G101",
+              "date": "2026-10-28",
+              "from_city": "北京",
+              "to_city": "上海",
+              "seat_type": "一等座",
+              "kind": "高铁"
+            },
+            "field": "train_no",
+            "claimed": "G101",
+            "tool_value": "G101",
+            "matched": true,
+            "comparison": "equal",
+            "line": 7,
+            "authority_sources": [
+              {
+                "event_index": 6,
+                "call_id": "call_7c93552cc4024ef9a71b6da3",
+                "args": {
+                  "from_city": "北京",
+                  "date": "2026-10-28",
+                  "to_city": "上海"
+                }
+              }
+            ]
+          },
+          {
+            "train_no": "G101",
+            "identity": {
+              "train_no": "G101",
+              "date": "2026-10-28",
+              "from_city": "北京",
+              "to_city": "上海",
+              "seat_type": "一等座",
+              "kind": "高铁"
+            },
+            "field": "seat_type",
+            "claimed": "一等座",
+            "tool_value": "一等座",
+            "matched": true,
+            "comparison": "equal",
+            "line": 7,
+            "authority_sources": [
+              {
+                "event_index": 6,
+                "call_id": "call_7c93552cc4024ef9a71b6da3",
+                "args": {
+                  "from_city": "北京",
+                  "date": "2026-10-28",
+                  "to_city": "上海"
+                }
+              }
+            ]
+          },
+          {
+            "train_no": "G101",
+            "identity": {
+              "train_no": "G101",
+              "date": "2026-10-28",
+              "from_city": "北京",
+              "to_city": "上海",
+              "seat_type": "一等座",
+              "kind": "高铁"
+            },
+            "field": "price",
+            "claimed": "884.8",
+            "tool_value": "884.8",
+            "matched": true,
+            "comparison": "equal",
+            "line": 7,
+            "authority_sources": [
+              {
+                "event_index": 6,
+                "call_id": "call_7c93552cc4024ef9a71b6da3",
+                "args": {
+                  "from_city": "北京",
+                  "date": "2026-10-28",
+                  "to_city": "上海"
+                }
+              }
+            ]
+          },
+          {
+            "train_no": "G101",
+            "identity": {
+              "train_no": "G101",
+              "date": "2026-10-28",
+              "from_city": "北京",
+              "to_city": "上海",
+              "seat_type": "一等座",
+              "kind": "高铁"
+            },
+            "field": "seats_left",
+            "claimed": 195,
+            "tool_value": 195,
+            "matched": true,
+            "comparison": "equal",
+            "line": 7,
+            "authority_sources": [
+              {
+                "event_index": 6,
+                "call_id": "call_7c93552cc4024ef9a71b6da3",
+                "args": {
+                  "from_city": "北京",
+                  "date": "2026-10-28",
+                  "to_city": "上海"
+                }
+              }
+            ]
+          },
+          {
+            "train_no": "G101",
+            "identity": {
+              "train_no": "G101",
+              "date": "2026-10-28",
+              "from_city": "北京",
+              "to_city": "上海",
+              "seat_type": "一等座",
+              "kind": "高铁"
+            },
+            "field": "date",
+            "claimed": "2026-10-28",
+            "tool_value": "2026-10-28",
+            "matched": true,
+            "comparison": "equal",
+            "line": 7,
+            "authority_sources": [
+              {
+                "event_index": 6,
+                "call_id": "call_7c93552cc4024ef9a71b6da3",
+                "args": {
+                  "from_city": "北京",
+                  "date": "2026-10-28",
+                  "to_city": "上海"
+                }
+              }
+            ]
+          },
+          {
+            "train_no": "G102",
+            "identity": {
+              "train_no": "G102",
+              "date": "2026-10-28",
+              "from_city": "北京",
+              "to_city": "上海",
+              "seat_type": "一等座",
+              "kind": "高铁"
+            },
+            "field": "train_no",
+            "claimed": "G102",
+            "tool_value": "G102",
+            "matched": true,
+            "comparison": "equal",
+            "line": 8,
+            "authority_sources": [
+              {
+                "event_index": 6,
+                "call_id": "call_7c93552cc4024ef9a71b6da3",
+                "args": {
+                  "from_city": "北京",
+                  "date": "2026-10-28",
+                  "to_city": "上海"
+                }
+              }
+            ]
+          },
+          {
+            "train_no": "G102",
+            "identity": {
+              "train_no": "G102",
+              "date": "2026-10-28",
+              "from_city": "北京",
+              "to_city": "上海",
+              "seat_type": "一等座",
+              "kind": "高铁"
+            },
+            "field": "seat_type",
+            "claimed": "一等座",
+            "tool_value": "一等座",
+            "matched": true,
+            "comparison": "equal",
+            "line": 8,
+            "authority_sources": [
+              {
+                "event_index": 6,
+                "call_id": "call_7c93552cc4024ef9a71b6da3",
+                "args": {
+                  "from_city": "北京",
+                  "date": "2026-10-28",
+                  "to_city": "上海"
+                }
+              }
+            ]
+          },
+          {
+            "train_no": "G102",
+            "identity": {
+              "train_no": "G102",
+              "date": "2026-10-28",
+              "from_city": "北京",
+              "to_city": "上海",
+              "seat_type": "一等座",
+              "kind": "高铁"
+            },
+            "field": "price",
+            "claimed": "884.8",
+            "tool_value": "884.8",
+            "matched": true,
+            "comparison": "equal",
+            "line": 8,
+            "authority_sources": [
+              {
+                "event_index": 6,
+                "call_id": "call_7c93552cc4024ef9a71b6da3",
+                "args": {
+                  "from_city": "北京",
+                  "date": "2026-10-28",
+                  "to_city": "上海"
+                }
+              }
+            ]
+          },
+          {
+            "train_no": "G102",
+            "identity": {
+              "train_no": "G102",
+              "date": "2026-10-28",
+              "from_city": "北京",
+              "to_city": "上海",
+              "seat_type": "一等座",
+              "kind": "高铁"
+            },
+            "field": "seats_left",
+            "claimed": 172,
+            "tool_value": 172,
+            "matched": true,
+            "comparison": "equal",
+            "line": 8,
+            "authority_sources": [
+              {
+                "event_index": 6,
+                "call_id": "call_7c93552cc4024ef9a71b6da3",
+                "args": {
+                  "from_city": "北京",
+                  "date": "2026-10-28",
+                  "to_city": "上海"
+                }
+              }
+            ]
+          },
+          {
+            "train_no": "G102",
+            "identity": {
+              "train_no": "G102",
+              "date": "2026-10-28",
+              "from_city": "北京",
+              "to_city": "上海",
+              "seat_type": "一等座",
+              "kind": "高铁"
+            },
+            "field": "date",
+            "claimed": "2026-10-28",
+            "tool_value": "2026-10-28",
+            "matched": true,
+            "comparison": "equal",
+            "line": 8,
+            "authority_sources": [
+              {
+                "event_index": 6,
+                "call_id": "call_7c93552cc4024ef9a71b6da3",
+                "args": {
+                  "from_city": "北京",
+                  "date": "2026-10-28",
+                  "to_city": "上海"
+                }
+              }
+            ]
+          },
+          {
+            "train_no": "G103",
+            "identity": {
+              "train_no": "G103",
+              "date": "2026-10-28",
+              "from_city": "北京",
+              "to_city": "上海",
+              "seat_type": "一等座",
+              "kind": "高铁"
+            },
+            "field": "train_no",
+            "claimed": "G103",
+            "tool_value": "G103",
+            "matched": true,
+            "comparison": "equal",
+            "line": 9,
+            "authority_sources": [
+              {
+                "event_index": 6,
+                "call_id": "call_7c93552cc4024ef9a71b6da3",
+                "args": {
+                  "from_city": "北京",
+                  "date": "2026-10-28",
+                  "to_city": "上海"
+                }
+              }
+            ]
+          },
+          {
+            "train_no": "G103",
+            "identity": {
+              "train_no": "G103",
+              "date": "2026-10-28",
+              "from_city": "北京",
+              "to_city": "上海",
+              "seat_type": "一等座",
+              "kind": "高铁"
+            },
+            "field": "seat_type",
+            "claimed": "一等座",
+            "tool_value": "一等座",
+            "matched": true,
+            "comparison": "equal",
+            "line": 9,
+            "authority_sources": [
+              {
+                "event_index": 6,
+                "call_id": "call_7c93552cc4024ef9a71b6da3",
+                "args": {
+                  "from_city": "北京",
+                  "date": "2026-10-28",
+                  "to_city": "上海"
+                }
+              }
+            ]
+          },
+          {
+            "train_no": "G103",
+            "identity": {
+              "train_no": "G103",
+              "date": "2026-10-28",
+              "from_city": "北京",
+              "to_city": "上海",
+              "seat_type": "一等座",
+              "kind": "高铁"
+            },
+            "field": "price",
+            "claimed": "884.8",
+            "tool_value": "884.8",
+            "matched": true,
+            "comparison": "equal",
+            "line": 9,
+            "authority_sources": [
+              {
+                "event_index": 6,
+                "call_id": "call_7c93552cc4024ef9a71b6da3",
+                "args": {
+                  "from_city": "北京",
+                  "date": "2026-10-28",
+                  "to_city": "上海"
+                }
+              }
+            ]
+          },
+          {
+            "train_no": "G103",
+            "identity": {
+              "train_no": "G103",
+              "date": "2026-10-28",
+              "from_city": "北京",
+              "to_city": "上海",
+              "seat_type": "一等座",
+              "kind": "高铁"
+            },
+            "field": "seats_left",
+            "claimed": 57,
+            "tool_value": 57,
+            "matched": true,
+            "comparison": "equal",
+            "line": 9,
+            "authority_sources": [
+              {
+                "event_index": 6,
+                "call_id": "call_7c93552cc4024ef9a71b6da3",
+                "args": {
+                  "from_city": "北京",
+                  "date": "2026-10-28",
+                  "to_city": "上海"
+                }
+              }
+            ]
+          },
+          {
+            "train_no": "G103",
+            "identity": {
+              "train_no": "G103",
+              "date": "2026-10-28",
+              "from_city": "北京",
+              "to_city": "上海",
+              "seat_type": "一等座",
+              "kind": "高铁"
+            },
+            "field": "date",
+            "claimed": "2026-10-28",
+            "tool_value": "2026-10-28",
+            "matched": true,
+            "comparison": "equal",
+            "line": 9,
+            "authority_sources": [
+              {
+                "event_index": 6,
+                "call_id": "call_7c93552cc4024ef9a71b6da3",
+                "args": {
+                  "from_city": "北京",
+                  "date": "2026-10-28",
+                  "to_city": "上海"
+                }
+              }
+            ]
+          },
+          {
+            "train_no": "G101",
+            "identity": {
+              "train_no": "G101",
+              "date": "2026-10-28",
+              "from_city": "北京",
+              "to_city": "上海",
+              "seat_type": "商务座",
+              "kind": "高铁"
+            },
+            "field": "train_no",
+            "claimed": "G101",
+            "tool_value": "G101",
+            "matched": true,
+            "comparison": "equal",
+            "line": 10,
+            "authority_sources": [
+              {
+                "event_index": 6,
+                "call_id": "call_7c93552cc4024ef9a71b6da3",
+                "args": {
+                  "from_city": "北京",
+                  "date": "2026-10-28",
+                  "to_city": "上海"
+                }
+              }
+            ]
+          },
+          {
+            "train_no": "G101",
+            "identity": {
+              "train_no": "G101",
+              "date": "2026-10-28",
+              "from_city": "北京",
+              "to_city": "上海",
+              "seat_type": "商务座",
+              "kind": "高铁"
+            },
+            "field": "seat_type",
+            "claimed": "商务座",
+            "tool_value": "商务座",
+            "matched": true,
+            "comparison": "equal",
+            "line": 10,
+            "authority_sources": [
+              {
+                "event_index": 6,
+                "call_id": "call_7c93552cc4024ef9a71b6da3",
+                "args": {
+                  "from_city": "北京",
+                  "date": "2026-10-28",
+                  "to_city": "上海"
+                }
+              }
+            ]
+          },
+          {
+            "train_no": "G101",
+            "identity": {
+              "train_no": "G101",
+              "date": "2026-10-28",
+              "from_city": "北京",
+              "to_city": "上海",
+              "seat_type": "商务座",
+              "kind": "高铁"
+            },
+            "field": "price",
+            "claimed": "1659",
+            "tool_value": "1659",
+            "matched": true,
+            "comparison": "equal",
+            "line": 10,
+            "authority_sources": [
+              {
+                "event_index": 6,
+                "call_id": "call_7c93552cc4024ef9a71b6da3",
+                "args": {
+                  "from_city": "北京",
+                  "date": "2026-10-28",
+                  "to_city": "上海"
+                }
+              }
+            ]
+          },
+          {
+            "train_no": "G101",
+            "identity": {
+              "train_no": "G101",
+              "date": "2026-10-28",
+              "from_city": "北京",
+              "to_city": "上海",
+              "seat_type": "商务座",
+              "kind": "高铁"
+            },
+            "field": "seats_left",
+            "claimed": 4,
+            "tool_value": 4,
+            "matched": true,
+            "comparison": "equal",
+            "line": 10,
+            "authority_sources": [
+              {
+                "event_index": 6,
+                "call_id": "call_7c93552cc4024ef9a71b6da3",
+                "args": {
+                  "from_city": "北京",
+                  "date": "2026-10-28",
+                  "to_city": "上海"
+                }
+              }
+            ]
+          },
+          {
+            "train_no": "G101",
+            "identity": {
+              "train_no": "G101",
+              "date": "2026-10-28",
+              "from_city": "北京",
+              "to_city": "上海",
+              "seat_type": "商务座",
+              "kind": "高铁"
+            },
+            "field": "date",
+            "claimed": "2026-10-28",
+            "tool_value": "2026-10-28",
+            "matched": true,
+            "comparison": "equal",
+            "line": 10,
+            "authority_sources": [
+              {
+                "event_index": 6,
+                "call_id": "call_7c93552cc4024ef9a71b6da3",
+                "args": {
+                  "from_city": "北京",
+                  "date": "2026-10-28",
+                  "to_city": "上海"
+                }
+              }
+            ]
+          },
+          {
+            "train_no": "G103",
+            "identity": {
+              "train_no": "G103",
+              "date": "2026-10-28",
+              "from_city": "北京",
+              "to_city": "上海",
+              "seat_type": "商务座",
+              "kind": "高铁"
+            },
+            "field": "train_no",
+            "claimed": "G103",
+            "tool_value": "G103",
+            "matched": true,
+            "comparison": "equal",
+            "line": 11,
+            "authority_sources": [
+              {
+                "event_index": 6,
+                "call_id": "call_7c93552cc4024ef9a71b6da3",
+                "args": {
+                  "from_city": "北京",
+                  "date": "2026-10-28",
+                  "to_city": "上海"
+                }
+              }
+            ]
+          },
+          {
+            "train_no": "G103",
+            "identity": {
+              "train_no": "G103",
+              "date": "2026-10-28",
+              "from_city": "北京",
+              "to_city": "上海",
+              "seat_type": "商务座",
+              "kind": "高铁"
+            },
+            "field": "seat_type",
+            "claimed": "商务座",
+            "tool_value": "商务座",
+            "matched": true,
+            "comparison": "equal",
+            "line": 11,
+            "authority_sources": [
+              {
+                "event_index": 6,
+                "call_id": "call_7c93552cc4024ef9a71b6da3",
+                "args": {
+                  "from_city": "北京",
+                  "date": "2026-10-28",
+                  "to_city": "上海"
+                }
+              }
+            ]
+          },
+          {
+            "train_no": "G103",
+            "identity": {
+              "train_no": "G103",
+              "date": "2026-10-28",
+              "from_city": "北京",
+              "to_city": "上海",
+              "seat_type": "商务座",
+              "kind": "高铁"
+            },
+            "field": "price",
+            "claimed": "1659",
+            "tool_value": "1659",
+            "matched": true,
+            "comparison": "equal",
+            "line": 11,
+            "authority_sources": [
+              {
+                "event_index": 6,
+                "call_id": "call_7c93552cc4024ef9a71b6da3",
+                "args": {
+                  "from_city": "北京",
+                  "date": "2026-10-28",
+                  "to_city": "上海"
+                }
+              }
+            ]
+          },
+          {
+            "train_no": "G103",
+            "identity": {
+              "train_no": "G103",
+              "date": "2026-10-28",
+              "from_city": "北京",
+              "to_city": "上海",
+              "seat_type": "商务座",
+              "kind": "高铁"
+            },
+            "field": "seats_left",
+            "claimed": 3,
+            "tool_value": 3,
+            "matched": true,
+            "comparison": "equal",
+            "line": 11,
+            "authority_sources": [
+              {
+                "event_index": 6,
+                "call_id": "call_7c93552cc4024ef9a71b6da3",
+                "args": {
+                  "from_city": "北京",
+                  "date": "2026-10-28",
+                  "to_city": "上海"
+                }
+              }
+            ]
+          },
+          {
+            "train_no": "G103",
+            "identity": {
+              "train_no": "G103",
+              "date": "2026-10-28",
+              "from_city": "北京",
+              "to_city": "上海",
+              "seat_type": "商务座",
+              "kind": "高铁"
+            },
+            "field": "date",
+            "claimed": "2026-10-28",
+            "tool_value": "2026-10-28",
+            "matched": true,
+            "comparison": "equal",
+            "line": 11,
+            "authority_sources": [
+              {
+                "event_index": 6,
+                "call_id": "call_7c93552cc4024ef9a71b6da3",
+                "args": {
+                  "from_city": "北京",
+                  "date": "2026-10-28",
+                  "to_city": "上海"
+                }
+              }
+            ]
+          },
+          {
+            "train_no": "G102",
+            "identity": {
+              "train_no": "G102",
+              "date": "2026-10-28",
+              "from_city": "北京",
+              "to_city": "上海",
+              "seat_type": "商务座",
+              "kind": "高铁"
+            },
+            "field": "train_no",
+            "claimed": "G102",
+            "tool_value": "G102",
+            "matched": true,
+            "comparison": "equal",
+            "line": 12,
+            "authority_sources": [
+              {
+                "event_index": 6,
+                "call_id": "call_7c93552cc4024ef9a71b6da3",
+                "args": {
+                  "from_city": "北京",
+                  "date": "2026-10-28",
+                  "to_city": "上海"
+                }
+              }
+            ]
+          },
+          {
+            "train_no": "G102",
+            "identity": {
+              "train_no": "G102",
+              "date": "2026-10-28",
+              "from_city": "北京",
+              "to_city": "上海",
+              "seat_type": "商务座",
+              "kind": "高铁"
+            },
+            "field": "seat_type",
+            "claimed": "商务座",
+            "tool_value": "商务座",
+            "matched": true,
+            "comparison": "equal",
+            "line": 12,
+            "authority_sources": [
+              {
+                "event_index": 6,
+                "call_id": "call_7c93552cc4024ef9a71b6da3",
+                "args": {
+                  "from_city": "北京",
+                  "date": "2026-10-28",
+                  "to_city": "上海"
+                }
+              }
+            ]
+          },
+          {
+            "train_no": "G102",
+            "identity": {
+              "train_no": "G102",
+              "date": "2026-10-28",
+              "from_city": "北京",
+              "to_city": "上海",
+              "seat_type": "商务座",
+              "kind": "高铁"
+            },
+            "field": "price",
+            "claimed": "1659",
+            "tool_value": "1659",
+            "matched": true,
+            "comparison": "equal",
+            "line": 12,
+            "authority_sources": [
+              {
+                "event_index": 6,
+                "call_id": "call_7c93552cc4024ef9a71b6da3",
+                "args": {
+                  "from_city": "北京",
+                  "date": "2026-10-28",
+                  "to_city": "上海"
+                }
+              }
+            ]
+          },
+          {
+            "train_no": "G102",
+            "identity": {
+              "train_no": "G102",
+              "date": "2026-10-28",
+              "from_city": "北京",
+              "to_city": "上海",
+              "seat_type": "商务座",
+              "kind": "高铁"
+            },
+            "field": "date",
+            "claimed": "2026-10-28",
+            "tool_value": "2026-10-28",
+            "matched": true,
+            "comparison": "equal",
+            "line": 12,
+            "authority_sources": [
+              {
+                "event_index": 6,
+                "call_id": "call_7c93552cc4024ef9a71b6da3",
+                "args": {
+                  "from_city": "北京",
+                  "date": "2026-10-28",
+                  "to_city": "上海"
+                }
+              }
+            ]
+          }
+        ],
+        "indeterminate": [
+          {
+            "line": 1,
+            "text": "有票，但二等座已全部售罄",
+            "reason": "unscoped_factual_claim"
+          },
+          {
+            "line": 16,
+            "text": "- 二等座三趟车均无余票",
+            "reason": "unscoped_factual_claim"
+          },
+          {
+            "line": 12,
+            "text": "| G102 | 09:17 → 14:17 | 商务座 | ¥1659.0 | **0（售罄）** |",
+            "reason": "unsupported_or_invalid_value",
+            "field": "seats_left",
+            "claimed": "0（售罄）"
+          },
+          {
+            "line": 13,
+            "text": "| G101/G102/G103 | — | 二等座 | ¥553.0 | **0（全部售罄）** |",
+            "reason": "unsupported_or_invalid_value",
+            "field": "seats_left",
+            "claimed": "0（全部售罄）"
+          }
+        ],
+        "ignored": [
+          {
+            "line": 17,
+            "text": "- 我默认按北京→上海查询的——如果你的出发地/目的地不是这两个城市，告诉我我再查一次",
+            "reason": "negative_assertion"
+          }
+        ],
+        "authority_queries": [
+          {
+            "event_index": 6,
+            "rows": 9,
+            "call_id": "call_7c93552cc4024ef9a71b6da3",
+            "args": {
+              "from_city": "北京",
+              "date": "2026-10-28",
+              "to_city": "上海"
+            }
+          }
+        ],
+        "scope": "Explicit ticket fields in labelled prose/tables; not full natural-language or business accuracy"
+      }
+    },
+    {
+      "event": "model_end",
+      "model_step": 2
+    },
+    {
+      "event": "agent_error",
+      "category": "reply_tool_mismatch",
+      "http_status": null,
+      "exception_type": "DeepSeekError",
+      "phase": "reply_validation"
+    }
+  ],
+  "actual_models": [
+    "qwen3.8-flash"
+  ],
+  "root": "artifacts\\runtime\\live-lab-audit-20261027\\backend\\bailian\\ambiguous-tomorrow-1c375a62de",
+  "generation_requests": 2,
+  "embedding_requests": 0,
+  "langsmith_requests": 0
+}

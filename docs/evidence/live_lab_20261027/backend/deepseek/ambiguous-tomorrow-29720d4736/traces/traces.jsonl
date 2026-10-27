@@ -1,0 +1,1 @@
+{"session_id": "web-2319a9c56620", "provider": "deepseek_live", "model": "deepseek-flash", "user_msg": "明天还有票吗", "steps": [], "tool_sequence": [], "reply": "需要补充几个信息才能帮您查：\n\n1. 出发城市和到达城市\n2. 交通方式（高铁还是机票）\n3. 席别（如二等座/经济舱）\n\n您说“明天”我按 **2026-10-28** 来查。请补充目的地和出发地等信息，我马上帮您查询。", "finish_reason": "stop", "tokens": {"prompt": 759, "completion": 74}, "total_latency_ms": 1166}

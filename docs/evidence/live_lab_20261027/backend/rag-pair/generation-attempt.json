@@ -1,0 +1,6 @@
+{
+  "explicit_command_authorization": true,
+  "local_request_limit": null,
+  "evidence_mode": "real_api",
+  "tool_result_sha256": "44f4e38a0d6fb00442dc6b42398a179c62f13f601902ba35ca1a19d0a314363c"
+}

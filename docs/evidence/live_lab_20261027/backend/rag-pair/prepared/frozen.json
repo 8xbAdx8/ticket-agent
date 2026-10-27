@@ -1,0 +1,567 @@
+{
+  "schema": "ticket-v352-frozen-policy/1",
+  "question": "锁座后多久必须完成支付？",
+  "mode": "hybrid",
+  "quality_profile": "v351",
+  "top_k": 3,
+  "threshold": 0.35,
+  "source_tree_sha256": "f65a849870a6a9070920c70c609859538890967fcf0bdd87726094b306648776",
+  "policy_chunks_sha256": "1ee9fd4666ba9b4fff14f2be4c16adbcc45fd81de8fd57ef64e1e8614b9254de",
+  "tool_result": {
+    "question": "锁座后多久必须完成支付？",
+    "hits": [
+      {
+        "doc_id": "P11",
+        "title": "锁座与支付有效期",
+        "source": "data/policies.md#P11",
+        "version": "43aea1ebf3c7b333",
+        "chunk_id": "P11-0000-589c2e46be21",
+        "content": "模拟锁座有效期 15 分钟，过期未支付自动释放库存；下单必须提供与锁座一致的乘客列表。重复支付不重复扣减库存。",
+        "score": 0.01639344262295082,
+        "keyword_score": 1.8708286933869707,
+        "rank": 1,
+        "fusion_ranks": {
+          "keyword": 1,
+          "vector": 1
+        },
+        "fusion_weights": {
+          "keyword": 0.30000000000000004,
+          "vector": 0.7
+        },
+        "vector_score": 0.8076332211494446
+      }
+    ],
+    "count": 1
+  },
+  "tool_result_sha256": "44f4e38a0d6fb00442dc6b42398a179c62f13f601902ba35ca1a19d0a314363c",
+  "retrieval": {
+    "schema": "ticket-rag-retrieval/1",
+    "question": "锁座后多久必须完成支付？",
+    "mode": "hybrid",
+    "top_k": 3,
+    "vector_threshold": 0.35,
+    "embedding_model": "text-embedding-v4",
+    "embedding_origin": "real_api",
+    "index_version": "242aa8199c4a8393ded29751",
+    "fusion": "vector_qualified_weighted_rrf_k60",
+    "hits": [
+      {
+        "doc_id": "P11",
+        "title": "锁座与支付有效期",
+        "source": "data/policies.md#P11",
+        "version": "43aea1ebf3c7b333",
+        "chunk_id": "P11-0000-589c2e46be21",
+        "content": "模拟锁座有效期 15 分钟，过期未支付自动释放库存；下单必须提供与锁座一致的乘客列表。重复支付不重复扣减库存。",
+        "score": 0.01639344262295082,
+        "keyword_score": 1.8708286933869707,
+        "rank": 1,
+        "fusion_ranks": {
+          "keyword": 1,
+          "vector": 1
+        },
+        "fusion_weights": {
+          "keyword": 0.30000000000000004,
+          "vector": 0.7
+        },
+        "vector_score": 0.8076332211494446
+      }
+    ],
+    "embedding_latency_ms": 2,
+    "total_latency_ms": 897,
+    "embedding_receipts": [
+      {
+        "request_id": "61f3c94ba1b64b6ca954cc60171285ec",
+        "origin": "real_api",
+        "model": "text-embedding-v4",
+        "actual_model": "text-embedding-v4",
+        "dimensions": 1024,
+        "tokens": 110,
+        "status": 200,
+        "latency_ms": 2065,
+        "server_request_id": "216968b2-3f3b-9d57-8635-06449d36da57",
+        "response_sha256": "1568465b7f09ca6aad54b0ef1b94610a42d68cd1c205e10ed9b5999ece28b138",
+        "vector_hashes": [
+          "545d52d78a4f95cfaf5534dc456c46a7e969764b60f706e96a09b50a12429572",
+          "cb27f6661649a5d5468730986ccf8ce01287cbf365f53bc7744bf324a8e5d0e1",
+          "3b1a3925e2cfae003db763e8d3baafb6cc4101a02d5bf5dd71153853aec609ab",
+          "06ab312e896baf897392a89bd8146b32a6b78d0721cf667a76d75bcb27b96f8c",
+          "e1b7c5aafdc5b6e4981197c4f3d31cdc6cb6170e4f51fba2e5c245dac3207513",
+          "1b8a2bb278c49a41779a152870834095c8d23970ad9f116eec8a530a9630dc19",
+          "2843141270c94241b5b0cdc8b66fba8c2762abd4dd12ce1fb652c127c2518710",
+          "e0b2ec3b16d23c461421e4aa106bedcb2b227d4d562b04c379255496a595f840",
+          "7625c544aedc9d39e47c8fc41fc3a57e5a8ecaa70e56fe43e9a722eda9de628f",
+          "6a97d4b5945f8fb5a251b1ecfb85313c7685d7e45e9b990f0e78755c981167ea"
+        ]
+      }
+    ],
+    "candidate_hits": [
+      {
+        "doc_id": "P11",
+        "title": "锁座与支付有效期",
+        "source": "data/policies.md#P11",
+        "version": "43aea1ebf3c7b333",
+        "chunk_id": "P11-0000-589c2e46be21",
+        "content": "模拟锁座有效期 15 分钟，过期未支付自动释放库存；下单必须提供与锁座一致的乘客列表。重复支付不重复扣减库存。",
+        "score": 0.8076332211494446,
+        "keyword_score": 1.8708286933869707,
+        "rank": 1,
+        "vector_score": 0.8076332211494446
+      },
+      {
+        "doc_id": "P12",
+        "title": "未支付订单取消",
+        "source": "data/policies.md#P12",
+        "version": "2295151242863c57",
+        "chunk_id": "P12-0000-3fece7e2c814",
+        "content": "未支付订单取消不收取手续费，释放已占库存；已退款或已取消订单不得再次释放库存，取消后的订单不可支付。",
+        "score": 0.5506129264831543,
+        "keyword_score": 0.9615239476408232,
+        "rank": 2,
+        "vector_score": 0.5506129264831543
+      },
+      {
+        "doc_id": "P04",
+        "title": "儿童票",
+        "source": "data/policies.md#P04",
+        "version": "0e8a2e18e6885968",
+        "chunk_id": "P04-0000-901a2dd37c20",
+        "content": "身高 1.2 米以下且不满 6 周岁儿童可免票（不占座）；6 至 14 周岁需购买儿童票，二等座按公布票价 50% 计算，一等座与商务座不售儿童票。",
+        "score": 0.5252257314388902,
+        "keyword_score": 0.5252257314388902,
+        "rank": 3
+      },
+      {
+        "doc_id": "P03",
+        "title": "开车后处理",
+        "source": "data/policies.md#P03",
+        "version": "5e1d85aec65728f4",
+        "chunk_id": "P03-0000-0e22a8a4248f",
+        "content": "开车后 2 小时内可办理一次改签至当日其他有余票车次，不退票。超过 2 小时车票作废。",
+        "score": 0.3871504068374634,
+        "keyword_score": 0.31234752377721214,
+        "rank": 8,
+        "vector_score": 0.3871504068374634
+      },
+      {
+        "doc_id": "P15",
+        "title": "数据预售范围",
+        "source": "data/policies.md#P15",
+        "version": "3dad16931011fba7",
+        "chunk_id": "P15-0000-9ab51dd978bf",
+        "content": "演示数据库覆盖生成当天及之后六天；超出日期范围或没有配置的路线返回空列表，不表示真实系统没有余票。",
+        "score": 0.5160186886787415,
+        "keyword_score": 0.2773500981126146,
+        "rank": 3,
+        "vector_score": 0.5160186886787415
+      },
+      {
+        "doc_id": "P13",
+        "title": "模拟隐私规则",
+        "source": "data/policies.md#P13",
+        "version": "fcb3716098433993",
+        "chunk_id": "P13-0000-905680b18ce6",
+        "content": "演示身份固定为当前模拟用户，仅可查询、支付、取消自己的订单；不能通过另一个手机号或订单号读取其他用户的信息。",
+        "score": 0.46681827306747437,
+        "keyword_score": 0.26967994498529685,
+        "rank": 6,
+        "vector_score": 0.46681827306747437
+      },
+      {
+        "doc_id": "P02",
+        "title": "改签规则",
+        "source": "data/policies.md#P02",
+        "version": "d5926ccfe3981a69",
+        "chunk_id": "P02-0000-ee28e78d13a2",
+        "content": "开车前 48 小时以上可改签预售期内任意车次；开车前 48 小时以内可改签开车前的其他车次，也可改签开车后至当日 24:00 之间的车次。每张票仅可改签一次，改签后不退。",
+        "score": 0.3589398264884949,
+        "keyword_score": 0.23408229439226114,
+        "rank": 9,
+        "vector_score": 0.3589398264884949
+      },
+      {
+        "doc_id": "P10",
+        "title": "实名与身份核验",
+        "source": "data/policies.md#P10",
+        "version": "8b2a80eb3605dca0",
+        "chunk_id": "P10-0000-d31bb6d46837",
+        "content": "购票实行实名制，乘车人须与票面信息一致；一个有效身份证件同一乘车日期同一车次仅可购买一张车票。",
+        "score": 0.14002800840280097,
+        "keyword_score": 0.14002800840280097,
+        "rank": 8
+      },
+      {
+        "doc_id": "P05",
+        "title": "学生票",
+        "source": "data/policies.md#P05",
+        "version": "def9fcf8b2b8e173",
+        "chunk_id": "P05-0000-2ad89d5c523b",
+        "content": "全日制在校学生每年可购买 4 次学生票，仅限二等座，按公布票价 75% 计算，寒暑假及家庭居住地至学校所在地之间有效。",
+        "score": 0.1386750490563073,
+        "keyword_score": 0.1386750490563073,
+        "rank": 9
+      },
+      {
+        "doc_id": "P06",
+        "title": "行李规定",
+        "source": "data/policies.md#P06",
+        "version": "1e1fd8d51d3f9486",
+        "chunk_id": "P06-0000-2705abb94023",
+        "content": "高铁成人免费携带品重量 20 千克，儿童 10 千克；每件物品长宽高之和不超过 160 厘米。超重部分按每千克 5 元补收运费。",
+        "score": 0.1386750490563073,
+        "keyword_score": 0.1386750490563073,
+        "rank": 10
+      },
+      {
+        "doc_id": "P14",
+        "title": "模拟候补边界",
+        "source": "data/policies.md#P14",
+        "version": "f4285c57defe97e1",
+        "chunk_id": "P14-0000-80089e9f49a8",
+        "content": "候补工具只返回监控任务凭据，不执行后台轮询、不承诺兑现，也不扣款。只有数据库中存在且当前无票的班次可以提交监控。",
+        "score": 0.47509294748306274,
+        "keyword_score": 0.13245323570650439,
+        "rank": 5,
+        "vector_score": 0.47509294748306274
+      },
+      {
+        "doc_id": "P09",
+        "title": "机票退改规则",
+        "source": "data/policies.md#P09",
+        "version": "f31cd4160b93abb5",
+        "chunk_id": "P09-0000-799e4c5fd057",
+        "content": "机票经济舱起飞前 24 小时以上退票收取票面价 10%，24 小时内收取 30%；特价舱位（折扣低于 4 折）不支持退票，仅退机场建设费与燃油附加费。",
+        "score": 0.1270001270001905,
+        "keyword_score": 0.1270001270001905,
+        "rank": 12
+      },
+      {
+        "version": "e8159a7e61371bf7",
+        "source": "data/policies.md#P08",
+        "title": "候补与余票释放",
+        "chunk_id": "P08-0000-d1134f07d8dc",
+        "doc_id": "P08",
+        "content": "无票时可提交候补订单，系统按提交顺序自动兑现；其他旅客退票产生的余票优先分配给候补队列，候补订单有效期至开车前 2 小时。",
+        "score": 0.4924817681312561,
+        "vector_score": 0.4924817681312561,
+        "rank": 4
+      },
+      {
+        "doc_id": "P07",
+        "source": "data/policies.md#P07",
+        "version": "2c734d1ca6e68b07",
+        "title": "报销凭证",
+        "chunk_id": "P07-0000-ef524fb2b645",
+        "content": "乘车之日起 180 日内可在车站窗口或自助机打印报销凭证，仅可打印一次；已打印报销凭证的车票退票时需先交回凭证。",
+        "score": 0.3894672393798828,
+        "vector_score": 0.3894672393798828,
+        "rank": 7
+      },
+      {
+        "chunk_id": "P01-0000-7e17c7d453fc",
+        "title": "退票手续费阶梯",
+        "doc_id": "P01",
+        "source": "data/policies.md#P01",
+        "version": "645904208717fad9",
+        "content": "开车前 48 小时以上退票，收取票价 5% 手续费；开车前 24 至 48 小时退票，收取 10%；开车前不足 24 小时退票，收取 20%。已取报销凭证或已改签的车票不退。",
+        "score": 0.356683611869812,
+        "vector_score": 0.356683611869812,
+        "rank": 10
+      }
+    ],
+    "rejections": [
+      {
+        "doc_id": "P12",
+        "reason": "policy_subject_or_transport_mismatch",
+        "score": 0.5506129264831543
+      },
+      {
+        "doc_id": "P04",
+        "reason": "policy_subject_or_transport_mismatch",
+        "score": 0.5252257314388902
+      },
+      {
+        "doc_id": "P03",
+        "reason": "policy_subject_or_transport_mismatch",
+        "score": 0.3871504068374634
+      },
+      {
+        "doc_id": "P15",
+        "reason": "policy_subject_or_transport_mismatch",
+        "score": 0.5160186886787415
+      },
+      {
+        "doc_id": "P13",
+        "reason": "policy_subject_or_transport_mismatch",
+        "score": 0.46681827306747437
+      },
+      {
+        "doc_id": "P02",
+        "reason": "policy_subject_or_transport_mismatch",
+        "score": 0.3589398264884949
+      },
+      {
+        "doc_id": "P10",
+        "reason": "policy_subject_or_transport_mismatch",
+        "score": 0.14002800840280097
+      },
+      {
+        "doc_id": "P05",
+        "reason": "policy_subject_or_transport_mismatch",
+        "score": 0.1386750490563073
+      },
+      {
+        "doc_id": "P06",
+        "reason": "policy_subject_or_transport_mismatch",
+        "score": 0.1386750490563073
+      },
+      {
+        "doc_id": "P14",
+        "reason": "policy_subject_or_transport_mismatch",
+        "score": 0.47509294748306274
+      },
+      {
+        "doc_id": "P09",
+        "reason": "policy_subject_or_transport_mismatch",
+        "score": 0.1270001270001905
+      },
+      {
+        "doc_id": "P08",
+        "reason": "policy_subject_or_transport_mismatch",
+        "score": 0.4924817681312561
+      },
+      {
+        "doc_id": "P07",
+        "reason": "policy_subject_or_transport_mismatch",
+        "score": 0.3894672393798828
+      },
+      {
+        "doc_id": "P01",
+        "reason": "policy_subject_or_transport_mismatch",
+        "score": 0.356683611869812
+      }
+    ],
+    "sufficiency": {
+      "state": "scoped_evidence",
+      "abstain_recommended": false,
+      "topics": [
+        "lock"
+      ],
+      "allowed_policy_ids": [
+        "P11"
+      ],
+      "unsupported_attributes": [],
+      "needs_clarification": false,
+      "transport_scope": "unspecified",
+      "limits": "Finite corpus capability checks; unknown paraphrases and semantic gaps require B review."
+    },
+    "quality_profile": "v351",
+    "minimum_keyword_score": 0.0,
+    "vector_weight": 0.7
+  },
+  "logical_index": {
+    "index_version": "242aa8199c4a8393ded29751",
+    "chunks": 15,
+    "documents": 15,
+    "rows": [
+      {
+        "chunk_id": "P01-0000-7e17c7d453fc",
+        "content": "开车前 48 小时以上退票，收取票价 5% 手续费；开车前 24 至 48 小时退票，收取 10%；开车前不足 24 小时退票，收取 20%。已取报销凭证或已改签的车票不退。",
+        "metadata": {
+          "doc_id": "P01",
+          "version": "645904208717fad9",
+          "source": "data/policies.md#P01",
+          "chunk_id": "P01-0000-7e17c7d453fc",
+          "title": "退票手续费阶梯"
+        },
+        "dimensions": 1024,
+        "vector_sha256": "6ab525ad02fcfc5ed8cd463c07d6c595ee872d525ae81d0da71c41fadaf286d0"
+      },
+      {
+        "chunk_id": "P02-0000-ee28e78d13a2",
+        "content": "开车前 48 小时以上可改签预售期内任意车次；开车前 48 小时以内可改签开车前的其他车次，也可改签开车后至当日 24:00 之间的车次。每张票仅可改签一次，改签后不退。",
+        "metadata": {
+          "chunk_id": "P02-0000-ee28e78d13a2",
+          "version": "d5926ccfe3981a69",
+          "title": "改签规则",
+          "doc_id": "P02",
+          "source": "data/policies.md#P02"
+        },
+        "dimensions": 1024,
+        "vector_sha256": "98d6f92b1b6f63d52690b4946af9fef48be666efa85c36fa254cfb35033b6940"
+      },
+      {
+        "chunk_id": "P03-0000-0e22a8a4248f",
+        "content": "开车后 2 小时内可办理一次改签至当日其他有余票车次，不退票。超过 2 小时车票作废。",
+        "metadata": {
+          "title": "开车后处理",
+          "version": "5e1d85aec65728f4",
+          "chunk_id": "P03-0000-0e22a8a4248f",
+          "doc_id": "P03",
+          "source": "data/policies.md#P03"
+        },
+        "dimensions": 1024,
+        "vector_sha256": "c46c922dc41b047ad3161dcedb270a0585dedb70a849387c33ab8553fe6ceefa"
+      },
+      {
+        "chunk_id": "P04-0000-901a2dd37c20",
+        "content": "身高 1.2 米以下且不满 6 周岁儿童可免票（不占座）；6 至 14 周岁需购买儿童票，二等座按公布票价 50% 计算，一等座与商务座不售儿童票。",
+        "metadata": {
+          "doc_id": "P04",
+          "source": "data/policies.md#P04",
+          "chunk_id": "P04-0000-901a2dd37c20",
+          "version": "0e8a2e18e6885968",
+          "title": "儿童票"
+        },
+        "dimensions": 1024,
+        "vector_sha256": "7cc16a29d452bae661a6aaea38412cf5b963a7283e2750cb3ee5de56c3500f22"
+      },
+      {
+        "chunk_id": "P05-0000-2ad89d5c523b",
+        "content": "全日制在校学生每年可购买 4 次学生票，仅限二等座，按公布票价 75% 计算，寒暑假及家庭居住地至学校所在地之间有效。",
+        "metadata": {
+          "source": "data/policies.md#P05",
+          "chunk_id": "P05-0000-2ad89d5c523b",
+          "doc_id": "P05",
+          "version": "def9fcf8b2b8e173",
+          "title": "学生票"
+        },
+        "dimensions": 1024,
+        "vector_sha256": "df928ea1c105bc034fc9451342f2ea28c11566bd0c9d42dfb6e1e302df74d6ff"
+      },
+      {
+        "chunk_id": "P06-0000-2705abb94023",
+        "content": "高铁成人免费携带品重量 20 千克，儿童 10 千克；每件物品长宽高之和不超过 160 厘米。超重部分按每千克 5 元补收运费。",
+        "metadata": {
+          "version": "1e1fd8d51d3f9486",
+          "title": "行李规定",
+          "source": "data/policies.md#P06",
+          "doc_id": "P06",
+          "chunk_id": "P06-0000-2705abb94023"
+        },
+        "dimensions": 1024,
+        "vector_sha256": "6e8ced9bab23af8b08d86fa76091b88b39896b730073286e20489cead94e7539"
+      },
+      {
+        "chunk_id": "P07-0000-ef524fb2b645",
+        "content": "乘车之日起 180 日内可在车站窗口或自助机打印报销凭证，仅可打印一次；已打印报销凭证的车票退票时需先交回凭证。",
+        "metadata": {
+          "title": "报销凭证",
+          "version": "2c734d1ca6e68b07",
+          "doc_id": "P07",
+          "chunk_id": "P07-0000-ef524fb2b645",
+          "source": "data/policies.md#P07"
+        },
+        "dimensions": 1024,
+        "vector_sha256": "69de580ec3762360ff3b38a220b49f2dec01336103f98c558e24e01c17ac54c5"
+      },
+      {
+        "chunk_id": "P08-0000-d1134f07d8dc",
+        "content": "无票时可提交候补订单，系统按提交顺序自动兑现；其他旅客退票产生的余票优先分配给候补队列，候补订单有效期至开车前 2 小时。",
+        "metadata": {
+          "doc_id": "P08",
+          "title": "候补与余票释放",
+          "source": "data/policies.md#P08",
+          "version": "e8159a7e61371bf7",
+          "chunk_id": "P08-0000-d1134f07d8dc"
+        },
+        "dimensions": 1024,
+        "vector_sha256": "6959d426a1948ed08c1b818327cf26dfe5856c4285eda11ab873dd17c1858001"
+      },
+      {
+        "chunk_id": "P09-0000-799e4c5fd057",
+        "content": "机票经济舱起飞前 24 小时以上退票收取票面价 10%，24 小时内收取 30%；特价舱位（折扣低于 4 折）不支持退票，仅退机场建设费与燃油附加费。",
+        "metadata": {
+          "chunk_id": "P09-0000-799e4c5fd057",
+          "version": "f31cd4160b93abb5",
+          "title": "机票退改规则",
+          "source": "data/policies.md#P09",
+          "doc_id": "P09"
+        },
+        "dimensions": 1024,
+        "vector_sha256": "c1bcb32b3a740df91948e56839f275c7caf09e9de6065e72acb8eb3c4e565862"
+      },
+      {
+        "chunk_id": "P10-0000-d31bb6d46837",
+        "content": "购票实行实名制，乘车人须与票面信息一致；一个有效身份证件同一乘车日期同一车次仅可购买一张车票。",
+        "metadata": {
+          "title": "实名与身份核验",
+          "source": "data/policies.md#P10",
+          "chunk_id": "P10-0000-d31bb6d46837",
+          "doc_id": "P10",
+          "version": "8b2a80eb3605dca0"
+        },
+        "dimensions": 1024,
+        "vector_sha256": "09b4244562248bb3d364162da2fcb71a6cc54812091b5ce41ca073ae14aaa13b"
+      },
+      {
+        "chunk_id": "P11-0000-589c2e46be21",
+        "content": "模拟锁座有效期 15 分钟，过期未支付自动释放库存；下单必须提供与锁座一致的乘客列表。重复支付不重复扣减库存。",
+        "metadata": {
+          "source": "data/policies.md#P11",
+          "doc_id": "P11",
+          "chunk_id": "P11-0000-589c2e46be21",
+          "title": "锁座与支付有效期",
+          "version": "43aea1ebf3c7b333"
+        },
+        "dimensions": 1024,
+        "vector_sha256": "d3d30214d5dba44947f955a0430a98b0a31aadad8f2fa900279680db0e213fb8"
+      },
+      {
+        "chunk_id": "P12-0000-3fece7e2c814",
+        "content": "未支付订单取消不收取手续费，释放已占库存；已退款或已取消订单不得再次释放库存，取消后的订单不可支付。",
+        "metadata": {
+          "title": "未支付订单取消",
+          "version": "2295151242863c57",
+          "source": "data/policies.md#P12",
+          "doc_id": "P12",
+          "chunk_id": "P12-0000-3fece7e2c814"
+        },
+        "dimensions": 1024,
+        "vector_sha256": "28240826c35870d7f94b4e44dc6c7d51bebea8f575a0b7dfd21cdccac417cae6"
+      },
+      {
+        "chunk_id": "P13-0000-905680b18ce6",
+        "content": "演示身份固定为当前模拟用户，仅可查询、支付、取消自己的订单；不能通过另一个手机号或订单号读取其他用户的信息。",
+        "metadata": {
+          "version": "fcb3716098433993",
+          "title": "模拟隐私规则",
+          "source": "data/policies.md#P13",
+          "doc_id": "P13",
+          "chunk_id": "P13-0000-905680b18ce6"
+        },
+        "dimensions": 1024,
+        "vector_sha256": "1851d7f90d785c04039b474e6aa81e1f3124bd0c0fa14c21fa7aee01f951146f"
+      },
+      {
+        "chunk_id": "P14-0000-80089e9f49a8",
+        "content": "候补工具只返回监控任务凭据，不执行后台轮询、不承诺兑现，也不扣款。只有数据库中存在且当前无票的班次可以提交监控。",
+        "metadata": {
+          "title": "模拟候补边界",
+          "doc_id": "P14",
+          "version": "f4285c57defe97e1",
+          "chunk_id": "P14-0000-80089e9f49a8",
+          "source": "data/policies.md#P14"
+        },
+        "dimensions": 1024,
+        "vector_sha256": "f60d3801c0663d7118502e07037b13a56859bb2567150ec61b04c0a8d0fc4d1c"
+      },
+      {
+        "chunk_id": "P15-0000-9ab51dd978bf",
+        "content": "演示数据库覆盖生成当天及之后六天；超出日期范围或没有配置的路线返回空列表，不表示真实系统没有余票。",
+        "metadata": {
+          "title": "数据预售范围",
+          "source": "data/policies.md#P15",
+          "chunk_id": "P15-0000-9ab51dd978bf",
+          "doc_id": "P15",
+          "version": "3dad16931011fba7"
+        },
+        "dimensions": 1024,
+        "vector_sha256": "9881e06bd7e27b6f62ca679b89420282d9b817f41d2cac96263ada6c3a75eb6a"
+      }
+    ],
+    "logical_sha256": "bde52e41f7148c11c77e11cd0fbcb68c715f672588d7265699fd77a387bd2a70"
+  },
+  "execution": "actual_cached_chroma_on_copy_no_generation",
+  "real_generation_requests": 0,
+  "real_embedding_requests": 0
+}

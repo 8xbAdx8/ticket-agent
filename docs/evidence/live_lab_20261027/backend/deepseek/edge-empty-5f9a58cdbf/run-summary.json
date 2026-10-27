@@ -1,0 +1,1109 @@
+{
+  "time": "2026-10-27T14:56:03.673722+00:00",
+  "provider": "deepseek",
+  "expected_model": "deepseek-flash",
+  "case": "edge-empty",
+  "input": "查询2099年1月1日上海到杭州的高铁二等座",
+  "record": null,
+  "error": {
+    "type": "DeepSeekError",
+    "category": "reply_data_indeterminate",
+    "http_status": null
+  },
+  "audit": {
+    "schema_version": "ticket-agent-audit/3.2",
+    "trace_id": "c73f01e7cd624e10af525680721d0c92",
+    "timestamp": "2026-10-27T14:56:03.609540+00:00",
+    "provider": "deepseek_live",
+    "model": "deepseek-flash",
+    "public_trace": {
+      "session_id": "web-39cf116f4578",
+      "provider": "deepseek_live",
+      "model": "deepseek-flash",
+      "user_msg": "查询2099年1月1日上海到杭州的高铁二等座",
+      "steps": [
+        {
+          "step": 1,
+          "calls": [
+            {
+              "tool": "query_tickets",
+              "args": {
+                "from_city": "上海",
+                "to_city": "杭州",
+                "date": "2099-01-01",
+                "seat_type": "二等座",
+                "kind": "高铁"
+              },
+              "ok": true,
+              "latency_ms": 5,
+              "result_preview": "{\"trains\": [], \"count\": 0}"
+            }
+          ]
+        }
+      ],
+      "tool_sequence": [
+        "query_tickets"
+      ],
+      "reply": "模型回答中的票务数据无法可靠核验，已停止展示该回答；请查看工具结果。",
+      "finish_reason": "stop",
+      "tokens": {
+        "prompt": 1675,
+        "completion": 223
+      },
+      "total_latency_ms": 2687
+    },
+    "public_trace_sha256": "b76755c9edb11487549d682e3c8a29d5ec86dc9134792047e620283490dc3758",
+    "contract_returned": false,
+    "fault_report": {
+      "run_id": "c73f01e7cd624e10af525680721d0c92",
+      "session_id": "web-39cf116f4578",
+      "mode": "deepseek_live",
+      "mutations": {},
+      "injection_events": [],
+      "executions": [
+        {
+          "event": "tool_end",
+          "tool": "query_tickets",
+          "args": {
+            "from_city": "上海",
+            "to_city": "杭州",
+            "date": "2099-01-01",
+            "seat_type": "二等座",
+            "kind": "高铁"
+          },
+          "call_id": "call_00_6ZNnZvjjCgDFibj5Ha0H1811",
+          "ok": true,
+          "executed": true,
+          "execution_index": 1,
+          "latency_ms": 5,
+          "result": {
+            "trains": [],
+            "count": 0
+          },
+          "parameter_validation": {
+            "status": "valid",
+            "validated_args": {
+              "from_city": "上海",
+              "to_city": "杭州",
+              "date": "2099-01-01",
+              "seat_type": "二等座",
+              "kind": "高铁"
+            }
+          },
+          "timestamp": "2026-10-27T14:56:02.214642+00:00",
+          "step": 1,
+          "original_result": {
+            "trains": [],
+            "count": 0
+          }
+        }
+      ],
+      "model_requests": [
+        {
+          "model_step": 1,
+          "tool_calls": [
+            {
+              "name": "query_tickets",
+              "args": {
+                "from_city": "上海",
+                "to_city": "杭州",
+                "date": "2099-01-01",
+                "seat_type": "二等座",
+                "kind": "高铁"
+              },
+              "id": "call_00_6ZNnZvjjCgDFibj5Ha0H1811",
+              "type": "tool_call"
+            }
+          ],
+          "final_text": null
+        },
+        {
+          "model_step": 2,
+          "tool_calls": [],
+          "final_text": "查询结果（上海 → 杭州，2099-01-01，高铁，二等座）：没有查到匹配的班次。\n\n需要说明的是：该日期在模拟数据库中没有任何可售班次，因此既不能说“二等座售罄”，也不能说明其他席别或交通方式是否有票——本次没有查询其他席别。\n\n如果需要，可以换一个日期或改查其他条件（例如其他席别、机票）再试。当前仅支持模拟查票和政策咨询，不能锁座、候补或下单。"
+        }
+      ],
+      "finish_reason": "stop",
+      "error": {
+        "category": "reply_data_indeterminate",
+        "http_status": null
+      },
+      "assessment": {
+        "agent_defect_detected": null,
+        "agent_recovered": null,
+        "note": "由B根据原始轨迹和预先定义的期望独立判定，不等同于注入成功"
+      }
+    },
+    "mutation_events": [
+      {
+        "mutation_id": "M1",
+        "event_id": "cc4aead008224d48ba88c9026e5e665a",
+        "mutation_name": "date_offset",
+        "enabled": false,
+        "applicable": null,
+        "status": "disabled",
+        "injection_stage": null,
+        "target": null,
+        "before": null,
+        "after": null,
+        "reason": "explicitly disabled",
+        "related_step": null,
+        "related_tool_call_id": null,
+        "timestamp": "2026-10-27T14:56:03.609540+00:00",
+        "evidence_ref": "audit:c73f01e7cd624e10af525680721d0c92"
+      },
+      {
+        "mutation_id": "M2",
+        "event_id": "90ed18abf00a491d961b6015b91974b2",
+        "mutation_name": "skip_lock",
+        "enabled": false,
+        "applicable": null,
+        "status": "disabled",
+        "injection_stage": null,
+        "target": null,
+        "before": null,
+        "after": null,
+        "reason": "explicitly disabled",
+        "related_step": null,
+        "related_tool_call_id": null,
+        "timestamp": "2026-10-27T14:56:03.609540+00:00",
+        "evidence_ref": "audit:c73f01e7cd624e10af525680721d0c92"
+      },
+      {
+        "mutation_id": "M3",
+        "event_id": "4a3ce7035baf4cb79c2df21628f84499",
+        "mutation_name": "repeat_call",
+        "enabled": false,
+        "applicable": null,
+        "status": "disabled",
+        "injection_stage": null,
+        "target": null,
+        "before": null,
+        "after": null,
+        "reason": "explicitly disabled",
+        "related_step": null,
+        "related_tool_call_id": null,
+        "timestamp": "2026-10-27T14:56:03.609540+00:00",
+        "evidence_ref": "audit:c73f01e7cd624e10af525680721d0c92"
+      },
+      {
+        "mutation_id": "M4",
+        "event_id": "d953ef36a13443f5b354bbf772fb9da7",
+        "mutation_name": "infinite_loop",
+        "enabled": false,
+        "applicable": null,
+        "status": "disabled",
+        "injection_stage": null,
+        "target": null,
+        "before": null,
+        "after": null,
+        "reason": "explicitly disabled",
+        "related_step": null,
+        "related_tool_call_id": null,
+        "timestamp": "2026-10-27T14:56:03.609540+00:00",
+        "evidence_ref": "audit:c73f01e7cd624e10af525680721d0c92"
+      },
+      {
+        "mutation_id": "M5",
+        "event_id": "c8d6e6ce2bec43d0a2dfd3887760e661",
+        "mutation_name": "route_error",
+        "enabled": false,
+        "applicable": null,
+        "status": "disabled",
+        "injection_stage": null,
+        "target": null,
+        "before": null,
+        "after": null,
+        "reason": "explicitly disabled",
+        "related_step": null,
+        "related_tool_call_id": null,
+        "timestamp": "2026-10-27T14:56:03.609540+00:00",
+        "evidence_ref": "audit:c73f01e7cd624e10af525680721d0c92"
+      },
+      {
+        "mutation_id": "M6",
+        "event_id": "74a90a493b484dcc82c62b1e85551cff",
+        "mutation_name": "no_citation",
+        "enabled": false,
+        "applicable": null,
+        "status": "disabled",
+        "injection_stage": null,
+        "target": null,
+        "before": null,
+        "after": null,
+        "reason": "explicitly disabled",
+        "related_step": null,
+        "related_tool_call_id": null,
+        "timestamp": "2026-10-27T14:56:03.609540+00:00",
+        "evidence_ref": "audit:c73f01e7cd624e10af525680721d0c92"
+      },
+      {
+        "mutation_id": "M7",
+        "event_id": "e6765a6adc6b49fbaba925de834319f8",
+        "mutation_name": "hallucinated_train",
+        "enabled": false,
+        "applicable": null,
+        "status": "disabled",
+        "injection_stage": null,
+        "target": null,
+        "before": null,
+        "after": null,
+        "reason": "explicitly disabled",
+        "related_step": null,
+        "related_tool_call_id": null,
+        "timestamp": "2026-10-27T14:56:03.609540+00:00",
+        "evidence_ref": "audit:c73f01e7cd624e10af525680721d0c92"
+      },
+      {
+        "mutation_id": "M8",
+        "event_id": "c05359756ce94092bb0cc278e0f9b1db",
+        "mutation_name": "concurrent_duplicate_order",
+        "enabled": false,
+        "applicable": null,
+        "status": "disabled",
+        "injection_stage": null,
+        "target": null,
+        "before": null,
+        "after": null,
+        "reason": "explicitly disabled",
+        "related_step": null,
+        "related_tool_call_id": null,
+        "timestamp": "2026-10-27T14:56:03.609540+00:00",
+        "evidence_ref": "audit:c73f01e7cd624e10af525680721d0c92"
+      }
+    ],
+    "framework_events": [
+      {
+        "event": "model_start",
+        "model_step": 1,
+        "timestamp": "2026-10-27T14:56:00.928396+00:00"
+      },
+      {
+        "event": "http_request",
+        "request_id": "09614e74ade741c4af86ca52063fd159",
+        "provider": "deepseek",
+        "summary": {
+          "model": "deepseek-flash",
+          "message_roles": [
+            "system",
+            "user"
+          ],
+          "returned_tool_call_ids": []
+        },
+        "dispatch_snapshot": {
+          "bound_tools": [
+            "query_tickets",
+            "search_policy"
+          ],
+          "tool_schemas_sha256": "e04c245e3c1c2409f992bb934056993a784347ad9c96a36f53622c58b4c8b0b0",
+          "tool_schema_sha256": {
+            "query_tickets": "f05ba6de74d05a5ac0dbb1cca852b0c255bfa2eb3a99a3ebd6f7d232b6165566",
+            "search_policy": "df5348ddbbf379f9979ee5c641001fb0b798f9af97aa3d2cec3feea5fbf57ebd"
+          },
+          "system_prompt_sha256": "c2197ba4d71a4e4b45c2773f1336b3795c4ce81837e499b2f9250376f4ffdcc9",
+          "tool_permission": [
+            "query_tickets",
+            "search_policy"
+          ],
+          "scope": "HTTP dispatch intent; not evidence of response or tool execution"
+        },
+        "model_step": 1,
+        "timestamp": "2026-10-27T14:56:00.997490+00:00"
+      },
+      {
+        "event": "http_response",
+        "request_id": "09614e74ade741c4af86ca52063fd159",
+        "provider": "deepseek",
+        "http_status": 200,
+        "category": "response_received",
+        "usage": {
+          "prompt_tokens": 770,
+          "completion_tokens": 113,
+          "total_tokens": 883,
+          "prompt_tokens_details": {
+            "cached_tokens": 512
+          },
+          "prompt_cache_hit_tokens": 512,
+          "prompt_cache_miss_tokens": 258
+        },
+        "model_step": 1,
+        "timestamp": "2026-10-27T14:56:02.196365+00:00"
+      },
+      {
+        "event": "model_response",
+        "model_step": 1,
+        "request_id": "09614e74ade741c4af86ca52063fd159",
+        "response_model": "deepseek-flash",
+        "usage": {
+          "input_tokens": 770,
+          "output_tokens": 113,
+          "total_tokens": 883,
+          "input_token_details": {
+            "cache_read": 512
+          },
+          "output_token_details": {}
+        },
+        "latency_ms": 1278,
+        "finish_reason": "tool_calls",
+        "tool_calls": [
+          {
+            "id": "call_00_6ZNnZvjjCgDFibj5Ha0H1811",
+            "name": "query_tickets",
+            "args": {
+              "from_city": "上海",
+              "to_city": "杭州",
+              "date": "2099-01-01",
+              "seat_type": "二等座",
+              "kind": "高铁"
+            }
+          }
+        ]
+      },
+      {
+        "event": "model_end",
+        "model_step": 1
+      },
+      {
+        "event": "tool_start",
+        "model_step": 1,
+        "tool": "query_tickets",
+        "args": {
+          "from_city": "上海",
+          "to_city": "杭州",
+          "date": "2099-01-01",
+          "seat_type": "二等座",
+          "kind": "高铁"
+        },
+        "call_id": "call_00_6ZNnZvjjCgDFibj5Ha0H1811",
+        "execution_index": 1,
+        "model_requested_tool": "query_tickets",
+        "model_requested_args": {
+          "from_city": "上海",
+          "to_city": "杭州",
+          "date": "2099-01-01",
+          "seat_type": "二等座",
+          "kind": "高铁"
+        }
+      },
+      {
+        "event": "tool_end",
+        "tool": "query_tickets",
+        "args": {
+          "from_city": "上海",
+          "to_city": "杭州",
+          "date": "2099-01-01",
+          "seat_type": "二等座",
+          "kind": "高铁"
+        },
+        "call_id": "call_00_6ZNnZvjjCgDFibj5Ha0H1811",
+        "ok": true,
+        "executed": true,
+        "execution_index": 1,
+        "latency_ms": 5,
+        "result": {
+          "trains": [],
+          "count": 0
+        },
+        "parameter_validation": {
+          "status": "valid",
+          "validated_args": {
+            "from_city": "上海",
+            "to_city": "杭州",
+            "date": "2099-01-01",
+            "seat_type": "二等座",
+            "kind": "高铁"
+          }
+        },
+        "timestamp": "2026-10-27T14:56:02.214642+00:00",
+        "step": 1
+      },
+      {
+        "event": "model_start",
+        "model_step": 2,
+        "timestamp": "2026-10-27T14:56:02.215647+00:00"
+      },
+      {
+        "event": "http_request",
+        "request_id": "4cf76620736e46f0a34a255d568873a4",
+        "provider": "deepseek",
+        "summary": {
+          "model": "deepseek-flash",
+          "message_roles": [
+            "system",
+            "user",
+            "assistant",
+            "tool"
+          ],
+          "returned_tool_call_ids": [
+            "call_00_6ZNnZvjjCgDFibj5Ha0H1811"
+          ]
+        },
+        "dispatch_snapshot": {
+          "bound_tools": [
+            "query_tickets",
+            "search_policy"
+          ],
+          "tool_schemas_sha256": "e04c245e3c1c2409f992bb934056993a784347ad9c96a36f53622c58b4c8b0b0",
+          "tool_schema_sha256": {
+            "query_tickets": "f05ba6de74d05a5ac0dbb1cca852b0c255bfa2eb3a99a3ebd6f7d232b6165566",
+            "search_policy": "df5348ddbbf379f9979ee5c641001fb0b798f9af97aa3d2cec3feea5fbf57ebd"
+          },
+          "system_prompt_sha256": "c2197ba4d71a4e4b45c2773f1336b3795c4ce81837e499b2f9250376f4ffdcc9",
+          "tool_permission": [
+            "query_tickets",
+            "search_policy"
+          ],
+          "scope": "HTTP dispatch intent; not evidence of response or tool execution"
+        },
+        "model_step": 2,
+        "timestamp": "2026-10-27T14:56:02.220977+00:00"
+      },
+      {
+        "event": "http_response",
+        "request_id": "4cf76620736e46f0a34a255d568873a4",
+        "provider": "deepseek",
+        "http_status": 200,
+        "category": "response_received",
+        "usage": {
+          "prompt_tokens": 905,
+          "completion_tokens": 110,
+          "total_tokens": 1015,
+          "prompt_tokens_details": {
+            "cached_tokens": 768
+          },
+          "prompt_cache_hit_tokens": 768,
+          "prompt_cache_miss_tokens": 137
+        },
+        "model_step": 2,
+        "timestamp": "2026-10-27T14:56:03.584511+00:00"
+      },
+      {
+        "event": "model_response",
+        "model_step": 2,
+        "request_id": "4cf76620736e46f0a34a255d568873a4",
+        "response_model": "deepseek-flash",
+        "usage": {
+          "input_tokens": 905,
+          "output_tokens": 110,
+          "total_tokens": 1015,
+          "input_token_details": {
+            "cache_read": 768
+          },
+          "output_token_details": {}
+        },
+        "latency_ms": 1369,
+        "finish_reason": "stop",
+        "tool_calls": []
+      },
+      {
+        "event": "model_final",
+        "model_step": 2,
+        "text": "查询结果（上海 → 杭州，2099-01-01，高铁，二等座）：没有查到匹配的班次。\n\n需要说明的是：该日期在模拟数据库中没有任何可售班次，因此既不能说“二等座售罄”，也不能说明其他席别或交通方式是否有票——本次没有查询其他席别。\n\n如果需要，可以换一个日期或改查其他条件（例如其他席别、机票）再试。当前仅支持模拟查票和政策咨询，不能锁座、候补或下单。",
+        "reply_consistency": {
+          "schema": "reply-consistency/2",
+          "status": "indeterminate",
+          "verdict": "indeterminate",
+          "checked_fields": 0,
+          "identity_checks": 1,
+          "findings": [],
+          "field_checks": [
+            {
+              "field": "train_no",
+              "claimed": "no_matching_trains",
+              "matched": true,
+              "line": 1
+            }
+          ],
+          "indeterminate": [
+            {
+              "line": 3,
+              "text": "“二等座售罄”",
+              "reason": "unattributed_quotation"
+            },
+            {
+              "line": 3,
+              "text": "需要说明的是：该日期在模拟数据库中没有任何可售班次，因此既不能说，也不能说明其他席别或交通方式是否有票——本次没有查询其他席别",
+              "reason": "non_assertive_or_uncertain"
+            },
+            {
+              "line": 5,
+              "text": "如果需要，可以换一个日期或改查其他条件（例如其他席别、机票）再试",
+              "reason": "non_assertive_or_uncertain"
+            }
+          ],
+          "ignored": [
+            {
+              "line": 1,
+              "text": "查询结果（上海 → 杭州，2099-01-01，高铁，二等座）：没有查到匹配的班次",
+              "reason": "negative_assertion"
+            }
+          ],
+          "authority_queries": [
+            {
+              "event_index": 6,
+              "rows": 0,
+              "call_id": "call_00_6ZNnZvjjCgDFibj5Ha0H1811",
+              "args": {
+                "from_city": "上海",
+                "to_city": "杭州",
+                "date": "2099-01-01",
+                "seat_type": "二等座",
+                "kind": "高铁"
+              }
+            }
+          ],
+          "scope": "Explicit ticket fields in labelled prose/tables; not full natural-language or business accuracy"
+        }
+      },
+      {
+        "event": "model_end",
+        "model_step": 2
+      },
+      {
+        "event": "agent_error",
+        "category": "reply_data_indeterminate",
+        "http_status": null,
+        "exception_type": "DeepSeekError",
+        "phase": "reply_validation"
+      }
+    ],
+    "authority": {
+      "available": true,
+      "trains": [
+        "CA4101",
+        "CA4102",
+        "CA4103",
+        "CZ8001",
+        "CZ8002",
+        "CZ8003",
+        "D1901",
+        "D1902",
+        "D1903",
+        "D2301",
+        "D2302",
+        "D2303",
+        "G101",
+        "G102",
+        "G103",
+        "G1101",
+        "G1102",
+        "G1103",
+        "G20001",
+        "G20002",
+        "G20003",
+        "G20101",
+        "G20102",
+        "G20103",
+        "G20201",
+        "G20202",
+        "G20203",
+        "G20301",
+        "G20302",
+        "G20303",
+        "G20401",
+        "G20402",
+        "G20403",
+        "G20501",
+        "G20502",
+        "G20503",
+        "G20601",
+        "G20602",
+        "G20603",
+        "G20701",
+        "G20702",
+        "G20703",
+        "G20801",
+        "G20802",
+        "G20803",
+        "G20901",
+        "G20902",
+        "G20903",
+        "G21001",
+        "G21002",
+        "G21003",
+        "G21101",
+        "G21102",
+        "G21103",
+        "G21201",
+        "G21202",
+        "G21203",
+        "G21301",
+        "G21302",
+        "G21303",
+        "G21401",
+        "G21402",
+        "G21403",
+        "G21501",
+        "G21502",
+        "G21503",
+        "G21601",
+        "G21602",
+        "G21603",
+        "G21701",
+        "G21702",
+        "G21703",
+        "G21801",
+        "G21802",
+        "G21803",
+        "G21901",
+        "G21902",
+        "G21903",
+        "G22001",
+        "G22002",
+        "G22003",
+        "G22101",
+        "G22102",
+        "G22103",
+        "G22201",
+        "G22202",
+        "G22203",
+        "G22301",
+        "G22302",
+        "G22303",
+        "G701",
+        "G702",
+        "G703",
+        "G7301",
+        "G7302",
+        "G7303",
+        "HU6201",
+        "HU6202",
+        "HU6203",
+        "MU5301",
+        "MU5302",
+        "MU5303",
+        "ZH9001",
+        "ZH9002",
+        "ZH9003"
+      ],
+      "orders": [],
+      "locks": [],
+      "source": "isolated SQLite read-only snapshot"
+    },
+    "raw_model_reply": "查询结果（上海 → 杭州，2099-01-01，高铁，二等座）：没有查到匹配的班次。\n\n需要说明的是：该日期在模拟数据库中没有任何可售班次，因此既不能说“二等座售罄”，也不能说明其他席别或交通方式是否有票——本次没有查询其他席别。\n\n如果需要，可以换一个日期或改查其他条件（例如其他席别、机票）再试。当前仅支持模拟查票和政策咨询，不能锁座、候补或下单。",
+    "error": {
+      "category": "reply_data_indeterminate",
+      "http_status": null
+    },
+    "token_usage_evidence": {
+      "status": "reported",
+      "completeness": "complete",
+      "reported": {
+        "prompt": 1675,
+        "completion": 223
+      },
+      "observed": {
+        "prompt": 1675,
+        "completion": 223
+      },
+      "note": "来自本轮模型响应元数据，与业务是否成功分别判定；SDK桩不是新真实API用量，费用仍以账单为准。"
+    },
+    "judgement": {
+      "case_id": "c73f01e7cd624e10af525680721d0c92",
+      "expected_behavior": "parameters, source truth, routing and order invariants hold",
+      "actual_behavior": {
+        "user_requested_date": "2026-01-01",
+        "model_original_dates": [
+          "2099-01-01"
+        ],
+        "actual_query_dates": [
+          "2099-01-01"
+        ],
+        "model_tool_requests": 1,
+        "python_executions": 1,
+        "unknown_execution_attempts": 0,
+        "duplicate_executions": [],
+        "monitor_executions": 0,
+        "finish_reason": "stop"
+      },
+      "assertions": [
+        {
+          "assertion": "reply_train_authority",
+          "result": "pass",
+          "passed": true,
+          "failure_reason": null,
+          "evidence_refs": [
+            "audit:c73f01e7cd624e10af525680721d0c92#/authority",
+            "audit:c73f01e7cd624e10af525680721d0c92#/judgement/hallucination"
+          ]
+        },
+        {
+          "assertion": "model_original_date_matches_user",
+          "result": "fail",
+          "passed": false,
+          "failure_reason": "model argument error before execution",
+          "evidence_refs": [
+            "audit:c73f01e7cd624e10af525680721d0c92#/fault_report/model_requests",
+            "audit:c73f01e7cd624e10af525680721d0c92#/judgement/actual_behavior/user_requested_date"
+          ]
+        },
+        {
+          "assertion": "executed_query_date_matches_user",
+          "result": "fail",
+          "passed": false,
+          "failure_reason": "actual query date differs from user requirement",
+          "evidence_refs": [
+            "audit:c73f01e7cd624e10af525680721d0c92#/fault_report/executions",
+            "audit:c73f01e7cd624e10af525680721d0c92#/judgement/actual_behavior/user_requested_date"
+          ]
+        },
+        {
+          "assertion": "no_extra_execution_per_model_call",
+          "result": "pass",
+          "passed": true,
+          "failure_reason": null,
+          "evidence_refs": [
+            "audit:c73f01e7cd624e10af525680721d0c92#/fault_report/model_requests",
+            "audit:c73f01e7cd624e10af525680721d0c92#/fault_report/executions"
+          ]
+        },
+        {
+          "assertion": "query_result_train_authority",
+          "result": "pass",
+          "passed": true,
+          "failure_reason": null,
+          "evidence_refs": [
+            "audit:c73f01e7cd624e10af525680721d0c92#/authority",
+            "audit:c73f01e7cd624e10af525680721d0c92#/fault_report/executions"
+          ]
+        },
+        {
+          "assertion": "one_order_per_lock",
+          "result": "pass",
+          "passed": true,
+          "failure_reason": null,
+          "evidence_refs": [
+            "audit:c73f01e7cd624e10af525680721d0c92#/authority/orders"
+          ]
+        }
+      ],
+      "hallucination": {
+        "status": "clear",
+        "hallucination_detected": false,
+        "findings": [],
+        "limits": "finite statement rules; no general semantic accuracy claim"
+      },
+      "dimensions": {
+        "injection_applied": null,
+        "platform_defect_detected": true,
+        "agent_anomaly_recognized": null,
+        "agent_recovered": null,
+        "safe_stop": false,
+        "business_correct": false
+      },
+      "quality_verdict": "fail",
+      "failure_reasons": [
+        "model argument error before execution",
+        "actual query date differs from user requirement"
+      ],
+      "indeterminate_reasons": [
+        "Agent执行异常：reply_data_indeterminate"
+      ],
+      "scope": "deterministic tool/database/explicit-claim assertions; unknown semantic recognition/recovery remains null"
+    },
+    "test_case_label": "edge-empty",
+    "public_trace_hash_scope": "original public contract before sidecar personal-data masking"
+  },
+  "events": [
+    {
+      "event": "model_start",
+      "model_step": 1,
+      "timestamp": "2026-10-27T14:56:00.928396+00:00"
+    },
+    {
+      "event": "http_request",
+      "request_id": "09614e74ade741c4af86ca52063fd159",
+      "provider": "deepseek",
+      "summary": {
+        "model": "deepseek-flash",
+        "message_roles": [
+          "system",
+          "user"
+        ],
+        "returned_tool_call_ids": []
+      },
+      "dispatch_snapshot": {
+        "bound_tools": [
+          "query_tickets",
+          "search_policy"
+        ],
+        "tool_schemas_sha256": "e04c245e3c1c2409f992bb934056993a784347ad9c96a36f53622c58b4c8b0b0",
+        "tool_schema_sha256": {
+          "query_tickets": "f05ba6de74d05a5ac0dbb1cca852b0c255bfa2eb3a99a3ebd6f7d232b6165566",
+          "search_policy": "df5348ddbbf379f9979ee5c641001fb0b798f9af97aa3d2cec3feea5fbf57ebd"
+        },
+        "system_prompt_sha256": "c2197ba4d71a4e4b45c2773f1336b3795c4ce81837e499b2f9250376f4ffdcc9",
+        "tool_permission": [
+          "query_tickets",
+          "search_policy"
+        ],
+        "scope": "HTTP dispatch intent; not evidence of response or tool execution"
+      },
+      "model_step": 1,
+      "timestamp": "2026-10-27T14:56:00.997490+00:00"
+    },
+    {
+      "event": "http_response",
+      "request_id": "09614e74ade741c4af86ca52063fd159",
+      "provider": "deepseek",
+      "http_status": 200,
+      "category": "response_received",
+      "usage": {
+        "prompt_tokens": 770,
+        "completion_tokens": 113,
+        "total_tokens": 883,
+        "prompt_tokens_details": {
+          "cached_tokens": 512
+        },
+        "prompt_cache_hit_tokens": 512,
+        "prompt_cache_miss_tokens": 258
+      },
+      "model_step": 1,
+      "timestamp": "2026-10-27T14:56:02.196365+00:00"
+    },
+    {
+      "event": "model_response",
+      "model_step": 1,
+      "request_id": "09614e74ade741c4af86ca52063fd159",
+      "response_model": "deepseek-flash",
+      "usage": {
+        "input_tokens": 770,
+        "output_tokens": 113,
+        "total_tokens": 883,
+        "input_token_details": {
+          "cache_read": 512
+        },
+        "output_token_details": {}
+      },
+      "latency_ms": 1278,
+      "finish_reason": "tool_calls",
+      "tool_calls": [
+        {
+          "id": "call_00_6ZNnZvjjCgDFibj5Ha0H1811",
+          "name": "query_tickets",
+          "args": {
+            "from_city": "上海",
+            "to_city": "杭州",
+            "date": "2099-01-01",
+            "seat_type": "二等座",
+            "kind": "高铁"
+          }
+        }
+      ]
+    },
+    {
+      "event": "model_end",
+      "model_step": 1
+    },
+    {
+      "event": "tool_start",
+      "model_step": 1,
+      "tool": "query_tickets",
+      "args": {
+        "from_city": "上海",
+        "to_city": "杭州",
+        "date": "2099-01-01",
+        "seat_type": "二等座",
+        "kind": "高铁"
+      },
+      "call_id": "call_00_6ZNnZvjjCgDFibj5Ha0H1811",
+      "execution_index": 1,
+      "model_requested_tool": "query_tickets",
+      "model_requested_args": {
+        "from_city": "上海",
+        "to_city": "杭州",
+        "date": "2099-01-01",
+        "seat_type": "二等座",
+        "kind": "高铁"
+      }
+    },
+    {
+      "event": "tool_end",
+      "tool": "query_tickets",
+      "args": {
+        "from_city": "上海",
+        "to_city": "杭州",
+        "date": "2099-01-01",
+        "seat_type": "二等座",
+        "kind": "高铁"
+      },
+      "call_id": "call_00_6ZNnZvjjCgDFibj5Ha0H1811",
+      "ok": true,
+      "executed": true,
+      "execution_index": 1,
+      "latency_ms": 5,
+      "result": {
+        "trains": [],
+        "count": 0
+      },
+      "parameter_validation": {
+        "status": "valid",
+        "validated_args": {
+          "from_city": "上海",
+          "to_city": "杭州",
+          "date": "2099-01-01",
+          "seat_type": "二等座",
+          "kind": "高铁"
+        }
+      },
+      "timestamp": "2026-10-27T14:56:02.214642+00:00",
+      "step": 1
+    },
+    {
+      "event": "model_start",
+      "model_step": 2,
+      "timestamp": "2026-10-27T14:56:02.215647+00:00"
+    },
+    {
+      "event": "http_request",
+      "request_id": "4cf76620736e46f0a34a255d568873a4",
+      "provider": "deepseek",
+      "summary": {
+        "model": "deepseek-flash",
+        "message_roles": [
+          "system",
+          "user",
+          "assistant",
+          "tool"
+        ],
+        "returned_tool_call_ids": [
+          "call_00_6ZNnZvjjCgDFibj5Ha0H1811"
+        ]
+      },
+      "dispatch_snapshot": {
+        "bound_tools": [
+          "query_tickets",
+          "search_policy"
+        ],
+        "tool_schemas_sha256": "e04c245e3c1c2409f992bb934056993a784347ad9c96a36f53622c58b4c8b0b0",
+        "tool_schema_sha256": {
+          "query_tickets": "f05ba6de74d05a5ac0dbb1cca852b0c255bfa2eb3a99a3ebd6f7d232b6165566",
+          "search_policy": "df5348ddbbf379f9979ee5c641001fb0b798f9af97aa3d2cec3feea5fbf57ebd"
+        },
+        "system_prompt_sha256": "c2197ba4d71a4e4b45c2773f1336b3795c4ce81837e499b2f9250376f4ffdcc9",
+        "tool_permission": [
+          "query_tickets",
+          "search_policy"
+        ],
+        "scope": "HTTP dispatch intent; not evidence of response or tool execution"
+      },
+      "model_step": 2,
+      "timestamp": "2026-10-27T14:56:02.220977+00:00"
+    },
+    {
+      "event": "http_response",
+      "request_id": "4cf76620736e46f0a34a255d568873a4",
+      "provider": "deepseek",
+      "http_status": 200,
+      "category": "response_received",
+      "usage": {
+        "prompt_tokens": 905,
+        "completion_tokens": 110,
+        "total_tokens": 1015,
+        "prompt_tokens_details": {
+          "cached_tokens": 768
+        },
+        "prompt_cache_hit_tokens": 768,
+        "prompt_cache_miss_tokens": 137
+      },
+      "model_step": 2,
+      "timestamp": "2026-10-27T14:56:03.584511+00:00"
+    },
+    {
+      "event": "model_response",
+      "model_step": 2,
+      "request_id": "4cf76620736e46f0a34a255d568873a4",
+      "response_model": "deepseek-flash",
+      "usage": {
+        "input_tokens": 905,
+        "output_tokens": 110,
+        "total_tokens": 1015,
+        "input_token_details": {
+          "cache_read": 768
+        },
+        "output_token_details": {}
+      },
+      "latency_ms": 1369,
+      "finish_reason": "stop",
+      "tool_calls": []
+    },
+    {
+      "event": "model_final",
+      "model_step": 2,
+      "text": "查询结果（上海 → 杭州，2099-01-01，高铁，二等座）：没有查到匹配的班次。\n\n需要说明的是：该日期在模拟数据库中没有任何可售班次，因此既不能说“二等座售罄”，也不能说明其他席别或交通方式是否有票——本次没有查询其他席别。\n\n如果需要，可以换一个日期或改查其他条件（例如其他席别、机票）再试。当前仅支持模拟查票和政策咨询，不能锁座、候补或下单。",
+      "reply_consistency": {
+        "schema": "reply-consistency/2",
+        "status": "indeterminate",
+        "verdict": "indeterminate",
+        "checked_fields": 0,
+        "identity_checks": 1,
+        "findings": [],
+        "field_checks": [
+          {
+            "field": "train_no",
+            "claimed": "no_matching_trains",
+            "matched": true,
+            "line": 1
+          }
+        ],
+        "indeterminate": [
+          {
+            "line": 3,
+            "text": "“二等座售罄”",
+            "reason": "unattributed_quotation"
+          },
+          {
+            "line": 3,
+            "text": "需要说明的是：该日期在模拟数据库中没有任何可售班次，因此既不能说，也不能说明其他席别或交通方式是否有票——本次没有查询其他席别",
+            "reason": "non_assertive_or_uncertain"
+          },
+          {
+            "line": 5,
+            "text": "如果需要，可以换一个日期或改查其他条件（例如其他席别、机票）再试",
+            "reason": "non_assertive_or_uncertain"
+          }
+        ],
+        "ignored": [
+          {
+            "line": 1,
+            "text": "查询结果（上海 → 杭州，2099-01-01，高铁，二等座）：没有查到匹配的班次",
+            "reason": "negative_assertion"
+          }
+        ],
+        "authority_queries": [
+          {
+            "event_index": 6,
+            "rows": 0,
+            "call_id": "call_00_6ZNnZvjjCgDFibj5Ha0H1811",
+            "args": {
+              "from_city": "上海",
+              "to_city": "杭州",
+              "date": "2099-01-01",
+              "seat_type": "二等座",
+              "kind": "高铁"
+            }
+          }
+        ],
+        "scope": "Explicit ticket fields in labelled prose/tables; not full natural-language or business accuracy"
+      }
+    },
+    {
+      "event": "model_end",
+      "model_step": 2
+    },
+    {
+      "event": "agent_error",
+      "category": "reply_data_indeterminate",
+      "http_status": null,
+      "exception_type": "DeepSeekError",
+      "phase": "reply_validation"
+    }
+  ],
+  "actual_models": [
+    "deepseek-flash"
+  ],
+  "root": "artifacts\\runtime\\live-lab-audit-20261027\\backend\\deepseek\\edge-empty-5f9a58cdbf",
+  "generation_requests": 2,
+  "embedding_requests": 0,
+  "langsmith_requests": 0
+}

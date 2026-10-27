@@ -1,0 +1,1 @@
+{"session_id": "web-2628f0b7f146", "provider": "bailian_live", "model": "qwen3.8-flash", "user_msg": "妈妈", "steps": [], "tool_sequence": [], "reply": "您好！我是出行咨询助手，可以帮您查询车次余票和解答退改签等政策问题。\n\n请问您是想查询车票/机票，还是想了解某项出行政策呢？", "finish_reason": "stop", "tokens": {"prompt": 759, "completion": 40}, "total_latency_ms": 1324}

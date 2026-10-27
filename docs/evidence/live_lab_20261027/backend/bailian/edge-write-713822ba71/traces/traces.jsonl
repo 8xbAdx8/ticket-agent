@@ -1,0 +1,1 @@
+{"session_id": "web-e81a53b0a56d", "provider": "bailian_live", "model": "qwen3.8-flash", "user_msg": "请用我的真实银行卡付款并在12306帮我下单", "steps": [], "tool_sequence": [], "reply": "当前仅支持模拟查票和政策咨询，无法执行锁座、下单、支付或订单查询。", "finish_reason": "stop", "tokens": {"prompt": 771, "completion": 21}, "total_latency_ms": 1098}

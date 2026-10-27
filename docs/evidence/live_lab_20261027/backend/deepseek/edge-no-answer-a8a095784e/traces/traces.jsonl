@@ -1,0 +1,1 @@
+{"session_id": "web-1b2f5fecaea5", "provider": "deepseek_live", "model": "deepseek-flash", "user_msg": "模拟票务政策中，去火星需要几天隔离？", "steps": [], "tool_sequence": [], "reply": "这个问题和票务政策无关，虚构票务知识库里也没有火星旅行或隔离相关的条目，我无法给出答案。当前仅支持模拟查票和政策咨询，且只覆盖高铁、机票的退改签、儿童票、行李等常规票务规则。", "finish_reason": "stop", "tokens": {"prompt": 767, "completion": 55}, "total_latency_ms": 1347}

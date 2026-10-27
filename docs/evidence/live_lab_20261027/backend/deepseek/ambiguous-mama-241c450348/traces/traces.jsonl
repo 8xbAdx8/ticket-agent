@@ -1,0 +1,1 @@
+{"session_id": "web-6d6e00b6555d", "provider": "deepseek_live", "model": "deepseek-flash", "user_msg": "妈妈", "steps": [], "tool_sequence": [], "reply": "您好，我在。请问需要查询哪条线路的车票或机票？可以说一下出发城市、到达城市和日期，我帮您查询虚构余票；如果是退改签、儿童票等规则问题，我也可以帮您检索政策。当前仅支持模拟查票和政策咨询。", "finish_reason": "stop", "tokens": {"prompt": 756, "completion": 60}, "total_latency_ms": 1451}
