@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="2" skipped="0" tests="61" time="10.938" timestamp="2026-10-27T13:16:52.325944+08:00" hostname="LAPTOP-JRNNDCUQ"><testcase classname="tests.test_trace_quality_consistency.HistoricalParserTests" name="test_both_real_clarifications_have_no_unverifiable_ticket_claim" time="0.019" /><testcase classname="tests.test_trace_quality_consistency.HistoricalParserTests" name="test_non_ticket_quotes_and_sample_questions_are_not_ticket_assertions" time="0.001" /><testcase classname="tests.test_trace_quality_consistency.HistoricalParserTests" name="test_original_train_response_25_fields_already_match_current_code" time="0.002" /><testcase classname="tests.test_trace_quality_consistency.HistoricalParserTests" name="test_quoted_invented_ticket_fact_is_still_blocked" time="0.001" /><testcase classname="tests.test_trace_quality_consistency.HistoricalParserTests" name="test_user_attribution_does_not_hide_a_later_quoted_result" time="0.001" /><testcase classname="tests.test_trace_quality_consistency.QualityEvidenceTests" name="test_backend_error_is_not_an_empty_failure" time="0.003" /><testcase classname="tests.test_trace_quality_consistency.QualityEvidenceTests" name="test_historical_error_placeholder_is_not_labelled_a_returned_answer" time="0.786" /><testcase classname="tests.test_trace_quality_consistency.QualityEvidenceTests" name="test_raw_answer_is_checked_even_if_failure_placeholder_hides_it" time="0.002" /><testcase classname="tests.test_trace_quality_consistency.QualityEvidenceTests" name="test_runtime_failure_always_has_an_explicit_reason" time="0.001" /><testcase classname="tests.test_trace_quality_consistency.QualityEvidenceTests" name="test_successful_zero_tool_clarification_is_not_failed_or_business_pass" time="0.001" /><testcase classname="tests.test_trace_quality_consistency.QualityEvidenceTests" name="test_uncertain_reply_has_reason_and_is_not_a_confirmed_failure" time="0.001" /><testcase classname="tests.test_trace_quality_consistency.TokenEvidenceTests" name="test_complete_usage_is_independent_of_later_validation_failure" time="0.002" /><testcase classname="tests.test_trace_quality_consistency.TokenEvidenceTests" name="test_missing_second_usage_does_not_claim_complete" time="0.001" /><testcase classname="tests.test_trace_quality_consistency.TokenEvidenceTests" name="test_no_response_is_unknown_and_explicitly_reported_zero_is_preserved" time="0.001" /><testcase classname="tests.test_trace_quality_consistency.TokenEvidenceTests" name="test_second_request_timeout_preserves_partial_usage_without_fabricated_total" time="0.001" /><testcase classname="tests.test_trace_quality_consistency.ProviderReplyTests" name="test_bailian_bad_usage" time="0.660" /><testcase classname="tests.test_trace_quality_consistency.ProviderReplyTests" name="test_bailian_clarification" time="0.059" /><testcase classname="tests.test_trace_quality_consistency.ProviderReplyTests" name="test_bailian_mismatch" time="0.086" /><testcase classname="tests.test_trace_quality_consistency.ProviderReplyTests" name="test_bailian_timeout" time="0.070" /><testcase classname="tests.test_trace_quality_consistency.ProviderReplyTests" name="test_bailian_uncertain" time="0.068" /><testcase classname="tests.test_trace_quality_consistency.ProviderReplyTests" name="test_bailian_web" time="0.080"><failure message="ValueError: UI runtime must stay in isolated artifacts/runtime">self = &lt;test_trace_quality_consistency.ProviderReplyTests testMethod=test_bailian_web&gt;
+
+    def run(self):
+&gt;       self.run_scenario(provider, scenario)
+
+tests\test_trace_quality_consistency.py:244: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\test_trace_quality_consistency.py:177: in run_scenario
+    session=Conversation('user',engine='langchain',live=True,live_provider=provider,
+&lt;string&gt;:21: in __init__
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = Conversation(mode='user', engine='langchain', live=True, live_provider='bailian', live_model=None, case_id=None, initi...p/tmp6m386vsm'), sid='mom', history=[], results=[], audits=[], agent=None, error=None, receipts={}, remote_receipts=[])
+
+    def __post_init__(self):
+        if self.mode not in ("user", "lab"):
+            raise ValueError("Unknown UI mode")
+        if self.mode == "user" and self.mutations:
+            raise ValueError("普通用户模式不能注入变异")
+        if self.live and self.engine != "langchain":
+            raise ValueError("Live requires LangChain")
+        if self.live and self.live_provider not in ("deepseek","bailian"):
+            raise ValueError("Unknown Live provider")
+        self.root = Path(self.root) if self.root else ROOT/"artifacts/runtime/v33"/self.mode/self.sid
+        base=(ROOT/"artifacts/runtime").resolve()
+        if not self.root.resolve().is_relative_to(base) or self.root.resolve()==base:
+&gt;           raise ValueError("UI runtime must stay in isolated artifacts/runtime")
+E           ValueError: UI runtime must stay in isolated artifacts/runtime
+
+web\runtime.py:98: ValueError</failure></testcase><testcase classname="tests.test_trace_quality_consistency.ProviderReplyTests" name="test_deepseek_bad_usage" time="0.066" /><testcase classname="tests.test_trace_quality_consistency.ProviderReplyTests" name="test_deepseek_clarification" time="0.071" /><testcase classname="tests.test_trace_quality_consistency.ProviderReplyTests" name="test_deepseek_mismatch" time="0.104" /><testcase classname="tests.test_trace_quality_consistency.ProviderReplyTests" name="test_deepseek_timeout" time="0.063" /><testcase classname="tests.test_trace_quality_consistency.ProviderReplyTests" name="test_deepseek_uncertain" time="0.086" /><testcase classname="tests.test_trace_quality_consistency.ProviderReplyTests" name="test_deepseek_web" time="0.035"><failure message="ValueError: UI runtime must stay in isolated artifacts/runtime">self = &lt;test_trace_quality_consistency.ProviderReplyTests testMethod=test_deepseek_web&gt;
+
+    def run(self):
+&gt;       self.run_scenario(provider, scenario)
+
+tests\test_trace_quality_consistency.py:244: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\test_trace_quality_consistency.py:177: in run_scenario
+    session=Conversation('user',engine='langchain',live=True,live_provider=provider,
+&lt;string&gt;:21: in __init__
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = Conversation(mode='user', engine='langchain', live=True, live_provider='deepseek', live_model=None, case_id=None, init...p/tmpnvnuw4lq'), sid='mom', history=[], results=[], audits=[], agent=None, error=None, receipts={}, remote_receipts=[])
+
+    def __post_init__(self):
+        if self.mode not in ("user", "lab"):
+            raise ValueError("Unknown UI mode")
+        if self.mode == "user" and self.mutations:
+            raise ValueError("普通用户模式不能注入变异")
+        if self.live and self.engine != "langchain":
+            raise ValueError("Live requires LangChain")
+        if self.live and self.live_provider not in ("deepseek","bailian"):
+            raise ValueError("Unknown Live provider")
+        self.root = Path(self.root) if self.root else ROOT/"artifacts/runtime/v33"/self.mode/self.sid
+        base=(ROOT/"artifacts/runtime").resolve()
+        if not self.root.resolve().is_relative_to(base) or self.root.resolve()==base:
+&gt;           raise ValueError("UI runtime must stay in isolated artifacts/runtime")
+E           ValueError: UI runtime must stay in isolated artifacts/runtime
+
+web\runtime.py:98: ValueError</failure></testcase><testcase classname="tests.test_deepseek_readonly_quality.ReadOnlyQualityTests" name="test_all_http_categories_fail_closed_without_retry_or_success_trace" time="0.355" /><testcase classname="tests.test_deepseek_readonly_quality.ReadOnlyQualityTests" name="test_cli_failure_has_exit_two_null_tokens_and_no_fake_normal_record" time="0.078" /><testcase classname="tests.test_deepseek_readonly_quality.ReadOnlyQualityTests" name="test_cli_success_status_is_historical_and_not_full_live_acceptance" time="0.062" /><testcase classname="tests.test_deepseek_readonly_quality.ReadOnlyQualityTests" name="test_exhausted_budget_never_enters_mock_transport" time="0.089" /><testcase classname="tests.test_deepseek_readonly_quality.ReadOnlyQualityTests" name="test_failure_does_not_pollute_followup_protocol_or_other_session" time="0.189" /><testcase classname="tests.test_deepseek_readonly_quality.ReadOnlyQualityTests" name="test_false_backend_flag_and_model_false_success_are_not_hidden" time="0.086" /><testcase classname="tests.test_deepseek_readonly_quality.ReadOnlyQualityTests" name="test_invitation_is_rejected_and_raw_final_is_preserved_not_rewritten" time="0.418" /><testcase classname="tests.test_deepseek_readonly_quality.ReadOnlyQualityTests" name="test_malformed_tool_call_is_auditable_and_never_executes" time="0.085" /><testcase classname="tests.test_deepseek_readonly_quality.ReadOnlyQualityTests" name="test_policy_rules_and_readonly_disclosure_are_not_misclassified" time="0.036" /><testcase classname="tests.test_deepseek_readonly_quality.ReadOnlyQualityTests" name="test_readonly_prompt_and_unmodified_legitimate_reply" time="0.075" /><testcase classname="tests.test_deepseek_readonly_quality.ReadOnlyQualityTests" name="test_save_trace_false_does_not_create_failure_or_success_files" time="0.045" /><testcase classname="tests.test_deepseek_readonly_quality.ReadOnlyQualityTests" name="test_timeout_and_connection_failure_do_not_retry_or_refund_reservation" time="0.095" /><testcase classname="tests.test_deepseek_readonly_quality.ReadOnlyQualityTests" name="test_unknown_second_usage_keeps_real_calls_and_only_observed_tokens" time="0.085" /><testcase classname="tests.test_deepseek_readonly_quality.ReadOnlyQualityTests" name="test_web_readonly_options_and_error_do_not_show_model_false_success" time="4.121" /></testsuite></testsuites>

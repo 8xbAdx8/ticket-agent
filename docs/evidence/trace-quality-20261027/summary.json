@@ -1,0 +1,101 @@
+{
+  "schema": "ticket-trace-quality-fix/1",
+  "date": "2026-10-27",
+  "source_branch": "codex/fix-trace-quality-20261027",
+  "tested_source_commit": "4eaddd0508588a7df0b36dc030adf04c59f19471",
+  "baseline_commit": "957e5cb0fd7a8c07ea1cc2486e500ee5cf9254c4",
+  "historical_trace_ids": [
+    "cbe8c088462046d99e49f322136c47d1",
+    "2a8a65c47f604739a0547e1323ba7c23",
+    "6ed4d02f56244449ba992e803c86f200"
+  ],
+  "status": "passed",
+  "new_targeted_tests": {
+    "passed": 27,
+    "failed": 0,
+    "skipped": 0,
+    "subtests_passed": 2
+  },
+  "related_initial_targeted": {
+    "passed": 121,
+    "failed": 0,
+    "subtests_passed": 18
+  },
+  "pytest": {
+    "passed": 622,
+    "subtests_passed": 96,
+    "junit": {
+      "tests": 718,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  },
+  "old_environment_regression": {
+    "status": "passed",
+    "scope": "A offline regression, not B official 100 cases",
+    "real_keys_removed_from_children": true,
+    "non_loopback_python_network_blocked": true,
+    "blocked_network_attempts": 0,
+    "new_deepseek_api_requests": 0,
+    "production_budget_and_live_evidence_unchanged": true,
+    "checked_file_count": 361,
+    "runs": [
+      {
+        "name": "deepseek_unit",
+        "exit_code": 0,
+        "tests": 622,
+        "skipped": 24,
+        "log": "deepseek_unit.txt"
+      },
+      {
+        "name": "v3_unit",
+        "exit_code": 0,
+        "tests": 622,
+        "skipped": 112,
+        "log": "v3_unit.txt"
+      },
+      {
+        "name": "v2_unit",
+        "exit_code": 0,
+        "tests": 622,
+        "skipped": 247,
+        "log": "v2_unit.txt"
+      },
+      {
+        "name": "mock_smoke",
+        "exit_code": 0,
+        "tests": null,
+        "skipped": 0,
+        "log": "mock_smoke.txt"
+      }
+    ]
+  },
+  "original_mutation_matrix": {
+    "name": "v32_audit_matrix",
+    "exit_code": 0,
+    "expected_exit_code": 0,
+    "passed": true
+  },
+  "rag_eight_mutations": {
+    "name": "rag_eight_mutations",
+    "exit_code": 0,
+    "collected": null,
+    "skipped": 0
+  },
+  "retention": {
+    "protected_files": 13133,
+    "changed_original_files": []
+  },
+  "new_model_requests": 0,
+  "new_embedding_requests": 0,
+  "langsmith_requests": 0,
+  "blocked_network_attempts": 0,
+  "source_contract_modified": false,
+  "business_tools_modified": false,
+  "formal_B_tests_modified": false,
+  "historical_train_followup_already_fixed_in": "22a1c75cffb96400a148ba83f73bbdfc00a7a690",
+  "initial_full_failure_explanation": "Extra process TICKET_LANGSMITH_EXPORT_ENABLED=false disabled 8 existing LangSmith MockTransport tests; removed test-launch override, retained socket guard, reran unchanged assertions.",
+  "initial_targeted_failures_explanation": "Before-fix assertions also included new fixture assumptions; web fixture initially violated the existing workspace-only runtime guard. Only A fixtures were corrected; security guard and original tests unchanged.",
+  "verification_mode": "offline historical replay, real SDK MockTransport and Streamlit AppTest; no new paid or remote validation"
+}

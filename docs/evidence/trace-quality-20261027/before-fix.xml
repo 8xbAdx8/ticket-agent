@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="10" skipped="0" tests="13" time="2.943" timestamp="2026-10-27T13:12:45.672893+08:00" hostname="LAPTOP-JRNNDCUQ"><testcase classname="tests.test_trace_quality_consistency.HistoricalParserTests" name="test_both_real_clarifications_have_no_unverifiable_ticket_claim" time="0.354"><failure message="AssertionError: 'indeterminate' != 'not_verified'&#10;- indeterminate&#10;+ not_verified">self = &lt;test_trace_quality_consistency.HistoricalParserTests testMethod=test_both_real_clarifications_have_no_unverifiable_ticket_claim&gt;
+
+    def test_both_real_clarifications_have_no_unverifiable_ticket_claim(self):
+        for row in HISTORY:
+            if row['user_msg'] != '妈妈':
+                continue
+            with self.subTest(trace_id=row['trace_id']):
+                before = copy.deepcopy(row)
+                verdict = check(row['raw_model_reply'], row['events'])
+&gt;               self.assertEqual(verdict['status'], 'not_verified')
+E               AssertionError: 'indeterminate' != 'not_verified'
+E               - indeterminate
+E               + not_verified
+
+tests\test_trace_quality_consistency.py:22: AssertionError</failure><failure message="AssertionError: 'indeterminate' != 'not_verified'&#10;- indeterminate&#10;+ not_verified">self = &lt;test_trace_quality_consistency.HistoricalParserTests testMethod=test_both_real_clarifications_have_no_unverifiable_ticket_claim&gt;
+
+    def test_both_real_clarifications_have_no_unverifiable_ticket_claim(self):
+        for row in HISTORY:
+            if row['user_msg'] != '妈妈':
+                continue
+            with self.subTest(trace_id=row['trace_id']):
+                before = copy.deepcopy(row)
+                verdict = check(row['raw_model_reply'], row['events'])
+&gt;               self.assertEqual(verdict['status'], 'not_verified')
+E               AssertionError: 'indeterminate' != 'not_verified'
+E               - indeterminate
+E               + not_verified
+
+tests\test_trace_quality_consistency.py:22: AssertionError</failure></testcase><testcase classname="tests.test_trace_quality_consistency.HistoricalParserTests" name="test_non_ticket_quotes_and_sample_questions_are_not_ticket_assertions" time="0.002"><failure message="AssertionError: 'indeterminate' != 'not_verified'&#10;- indeterminate&#10;+ not_verified">self = &lt;test_trace_quality_consistency.HistoricalParserTests testMethod=test_non_ticket_quotes_and_sample_questions_are_not_ticket_assertions&gt;
+
+    def test_non_ticket_quotes_and_sample_questions_are_not_ticket_assertions(self):
+        for reply in ('您发的“妈妈”是什么意思？', '请补充路线（如“下周三北京到上海的高铁”）。',
+                      '您好，“谢谢”已收到，请补充出发地。'):
+&gt;           self.assertEqual(check(reply, [])['status'], 'not_verified')
+E           AssertionError: 'indeterminate' != 'not_verified'
+E           - indeterminate
+E           + not_verified
+
+tests\test_trace_quality_consistency.py:48: AssertionError</failure></testcase><testcase classname="tests.test_trace_quality_consistency.HistoricalParserTests" name="test_original_train_response_25_fields_already_match_current_code" time="0.002" /><testcase classname="tests.test_trace_quality_consistency.HistoricalParserTests" name="test_quoted_invented_ticket_fact_is_still_blocked" time="0.001"><failure message="AssertionError: 'indeterminate' != 'failed'&#10;- indeterminate&#10;+ failed">self = &lt;test_trace_quality_consistency.HistoricalParserTests testMethod=test_quoted_invented_ticket_fact_is_still_blocked&gt;
+
+    def test_quoted_invented_ticket_fact_is_still_blocked(self):
+&gt;       self.assertEqual(check('查询结果为“G9999 出发05:00”。', [])['status'], 'failed')
+E       AssertionError: 'indeterminate' != 'failed'
+E       - indeterminate
+E       + failed
+
+tests\test_trace_quality_consistency.py:37: AssertionError</failure></testcase><testcase classname="tests.test_trace_quality_consistency.HistoricalParserTests" name="test_user_attribution_does_not_hide_a_later_quoted_result" time="0.001"><failure message="AssertionError: 'indeterminate' != 'failed'&#10;- indeterminate&#10;+ failed">self = &lt;test_trace_quality_consistency.HistoricalParserTests testMethod=test_user_attribution_does_not_hide_a_later_quoted_result&gt;
+
+    def test_user_attribution_does_not_hide_a_later_quoted_result(self):
+        verdict = check('您输入的“妈妈”，查询结果为“G9999 出发05:00”。', [])
+&gt;       self.assertEqual(verdict['status'], 'failed')
+E       AssertionError: 'indeterminate' != 'failed'
+E       - indeterminate
+E       + failed
+
+tests\test_trace_quality_consistency.py:42: AssertionError</failure></testcase><testcase classname="tests.test_trace_quality_consistency.QualityEvidenceTests" name="test_backend_error_is_not_an_empty_failure" time="0.006"><failure message="AssertionError: False is not true">self = &lt;test_trace_quality_consistency.QualityEvidenceTests testMethod=test_backend_error_is_not_an_empty_failure&gt;
+
+    def test_backend_error_is_not_an_empty_failure(self):
+        result = self.evaluate(executions=[{'tool': 'query_tickets', 'ok': False, 'executed': False}])
+        self.assertEqual(result['quality_verdict'], 'fail')
+&gt;       self.assertTrue(any('query_tickets' in r for r in result['failure_reasons']))
+E       AssertionError: False is not true
+
+tests\test_trace_quality_consistency.py:79: AssertionError</failure></testcase><testcase classname="tests.test_trace_quality_consistency.QualityEvidenceTests" name="test_historical_error_placeholder_is_not_labelled_a_returned_answer" time="0.733"><failure message="AssertionError: '模型原始回复' not found in ['用户输入', '最终回复']">self = &lt;test_trace_quality_consistency.QualityEvidenceTests testMethod=test_historical_error_placeholder_is_not_labelled_a_returned_answer&gt;
+
+    def test_historical_error_placeholder_is_not_labelled_a_returned_answer(self):
+        from web.trace_view import timeline_items
+        row = next(r for r in HISTORY if r['trace_id'] == 'cbe8c088462046d99e49f322136c47d1')
+        audit = {'public_trace': row['original_public_trace'], 'contract_returned': False,
+                 'raw_model_reply': row['raw_model_reply'], 'error': {'category': 'reply_data_indeterminate'}}
+        timeline = timeline_items(audit)
+&gt;       self.assertIn('模型原始回复', [r['kind'] for r in timeline])
+E       AssertionError: '模型原始回复' not found in ['用户输入', '最终回复']
+
+tests\test_trace_quality_consistency.py:92: AssertionError</failure></testcase><testcase classname="tests.test_trace_quality_consistency.QualityEvidenceTests" name="test_raw_answer_is_checked_even_if_failure_placeholder_hides_it" time="0.002"><failure message="AssertionError: False is not true">self = &lt;test_trace_quality_consistency.QualityEvidenceTests testMethod=test_raw_answer_is_checked_even_if_failure_placeholder_hides_it&gt;
+
+    def test_raw_answer_is_checked_even_if_failure_placeholder_hides_it(self):
+        result = self.evaluate(error={'category': 'reply_tool_mismatch'}, raw='查到G9999有票。')
+        self.assertEqual(result['quality_verdict'], 'fail')
+&gt;       self.assertTrue(result['hallucination']['hallucination_detected'])
+E       AssertionError: False is not true
+
+tests\test_trace_quality_consistency.py:84: AssertionError</failure></testcase><testcase classname="tests.test_trace_quality_consistency.QualityEvidenceTests" name="test_runtime_failure_always_has_an_explicit_reason" time="0.002"><failure message="AssertionError: False is not true">self = &lt;test_trace_quality_consistency.QualityEvidenceTests testMethod=test_runtime_failure_always_has_an_explicit_reason&gt;
+
+    def test_runtime_failure_always_has_an_explicit_reason(self):
+        for category in ('timeout', 'authentication_failed', 'request_budget_exhausted', 'token_usage_unknown'):
+            result = self.evaluate(error={'category': category, 'http_status': None})
+            self.assertEqual(result['quality_verdict'], 'fail')
+&gt;           self.assertTrue(any(category in r for r in result['failure_reasons']))
+E           AssertionError: False is not true
+
+tests\test_trace_quality_consistency.py:74: AssertionError</failure></testcase><testcase classname="tests.test_trace_quality_consistency.QualityEvidenceTests" name="test_successful_zero_tool_clarification_is_not_failed_or_business_pass" time="0.001" /><testcase classname="tests.test_trace_quality_consistency.QualityEvidenceTests" name="test_uncertain_reply_has_reason_and_is_not_a_confirmed_failure" time="0.001"><failure message="AssertionError: 'fail' != 'indeterminate'&#10;- fail&#10;+ indeterminate">self = &lt;test_trace_quality_consistency.QualityEvidenceTests testMethod=test_uncertain_reply_has_reason_and_is_not_a_confirmed_failure&gt;
+
+    def test_uncertain_reply_has_reason_and_is_not_a_confirmed_failure(self):
+        result = self.evaluate(error={'category': 'reply_data_indeterminate', 'http_status': None})
+&gt;       self.assertEqual(result['quality_verdict'], 'indeterminate')
+E       AssertionError: 'fail' != 'indeterminate'
+E       - fail
+E       + indeterminate
+
+tests\test_trace_quality_consistency.py:66: AssertionError</failure></testcase></testsuite></testsuites>

@@ -1,0 +1,7 @@
+{
+  "status": "passed",
+  "files": 25,
+  "configured_credentials_checked": true,
+  "nested_office_zip_checked": true,
+  "scope": "known credentials, token patterns and private keys; image text is not OCR-scanned"
+}

@@ -1,0 +1,40 @@
+{
+  "schema": "ticket-v352-offline/1",
+  "tested_source_head": "4eaddd0508588a7df0b36dc030adf04c59f19471",
+  "status": "failed",
+  "pytest": {
+    "passed": 614,
+    "subtests_passed": 96,
+    "junit": {
+      "tests": 718,
+      "failures": 8,
+      "errors": 0,
+      "skipped": 0
+    }
+  },
+  "runs": [
+    {
+      "name": "pytest",
+      "exit_code": 1
+    },
+    {
+      "name": "compatibility",
+      "exit_code": 1
+    },
+    {
+      "name": "retrieval48",
+      "exit_code": 0
+    }
+  ],
+  "protected_files": 3933,
+  "changed_original_files": [],
+  "existing_v352_evidence_files_protected": 62,
+  "changed_existing_v352_evidence_files": [],
+  "source_index_byte_unchanged_this_version": true,
+  "prior_v351_incident_preserved": true,
+  "real_generation_requests": 0,
+  "real_embedding_requests": 0,
+  "langsmith_requests": 0,
+  "blocked_network_attempts": 0,
+  "scope": "A offline acceptance only; real retrieval and Live evidence are reported separately."
+}

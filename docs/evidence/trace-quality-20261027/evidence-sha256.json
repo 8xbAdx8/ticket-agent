@@ -1,0 +1,15 @@
+{
+  "docs/evidence/trace-quality-20261027/before-fix.xml": "b3b20e81cf80ce3034466a62b25f8afbc604c55595ef4e8e017604405de6491f",
+  "docs/evidence/trace-quality-20261027/compatibility-summary.json": "b2de1628cb3001028fafc50f4a325c200a777c4f4f88119f3145e65076c10c00",
+  "docs/evidence/trace-quality-20261027/first-full-failure.xml": "8942ceb792376f395dda033fd8744ab1044563f17b42550316381f934a6d8369",
+  "docs/evidence/trace-quality-20261027/historical-comparison.json": "42b28dc79f7209aa5d68791e188dcedb4f5e0ab6ef5ff26edac09dc65a9051a6",
+  "docs/evidence/trace-quality-20261027/initial-full-failure.json": "607336674076119779def7b9659463fb63b67a0fcd84e1a6cd7195bf4418ffb1",
+  "docs/evidence/trace-quality-20261027/offline-summary.json": "06bdb36d47a23263f4104f481361866232bec8068df9778ecab418404d15f9a2",
+  "docs/evidence/trace-quality-20261027/pytest.xml": "3bcbf5a082ee34a5382f7d1a33b9592fdf99eebb625224ca2cc303e4d83d5543",
+  "docs/evidence/trace-quality-20261027/retention.json": "146d5aa93c8a2bfeb81c43b7fb4c4184889ad78a405cb878edb74e2f1029a273",
+  "docs/evidence/trace-quality-20261027/security.json": "df9299177111125495ec5be74f3cb7d04e9addf06e27043baf6ab9d8b67ca5f4",
+  "docs/evidence/trace-quality-20261027/summary.json": "a19c16431c7ce390b655e1fe938a41229f9c8e51c3949bfca2ca519a09429daf",
+  "docs/evidence/trace-quality-20261027/targeted-final.xml": "e49a4aa0b4b29ec8dfea3264e9d99d0d3d9c4e982f7d10288cbd9906c095862a",
+  "docs/evidence/trace-quality-20261027/targeted-initial.xml": "6200283d418845a2f4a3773f0d178091c299afba17362dfa4112368aee984283",
+  "docs/evidence/trace-quality-20261027/web-fixture-initial-failure.xml": "b9b20a7f21c8a7ee8f12cc3dacd3e48e0fd71aa94f61d39253a8e5d9abea2f35"
+}

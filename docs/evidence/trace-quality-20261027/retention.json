@@ -1,0 +1,18 @@
+{
+  "schema": "ticket-trace-quality-retention/1",
+  "protected_files": 13133,
+  "changed_original_files": [],
+  "core_history_and_contract_sha256": {
+    "artifacts/runtime/v33/user/web-f9d4cb6b05d6/traces/deepseek_runs.jsonl": "011039ce9223fe8ca5e929f1a6cd040c934925d61f466bedb3ca5601d3cac128",
+    "artifacts/runtime/v33/user/web-aa088c032007/traces/audit_runs.jsonl": "22d3d50dfa7e9d36406f74ed6b6832d0d2e581c45ed88341ddbaab5d6aaa3849",
+    "artifacts/runtime/v33/user/web-f9d4cb6b05d6/traces/audit_runs.jsonl": "108e712fea279f537637267a67b9340541464cabc707e02cbba367f63f235e93",
+    "artifacts/runtime/v33/user/web-aa088c032007/traces/traces.jsonl": "aed27b5d619c97309291e2d43df35263f711b77fd6a7bd062de3121abc6c67c6",
+    "artifacts/runtime/v33/user/web-aa088c032007/traces/provider_runs.jsonl": "fa962936611875b02653613389770e71a970bb25b41119694720d94797ab020a",
+    "artifacts/runtime/v33/user/web-f9d4cb6b05d6/traces/provider_runs.jsonl": "a8148c47fd39b21a8a2188271112c5c074b8f129cd63ceae07a69713549cf226",
+    "docs/contract.md": "bfe2f8ebf1ec02b831765286652e50344d1cfcc24d5179bd8ffd78fe6e8c0381",
+    "artifacts/runtime/v33/user/web-f9d4cb6b05d6/traces/traces.jsonl": "cf737727f4273f4267dd28d72069e1f835c5232e0ad7c76fe6fe71be8acc4f1e"
+  },
+  "new_generation_requests": 0,
+  "new_embedding_requests": 0,
+  "langsmith_requests": 0
+}
