@@ -11,8 +11,24 @@ CLARIFY=json.loads((Path(__file__).parent/'fixtures/live_lab_qwen_clarification.
 QWEN_AGGREGATE=json.loads((Path(__file__).parent/'fixtures/live_lab_qwen_aggregate.json').read_text(encoding='utf-8'))
 DENIED=json.loads((Path(__file__).parent/'fixtures/live_lab_denied_train.json').read_text(encoding='utf-8'))
 POLICY_EMPTY=json.loads((Path(__file__).parent/'fixtures/live_lab_empty_policy.json').read_text(encoding='utf-8'))
+POLICY_FOLLOWUP=json.loads((Path(__file__).parent/'fixtures/live_lab_policy_followup.json').read_text(encoding='utf-8'))
 
 class AggregateAvailabilityAudit(unittest.TestCase):
+    def test_policy_future_query_offer_is_not_ticket_fact(self):
+        result=check(POLICY_FOLLOWUP['reply'],POLICY_FOLLOWUP['events'])
+        self.assertFalse(any(r['reason']=='non_assertive_or_uncertain' for r in result['indeterminate']))
+        self.assertTrue(any(r['reason']=='future_query_offer' for r in result['ignored']))
+
+    def test_policy_offer_does_not_hide_concrete_or_completed_claims(self):
+        base='如果您有实际的出行需求，可以告诉我出发地、到达地和日期，我帮您查询车次与余票'
+        for detail in ('，目前有23张余票','，目前有票','，我已完成查询','，G9999有余票'):
+            with self.subTest(detail=detail):
+                result=check(base+detail+'。',POLICY_FOLLOWUP['events'])
+                self.assertEqual(result['status'],'indeterminate',result)
+        self.assertEqual(check('目前有23张余票，'+base+'。',POLICY_FOLLOWUP['events'])['status'],'indeterminate')
+        self.assertEqual(check(base.replace('实际的出行需求','23张余票'),POLICY_FOLLOWUP['events'])['status'],'indeterminate')
+        self.assertEqual(check(base+'。查到 G9999 有余票。',POLICY_FOLLOWUP['events'])['status'],'indeterminate')
+
     def test_policy_empty_is_not_a_ticket_empty_claim(self):
         result=check(POLICY_EMPTY['reply'],POLICY_EMPTY['events'])
         self.assertFalse(any(r['reason']=='empty_result_scope_unknown' for r in result['indeterminate']))

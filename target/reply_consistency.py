@@ -189,6 +189,18 @@ def _parse(reply):
                 elif not ids and re.search(r'未查到|没有查到|没有匹配|无匹配',clause):
                     denials.append({'line':number,'text':clause,'predicate':'policy_empty_result' if re.search(r'政策|知识库',clause) else None})
                 continue
+            future_offer=re.fullmatch(
+                r'\s*(?:如果|若|如需).{0,45}(?:告诉我|提供|补充).{0,30}'
+                r'(?:我(?:可以|会|帮您|帮你)|可以)(?:为您|为你)?(?:查询|查看|查找)'
+                r'(?:车次|班次|余票|票价)(?:[与和、/](?:车次|班次|余票|票价))*\s*',clause)
+            concrete=re.search(TRAIN+r'|\d|[¥￥]|[一二三四五六七八九十两百千万]+\s*(?:张|元|趟|分钟|小时|天)'
+                               r'|有票|有余票|售罄|(?:已|已经|成功|完成).{0,12}(?:查询|锁座|下单|支付|取消)',clause)
+            if future_offer and not concrete:
+                ignored.append({'line':number,'text':clause,'reason':'future_query_offer'});continue
+            # A similar offer with an extra statement must not disappear from
+            # validation just because its wording starts with a condition.
+            if concrete and re.search(r'(?:如果|若|如需).{0,80}(?:告诉我|提供|补充).{0,50}(?:查询|查看|查找)',clause):
+                unresolved.append({'line':number,'text':clause,'reason':'future_offer_mixed_with_claim'})
             # A request for the user's next query is not a claim about ticket data.
             # Keep any concrete identity/number or asserted availability in normal validation.
             if (re.search(r'(?:如果|如需|若|需要|请).{0,60}(?:告诉我|告知我|提供|补充|指定|输入)',clause)
