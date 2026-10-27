@@ -73,7 +73,31 @@ def budget_for(settings, provider, *, transport=None):
     return UsageLog(provider, settings.ledger_path, origin=origin_for(transport))
 
 
-def reserve(request, budget, provider, body):
+def dispatch_snapshot(body, permitted):
+    """Hash the actual outgoing payload without retaining prompt or tool schemas.
+
+    This is dispatch intent, not evidence of a successful HTTP response. The
+    list passed by the transport guard is the permission effective on this
+    request, which can differ from a configured or historical toolset.
+    """
+    def hashed(value):
+        return hashlib.sha256(json.dumps(value, ensure_ascii=False, sort_keys=True,
+                                         separators=(',', ':')).encode('utf-8')).hexdigest()
+    supplied_tools = body.get('tools')
+    valid_tools = isinstance(supplied_tools, list) and all(
+        isinstance(t, dict) and isinstance(t.get('function'), dict)
+        and isinstance(t['function'].get('name'), str) for t in supplied_tools)
+    messages = body.get('messages')
+    system_messages = [m for m in messages if isinstance(m, dict) and m.get('role') == 'system'] if isinstance(messages, list) else []
+    return {'bound_tools': [t['function']['name'] for t in supplied_tools] if valid_tools else None,
+            'tool_schemas_sha256': hashed(supplied_tools) if valid_tools else None,
+            'tool_schema_sha256': {t['function']['name']: hashed(t) for t in supplied_tools} if valid_tools else None,
+            'system_prompt_sha256': hashed(system_messages) if system_messages else None,
+            'tool_permission': sorted(permitted) if permitted is not None else None,
+            'scope': 'HTTP dispatch intent; not evidence of response or tool execution'}
+
+
+def reserve(request, budget, provider, body, *, permitted=None):
     if 'ticket_reservation' in request.extensions:
         raise error('duplicate_request_dispatch')
     summary = {'model': body.get('model'), 'message_roles': [m.get('role') for m in body.get('messages', [])],
@@ -86,7 +110,8 @@ def reserve(request, budget, provider, body):
     request.extensions['ticket_reservation'] = (budget, identity, identity, provider)
     request.extensions['ticket_budget_id'] = identity  # Compatibility, not a budget reservation.
     request.extensions['ticket_usage_started'] = time.perf_counter()
-    emit({'event': 'http_request', 'request_id': identity, 'provider': provider, 'summary': summary})
+    emit({'event': 'http_request', 'request_id': identity, 'provider': provider, 'summary': summary,
+          'dispatch_snapshot': dispatch_snapshot(body, permitted)})
     if os.getenv('TICKET_API_VALIDATION_PROFILE') == 'v352':
         from target.v352_validation import canonical_hash
         payloads = []

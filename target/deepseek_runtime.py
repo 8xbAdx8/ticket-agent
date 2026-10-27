@@ -215,7 +215,7 @@ def guarded_client(settings, *, transport=None):
             raise DeepSeekError("output_token_limit_required")
         if len(request.content) > settings.max_payload_bytes:
             raise DeepSeekError("request_payload_limit")
-        reserve(request,budget,"deepseek",body)
+        reserve(request,budget,"deepseek",body,permitted=permitted)
 
     def after(response):
         identity = response.request.extensions.get("ticket_budget_id")

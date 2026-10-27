@@ -85,7 +85,7 @@ def guarded_client(settings, *, transport=None):
             raise BailianError("request_configuration_rejected")
         if len(request.content) > settings.max_payload_bytes:
             raise BailianError("request_payload_limit")
-        reserve(request,budget,"bailian",body)
+        reserve(request,budget,"bailian",body,permitted=READ_ONLY)
 
     def after(response):
         identity = response.request.extensions.get("ticket_budget_id")
