@@ -180,7 +180,11 @@ def evaluate(public_trace, report, authority, *, error=None, raw_model_reply=Non
     if uncited:checks.append(assertion("retrieved_policy_has_citations",False,"model-visible policy result has missing citation",["executions"]))
     unbacked=[t for e in actual if e["tool"]=="query_tickets" and isinstance(e.get("result"),dict)
               for t in e["result"].get("trains",[]) if authority.get("available") and t.get("train_no") not in authority["trains"]]
-    if query_runs:checks.append(assertion("query_result_train_authority",not unbacked,"tool-visible trains not in authoritative database",["authority","executions"]))
+    if query_runs:
+        # An unavailable authority cannot prove that returned trains exist.
+        checks.append(assertion("query_result_train_authority",not unbacked if authority.get("available") else None,
+            "tool-visible trains not in authoritative database" if authority.get("available") else "authoritative ticket database unavailable",
+            ["authority","executions"]))
     failed_order=[e for e in actual if e["tool"]=="create_order" and not e.get("ok")]
     for e in actual:
         if e["tool"]=="create_order":

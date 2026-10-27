@@ -82,9 +82,16 @@ def lab_page():
         if enabled.get("concurrent_duplicate_order"):
             st.info("M8 对话执行不适用；请使用独立后端对照。")
         if st.button("运行并发订单对照（离线）", width="stretch"):
-            with st.spinner("正在实际执行正常库与临时影子库对照…"):
-                session.concurrency(scenario)
-            st.success("实际对照已保存；0 次模型 API 请求。")
+            try:
+                with st.spinner("正在实际执行隔离的并发场景…"):
+                    records=session.concurrency(scenario)
+            except Exception as exc:
+                st.error("并发实验未完成（"+type(exc).__name__+"）；已保存的基线仍可查看，未自动重试。")
+            else:
+                if len(records)==1:
+                    st.info("正常库结果已保存；此场景不适用于 M8 缺陷注入，未运行影子库。0 次模型 API 请求。")
+                else:
+                    st.success("实际对照已保存；0 次模型 API 请求。")
         if session.error:
             st.error("上次执行失败：" + session.error["category"] + "；未自动重试，也没有把旧结果作为新结果。")
         if live:

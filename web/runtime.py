@@ -219,8 +219,12 @@ class Conversation:
         from target.concurrency_probe import probe
         self.trace_dir.mkdir(parents=True, exist_ok=True)
         with scoped(self._values(), {"LANGSMITH_TRACING":"false","LANGCHAIN_TRACING_V2":"false"}):
-            records=[probe(scenario, save=True, trace_dir=self.trace_dir), probe(scenario, mutant=True, save=True, trace_dir=self.trace_dir)]
-        self.audits.extend(records)
+            records=[probe(scenario, save=True, trace_dir=self.trace_dir)]
+            self.audits.extend(records)  # Retain a saved baseline even if the next probe fails.
+            if scenario not in ("expired_lock","worker_failure"):
+                mutant=probe(scenario, mutant=True, save=True, trace_dir=self.trace_dir)
+                records.append(mutant)
+                self.audits.append(mutant)
         return records
 
 
