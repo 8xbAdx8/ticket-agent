@@ -114,6 +114,7 @@ class Agent:
         messages.append({"role": "user", "content": message})
 
         reply = "抱歉，我没能完成这次操作。"
+        legacy_error = None
         for step in range(config.MAX_STEPS):
             event_start=len(run.events)
             try:
@@ -127,7 +128,10 @@ class Agent:
             except Exception as exc:
                 reply = f"模型调用未完成 ({type(exc).__name__})，请检查配置或重试。"
                 messages.append({"role": "assistant", "content": reply, "tool_calls": []})
+                # The historic contract permits only stop/max_steps_exceeded.
+                # Record the exception separately so stop is never treated as success.
                 trace.finish(reply, "stop")
+                legacy_error={"category":"legacy_provider_error","type":type(exc).__name__,"phase":"model"}
                 break
             usage = getattr(self.provider, "last_usage", {})
             for key in trace.tokens:
@@ -178,11 +182,11 @@ class Agent:
 
         out = trace.to_dict()
         from target.diagnostics import make_audit
-        self.last_audit_report=make_audit(trace,run,save=save_trace,public_trace=out)
+        self.last_audit_report=make_audit(trace,run,save=save_trace,public_trace=out,error=legacy_error,contract_returned=True)
         from target.fault_injection import ACTIVE_LEGACY_RUN
         run = ACTIVE_LEGACY_RUN.get()
-        self.last_fault_report = run.save(trace) if run and run.config and save_trace else (
-            run.report(finish_reason=trace.finish_reason) if run and run.config else None)
+        self.last_fault_report = run.save(trace,error=legacy_error) if run and run.config and save_trace else (
+            run.report(finish_reason=trace.finish_reason,error=legacy_error) if run and run.config else None)
         if save_trace:
             trace.save(record=out)
         return out

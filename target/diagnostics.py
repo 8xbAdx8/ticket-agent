@@ -167,17 +167,45 @@ def evaluate(public_trace, report, authority, *, error=None, raw_model_reply=Non
     routed=[e for e in actual if any(c.get("id")==e.get("call_id") and c["name"]=="search_policy" for c in calls)]
     if routed:
         checks.append(assertion("policy_intent_preserves_tool_route",all(e["tool"]=="search_policy" for e in routed),"policy request executed a different tool",["model_requests","executions"]))
+    user_text=public_trace.get("user_msg","")
+    policy_only=bool(re.search(r"政策|规则|手续费|有效期|多久",user_text)) and not bool(
+        re.search(r"查(?:询|找)?(?:.{0,12})(?:车次|余票|票价|班次)|(?:帮我|我要|请)(?:锁座|下单|订票|支付|取消)",user_text))
+    policy_wrong_route=bool(policy_only and any(e.get('tool')=='query_tickets' for e in actual)
+                            and not any(e.get('tool')=='search_policy' for e in actual))
+    if policy_wrong_route:
+        checks.append(assertion('policy_question_not_routed_to_ticket_query',False,
+            'policy-only question executed ticket search without policy search',['user_conditions','executions']))
     grouped={}
     for e in actual:grouped.setdefault((e.get("call_id"),e.get("tool")),[]).append(e)
     duplicate=[{"call_id":key[0],"tool":key[1],"count":len(items)} for key,items in grouped.items() if key[0] and len(items)>1]
     if calls:
         checks.append(assertion("no_extra_execution_per_model_call",not duplicate,"one model request caused repeated backend execution",["model_requests","executions"]))
+    same_step={}
+    for e in actual:
+        if e.get('step') is not None and isinstance(e.get('args'),dict):
+            key=(e['step'],e.get('tool'),json.dumps(e['args'],ensure_ascii=False,sort_keys=True,default=str))
+            same_step.setdefault(key,[]).append(e)
+    duplicate_calls=[items for items in same_step.values() if len(items)>1 and len({e.get('call_id') for e in items})>1]
+    if duplicate_calls:
+        checks.append(assertion('no_identical_calls_in_one_step',False,
+            'identical tool and parameters executed multiple times in the same model step',['model_requests','executions']))
     loop_runs=[e for e in actual if e.get("tool")=="monitor_seat"]
     if enabled.get("infinite_loop") and len(loop_runs)>1:
         checks.append(assertion("no_forced_monitor_loop",False,"injected monitor repetitions observed; inspect finite stop reason",["executions"]))
     uncited=[e for e in actual if e["tool"]=="search_policy" and isinstance(e.get("result"),dict) and e["result"].get("hits")
              and any(not h.get("doc_id") for h in e["result"]["hits"])]
     if uncited:checks.append(assertion("retrieved_policy_has_citations",False,"model-visible policy result has missing citation",["executions"]))
+    reply=raw_model_reply if raw_model_reply is not None else public_trace.get('reply','')
+    policy_hits=[h for e in actual if e.get('tool')=='search_policy' and isinstance(e.get('result'),dict)
+                 for h in e['result'].get('hits',[]) if isinstance(h,dict)]
+    visible_ids={str(h.get('doc_id')) for h in policy_hits if h.get('doc_id')}
+    cited=set(re.findall(r'(?<![A-Za-z0-9])P\d+(?![A-Za-z0-9])',reply or ''))
+    copied_policy=any(isinstance(h.get('content'),str) and len(h['content'].strip())>=8
+                      and h['content'].strip() in (reply or '') for h in policy_hits)
+    missing_reply_citation=bool(not error and copied_policy and visible_ids and not cited.intersection(visible_ids))
+    if missing_reply_citation:
+        checks.append(assertion('policy_factual_reply_has_source',False,
+            'reply repeats retrieved policy content without a matching source ID',['executions','model_requests']))
     unbacked=[t for e in actual if e["tool"]=="query_tickets" and isinstance(e.get("result"),dict)
               for t in e["result"].get("trains",[]) if authority.get("available") and t.get("train_no") not in authority["trains"]]
     if query_runs:
@@ -211,6 +239,7 @@ def evaluate(public_trace, report, authority, *, error=None, raw_model_reply=Non
     business=None
     if actual and authority.get("available"):
         business=(not error and public_trace.get("finish_reason")=="stop" and not backend_errors and not unbacked and not uncited
+                  and not policy_wrong_route and not missing_reply_citation
                   and all(e["tool"]=="search_policy" for e in routed) and all(n<=1 for n in counts.values())
                   and hall["hallucination_detected"] is False and (not expected_date or not actual_dates or actual_dates[-1]==expected_date))
         if any(e["tool"]=="create_order" for e in actual):business=business and bool(authority["orders"])
@@ -231,7 +260,7 @@ def evaluate(public_trace, report, authority, *, error=None, raw_model_reply=Non
         "scope":"deterministic tool/database/explicit-claim assertions; unknown semantic recognition/recovery remains null"}
 
 
-def make_audit(trace, fault_run, *, events=(), error=None, save=True, public_trace=None):
+def make_audit(trace, fault_run, *, events=(), error=None, save=True, public_trace=None, contract_returned=None):
     import config
     report=fault_run.report(finish_reason=trace.finish_reason,error=error)
     public_trace=public_trace or trace.to_dict()
@@ -250,11 +279,14 @@ def make_audit(trace, fault_run, *, events=(), error=None, save=True, public_tra
                         "note":"Mock/SDK桩数值不是实际API用量；失败轮不得据此计算完整费用"}
     audit={"schema_version":"ticket-agent-audit/3.2","trace_id":trace.trace_id,
            "timestamp":datetime.now(timezone.utc).isoformat(),"provider":trace.provider,"model":trace.model,
-           "public_trace":public_trace,"public_trace_sha256":digest(public_trace),"contract_returned":error is None,
+           "public_trace":public_trace,"public_trace_sha256":digest(public_trace),
+           "contract_returned":error is None if contract_returned is None else contract_returned,
            "fault_report":report,"mutation_events":mutation_events(report,trace.trace_id),
            "framework_events":list(events),"authority":authority,"raw_model_reply":raw,"error":error,
            "token_usage_evidence":token_evidence,
            "judgement":evaluate(public_trace,report,authority,error=error,raw_model_reply=raw)}
+    if os.getenv('TICKET_CASE_ID'):
+        audit['test_case_label']=os.environ['TICKET_CASE_ID']
     audit["judgement"]["case_id"]=trace.trace_id
     locations={"model_requests":"fault_report/model_requests","executions":"fault_report/executions","user_conditions":"judgement/actual_behavior/user_requested_date",
                "hallucination":"judgement/hallucination","authority":"authority","authority/orders":"authority/orders"}

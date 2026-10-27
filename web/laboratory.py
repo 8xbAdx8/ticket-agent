@@ -1,5 +1,6 @@
 """Explicit experiments only. Rerendering never calls the Agent."""
 import re
+import os
 import uuid
 from datetime import timedelta
 import streamlit as st
@@ -11,6 +12,16 @@ from web.conversation import execute, show_business, show_remote_export
 from web.trace_view import show_record
 
 DESCRIPTIONS = dict(zip(MUTATIONS, ("M1 · 日期偏移一天", "M2 · 跳过锁座下单", "M3 · 重复派发工具", "M4 · 有限监控重入", "M5 · 政策误路由", "M6 · 删除政策引用", "M7 · 注入假车次 G9999", "M8 · 影子库并发重复订单")))
+
+
+def live_unavailable_reason(provider):
+    if os.getenv('TICKET_WEB_OFFLINE_ONLY')=='1':
+        return '当前为离线模式，真实模型请求已关闭；请使用在线启动入口。'
+    key='DASHSCOPE_API_KEY' if provider=='bailian' else 'DEEPSEEK_API_KEY'
+    if not os.getenv(key,'').strip():return key+' 未配置；请配置后重新启动，未发送模型请求。'
+    if provider=='bailian' and not os.getenv('DASHSCOPE_BASE_URL','').strip():
+        return 'DASHSCOPE_BASE_URL 未配置；请设置与账号地域匹配的地址。'
+    return '模型配置不完整；请核对模型名称和服务地址。'
 
 
 def lab_page():
@@ -86,12 +97,14 @@ def lab_page():
                 st.rerun()
         if enabled.get("concurrent_duplicate_order"):
             st.info("M8 对话执行不适用；请使用独立后端对照。")
+        if live and not live_ready(live_provider):
+            st.warning(live_unavailable_reason(live_provider))
         if st.button("运行并发订单对照（离线）", width="stretch"):
             try:
                 with st.spinner("正在实际执行隔离的并发场景…"):
                     records=session.concurrency(scenario)
             except Exception as exc:
-                st.error("并发实验未完成（"+type(exc).__name__+"）；已保存的基线仍可查看，未自动重试。")
+                st.error("并发实验未完成（"+type(exc).__name__+"）；已保存的记录可查看，未自动重试。")
             else:
                 if len(records)==1:
                     st.info("正常库结果已保存；此场景不适用于 M8 缺陷注入，未运行影子库。0 次模型 API 请求。")

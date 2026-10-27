@@ -132,7 +132,8 @@ class Conversation:
         normalize(self.mutations)
         if self.mutations.get("concurrent_duplicate_order"):
             raise ValueError("M8 不适用于普通对话，请运行并发对照")
-        env={"LANGSMITH_TRACING":"false", "LANGCHAIN_TRACING_V2":"false", "AGENT_MUTATIONS":"{}"}
+        env={"LANGSMITH_TRACING":"false", "LANGCHAIN_TRACING_V2":"false", "AGENT_MUTATIONS":"{}",
+             "TICKET_CASE_ID":self.case_id or "interactive"}
         if self.live:
             env["DEEPSEEK_LIVE_TEST_PROFILE"]="read_only"
             from target.live_providers import manual_environment
@@ -163,6 +164,10 @@ class Conversation:
                     self.agent=Agent(**kwargs)
                 cursor=turn_cursor(self.agent,self.sid)
                 record=self.agent.chat(self.sid,message)
+                audit_error=(self.agent.last_audit_report or {}).get('error')
+                if audit_error:
+                    self.error={'type':'AgentError',**audit_error}
+                    raise RuntimeError('agent_recorded_execution_error')
                 full=collect_results(self.agent,self.sid,cursor,record)
                 self.history.append(record)
                 self.results.append(full)
@@ -171,7 +176,7 @@ class Conversation:
                 self.receipts[request_id]=record
                 return record
             except Exception as exc:
-                self.error={"type":type(exc).__name__,**safe_error(exc)}
+                if self.error is None:self.error={"type":type(exc).__name__,**safe_error(exc)}
                 if self.agent and self.agent.last_audit_report:
                     self.audits.append(self.agent.last_audit_report)
                 raise
