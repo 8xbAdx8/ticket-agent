@@ -57,6 +57,8 @@ def lab_page():
         st.session_state['lab_allow_live']=False
         st.session_state['lab_allow_embedding']=False
         st.session_state['lab_submit_nonce']=uuid.uuid4().hex
+        st.session_state['lab_concurrency_nonce']=uuid.uuid4().hex
+        st.session_state.pop('lab_concurrency_notice',None)
         session = Conversation("lab", engine=engine, live=live, live_provider=live_provider,
                                live_model="qwen3.8-flash" if live_provider=="bailian" else None,case_id=case_id,mutations=enabled)
         st.session_state.setdefault("lab_archives", []).append(session)
@@ -99,17 +101,22 @@ def lab_page():
             st.info("M8 对话执行不适用；请使用独立后端对照。")
         if live and not live_ready(live_provider):
             st.warning(live_unavailable_reason(live_provider))
-        if st.button("运行并发订单对照（离线）", width="stretch"):
+        if st.button("运行并发订单对照（离线）", key="lab_concurrency_"+st.session_state['lab_concurrency_nonce'], width="stretch"):
+            st.session_state['lab_concurrency_nonce']=uuid.uuid4().hex
             try:
                 with st.spinner("正在实际执行隔离的并发场景…"):
                     records=session.concurrency(scenario)
             except Exception as exc:
-                st.error("并发实验未完成（"+type(exc).__name__+"）；已保存的记录可查看，未自动重试。")
+                notice=('error',"并发实验未完成（"+type(exc).__name__+"）；已保存的记录可查看，未自动重试。")
             else:
                 if len(records)==1:
-                    st.info("正常库结果已保存；此场景不适用于 M8 缺陷注入，未运行影子库。0 次模型 API 请求。")
+                    notice=('info',"正常库结果已保存；此场景不适用于 M8 缺陷注入，未运行影子库。0 次模型 API 请求。")
                 else:
-                    st.success("实际对照已保存；0 次模型 API 请求。")
+                    notice=('success',"实际对照已保存；0 次模型 API 请求。")
+            st.session_state['lab_concurrency_notice']=notice
+            st.rerun()
+        notice=st.session_state.pop('lab_concurrency_notice',None)
+        if notice:getattr(st,notice[0])(notice[1])
         if session.error:
             st.error("上次执行失败：" + session.error["category"] + "；未自动重试，也没有把旧结果作为新结果。")
         if live:

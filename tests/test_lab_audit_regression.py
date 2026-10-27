@@ -196,5 +196,21 @@ class LabAuditRegression(unittest.TestCase):
                     self.assertFalse(app.exception)
                     self.assertTrue(any('不适用于 M8' in item.value for item in app.info))
 
+    def test_concurrency_button_rotates_and_allows_deliberate_new_probe(self):
+        from streamlit.testing.v1 import AppTest
+        root=config.BASE_DIR/'artifacts/runtime';root.mkdir(parents=True,exist_ok=True)
+        with tempfile.TemporaryDirectory(prefix='lab-double-probe-',dir=root) as directory:
+            base=Path(directory).resolve();self.assertTrue(base.is_relative_to(root.resolve()))
+            def new_session(*args,**kwargs):return Conversation(*args,root=base/uuid.uuid4().hex,**kwargs)
+            with patch('web.laboratory.Conversation',side_effect=new_session):
+                app=AppTest.from_string('from web.laboratory import lab_page\nlab_page()').run()
+                first=next(b for b in app.button if b.label.startswith('运行并发订单对照'))
+                first_key=first.key;first.click().run()
+                second=next(b for b in app.button if b.label.startswith('运行并发订单对照'))
+                self.assertNotEqual(first_key,second.key)
+                self.assertEqual(len(app.session_state['lab_session'].audits),2)
+                second.click().run()
+                self.assertEqual(len(app.session_state['lab_session'].audits),4)
+
 
 if __name__=='__main__':unittest.main()
