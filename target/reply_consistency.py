@@ -199,10 +199,18 @@ def _parse(reply):
                 r'\s*(?:如果您愿意|如果你愿意)[，,]\s*(?:可以)?(?:告诉我|提供|补充)'
                 r'(?:以下信息|行程信息)[，,]\s*我(?:先)?帮(?:您|你)(?:模拟)?'
                 r'(?:查|查询)(?:一下)?有没有余票(?:[，,]供(?:您|你)参考)?[：:]?\s*',clause)
+            purchase_advice=re.fullmatch(
+                r'\s*(?:如果|若)(?:您|你)想(?:购买|订购)(?:明天|后天|今天)?'
+                r'(?:[（(]\d{4}-\d{2}-\d{2}[）)])?'
+                r'[\u4e00-\u9fff]{1,8}到[\u4e00-\u9fff]{1,8}的'
+                r'(?:高铁|火车|机票|航班)(?:二等座|一等座|商务座|经济舱|头等舱)?'
+                r'[，,]\s*建议通过\s*12306\s*官方\s*App\s*或网站办理\s*',clause, re.I)
             concrete=re.search(TRAIN+r'|\d|[¥￥]|[一二三四五六七八九十两百千万]+\s*(?:张|元|趟|分钟|小时|天)'
                                r'|有票|有余票|售罄|(?:已|已经|成功|完成).{0,12}(?:查询|锁座|下单|支付|取消)',clause)
             if stock_question_offer:
                 ignored.append({'line':number,'text':clause,'reason':'future_query_offer'});continue
+            if purchase_advice and not re.search(TRAIN+r'|有票|有余票|售罄|票价|已(?:经)?(?:购买|下单|支付)',clause):
+                ignored.append({'line':number,'text':clause,'reason':'conditional_purchase_advice'});continue
             if future_offer and not concrete:
                 ignored.append({'line':number,'text':clause,'reason':'future_query_offer'});continue
             # A similar offer with an extra statement must not disappear from

@@ -14,9 +14,22 @@ from target.reply_consistency import check
 from target.rag_faithfulness import check_answer
 
 RECORDED = json.loads((Path(__file__).parent / 'fixtures/ticket_buy_clarification.json').read_text(encoding='utf-8'))
+PURCHASE_ADVICE = json.loads((Path(__file__).parent / 'fixtures/ticket_purchase_advice.json').read_text(encoding='utf-8'))
 
 
 class ClarificationOfferTests(unittest.TestCase):
+    def test_recorded_official_channel_advice_is_not_a_ticket_claim(self):
+        result = check(PURCHASE_ADVICE['reply'], [])
+        self.assertEqual(result['status'], 'not_verified', result)
+        self.assertFalse(result['indeterminate'])
+
+    def test_purchase_advice_does_not_hide_unverified_ticket_claims(self):
+        advice = '如果您想购买明天（2026-10-28）上海到杭州的高铁二等座，建议通过 12306 官方 App 或网站办理'
+        for claim in ('，目前有23张余票', '，G9999有余票', '，票价73元', '，已经下单成功'):
+            with self.subTest(claim=claim):
+                self.assertEqual(check(advice + claim, [])['status'], 'indeterminate')
+        self.assertEqual(check('G9999有余票。' + advice, [])['status'], 'indeterminate')
+
     def test_actual_reply_passes_both_scoped_guards_without_claiming_full_fidelity(self):
         reply, events = RECORDED['reply'], RECORDED['events']
         self.assertEqual(check(reply, events)['status'], 'not_verified')
