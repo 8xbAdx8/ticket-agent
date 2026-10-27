@@ -88,7 +88,9 @@ def save(record):
 
 
 def citation_check(reply,hits):
-    allowed={h['doc_id'] for h in hits};citations=list(dict.fromkeys(re.findall(r'\bP\d+\b',reply)))
+    allowed={h.get('doc_id') for h in hits if h.get('doc_id')}
+    explicit=re.findall(r'\bdoc_id\s*[：:]\s*[`*]*([A-Za-z0-9_-]+)',reply,re.I)
+    citations=list(dict.fromkeys([*re.findall(r'\bP\d+\b',reply),*explicit]))
     wrong=[c for c in citations if c not in allowed]
     return {'allowed_doc_ids':sorted(allowed),'cited_doc_ids':citations,'wrong_citations':wrong,
             'citation_status':'failed' if wrong else 'checked_ids_match' if citations else 'indeterminate',
@@ -107,7 +109,7 @@ def attach_answer(trace,events,reply):
         from target.rag_store import documents
         versions={h['doc_id']:h['version'] for h in documents(config.POLICY_PATH)}
         check=check_answer(reply,hits,events=events,question=trace.user_msg,policy_versions=versions)
-        wrong=list(dict.fromkeys(d for finding in check['findings'] if finding['type']=='nonexistent_citation' for d in finding['doc_ids']))
+        wrong=list(dict.fromkeys([*result['wrong_citations'],*(d for finding in check['findings'] if finding['type']=='nonexistent_citation' for d in finding['doc_ids'])]))
         result.update(status=check['status'],wrong_citations=wrong,faithfulness_check=check,
                       citation_status='failed' if wrong else 'checked_ids_match' if check['cited_doc_ids'] else 'indeterminate')
     save({'schema':'ticket-rag-answer/1','trace_id':trace.trace_id,'session_id':trace.session_id,
