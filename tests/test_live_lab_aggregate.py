@@ -8,8 +8,31 @@ from target.diagnostics import evaluate
 
 FIXTURE=json.loads((Path(__file__).parent/'fixtures/live_lab_three_trains.json').read_text(encoding='utf-8'))
 CLARIFY=json.loads((Path(__file__).parent/'fixtures/live_lab_qwen_clarification.json').read_text(encoding='utf-8'))
+QWEN_AGGREGATE=json.loads((Path(__file__).parent/'fixtures/live_lab_qwen_aggregate.json').read_text(encoding='utf-8'))
 
 class AggregateAvailabilityAudit(unittest.TestCase):
+    def test_real_qwen_grouped_train_cell_not_a_fictitious_train(self):
+        result=check(QWEN_AGGREGATE['reply'],QWEN_AGGREGATE['events'])
+        self.assertFalse(any(f['claimed']=='G101/G102/G103' and f['error_type']=='unreturned_train' for f in result['findings']))
+        # The route was assumed by the model; field matching is not business success.
+        self.assertNotEqual(result['verdict'],'consistent_for_checked_fields')
+
+    def test_grouped_table_checks_each_train_and_inventory(self):
+        events=copy.deepcopy(QWEN_AGGREGATE['events'])
+        text='| 车次 | 席别 | 票价 | 余票 |\n|---|---|---|---|\n| G101/G102/G103 | 二等座 | ¥553.0 | 0（全部售罄） |'
+        result=check(text,events)
+        self.assertEqual(result['status'],'checked_fields_match',result)
+        self.assertEqual({c['train_no'] for c in result['field_checks'] if c['field']=='train_no'}, {'G101','G102','G103'})
+        bad_train=check(text.replace('G103','G9999'),events)
+        self.assertEqual(bad_train['status'],'failed')
+        self.assertTrue(any(f['error_type']=='unreturned_train' for f in bad_train['findings']))
+        for row in events[0]['result']['trains']:
+            if row['train_no']=='G102' and row['seat_type']=='二等座':row['seats_left']=2
+        bad_stock=check(text,events)
+        self.assertEqual(bad_stock['status'],'failed')
+        self.assertTrue(any(f['field']=='seats_left' for f in bad_stock['findings']))
+        self.assertEqual(check(text.replace('0（全部售罄）','0（有票）'),events)['status'],'indeterminate')
+
     def test_real_qwen_example_date_does_not_block_clarification(self):
         result=check(CLARIFY['reply'],CLARIFY['events'])
         self.assertEqual(result['status'],'not_verified',result['indeterminate'])

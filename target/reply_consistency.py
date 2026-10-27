@@ -41,6 +41,7 @@ def normalize(field,value):
         return date(*map(int,m.groups())).isoformat()
     if field in ('price','seats_left'):
         value=re.sub(r'^[¥￥]\s*|\s*(?:元(?:/人)?|张|个座位)$','',value)
+        if field=='seats_left' and re.fullmatch(r'0(?:\.0+)?\s*[（(]\s*(?:全部)?售罄\s*[）)]',value):return 0
         if field=='seats_left' and value in ('售罄','无票','无余票'):return 0
         if field=='seats_left' and value=='有票':return 'positive_stock'
         if not re.fullmatch(r'\d+(?:\.\d+)?',value):raise ValueError('exact_number_required')
@@ -153,7 +154,17 @@ def _parse(reply):
             if all(re.fullmatch(r'[:\- ]*',c) for c in cells):continue
             if header and len(cells)==len(header):
                 claims=[(f,c) for f,c in zip(header,cells) if f and c]
-                records.append({'line':number,'text':original,'claims':claims,'context':list(context),'format':'table'});continue
+                train_cells=[v for f,v in claims if f=='train_no']
+                if len(train_cells)==1 and '/' in train_cells[0]:
+                    parts=[part.strip() for part in train_cells[0].split('/')]
+                    if len(parts)<2 or len(set(parts))!=len(parts) or not all(re.fullmatch(TRAIN,part) for part in parts):
+                        unresolved.append({'line':number,'text':original,'reason':'ambiguous_grouped_train_identity'});continue
+                    for train in parts:
+                        separate=[(f,train if f=='train_no' else v) for f,v in claims]
+                        records.append({'line':number,'text':original,'claims':separate,'context':list(context),'format':'table_group'})
+                else:
+                    records.append({'line':number,'text':original,'claims':claims,'context':list(context),'format':'table'})
+                continue
             if re.search(TRAIN,text):
                 unresolved.append({'line':number,'text':original,'reason':'unrecognised_table'});continue
         for clause in re.split(r'[。！？；;]|但是|而是|但(?=实际|查询|查到)|(?<=[，,])(?=实际|\s*[GDCZTKYS]\d)',text):
