@@ -69,6 +69,20 @@ class UsageOnlyTests(unittest.TestCase):
         self.assertEqual(row['status'],200)
         self.assertIsNone(row['prompt']);self.assertIsNone(row['completion']);self.assertIsNone(row['cost'])
 
+    def test_phone_redaction_preserves_correlated_uuid_and_still_hides_credentials(self):
+        from target.api_usage import UsageLog
+        from target.request_accounting import capture
+        identity='9414d7f6a17346409147ba62a8bdc29f'
+        log=UsageLog('deepseek',self.root/'label',origin='offline_stub')
+        with patch.dict(os.environ,{'DEEPSEEK_API_KEY':'offline-credential-marker'}):
+            with capture([],identity,1):
+                log.reserve({'note':'联系电话13800000001','api_key':'offline-credential-marker'},request_id=identity)
+                log.record(identity,status=200)
+        row=log.snapshot()['requests'][0]
+        self.assertEqual(row['request_id'],identity);self.assertEqual(row['trace_id'],identity)
+        self.assertEqual(row['request_summary']['note'],'联系电话<phone-redacted>')
+        self.assertEqual(row['request_summary']['api_key'],'<redacted>')
+
     def test_statistic_write_failure_does_not_reject_request_identity(self):
         from target.api_usage import UsageLog
         log=UsageLog('deepseek',self.root/'label')

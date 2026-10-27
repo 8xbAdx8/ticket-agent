@@ -46,7 +46,9 @@ def sanitize(value):
     def text(s):
         for secret in sorted(secrets,key=len,reverse=True): s=s.replace(secret,"<redacted>")
         s=re.sub(r"(?i)\bBearer\s+[A-Za-z0-9._~+/=-]+","Bearer <redacted>",s)
-        s=re.sub(r"(?<!\d)1\d{10}(?!\d)","<phone-redacted>",s)
+        # A digit run inside a UUID/hash is an identifier, not a phone number.
+        # Keep real standalone numbers redacted, including next to Chinese text.
+        s=re.sub(r"(?<![A-Za-z0-9])1\d{10}(?![A-Za-z0-9])","<phone-redacted>",s)
         return s
     def walk(obj,depth=0):
         if depth>40:return {"omitted":"maximum audit depth"}
