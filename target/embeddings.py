@@ -11,6 +11,7 @@ import sqlite3
 import time
 import uuid
 from urllib.parse import urlsplit
+from target.api_usage import UsageLog
 
 ROOT=Path(__file__).resolve().parent.parent
 AUTH=ROOT/'artifacts/runtime/v35-qwen38-rag/authorization-20261026'
@@ -28,7 +29,7 @@ class EmbeddingSettings:
     dimensions: int=1024
     batch_size: int=10
     timeout: float=25
-    limit: int=8
+    limit: int=0  # Deprecated: cumulative request caps have been removed.
     ledger: Path=AUTH/'embedding.db'
     cache: Path=ROOT/'artifacts/runtime/v35-rag/embedding-cache.db'
     base_url: str=''
@@ -54,44 +55,20 @@ def endpoint(base):
     return base.rstrip('/')+'/embeddings'
 
 
-class EmbeddingBudget:
-    def __init__(self,path,limit=8):self.path,self.limit=Path(path),limit
+class EmbeddingBudget(UsageLog):
+    """Compatibility name: independent append-only usage, never a request gate."""
+    def __init__(self, path, limit=0):
+        self.historical_path = Path(path)
+        super().__init__('embedding', path)
 
-    def connect(self):
-        if not 1<=self.limit<=8:raise EmbeddingError('invalid_budget_limit')
-        self.path.parent.mkdir(parents=True,exist_ok=True)
-        c=sqlite3.connect(self.path,timeout=10);c.row_factory=sqlite3.Row
-        c.executescript('CREATE TABLE IF NOT EXISTS policy(id INTEGER PRIMARY KEY, cap INTEGER);'
-          'CREATE TABLE IF NOT EXISTS requests(request_id TEXT PRIMARY KEY,created TEXT,model TEXT,dimension INTEGER,'
-          'input_hashes TEXT,batch_size INTEGER,origin TEXT,status INTEGER,server_request_id TEXT,actual_model TEXT,'
-          'tokens INTEGER,latency_ms INTEGER,category TEXT,response_sha256 TEXT,vector_hashes TEXT);')
-        c.execute('INSERT OR IGNORE INTO policy VALUES(1,?)',(self.limit,));c.commit()
-        if c.execute('SELECT cap FROM policy WHERE id=1').fetchone()[0]!=self.limit:
-            c.close();raise EmbeddingError('persisted_budget_limit_mismatch')
-        return c
+    def reserve(self, settings, texts, origin):
+        self.origin = origin
+        return super().reserve({'model': settings.model, 'dimension': settings.dimensions,
+            'input_hashes': [hashlib.sha256(t.encode()).hexdigest() for t in texts], 'batch_size': len(texts)})
 
-    def reserve(self,settings,texts,origin):
-        with closing(self.connect()) as c:
-            c.execute('BEGIN IMMEDIATE')
-            if c.execute('SELECT COUNT(*) FROM requests').fetchone()[0]>=self.limit:
-                c.rollback();raise EmbeddingError('request_budget_exhausted')
-            uid=uuid.uuid4().hex
-            c.execute('INSERT INTO requests(request_id,created,model,dimension,input_hashes,batch_size,origin,category) VALUES(?,?,?,?,?,?,?,?)',
-                (uid,datetime.now(timezone.utc).isoformat(),settings.model,settings.dimensions,
-                 json.dumps([hashlib.sha256(t.encode()).hexdigest() for t in texts]),len(texts),origin,'reserved_outcome_unknown'))
-            c.commit();return uid
-
-    def settle(self,uid,**values):
-        allowed={'status','server_request_id','actual_model','tokens','latency_ms','category','response_sha256','vector_hashes'}
-        assert set(values)<=allowed
-        with closing(self.connect()) as c:
-            c.execute('UPDATE requests SET '+','.join(k+'=?' for k in values)+' WHERE request_id=?',(*values.values(),uid));c.commit()
-
-    def snapshot(self):
-        if not self.path.exists():return {'used':0,'limit':self.limit,'requests':[]}
-        with closing(sqlite3.connect(self.path.resolve().as_uri()+'?mode=ro',uri=True)) as c:
-            c.row_factory=sqlite3.Row;rows=[dict(r) for r in c.execute('SELECT * FROM requests ORDER BY created')]
-        return {'used':len(rows),'limit':self.limit,'requests':rows}
+    def settle(self, uid, **values):
+        self.record(uid, status=values.pop('status', None), category=values.pop('category', 'response_received'),
+                    model=values.get('actual_model'), **values)
 
 
 class EmbeddingProvider:

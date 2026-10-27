@@ -95,8 +95,8 @@ class ProtectedPolicyIndex:
                     'network_requests':0,'immutable_baseline':True}
 
     def retrieve(self,*args,**kwargs):
-        from target.rag_store import RagError
-        if kwargs.get('allow_network'):raise RagError('immutable_baseline_cache_only')
+        # Query embedding may use explicitly authorized network on the COPY.
+        # This never permits rebuilding or opening the immutable source in place.
         with working_index(self.path,self.provider,policy=self.policy,parent=self.parent) as (index,receipt):
             result=index.retrieve(*args,**kwargs)
             result['index_protection']={'source_tree_sha256':receipt['source_tree_sha256'],'opened_working_copy_only':True}

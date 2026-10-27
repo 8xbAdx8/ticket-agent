@@ -88,13 +88,9 @@ def metrics(cases,results):
             'not_applicable_recall_mrr_cases':sum(not c['expected_doc_ids'] for c in cases),'rows':rows}
 
 
-def validate_generation_binding(settings,provider):
-    from target.deepseek_runtime import DeepSeekError
-    expected=AUTH/(provider+'-generation.db')
-    if (settings.ledger_path.resolve()!=expected.resolve() or settings.max_requests!=2 or settings.max_model_calls!=2
-        or Path(os.getenv('TICKET_INITIAL_LIVE_BUDGET','')).resolve()!=(AUTH/'generation-total.db').resolve()
-        or os.getenv('TICKET_TOTAL_REQUEST_LIMIT')!='4'):
-        raise DeepSeekError('v352_fixed_generation_budget_required')
-    marker=AUTH/'generation-attempt.json'
-    if not marker.exists() or read(marker).get('explicit_command_authorization')!=4:
-        raise DeepSeekError('v352_explicit_validation_command_required')
+def validate_generation_binding(settings, provider):
+    """Historical import compatibility; no count, path or batch-marker check."""
+    if provider not in ('deepseek', 'bailian') or settings.profile != 'read_only':
+        from target.deepseek_runtime import DeepSeekError
+        raise DeepSeekError('read_only_tools_required')
+

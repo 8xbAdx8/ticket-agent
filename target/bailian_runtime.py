@@ -6,6 +6,7 @@ import re
 from dataclasses import dataclass
 from pathlib import Path
 from urllib.parse import urlsplit
+from typing import ClassVar
 import config
 from target.deepseek_runtime import Settings as DeepSeekSettings, RequestBudget, DeepSeekError, ERRORS
 from target.live_providers import READ_ONLY
@@ -19,26 +20,21 @@ class BailianError(DeepSeekError):
 
 @dataclass(frozen=True)
 class Settings(DeepSeekSettings):
-    max_requests: int = 3
+    provider_name: ClassVar[str] = "bailian"
+    max_requests: int = 0
     ledger_path: Path = config.BASE_DIR / "artifacts/runtime/v33-live-providers/bailian/requests.db"
 
     @classmethod
     def from_env(cls):
         try:
             settings = cls(timeout=float(os.getenv("BAILIAN_TIMEOUT", "20")),
-                max_requests=int(os.getenv("BAILIAN_MAX_REQUESTS", "3")),
+                max_requests=0,
                 max_model_calls=int(os.getenv("BAILIAN_MAX_MODEL_CALLS","3")),
                 ledger_path=Path(os.getenv("BAILIAN_BUDGET_PATH", str(cls.ledger_path))))
         except ValueError:
             raise BailianError("invalid_safety_limits") from None
-        interactive=os.getenv('TICKET_API_VALIDATION_PROFILE')=='interactive'
-        ceiling=4 if os.getenv("TICKET_API_VALIDATION_PROFILE")=="v35" else 3
-        if not (settings.max_requests==0 if interactive else 1<=settings.max_requests<=ceiling) or not 1 <= settings.timeout <= 60 or not 1<=settings.max_model_calls<=4:
+        if not 1 <= settings.timeout <= 60 or not 1<=settings.max_model_calls<=4:
             raise BailianError("invalid_safety_limits")
-        formal = config.BASE_DIR / "artifacts/runtime/deepseek-budget/requests.db"
-        deep = Path(os.getenv("DEEPSEEK_BUDGET_PATH", str(formal)))
-        if settings.ledger_path.resolve() in (formal.resolve(), deep.resolve()):
-            raise BailianError("provider_budget_must_be_independent")
         return settings
 
 
@@ -69,24 +65,8 @@ def validate_configuration():
 def guarded_client(settings, *, transport=None):
     import httpx
     address = endpoint()
-    if os.getenv('TICKET_API_VALIDATION_PROFILE')=='interactive':
-        from target.live_providers import validate_manual_binding
-        validate_manual_binding(settings,'bailian')
-    elif os.getenv('TICKET_API_VALIDATION_PROFILE')=='v352':
-        if config.MODEL_NAME!='qwen3.8-flash':raise BailianError('v352_model_identity_required')
-        from target.v352_validation import validate_generation_binding
-        validate_generation_binding(settings,'bailian')
-    elif config.MODEL_NAME=="qwen3.8-flash" and transport is None:
-        # All application entry points share the already-authorized V3.5 ledger.
-        # A naked Agent()/old launcher must not spend from a historical ledger.
-        from target.embeddings import AUTH
-        shared=os.getenv("TICKET_INITIAL_LIVE_BUDGET","")
-        if (settings.ledger_path.resolve()!=(AUTH/"generation.db").resolve() or settings.max_requests!=4
-                or not shared or Path(shared).resolve()!=(AUTH/"generation-total.db").resolve()
-                or os.getenv("TICKET_TOTAL_REQUEST_LIMIT")!="4"):
-            raise BailianError("v35_fixed_generation_budget_required")
     from target.request_accounting import budget_for,reserve,settle,client_class
-    budget = budget_for(settings,"bailian")
+    budget = budget_for(settings,"bailian",transport=transport)
     for name in ("httpx", "httpcore", "openai"):
         logging.getLogger(name).setLevel(logging.WARNING)
 

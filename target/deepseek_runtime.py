@@ -1,4 +1,4 @@
-"""DeepSeek 安全边界：官方地址、非思考模式、持久请求预算、脱敏错误。
+"""DeepSeek 安全边界：官方地址、非思考模式、非限额用量审计、脱敏错误。
 
 这里不生成 tool_calls。模型和工具仍由已有 create_agent 调度。
 """
@@ -12,6 +12,8 @@ from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
 from urllib.parse import urlsplit
+from typing import ClassVar
+from target.api_usage import UsageLog
 
 try:
     import httpx
@@ -58,7 +60,7 @@ def validate_read_only_reply(reply):
             raise DeepSeekError("read_only_capability_violation")
     if re.search(r"\b(?:I can|I will|shall I|would you like|let me)\b.{0,60}\b(?:book|reserve|pay|purchase|cancel)\b", reply, re.I):
         raise DeepSeekError("read_only_capability_violation")
-ERRORS = {400: "invalid_format", 401: "authentication_failed", 402: "insufficient_balance",
+ERRORS = {400: "invalid_format", 401: "authentication_failed", 402: "insufficient_balance", 403: "permission_denied",
           422: "invalid_parameters", 429: "rate_limited", 500: "server_error", 503: "service_unavailable"}
 
 
@@ -98,8 +100,9 @@ def safe_text(text):
 
 @dataclass(frozen=True)
 class Settings:
+    provider_name: ClassVar[str] = "deepseek"
     timeout: float = 20
-    max_requests: int = 5  # 0：用户手动使用时不限制累计请求数，仍逐次记账。
+    max_requests: int = 0  # Deprecated compatibility field; never an admission limit.
     max_output_tokens: int = 512
     max_model_calls: int = 3
     max_tool_calls: int = 4
@@ -112,14 +115,14 @@ class Settings:
     @classmethod
     def from_env(cls):
         values = dict(timeout=float(os.getenv("DEEPSEEK_TIMEOUT", "20")),
-            max_requests=int(os.getenv("DEEPSEEK_MAX_REQUESTS", "5")),
+            max_requests=0,  # Ignore obsolete DEEPSEEK_MAX_REQUESTS, including stale/invalid values.
             max_output_tokens=int(os.getenv("DEEPSEEK_MAX_OUTPUT_TOKENS", "512")),
             max_model_calls=int(os.getenv("DEEPSEEK_MAX_MODEL_CALLS", "3")),
             max_tool_calls=int(os.getenv("DEEPSEEK_MAX_TOOL_CALLS", "4")),
             turn_token_budget=int(os.getenv("DEEPSEEK_TURN_TOKEN_BUDGET", "12000")),
             max_payload_bytes=int(os.getenv("DEEPSEEK_MAX_PAYLOAD_BYTES", "32000")),
             ledger_path=Path(os.getenv("DEEPSEEK_BUDGET_PATH",str(cls.ledger_path))))
-        bounds = {"timeout":(1,60),"max_requests":(0,5),"max_output_tokens":(16,1024),
+        bounds = {"timeout":(1,60),"max_output_tokens":(16,1024),
                   "max_model_calls":(1,4),"max_tool_calls":(1,8),"turn_token_budget":(512,32000),
                   "max_payload_bytes":(1000,64000)}
         if any(not low <= values[k] <= high for k,(low,high) in bounds.items()):
@@ -142,8 +145,7 @@ def validate_sandbox(settings):
     base = (config.BASE_DIR / "artifacts/runtime").resolve()
     if (root is None or not root.is_relative_to(base) or root == base or config.USE_HTTP_MOCK
             or config.DB_PATH.resolve() != root / "tickets.db"
-            or config.TRACE_DIR.resolve() != root / "traces"
-            or settings.ledger_path.resolve() != root / "requests.db" or settings.max_requests == 0):
+            or config.TRACE_DIR.resolve() != root / "traces"):
         raise DeepSeekError("isolated_sandbox_required")
     try:
         marker = json.loads((root / ".ticket-agent-sandbox.json").read_text(encoding="utf-8"))
@@ -171,68 +173,24 @@ def validate_configuration():
         raise DeepSeekError("missing_DEEPSEEK_API_KEY")
 
 
-class RequestBudget:
-    """SQLite 事务先占预算再发送；崩溃/超时不退还，防止自动重发。
+class RequestBudget(UsageLog):
+    """Deprecated import name for non-blocking usage accounting, not a cap.
 
-    同一 ledger 的进程共享上限；max_requests=0 显式关闭累计上限，但保留账本。
-    人为删除/改路径、其他客户端不受此限制。
+    settings.ledger_path is only a namespace; the historical database is never
+    opened for writing, migrated, reset or used to authorize HTTP requests.
     """
     def __init__(self, settings):
         self.settings = settings
-
-    def _connect(self):
-        self.settings.ledger_path.parent.mkdir(parents=True, exist_ok=True)
-        c = sqlite3.connect(self.settings.ledger_path, timeout=10)
-        c.row_factory = sqlite3.Row
-        c.execute("CREATE TABLE IF NOT EXISTS requests (id INTEGER PRIMARY KEY, created TEXT, status INTEGER, category TEXT, prompt INTEGER, completion INTEGER, model TEXT)")
-        return c
-
-    def reserve(self):
-        c = self._connect()
-        try:
-            c.execute("BEGIN IMMEDIATE")
-            count = c.execute("SELECT COUNT(*) FROM requests").fetchone()[0]
-            if self.settings.max_requests != 0 and count >= min(5,self.settings.max_requests):
-                raise DeepSeekError("request_budget_exhausted")
-            row = c.execute("INSERT INTO requests(created,category) VALUES (?,?)",
-                            (datetime.now(timezone.utc).isoformat(), "reserved_outcome_unknown"))
-            c.commit()
-            return row.lastrowid
-        finally:
-            c.close()
-
-    def record(self, identity, *, status=None, category="response_received", usage=None, model=None):
-        usage = usage or {}
-        prompt, completion = usage.get("prompt_tokens"), usage.get("completion_tokens")
-        prompt = prompt if type(prompt) is int and prompt >= 0 else None
-        completion = completion if type(completion) is int and completion >= 0 else None
-        with closing(self._connect()) as c:
-            c.execute("UPDATE requests SET status=?,category=?,prompt=?,completion=?,model=? WHERE id=?",
-                      (status,category,prompt,completion,safe_text(model)[:100] if model else None,identity))
-            c.commit()
-
-    def snapshot(self):
-        # 没有请求时不创建 ledger，也不会为“检查密钥”消耗预算。
-        if not self.settings.ledger_path.exists():
-            return {"reserved_requests":0,"limit":self.settings.max_requests,"requests":[]}
-        with closing(self._connect()) as c:
-            rows = [dict(r) for r in c.execute("SELECT * FROM requests ORDER BY id")]
-        return {"reserved_requests":len(rows),"limit":self.settings.max_requests,"requests":rows}
+        super().__init__(getattr(settings, "provider_name", "deepseek"), settings.ledger_path)
 
 
 def guarded_client(settings, *, transport=None):
     if httpx is None:
         raise DeepSeekError("dependency_missing")
-    if os.getenv('TICKET_API_VALIDATION_PROFILE')=='v352':
-        from target.v352_validation import validate_generation_binding
-        validate_generation_binding(settings,'deepseek')
-    elif os.getenv('TICKET_API_VALIDATION_PROFILE')=='interactive':
-        from target.live_providers import validate_manual_binding
-        validate_manual_binding(settings,'deepseek')
     for name in ("httpx","httpcore"):
         logging.getLogger(name).setLevel(logging.WARNING)
     from target.request_accounting import budget_for, reserve, settle, client_class
-    budget = budget_for(settings,"deepseek")
+    budget = budget_for(settings,"deepseek",transport=transport)
 
     def before(request):
         if request.url.scheme != "https" or request.url.host != "api.deepseek.com" or request.url.port not in (None,443):

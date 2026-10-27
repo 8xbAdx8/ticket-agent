@@ -36,9 +36,9 @@ def retrieve(question,mode=None,*,allow_network=False,k=None,threshold=None):
     evidence=None
     try:
         frozen=None
-        if os.getenv('TICKET_API_VALIDATION_PROFILE')=='v352':
+        if os.getenv('TICKET_FROZEN_RAG_EVIDENCE'):
             from target.v352_validation import AUTH,read,canonical_hash
-            frozen=read(AUTH/'prepared/frozen.json')
+            frozen=read(Path(os.environ['TICKET_FROZEN_RAG_EVIDENCE']))
             if question!=frozen['question']:raise ValueError('paired_policy_query_changed_cache_only')
             if canonical_hash(documents(config.POLICY_PATH))!=frozen['policy_chunks_sha256']:
                 raise ValueError('paired_policy_corpus_changed')
