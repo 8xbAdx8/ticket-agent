@@ -1,5 +1,13 @@
 # Ticket Agent
 
+## 2026-10-27：所有 Live 入口取消本地累计请求上限
+
+DeepSeek、Qwen3.8-Flash、text-embedding-v4、真实 RAG、出行助手和测试实验室现在使用相同的**非限额用量记录**。旧 5/5、4/4、5/8 账本只作历史证据，不再决定能否调用 API；无需增额、重置账本或创建验证批次。旧 `*_MAX_REQUESTS` 和共享总额配置不再生效。真实 API 可能产生费用，服务商认证、配额与限流仍适用。
+
+双击 [启动_在线模式.cmd](启动_在线模式.cmd)，在页面选择模型、确认费用后发送；更新代码后先在原启动窗口按 Ctrl+C，再重启。Vector/Hybrid 未命中缓存时须另外确认 Embedding 网络访问。保留单轮执行步数、超时、零自动重试、两个只读工具、密钥脱敏、索引保护与本地 Trace。本轮开发与回归**没有发送任何真实模型、Embedding 或 LangSmith 请求**。
+
+当前实现、测试结果、A 旧断言的显式迁移及历史文件校验见 [移除上限报告](docs/handoff/unlimited-live/本地请求上限移除报告.md)；运行、API Key、用量日志和 B 测试步骤见 [使用与测试迁移说明](docs/handoff/unlimited-live/使用与测试迁移说明.md)。统一离线命令：`.\.venv-v35\Scripts\python.exe scripts/verify_unlimited_live_offline.py --current-only`。此前 ZIP 和以下按日期保留的限额描述均属于历史版本，未覆盖旧包或旧证据。
+
 ## 2026-10-27：当前团队交接入口
 
 最新修复见 [Trace、回复与质量一致性报告](docs/handoff/v352/Trace回复与质量一致性修复报告.md)：正常澄清不再被非票务引文误拦截，运行错误与未知判定分别记录原因，Token状态依据响应证据，网页区分原模型回答和未返回占位。新增27项专项；完整离线 **622通过、0失败、0跳过，另96子测试通过**，外部模型/Embedding/LangSmith请求0。修复分支与SHA见报告。以下已发出的交接ZIP仍对应957e5cb0，未自动覆盖。

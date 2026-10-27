@@ -1,0 +1,143 @@
+{
+  "checked_source_commit": "340c5b21e597627f3877247f6e8f6455f8e72c8a",
+  "roots": [
+    "target",
+    "web",
+    "scripts"
+  ],
+  "cumulative_budget_denial_raises": [],
+  "matches": [
+    {
+      "file": "target/api_usage.py",
+      "line": 118,
+      "code": "result.update(request_count=None,reserved_requests=None,used=None,recording_status='partial_or_unavailable',error='usage_log_write_failed')"
+    },
+    {
+      "file": "target/api_usage.py",
+      "line": 157,
+      "code": "return {'request_count': None, 'reserved_requests': None, 'used': None, 'limit': None,"
+    },
+    {
+      "file": "target/api_usage.py",
+      "line": 162,
+      "code": "return {'request_count': count, 'reserved_requests': count, 'used': count, 'limit': None,"
+    },
+    {
+      "file": "target/bailian_runtime.py",
+      "line": 24,
+      "code": "max_requests: int = 0"
+    },
+    {
+      "file": "target/bailian_runtime.py",
+      "line": 31,
+      "code": "max_requests=0,"
+    },
+    {
+      "file": "target/deepseek_runtime.py",
+      "line": 105,
+      "code": "max_requests: int = 0  # Deprecated compatibility field; never an admission limit."
+    },
+    {
+      "file": "target/deepseek_runtime.py",
+      "line": 118,
+      "code": "max_requests=0,  # Ignore obsolete DEEPSEEK_MAX_REQUESTS, including stale/invalid values."
+    },
+    {
+      "file": "target/diagnostics.py",
+      "line": 196,
+      "code": "\"request_budget_exhausted\",\"tool_call_limit_exceeded\",\"unavailable_policy_citation\"} or failed_order and not authority.get(\"orders\"))"
+    },
+    {
+      "file": "target/live_providers.py",
+      "line": 24,
+      "code": "'TICKET_TOTAL_REQUEST_LIMIT':'','DEEPSEEK_LIVE_TEST_PROFILE':'read_only','DEEPSEEK_THINKING':'disabled',"
+    },
+    {
+      "file": "target/live_providers.py",
+      "line": 30,
+      "code": "'DEEPSEEK_MAX_REQUESTS':'0','BAILIAN_MAX_REQUESTS':'0',"
+    },
+    {
+      "file": "target/request_accounting.py",
+      "line": 57,
+      "code": "return {'reserved_requests': 0, 'limit': limit, 'requests': [], 'unsettled_ids': [], 'historical': True}"
+    },
+    {
+      "file": "target/request_accounting.py",
+      "line": 62,
+      "code": "return {'reserved_requests': len(rows), 'limit': limit, 'requests': rows, 'historical': True,"
+    },
+    {
+      "file": "target/request_accounting.py",
+      "line": 66,
+      "code": "return {'reserved_requests': None, 'limit': limit, 'requests': [], 'unsettled_ids': [],"
+    },
+    {
+      "file": "web/runtime.py",
+      "line": 146,
+      "code": "DEEPSEEK_BUDGET_PATH=str(self.root/\"requests.db\"), DEEPSEEK_MAX_REQUESTS=\"5\")"
+    },
+    {
+      "file": "web/runtime.py",
+      "line": 229,
+      "code": "'historical_unlinked_ledger_requires_new_validation_pair':'这是旧版本保存的账本错误。当前Live已移除该拦截，旧记录保持原样。',"
+    },
+    {
+      "file": "web/runtime.py",
+      "line": 230,
+      "code": "'request_budget_exhausted':'这是旧版本保存的本地预算错误。当前Live累计请求数不限，旧记录保持原样。',"
+    },
+    {
+      "file": "scripts/check_deepseek_api.py",
+      "line": 38,
+      "code": "before = budget.snapshot()[\"reserved_requests\"]"
+    },
+    {
+      "file": "scripts/generate_deepseek_handoff.py",
+      "line": 75,
+      "code": "$env:DEEPSEEK_MAX_REQUESTS=\"5\""
+    },
+    {
+      "file": "scripts/generate_deepseek_handoff.py",
+      "line": 104,
+      "code": "api_errors = \"\"\"400 invalid_format；401 authentication_failed；402 insufficient_balance；422 invalid_parameters；429 rate_limited；500 server_error；503 service_unavailable；连接错误 network_connection；超时 timeout。还单独报告 missing_DEEPSEEK_API_KEY、request_budget_exhausted、token_usage_unknown、dependency_missing 等本地错误。只存类别和状态码，不存响应错误正文、Authorization、原始异常堆栈或内部推理。"
+    },
+    {
+      "file": "scripts/launch_app.py",
+      "line": 48,
+      "code": "DEEPSEEK_MAX_REQUESTS='0',BAILIAN_MAX_REQUESTS='0',TICKET_INITIAL_LIVE_BUDGET='',TICKET_TOTAL_REQUEST_LIMIT='',"
+    },
+    {
+      "file": "scripts/launch_app.py",
+      "line": 142,
+      "code": "env.update(DEEPSEEK_MAX_REQUESTS='0',DEEPSEEK_BUDGET_PATH=str(ROOT/'artifacts/runtime/manual-live/deepseek/requests.db'))"
+    },
+    {
+      "file": "scripts/verify_live_faults.py",
+      "line": 40,
+      "code": "DEEPSEEK_BUDGET_PATH=str(root/\"requests.db\"),DEEPSEEK_MAX_REQUESTS=\"5\",DEEPSEEK_TIMEOUT=\"20\","
+    },
+    {
+      "file": "scripts/verify_live_faults.py",
+      "line": 73,
+      "code": "\"request_count\":ledger[\"reserved_requests\"],\"requests\":ledger[\"requests\"],"
+    },
+    {
+      "file": "scripts/verify_v34_live.py",
+      "line": 53,
+      "code": "counts=[r['reserved_requests'] for r in providers.values()]"
+    }
+  ],
+  "classification": {
+    "target/request_accounting.py": "Read-only historical snapshots and compatibility names; never admission.",
+    "target/api_usage.py": "Unlimited usage-only JSONL; count unknown/error does not gate requests.",
+    "target/deepseek_runtime.py": "Deprecated max_requests=0; only per-turn, payload and transport safety remain.",
+    "target/bailian_runtime.py": "Deprecated max_requests=0; only safety/endpoint/model validation remains.",
+    "web/runtime.py": "Old errors displayed for replay; offline sandbox obsolete value ignored.",
+    "scripts/generate_deepseek_handoff.py": "Historical V3 document generator, no model transport.",
+    "scripts/verify_live_faults.py": "Deprecated count setting ignored, actual usage snapshot; finite fault scenarios.",
+    "scripts/verify_v34_live.py": "Historical read-only reconciliation plus current non-gating usage.",
+    "scripts/launch_app.py": "Read-only history helper; current startup uses unlimited usage-only policy."
+  },
+  "scope": "Source search + AST denial check + runtime tests; legacy words alone are not a quota gate."
+}

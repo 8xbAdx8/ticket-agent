@@ -1,0 +1,77 @@
+{
+  "status": "passed",
+  "base_commit": "97213a7d60e4cecaef88b9cbe634f8df817d772d",
+  "original_files_checked": 13570,
+  "changed_original_files": [],
+  "snapshot_file": "artifacts/runtime/unlimited-live-20261027/protected.json",
+  "snapshot_sha256": "8b08da77201778109360ff4f51ed834f7cb332d2b6e29e7c28be71011f629097",
+  "original_database_files": 3041,
+  "original_jsonl_files": 6988,
+  "original_evidence_files": 1481,
+  "original_b_dataset_files": 8,
+  "contract_sha256": "bfe2f8ebf1ec02b831765286652e50344d1cfcc24d5179bd8ffd78fe6e8c0381",
+  "a_test_migration_checks": [
+    {
+      "file": "test_deepseek_runtime.py",
+      "original_unchanged": true,
+      "current_matches_mapping": true,
+      "mapped_edits": 5
+    },
+    {
+      "file": "test_deepseek_readonly_quality.py",
+      "original_unchanged": true,
+      "current_matches_mapping": true,
+      "mapped_edits": 2
+    },
+    {
+      "file": "test_live_faults.py",
+      "original_unchanged": true,
+      "current_matches_mapping": true,
+      "mapped_edits": 1
+    },
+    {
+      "file": "test_launcher.py",
+      "original_unchanged": true,
+      "current_matches_mapping": true,
+      "mapped_edits": 2
+    },
+    {
+      "file": "test_live_providers.py",
+      "original_unchanged": true,
+      "current_matches_mapping": true,
+      "mapped_edits": 5
+    },
+    {
+      "file": "test_v35_rag.py",
+      "original_unchanged": true,
+      "current_matches_mapping": true,
+      "mapped_edits": 3
+    },
+    {
+      "file": "test_manual_live_web.py",
+      "original_unchanged": true,
+      "current_matches_mapping": true,
+      "mapped_edits": 5
+    },
+    {
+      "file": "test_v34_api_audit.py",
+      "original_unchanged": true,
+      "current_matches_mapping": true,
+      "mapped_edits": 13
+    },
+    {
+      "file": "test_v352_chroma_protection.py",
+      "original_unchanged": true,
+      "current_matches_mapping": true,
+      "mapped_edits": 1
+    },
+    {
+      "file": "test_v352_live_protocol.py",
+      "original_unchanged": true,
+      "current_matches_mapping": true,
+      "mapped_edits": 7
+    }
+  ],
+  "restored_or_overwritten_originals": 0,
+  "b_original_assertions_modified": false
+}

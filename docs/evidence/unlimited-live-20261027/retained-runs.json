@@ -1,0 +1,222 @@
+{
+  "not_overwritten": true,
+  "runs": [
+    {
+      "path": "artifacts/runtime/unlimited-live-20261027/pre-migration-full.xml",
+      "sha256": "b07d152a9cc5b1247c3f9c1407d6fa71ec4668572eccb5fb13f2afb799208a41",
+      "failure_records": [
+        {
+          "class": "tests.test_deepseek_readonly_quality.ReadOnlyQualityTests",
+          "name": "test_exhausted_budget_never_enters_mock_transport",
+          "type": "failure"
+        },
+        {
+          "class": "tests.test_deepseek_readonly_quality.ReadOnlyQualityTests",
+          "name": "test_timeout_and_connection_failure_do_not_retry_or_refund_reservation",
+          "type": "failure"
+        },
+        {
+          "class": "tests.test_deepseek_readonly_quality.ReadOnlyQualityTests",
+          "name": "test_timeout_and_connection_failure_do_not_retry_or_refund_reservation",
+          "type": "failure"
+        },
+        {
+          "class": "tests.test_deepseek_runtime.DeepSeekRuntimeTests",
+          "name": "test_default_stays_capped_and_negative_limit_is_rejected",
+          "type": "failure"
+        },
+        {
+          "class": "tests.test_deepseek_runtime.DeepSeekRuntimeTests",
+          "name": "test_global_budget_is_persistent_and_sixth_request_never_reaches_transport",
+          "type": "failure"
+        },
+        {
+          "class": "tests.test_deepseek_runtime.DeepSeekRuntimeTests",
+          "name": "test_unsafe_limits_and_thinking_opt_in_are_rejected",
+          "type": "failure"
+        },
+        {
+          "class": "tests.test_deepseek_runtime.DeepSeekRuntimeTests",
+          "name": "test_zero_limit_allows_more_than_five_requests_and_keeps_recording",
+          "type": "failure"
+        },
+        {
+          "class": "tests.test_launcher.LauncherTests",
+          "name": "test_live_uses_own_ledger_and_read_only_without_changing_source",
+          "type": "failure"
+        },
+        {
+          "class": "tests.test_launcher.LauncherTests",
+          "name": "test_manual_default_and_mode_data_isolation",
+          "type": "failure"
+        },
+        {
+          "class": "tests.test_live_faults.LiveFaultPathTests",
+          "name": "test_budget_exhaustion_retains_successful_injection_evidence",
+          "type": "failure"
+        },
+        {
+          "class": "tests.test_live_providers.LiveProviderTests",
+          "name": "test_budget_three_stops_fourth_before_transport",
+          "type": "failure"
+        },
+        {
+          "class": "tests.test_live_providers.LiveProviderTests",
+          "name": "test_endpoint_model_and_independent_ledger_fail_closed",
+          "type": "failure"
+        },
+        {
+          "class": "tests.test_live_providers.LiveProviderTests",
+          "name": "test_shared_initial_budget_limits_both_providers_together",
+          "type": "failure"
+        },
+        {
+          "class": "tests.test_manual_live_web.ManualConfigTests",
+          "name": "test_daily_web_preflight_does_not_inherit_old_cli_limit",
+          "type": "failure"
+        },
+        {
+          "class": "tests.test_manual_live_web.ManualConfigTests",
+          "name": "test_manual_binding_rejects_formal_path_and_shared_budget",
+          "type": "failure"
+        },
+        {
+          "class": "tests.test_manual_live_web.ManualSDKTests",
+          "name": "test_both_models_execute_tools_and_exceed_old_cumulative_cap_without_touching_formal_ledgers",
+          "type": "failure"
+        },
+        {
+          "class": "tests.test_manual_live_web.ManualUIBehaviorTests",
+          "name": "test_failed_preflight_has_persistable_error_and_old_methods_stay_available",
+          "type": "failure"
+        },
+        {
+          "class": "tests.test_v34_api_audit.AccountingTests",
+          "name": "test_concurrent_providers_never_exceed_four_and_ids_match",
+          "type": "failure"
+        },
+        {
+          "class": "tests.test_v34_api_audit.AccountingTests",
+          "name": "test_legacy_ledger_is_rejected_without_rewrite",
+          "type": "failure"
+        },
+        {
+          "class": "tests.test_v34_api_audit.AccountingTests",
+          "name": "test_policy_cannot_be_silently_raised",
+          "type": "failure"
+        },
+        {
+          "class": "tests.test_v34_api_audit.AccountingTests",
+          "name": "test_provider_limit_does_not_leak_total_reservation",
+          "type": "failure"
+        },
+        {
+          "class": "tests.test_v34_api_audit.AccountingTests",
+          "name": "test_same_uuid_atomic_pair_and_idempotent_settlement",
+          "type": "failure"
+        },
+        {
+          "class": "tests.test_v34_api_audit.ConfigTests",
+          "name": "test_authorization_plan_is_fixed_two_two_four",
+          "type": "failure"
+        },
+        {
+          "class": "tests.test_v34_api_audit.SDKLifecycleTests",
+          "name": "test_budget_blocks_before_network_without_phantom_total_row",
+          "type": "failure"
+        },
+        {
+          "class": "tests.test_v34_api_audit.SDKLifecycleTests",
+          "name": "test_first_200_survives_second_timeout_and_partial_tokens",
+          "type": "failure"
+        },
+        {
+          "class": "tests.test_v34_api_audit.SDKLifecycleTests",
+          "name": "test_real_sdk_roundtrip_links_calls_and_does_not_retry",
+          "type": "failure"
+        },
+        {
+          "class": "tests.test_v351_relevance.QualityGuardTests",
+          "name": "test_new_live_entry_defaults_are_cache_only_and_quality_profile_explicit",
+          "type": "failure"
+        },
+        {
+          "class": "tests.test_v352_chroma_protection.ChromaProtectionTests",
+          "name": "test_baseline_wrapper_does_not_allow_network_or_rebuild",
+          "type": "failure"
+        },
+        {
+          "class": "tests.test_v352_live_protocol.PairProtocolTests",
+          "name": "test_local_zero_http_failure_can_only_resume_unused_qwen_budget",
+          "type": "failure"
+        },
+        {
+          "class": "tests.test_v352_live_protocol.PairProtocolTests",
+          "name": "test_pair_receives_identical_actual_chroma_tool_results",
+          "type": "failure"
+        },
+        {
+          "class": "tests.test_v352_live_protocol.PairProtocolTests",
+          "name": "test_protocol_success_and_wrong_answer_are_separate",
+          "type": "failure"
+        },
+        {
+          "class": "tests.test_v352_live_protocol.PairProtocolTests",
+          "name": "test_text_only_answer_is_not_tool_calling_success",
+          "type": "failure"
+        },
+        {
+          "class": "tests.test_v352_live_protocol.PairProtocolTests",
+          "name": "test_timeout_is_not_retried_and_other_provider_has_own_budget",
+          "type": "failure"
+        },
+        {
+          "class": "tests.test_v352_live_protocol.FixedBudgetTests",
+          "name": "test_fresh_budget_requires_explicit_command_marker",
+          "type": "failure"
+        },
+        {
+          "class": "tests.test_v352_live_protocol.FixedBudgetTests",
+          "name": "test_per_provider_two_and_shared_four_are_persisted",
+          "type": "failure"
+        },
+        {
+          "class": "tests.test_v35_rag.EmbeddingTests",
+          "name": "test_budget_exhaustion_prevents_http_and_cannot_increase_cap",
+          "type": "failure"
+        },
+        {
+          "class": "tests.test_v35_rag.CompatibilityTests",
+          "name": "test_real_qwen_entry_rejects_old_or_alias_ledger_before_client",
+          "type": "failure"
+        },
+        {
+          "class": "tests.test_v35_rag.CompatibilityTests",
+          "name": "test_v35_four_request_cap_does_not_change_older_profiles",
+          "type": "failure"
+        }
+      ]
+    },
+    {
+      "path": "artifacts/runtime/unlimited-live-20261027/full-final/pytest.xml",
+      "sha256": "67c79ac8ab8f535233d64b51eb0fe61a2740c0553de9deab667389d162b5bdfb",
+      "failure_records": []
+    },
+    {
+      "path": "artifacts/runtime/unlimited-live-20261027/final-regression/pytest.xml",
+      "sha256": "ee5521c1c84b4b745c914f4a57726877aaf25d77a10a426c70fac88e5fe6fc2c",
+      "failure_records": [
+        {
+          "class": "tests.test_v34_api_audit.AccountingTests",
+          "name": "test_concurrent_unlimited_usage_has_unique_correlated_ids",
+          "type": "failure"
+        }
+      ]
+    }
+  ],
+  "notes": [
+    "First failures included obsolete A quota assertions and configuration/evidence-format regressions, not B score changes.",
+    "1533cba regression exposed UUID digit-run phone redaction; fixed in 340c5b2 and deterministic new regression.",
+    "Earlier UI form and SQLite fixture-handle failures also remain in the runtime directory."
+  ]
+}
