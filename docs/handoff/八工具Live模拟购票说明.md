@@ -25,9 +25,11 @@
 - 实际候补工具：`artifacts/runtime/full-live-20261028/monitor-2ee97251/traces/`。模型说明模拟任务不会后台监控或自动通知。
 - M2：DeepSeek `artifacts/runtime/full-live-20261028/skip_lock-be963ea8/traces/`，Qwen `artifacts/runtime/full-live-20261028/skip_lock-4d50c7c7/traces/`。无效锁座订单被拒绝。
 - M4：DeepSeek `artifacts/runtime/full-live-20261028/infinite_loop-53c36f7a/traces/`，Qwen `artifacts/runtime/full-live-20261028/infinite_loop-fee948fe/traces/`。调用上限终止。
-- 本机页面经浏览器检查，Live 实验室的 M2/M4 可选；模拟订单状态由应用内确认。受控真实模型执行通过 Python `Conversation` 路径；并未在浏览器中完整重跑真实三轮购票。
+- 本机浏览器已实际完成 DeepSeek 查票、确认模拟下单、确认模拟支付，订单卡显示已支付；本次独立会话 Trace 在 `artifacts/runtime/v33/user/web-ad325d284a64/traces/`。另在浏览器确认 Live 实验室的 M2/M4 可选；Qwen 完整流程经 Python `Conversation` 实际验证。
 - 离线全量主环境：`artifacts/runtime/full-live-20261028/offline-release/report.json`，710 通过、117 子测试通过、0 失败/跳过。随后界面修改追加针对性回归 40 通过、2 子测试。B 原有正式数据和断言未修改；A 的页面断言根据新标签作了兼容更新。
 
 ## 已知限制
 
 自然语言模型不保证每次选择相同工具。票务字段的自动校验对不确定内容不会保证全语义正确；如果检测到明确错配，页面显示警告并以实际工具记录为准。政策忠实度规则可能把模型结合先前订单结果的说明判为无法通过；上述真实失败需后续进一步处理。监控和支付均为虚构；用户关闭会话后不保证自动恢复模型上下文。正式评分须成员 B 独立验收，不能声称无 Bug 或正式用例全部通过。
+
+本轮实际真实模型生成请求：DeepSeek 37 次（输入 90,641、输出 3,958 Token），Qwen 20 次（输入 48,331、输出 2,180 Token）；以 `artifacts/runtime/full-live-20261028/usage/` 中的请求日志为依据。实际费用未知，Embedding 和 LangSmith 未用于本轮验证。
