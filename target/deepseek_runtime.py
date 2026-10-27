@@ -290,18 +290,17 @@ def make_model(settings=None, *, transport=None):
 
 def save_run_evidence(trace, events, error=None):
     """只存模型元数据、真实 tool_calls/工具结果与最终文字，不序列化 AIMessage。"""
+    from target.live_evidence import token_summary
     output = {"provider":"deepseek_live","model":config.MODEL_NAME,"session_id":trace.session_id,
               "user_msg":safe_text(trace.user_msg),"events":events,"error":error,
               "tokens":None if error else trace.tokens,"latency_ms":trace.total_latency_ms,
               "reply":None if error else safe_text(trace.reply),"finish_reason":trace.finish_reason,
               "thinking":"disabled"}
+    output.update(token_summary(events))
     if error:
         # 错误不伪装为正常契约 Trace；保留真实失败工具及已确认的部分用量。
         output["tool_attempts"] = trace.steps
         output["tool_sequence"] = trace.tool_names
-        output["observed_tokens"] = trace.tokens if any(
-            e["event"] == "model_response" and all(type(e.get("usage",{}).get(k)) is int and e["usage"][k] >= 0
-                                                  for k in ("input_tokens","output_tokens")) for e in events) else None
     path = config.TRACE_DIR / "deepseek_runs.jsonl"
     path.parent.mkdir(parents=True,exist_ok=True)
     with path.open("a",encoding="utf-8") as f:

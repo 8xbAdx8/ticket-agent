@@ -48,8 +48,19 @@ def timeline_items(audit,public=None):
         for step in public.get("steps",[]):
             for call in step.get("calls",[]):
                 result.append({"kind":"公共 Trace 工具调用","title":call.get("tool","工具"),"data":call})
+    if audit.get("raw_model_reply") is not None:
+        result.append({"kind":"模型原始回复","title":"校验前的模型文字，未冒充Agent成功返回", "data":{"reply":audit["raw_model_reply"]}})
+    for event in audit.get("framework_events",[]):
+        if event.get("event")=="model_final" and event.get("reply_consistency"):
+            result.append({"kind":"回答数据校验","title":"确定字段、未知项与忽略项分别保存", "data":event["reply_consistency"]})
+    if audit.get("error"):
+        result.append({"kind":"运行异常","title":str(audit["error"].get("category","unknown_error")),"data":audit["error"]})
     if public.get("reply"):
-        result.append({"kind":"最终回复","title":"Agent 公开回答","data":{"reply":public["reply"],"finish_reason":public.get("finish_reason")}})
+        returned=audit.get("contract_returned") is not False
+        result.append({"kind":"最终回复" if returned else "错误占位记录",
+                       "title":"Agent 公开回答" if returned else "异常旁证中的占位文本，未作为Agent.chat返回",
+                       "data":{"reply":public["reply"],"finish_reason":public.get("finish_reason"),
+                               "contract_returned":audit.get("contract_returned")}})
     if audit.get("judgement"):
         result.append({"kind":"自动判定","title":"独立审计结果","data":audit["judgement"]})
     return result

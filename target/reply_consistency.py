@@ -124,10 +124,19 @@ def _parse(reply):
             ignored.append({'line':number,'text':original,'reason':'quoted_block'});continue
         def quotation(m):
             prefix=text[:m.start()]
-            if re.search(r'用户|您(?:刚才|之前)?说|你(?:刚才|之前)?说|原话|引用',prefix):
+            # A later asserted result must not inherit an earlier user attribution.
+            if re.search(r'查到|查询结果|显示|结果为|车次为|班次为',prefix):return m[0][1:-1]
+            if re.search(r'用户|[您你](?:刚才|之前)?(?:说|发的|输入(?:的)?|提到的)|原话|引用',prefix):
                 ignored.append({'line':number,'text':m[0],'reason':'user_quotation'})
                 return ''
-            if re.search(r'查到|查询结果|显示|结果为|车次为|班次为',prefix):return m[0][1:-1]
+            quoted=m[0][1:-1]
+            if not re.search(TRAIN,quoted) and not _prose(quoted):
+                ignored.append({'line':number,'text':m[0],'reason':'non_ticket_quotation'})
+                return ''
+            if (re.search(r'(?:比如|例如|示例|[（(]如)\s*$',prefix)
+                    and not re.search(TRAIN+'|'+TIME+r'|[¥￥]|\d+\s*(?:元|张)',quoted)):
+                ignored.append({'line':number,'text':m[0],'reason':'sample_query_quotation'})
+                return ''
             unresolved.append({'line':number,'text':m[0],'reason':'unattributed_quotation'})
             return ''
         masked=re.sub(r'“[^”]*”|「[^」]*」|‘[^’]*’|"[^"]*"',quotation,text)

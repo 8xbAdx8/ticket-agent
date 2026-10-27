@@ -310,10 +310,12 @@ class LangChainAgent:
         run_config = {"configurable":{"thread_id":session_id},"max_concurrency":1,
                       "recursion_limit":4*config.MAX_STEPS+10}
         self.threads.add(session_id)
+        phase="model_or_tool_execution"
         try:
             with tracing_context(enabled=False):  # 默认不把本地会话上传到外部观测服务。
                 output = self.graph.invoke({"messages":[HumanMessage(content=message)]},config=run_config,context=context)
             reply = output["messages"][-1].text or "抱歉，我没能完成这次操作。"
+            phase="reply_validation"
             if self.deepseek_settings:
                 from target.deepseek_runtime import DeepSeekError, validate_read_only_reply
                 if any(not c["ok"] for s in trace.steps for c in s["calls"]):
@@ -331,6 +333,7 @@ class LangChainAgent:
                     if re.search(r"\bP\d+\b",reply):
                         raise DeepSeekError("unavailable_policy_citation")
             import os
+            phase="rag_answer_validation"
             if os.getenv("AGENT_RAG_MODE"):
                 from target.rag_service import attach_answer
                 assessment=attach_answer(trace,context.events,reply)
@@ -355,7 +358,15 @@ class LangChainAgent:
             if self.deepseek_settings:
                 from target.deepseek_runtime import DeepSeekError, safe_error, save_run_evidence
                 error = safe_error(exc)
-                trace.finish("请求未完成；本轮真实 Token 用量可能未知。","stop")
+                from target.reply_consistency import failure_notice
+                from target.live_evidence import token_summary
+                usage=token_summary(context.events)
+                notice=failure_notice(error["category"]) or "请求未完成（错误类别："+error["category"]+"），本轮未自动重试。"
+                if usage["token_usage_status"]!="complete":
+                    notice+=" 本轮 Token 用量"+("仅有部分记录。" if usage["token_usage_status"]=="partial" else "未知。")
+                trace.finish(notice,"stop")
+                context.events.append({"event":"agent_error","category":error["category"],
+                                       "http_status":error["http_status"],"exception_type":type(exc).__name__,"phase":phase})
                 self.last_events = context.events
                 if save_trace and config.PROVIDER == "deepseek":
                     save_run_evidence(trace,context.events,error)

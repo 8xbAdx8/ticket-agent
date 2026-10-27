@@ -143,7 +143,7 @@ def evaluate(public_trace, report, authority, *, error=None, raw_model_reply=Non
     actual=[e for e in executions if e.get("executed",True)]
     original_trains={t["train_no"] for e in executions if isinstance(e.get("original_result"),dict)
                      for t in e["original_result"].get("trains",[]) if isinstance(t,dict) and "train_no" in t}
-    hall=detect_hallucinated_trains(public_trace.get("reply",""),authority["trains"] if authority.get("available") else None,
+    hall=detect_hallucinated_trains(raw_model_reply if raw_model_reply is not None else public_trace.get("reply",""),authority["trains"] if authority.get("available") else None,
                                  user_message=public_trace.get("user_msg",""),valid_query_trains=original_trains)
     checks.append(assertion("reply_train_authority",not hall["hallucination_detected"] if hall["hallucination_detected"] is not None else None,
                             "reply asserts unsupported or ambiguous trains",["authority","hallucination"]))
@@ -193,6 +193,15 @@ def evaluate(public_trace, report, authority, *, error=None, raw_model_reply=Non
     safe_stop=bool(public_trace.get("finish_reason")=="max_steps_exceeded" or error and error.get("category") in {
         "request_budget_exhausted","tool_call_limit_exceeded","unavailable_policy_citation"} or failed_order and not authority.get("orders"))
     backend_errors=any(not e.get("ok") for e in executions)
+    uncertain_error=bool(error and error.get("category")=="reply_data_indeterminate")
+    failures=[c["failure_reason"] for c in checks if c["passed"] is False]
+    unknowns=[c["failure_reason"] for c in checks if c["passed"] is None]
+    if error:
+        reason="Agent执行异常："+str(error.get("category") or "unknown_error")
+        (unknowns if uncertain_error else failures).append(reason)
+    failures.extend("工具调用未成功："+str(e.get("tool","unknown_tool")) for e in executions if not e.get("ok"))
+    if not actual:
+        unknowns.append("没有实际工具执行；澄清/闲聊不自动判失败，也不据此认定业务成功。")
     business=None
     if actual and authority.get("available"):
         business=(not error and public_trace.get("finish_reason")=="stop" and not backend_errors and not unbacked and not uncited
@@ -211,8 +220,8 @@ def evaluate(public_trace, report, authority, *, error=None, raw_model_reply=Non
                       "agent_anomaly_recognized":True if corrected else None,
                       "agent_recovered":True if corrected and business else None,
                       "safe_stop":safe_stop,"business_correct":business},
-        "quality_verdict":"fail" if error or defect or backend_errors else "indeterminate" if any(c["passed"] is None for c in checks) or not actual else "pass",
-        "failure_reasons":[c["failure_reason"] for c in checks if c["passed"] is False],
+        "quality_verdict":"fail" if failures or defect or backend_errors else "indeterminate" if unknowns else "pass",
+        "failure_reasons":list(dict.fromkeys(failures)),"indeterminate_reasons":list(dict.fromkeys(unknowns)),
         "scope":"deterministic tool/database/explicit-claim assertions; unknown semantic recognition/recovery remains null"}
 
 
@@ -222,14 +231,23 @@ def make_audit(trace, fault_run, *, events=(), error=None, save=True, public_tra
     public_trace=public_trace or trace.to_dict()
     authority=authority_snapshot(config.DB_PATH)
     raw=next((m.get("final_text") for m in reversed(report["model_requests"]) if m.get("final_text") is not None),None)
+    if trace.provider in ("deepseek_live","bailian_live"):
+        from target.live_evidence import token_summary
+        usage=token_summary(events)
+        token_evidence={"status":"reported" if usage["token_usage_status"]=="complete" else "unknown_or_partial",
+                        "completeness":usage["token_usage_status"],"reported":usage["tokens"],
+                        "observed":usage["observed_tokens"],
+                        "note":"来自本轮模型响应元数据，与业务是否成功分别判定；SDK桩不是新真实API用量，费用仍以账单为准。"}
+    else:
+        token_evidence={"status":"unknown_or_partial" if error else "reported",
+                        "reported":None if error and error.get("category")=="token_usage_unknown" else trace.tokens,
+                        "note":"Mock/SDK桩数值不是实际API用量；失败轮不得据此计算完整费用"}
     audit={"schema_version":"ticket-agent-audit/3.2","trace_id":trace.trace_id,
            "timestamp":datetime.now(timezone.utc).isoformat(),"provider":trace.provider,"model":trace.model,
            "public_trace":public_trace,"public_trace_sha256":digest(public_trace),"contract_returned":error is None,
            "fault_report":report,"mutation_events":mutation_events(report,trace.trace_id),
            "framework_events":list(events),"authority":authority,"raw_model_reply":raw,"error":error,
-           "token_usage_evidence":{"status":"unknown_or_partial" if error else "reported",
-                                   "reported":None if error and error.get("category")=="token_usage_unknown" else trace.tokens,
-                                   "note":"Mock/SDK桩数值不是实际API用量；失败轮不得据此计算完整费用"},
+           "token_usage_evidence":token_evidence,
            "judgement":evaluate(public_trace,report,authority,error=error,raw_model_reply=raw)}
     audit["judgement"]["case_id"]=trace.trace_id
     locations={"model_requests":"fault_report/model_requests","executions":"fault_report/executions","user_conditions":"judgement/actual_behavior/user_requested_date",

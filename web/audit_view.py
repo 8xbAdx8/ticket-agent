@@ -20,10 +20,17 @@ def show_audit(record):
         value=dimensions.get(name)
         st.write(f"{label}：{'是' if value is True else '否' if value is False else '待判定 / 不适用'}")
     st.write("业务质量判定：",judgement.get("quality_verdict","indeterminate"))
+    if record.get("contract_returned") is False:
+        st.warning("本轮Agent.chat抛出异常，未返回公开契约；旁证中的reply是错误占位，不能当作成功返回或模型原答。")
+    if record.get("error"):
+        st.write("记录的异常：",record["error"])
     if judgement.get("test_verdict"):
         st.write("受控测试预期判定：",judgement["test_verdict"])
     st.caption("故意注入缺陷的用例可满足测试预期，同时业务质量失败。stop 不代表业务成功。")
     for reason in judgement.get("failure_reasons",[]):st.warning(reason)
+    for reason in judgement.get("indeterminate_reasons",[]):st.info(reason)
+    if judgement.get("quality_verdict")=="fail" and not judgement.get("failure_reasons"):
+        st.warning("该历史判定没有保存失败原因；请核查原始error与旁证，不能据空列表推断通过。")
     events=record.get("mutation_events",[])
     if events:
         st.dataframe([{k:e.get(k) for k in ("mutation_id","mutation_name","status","target","reason")} for e in events],hide_index=True)
