@@ -170,6 +170,25 @@ def _parse(reply):
                     and not ids and not re.search(r'\d|[¥￥]|[一二三四五六七八九十百千万两]+\s*(?:元|分钟|小时|张|天)',clause)
                     and not re.search(r'查到|查得|查询结果|显示|有票|余票|票价|价格|库存|售罄|(?:出发|到达)(?:时间|时刻)?(?:为|是)',clause)):
                 ignored.append({'line':number,'text':clause,'reason':'non_factual_follow_up'});continue
+            # A date offered as an example while requesting missing input is
+            # not a claim about a query result. Other concrete facts in the
+            # same clause still require validation.
+            without_example=re.sub(r'(?:例如|比如)\s*\d{4}[-年]\d{1,2}[-月]\d{1,2}日?', '', clause)
+            remaining_claims=_prose(without_example)
+            if (without_example!=clause and not ids
+                    and re.search(r'(?:请(?:您)?(?:提供|补充|告知|输入)|需要.{0,16}补充)',clause)
+                    and all(f=='date' and not re.search(r'\d|[¥￥]',v) for f,v in remaining_claims)):
+                ignored.append({'line':number,'text':clause,'reason':'clarification_date_example'});continue
+            # Only a count explicitly referring to already listed rows and one
+            # seat type can be associated with a specific query result.
+            aggregate=re.fullmatch(r'\s*([一二三四五六七八九十两1-9]\d?)趟车('+SEAT+r')都(?:有余票|有票)\s*',clause)
+            if aggregate:
+                count={'一':1,'二':2,'两':2,'三':3,'四':4,'五':5,'六':6,'七':7,'八':8,'九':9,'十':10}.get(aggregate[1])
+                if count is None and aggregate[1].isdigit():count=int(aggregate[1])
+                seen=list(dict.fromkeys(v for rec in records for f,v in rec['claims'] if f=='train_no'))
+                denials.append({'line':number,'text':clause,'predicate':'counted_all_available',
+                                'count':count,'seat_type':aggregate[2],'listed_trains':seen})
+                continue
             pairs=_prose(clause)
             if re.search(UNCERTAIN,clause) and (ids or pairs):
                 unresolved.append({'line':number,'text':clause,'reason':'non_assertive_or_uncertain'});continue
@@ -243,7 +262,22 @@ def check(reply,events):
                            'line':record['line'],'authority_sources':sources})
             if not matched:fail(record,f,v,[authority[f]],sources=sources)
     for denial in denials:
-        if denial.get('predicate')=='all_available':
+        if denial.get('predicate')=='counted_all_available':
+            ids=denial['listed_trains']; seat=denial['seat_type']
+            selected=[[r for r in rows if r['values'].get('train_no')==train and r['values'].get('seat_type')==seat] for train in ids]
+            if len(queries)!=1 or len(ids)!=denial['count'] or not ids or any(len(items)!=1 for items in selected):
+                uncertain(denial,'counted_availability_scope_unknown')
+            elif any('seats_left' not in items[0]['values'] for items in selected):
+                uncertain(denial,'availability_authority_missing')
+            else:
+                values=[items[0]['values']['seats_left'] for items in selected]
+                sources=[items[0]['source'] for items in selected]
+                matched=all(value>0 for value in values)
+                checks.append({'field':'seats_left','claimed':'counted_all_available','matched':matched,
+                               'comparison':'counted_all_available','line':denial['line'],
+                               'train_nos':ids,'tool_values':values,'authority_sources':sources})
+                if not matched:fail({'claims':[],**denial},'seats_left','counted_all_available',values,'availability_mismatch',sources)
+        elif denial.get('predicate')=='all_available':
             if len(queries)!=1 or any('seats_left' not in r['values'] for r in rows):
                 uncertain(denial,'availability_scope_unknown')
             elif rows and all(r['values']['seats_left']>0 for r in rows):

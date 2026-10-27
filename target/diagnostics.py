@@ -238,11 +238,12 @@ def evaluate(public_trace, report, authority, *, error=None, raw_model_reply=Non
         unknowns.append("没有实际工具执行；澄清/闲聊不自动判失败，也不据此认定业务成功。")
     business=None
     if actual and authority.get("available"):
-        business=(not error and public_trace.get("finish_reason")=="stop" and not backend_errors and not unbacked and not uncited
+        business=((not error or uncertain_error) and public_trace.get("finish_reason")=="stop" and not backend_errors and not unbacked and not uncited
                   and not policy_wrong_route and not missing_reply_citation
                   and all(e["tool"]=="search_policy" for e in routed) and all(n<=1 for n in counts.values())
                   and hall["hallucination_detected"] is False and (not expected_date or not actual_dates or actual_dates[-1]==expected_date))
         if any(e["tool"]=="create_order" for e in actual):business=business and bool(authority["orders"])
+        if uncertain_error and business:business=None
     applied=[e for e in report.get("injection_events",[]) if e["status"]=="applied"]
     return {"case_id":public_trace.get("session_id"),"expected_behavior":"parameters, source truth, routing and order invariants hold",
         "actual_behavior":{"user_requested_date":expected_date,"model_original_dates":model_dates,"actual_query_dates":actual_dates,
