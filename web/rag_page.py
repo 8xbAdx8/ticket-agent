@@ -5,7 +5,7 @@ from pathlib import Path
 import uuid
 import streamlit as st
 from web.design import header,empty
-from target.embeddings import AUTH,EmbeddingBudget
+from target.embeddings import AUTH
 from target.rag_store import ROOT,documents
 
 
@@ -29,18 +29,21 @@ def rag_page():
     cols=st.columns(4)
     cols[0].metric('原始政策文档',len({c['doc_id'] for c in documents(ROOT/'data/policies.md')}))
     cols[1].metric('有效索引切片',state.get('chunk_count','待校验'))
-    cols[2].metric('Embedding 已预留请求',EmbeddingBudget(AUTH/'embedding.db').snapshot()['used'])
-    cols[3].metric('生成已预留请求',_generation_used())
+    from target.api_usage import provider_usage
+    embedding_usage=provider_usage('embedding')
+    cols[2].metric('Embedding当前请求次数',embedding_usage['request_count'] if embedding_usage['request_count'] is not None else '未知')
+    cols[3].metric('生成当前请求次数',_generation_used())
     st.caption('索引状态：'+state['state']+' · 版本：'+str(state.get('index_version','未知'))+' · 类别：'+state.get('category','正常'))
-    st.caption('V3.5固定上限：Embedding 8次、Qwen生成4次；DeepSeek本轮无新增额度。缓存复用不生成向量请求。')
+    st.caption('Live模型与Embedding累计请求次数不设本地上限。真实API可能产生费用；缓存命中不发送新Embedding请求，历史证据单独保留。')
     with st.expander('索引元数据与API来源回执'):
         st.json(state)
     mode=st.selectbox('政策检索模式',['keyword','vector','hybrid'],key='rag_mode')
     k=st.number_input('Top-K',min_value=1,max_value=10,value=3,step=1,key='rag_k')
     threshold=st.slider('向量cosine最低分',min_value=0.0,max_value=1.0,value=0.35,step=0.05,key='rag_threshold')
     question=st.text_input('政策问题',value='锁座后多久必须完成支付？',key='rag_question')
-    consent=st.checkbox('本页只读取缓存；新付费验证请使用V3.5.2显式命令',value=False,disabled=True,key='rag_network_consent')
     offline=os.getenv('TICKET_WEB_OFFLINE_ONLY')=='1'
+    consent=st.checkbox('允许本次检索/构建调用真实Embedding（可能产生费用）',value=False,disabled=offline,key='rag_network_consent')
+    if offline:st.caption('当前由离线启动器强制禁止网络；在线模式确认费用后可执行真实Embedding。')
     if st.button('检索政策证据',key='rag_retrieve'):
         try:
             from target.rag_service import retrieve,scope
@@ -52,7 +55,8 @@ def rag_page():
         except Exception as exc:
             st.error('检索未完成：'+getattr(exc,'category',str(exc) if type(exc).__name__=='RagError' else type(exc).__name__)+'；没有回退或重试。')
             st.session_state.pop('rag_retrieval_result',None)
-    if st.button('显式增量构建 / 重建索引',disabled=not consent or offline or index is None,key='rag_build'):
+    if state.get('immutable_baseline'):st.caption('冻结基线索引只读；查询在副本进行。构建新版本须配置独立RAG_INDEX_DIR，禁止覆盖基线。')
+    if st.button('显式增量构建 / 重建索引',disabled=not consent or offline or index is None or state.get('immutable_baseline',False),key='rag_build'):
         try:
             st.write(index.build(allow_network=True,rebuild=state['state']!='ready'))
         except Exception as exc:st.error('索引构建失败：'+getattr(exc,'category',type(exc).__name__))
@@ -71,7 +75,7 @@ def rag_page():
     if generation:
         if model.startswith('DeepSeek'):
             st.info('本轮没有DeepSeek同证据真实生成；以下Qwen记录不作为DeepSeek成绩。')
-        st.caption('只读回放：真实调用源码与当前后续UI代码可能不同；没有新增模型请求。新对话在出行助手执行，仍受已用完的预算约束。')
+        st.caption('只读回放：真实调用源码与当前后续UI代码可能不同；没有新增模型请求。新的只读Live对话可在出行助手或测试实验室显式执行，无累计请求上限。')
         scenario=st.selectbox('已保存的真实生成样本',['function_calling','RQ01','RQ26'],key='rag_replay')
         record=next(r for r in generation['records'] if r['scenario']==scenario)
         st.write(record.get('original_model_reply') or '该项没有最终回复，见错误证据。')
@@ -98,5 +102,6 @@ def rag_page():
 
 
 def _generation_used():
-    from target.request_accounting import snapshot
-    return snapshot(AUTH/'generation-total.db',4)['reserved_requests']
+    from target.api_usage import provider_usage
+    counts=[provider_usage(p)['request_count'] for p in ('deepseek','bailian')]
+    return sum(counts) if all(type(n) is int for n in counts) else '未知'

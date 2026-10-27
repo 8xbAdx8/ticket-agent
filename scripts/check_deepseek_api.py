@@ -1,6 +1,6 @@
 """预检默认不联网；--run 才尝试余额、Hello 和两个只读 Agent 场景。
 
-所有生成请求共用持久 5 次预算。没有 Key 时不创建 Mock 替代结果。
+累计调用次数不限，逐次记录用量。没有 Key 时不创建 Mock 替代结果。
 """
 import argparse
 import importlib.metadata
@@ -18,7 +18,7 @@ sys.path.insert(0,str(ROOT))
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--run",action="store_true",help="允许访问官方 API；仍受共享 5 次请求上限约束")
+    parser.add_argument("--run",action="store_true",help="显式访问官方API，可能产生费用；无本地累计请求上限")
     parser.add_argument("--connection-only",action="store_true")
     parser.add_argument("--out",type=Path)
     args = parser.parse_args()
@@ -49,8 +49,10 @@ def main():
 
     def write():
         state = budget.snapshot()
-        report["online_generation_requests_this_run"] = state["reserved_requests"]-before
-        report["shared_budget"] = state
+        count=state['request_count']
+        report["online_generation_requests_this_run"] = count-before if type(count) is int and type(before) is int else None
+        report["usage_log"] = state
+        report["usage_policy"] = 'unlimited_usage_only'
         if report["online_generation_requests_this_run"] == 0:
             report["actual_cost"] = {"amount":0,"reason":"no_generation_request_sent"}
         (out/"report.json").write_text(safe_text(json.dumps(report,ensure_ascii=False,indent=2)),encoding="utf-8")
@@ -124,7 +126,7 @@ def main():
     for name in ("hello","query_tickets","search_policy"):
         if name not in performed:
             report["cases"].append({"name":name,"status":"skipped","reason":"earlier_stage_not_passed_or_connection_only"})
-    rows = budget.snapshot()["requests"][before:]
+    rows = budget.snapshot()["requests"][before if type(before) is int else 0:]
     if rows and all(r["prompt"] is not None and r["completion"] is not None for r in rows):
         report["token_usage"] = {"prompt":sum(r["prompt"] for r in rows),"completion":sum(r["completion"] for r in rows)}
         report["actual_cost"] = {"amount":None,"reason":"consult_provider_billing; tokens_are_not_a_receipt"}

@@ -100,13 +100,17 @@ def user_page():
         show_remote_export(session)
     if st.session_state.get('user_compose_session')!=session.sid:
         st.session_state['user_allow_live']=False
+        st.session_state['user_allow_embedding']=False
+        st.session_state['user_rag_mode']=session.rag_mode or 'keyword'
         st.session_state['user_compose_session']=session.sid
     with st.form("user_compose"):
         message=st.text_input("输入消息",key="user_message",placeholder="例如：查明天上海到杭州的高铁二等座")
         allow_live=st.checkbox("确认发送真实 "+live_name+" 请求（会产生 API 费用）",key="user_allow_live") if session.live else False
-        send=st.form_submit_button("发送",type="primary",disabled=session.live and (not live_ready(session.live_provider) or (session.initial_budget and not session.interactive)))
-    if session.live and session.initial_budget and not session.interactive:
-        st.info('该历史验收会话保留供回放。点击“新建会话”进入日常在线模式。')
+        if session.live:
+            session.rag_mode=st.selectbox('政策检索方式',['keyword','hybrid','vector'],key='user_rag_mode')
+            session.allow_rag_network=st.checkbox('允许本轮RAG调用真实Embedding（可能产生费用；仅发送问题时执行）',key='user_allow_embedding')
+            st.caption('本地累计请求次数不设上限；单轮步数、超时和只读工具保护仍然生效。')
+        send=st.form_submit_button("发送",type="primary",disabled=session.live and not live_ready(session.live_provider))
     if session.live and not live_ready(session.live_provider):
         st.info(live_name+" 未配置完整或本次为离线验收。可查看历史证据；不会自动切换 Mock。")
     if send and message.strip():

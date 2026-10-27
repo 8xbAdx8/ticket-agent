@@ -77,13 +77,12 @@ def prepare():
                 runtime.validate_configuration(); settings=runtime.Settings.from_env()
                 __import__('langchain_deepseek' if provider=='deepseek' else 'langchain_openai')
                 budget=CoordinatedBudget(settings,provider)
-                with budget.transaction():pass
-                rows[provider]={'configuration':status(provider),'preflight':'ready','budget':budget.snapshot()}
+                rows[provider]={'configuration':status(provider),'preflight':'ready','usage':budget.snapshot()}
             except Exception as exc:rows[provider]={'configuration':status(provider),'preflight':'not_ready','error':safe_error(exc)}
     from target.observability import configuration_status
     return {'schema':'v34-preflight/1','source_sha':head(),'key_sources':sources,'providers':rows,
-            'shared_budget':snapshot(AUTH/'initial-total.db',4),'langsmith':configuration_status(),
-            'limits':{'deepseek':2,'bailian':2,'total_generation':4,'synthetic_upload_attempts':1,'automatic_retries':0}}
+            'usage_policy':'unlimited_usage_only','langsmith':configuration_status(),
+            'limits':{'deepseek':None,'bailian':None,'total_generation':None,'synthetic_upload_attempts':1,'automatic_retries':0}}
 
 
 def run_provider(provider,row):
@@ -93,11 +92,8 @@ def run_provider(provider,row):
     from web.runtime import scoped
     from data.seed import build_db
     from target.agent import Agent
-    case=AUTH/provider/'case';env=isolated_environment(provider,case)
-    marker=AUTH/provider/'attempt.json'
+    case=AUTH/provider/('case-'+uuid.uuid4().hex);env=isolated_environment(provider,case)
     if row['preflight']!='ready':return {'status':'skipped','reason':'configuration_not_ready','new_requests':0}
-    if marker.exists():return {'status':'not_repeated','reason':'provider_already_attempted'}
-    claim(marker)
     values=dict(PROVIDER=provider,ENGINE='langchain',LC_TOOLSET='read_only',MODEL_NAME=env['AGENT_MODEL'],BASE_URL=env['AGENT_BASE_URL'],
         API_KEY=os.environ['DEEPSEEK_API_KEY' if provider=='deepseek' else 'DASHSCOPE_API_KEY'],
         DB_PATH=case/'tickets.db',TRACE_DIR=case/'traces',MAX_STEPS=2,USE_HTTP_MOCK=False,USE_VECTOR_RAG=False)
@@ -160,13 +156,16 @@ def upload(preview_sha):
 
 
 def main():
+    global AUTH
     p=argparse.ArgumentParser(description=__doc__)
     actions=p.add_mutually_exclusive_group()
     actions.add_argument('--run-models',action='store_true');actions.add_argument('--prepare-langsmith',action='store_true');actions.add_argument('--upload-langsmith',action='store_true')
     actions.add_argument('--readback-langsmith',action='store_true',help='Requires separate user authorization for one additional GET; never reuploads')
     p.add_argument('--offline-report',type=Path);p.add_argument('--preview-sha')
     a=p.parse_args()
-    if a.run_models or a.upload_langsmith or a.readback_langsmith:
+    if not (a.prepare_langsmith or a.upload_langsmith or a.readback_langsmith):
+        AUTH=ROOT/'artifacts/runtime/live-checks'/('v34-'+uuid.uuid4().hex)
+    if a.upload_langsmith or a.readback_langsmith:
         if not a.offline_report:raise ValueError('offline_acceptance_required')
         gate(a.offline_report)
     state=prepare()

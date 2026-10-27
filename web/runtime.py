@@ -71,6 +71,8 @@ class Conversation:
     live_model: str | None = None
     case_id: str | None = None
     initial_budget: bool = False
+    rag_mode: str | None = None
+    allow_rag_network: bool = False
     interactive: bool = False
     mutations: dict = field(default_factory=dict)
     root: Path | None = None
@@ -132,17 +134,11 @@ class Conversation:
             raise ValueError("M8 不适用于普通对话，请运行并发对照")
         env={"LANGSMITH_TRACING":"false", "LANGCHAIN_TRACING_V2":"false", "AGENT_MUTATIONS":"{}"}
         if self.live:
-            # Preserve the launcher's real budget path and limits. Never enable live writes.
             env["DEEPSEEK_LIVE_TEST_PROFILE"]="read_only"
-            # New provider selector gets separate ledgers and a shared initial-three ceiling.
-            # Keep existing explicit DeepSeek launcher settings for compatibility tests/entry.
-            if self.interactive:
-                from target.live_providers import manual_environment
-                env.update(manual_environment(self.live_provider,self.root,model=self.live_model))
-            elif self.initial_budget or self.live_provider=="bailian":
-                from target.live_providers import isolated_environment
-                env.update(isolated_environment(self.live_provider,self.root,
-                    profile="v35" if self.live_model=="qwen3.8-flash" else None))
+            from target.live_providers import manual_environment
+            env.update(manual_environment(self.live_provider,self.root,model=self.live_model))
+            if self.rag_mode is not None:env['AGENT_RAG_MODE']=self.rag_mode
+            env['RAG_ALLOW_NETWORK']='1' if self.allow_rag_network else '0'
             env["TICKET_CASE_ID"]=self.case_id or "interactive"
         elif self.engine=="langchain" and any(self.mutations.get(k) for k in ("skip_lock","infinite_loop")):
             # Existing sandbox guard, only for the offline Mock test environment.
@@ -230,11 +226,15 @@ class Conversation:
 
 def failure_hint(category):
     messages={
-        'historical_unlinked_ledger_requires_new_validation_pair':'这个历史会话使用了旧验收账本。请新建日常在线会话，历史记录仍可回放。',
-        'request_budget_exhausted':'该验收会话额度已用完。日常使用请新建手动在线会话，旧账不需要清空。',
+        'historical_unlinked_ledger_requires_new_validation_pair':'这是旧版本保存的账本错误。当前Live已移除该拦截，旧记录保持原样。',
+        'request_budget_exhausted':'这是旧版本保存的本地预算错误。当前Live累计请求数不限，旧记录保持原样。',
         'missing_DEEPSEEK_API_KEY':'未读取到DeepSeek Key，请重新启动在线入口。',
         'missing_DASHSCOPE_API_KEY':'未读取到千问Key，请核对DASHSCOPE_API_KEY后重新启动。',
         'authentication_failed':'模型服务拒绝了Key，请检查有效性。',
+        'permission_denied':'服务商拒绝访问，请检查模型、地域和账号权限。',
+        'rate_limited':'服务商限流（HTTP 429），本次未自动重试，请稍后手动发送。',
+        'server_error':'模型服务端错误（HTTP 500），本次未自动重试。',
+        'service_unavailable':'模型服务暂不可用（HTTP 503），本次未自动重试。',
         'insufficient_balance':'模型账户余额或可用额度不足。',
         'timeout':'模型请求超时，本次未自动重试。',
         'network_connection':'模型网络连接失败，请检查本机网络或代理。',

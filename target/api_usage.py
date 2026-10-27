@@ -91,8 +91,13 @@ class UsageLog:
         identity = request_id or uuid.uuid4().hex
         from target.request_accounting import ACTIVE
         active = ACTIVE.get()
+        scope={}
+        if not active:
+            from target.rag_service import SCOPE
+            scope=SCOPE.get()
         self._append({'event': 'request_started', 'request_id': identity,
-                      'trace_id': active[1] if active else None,
+                      'trace_id': active[1] if active else scope.get('trace_id'),
+                      'tool_call_id':scope.get('call_id'),
                       'model_step': active[2] if active else None, 'summary': summary or {},
                       'category': 'dispatched_outcome_unknown'})
         return identity
@@ -102,6 +107,7 @@ class UsageLog:
         usage = usage if isinstance(usage, dict) else {}
         self._append({'event': 'request_finished', 'request_id': identity, 'status': status,
                       'category': category, 'phase': phase, 'model': model,
+                      'actual_model': model,
                       'prompt': _tokens(usage.get('prompt_tokens')),
                       'completion': _tokens(usage.get('completion_tokens')),
                       'cost': None, 'cost_basis': 'unknown_without_provider_billing_evidence', **metadata})
@@ -128,7 +134,9 @@ def read_usage(path):
                             rows.setdefault(uid, {'request_id': uid, 'provider': event['provider'],
                                 'origin': event['origin'], 'created': event['timestamp'],
                                 'trace_id': event.get('trace_id'), 'model_step': event.get('model_step'),
+                                'tool_call_id': event.get('tool_call_id'),
                                 'model': event.get('summary', {}).get('model'), 'request_summary': event.get('summary'),
+                                'requested_model': event.get('summary', {}).get('model'), 'actual_model': None,
                                 'status': None, 'category': event.get('category'), 'prompt': None,
                                 'completion': None, 'tokens': None, 'cost': None, 'phase': 'dispatched',
                                 **event.get('summary', {})})
@@ -141,7 +149,8 @@ def read_usage(path):
                             # tool exceptions must not replace it with unknown.
                             if row.get('status') is not None:
                                 continue
-                            row.update({k: v for k, v in event.items() if k not in ('event', 'schema', 'request_id', 'origin', 'provider')})
+                            row.update({k: v for k, v in event.items() if k not in ('event', 'schema', 'request_id', 'origin', 'provider')
+                                        and not (k=='model' and v is None)})
                     except (ValueError, TypeError, KeyError):
                         invalid += 1
     except OSError:

@@ -28,7 +28,7 @@ class FutureModelConfig:
     region_env: str = "BAILIAN_REGION"
     workspace_env: str = "BAILIAN_WORKSPACE_ID"
     model_env: str = "BAILIAN_MODEL"
-    budget_env: str = "BAILIAN_MAX_REQUESTS"
+    usage_dir_env: str = "TICKET_API_USAGE_DIR"
     tool_calling: str = "待按具体模型验证"
 
 
@@ -44,13 +44,13 @@ def registry():
     from target.tools import TOOL_NAMES
     return [ProviderCapability("Legacy Mock", True, True, "离线可用", "A 基线 / B 独立测试", tuple(TOOL_NAMES), "规则模型，不是自主大模型"),
         ProviderCapability("LangChain Mock", True, lc, "依赖已安装" if lc else "缺少依赖", "B 双引擎独立回归", tuple(TOOL_NAMES), "Mock 模型经真实 create_agent 框架执行"),
-        ProviderCapability("DeepSeek Live", True, key, ("已配置，当前为离线验收" if offline else "已配置，可发送真实请求") if key else "未配置", "V3.5.2已有真实search_policy闭环；当前会话以实际执行记录为准", ("query_tickets", "search_policy"), "日常对话使用独立手动账本；只读，打开本页不发送请求"),
+        ProviderCapability("DeepSeek Live", True, key, ("已配置，当前为离线验收" if offline else "已配置，可发送真实请求") if key else "未配置", "V3.5.2已有真实search_policy闭环；当前会话以实际执行记录为准", ("query_tickets", "search_policy"), "本地累计请求次数不限；只读，打开本页不发送请求"),
         ProviderCapability("LangGraph 执行增强", True, graph, "已有 create_agent 图执行与 InMemorySaver", "本地 Mock 运行路径已验证", (), "自定义图、持久化 checkpoint、人工 interrupt、失败恢复尚未实现"),
         ProviderCapability("LangSmith", True, ls["key_configured"],
             {"user_disabled":"脱敏导出未开启","not_configured":"未配置","configured_unverified":"已启用脱敏导出；当前远端待核验"}.get(ls["state"],"配置错误"),
             "以单次导出回执为准；未自动验证", (), "显式确认后仅导出白名单记录，POST + GET 回读验证；本地审计独立保留"),
         ProviderCapability("Qwen3.8-Flash Live", True, bailian["configured"], "已配置，单次状态以证据为准" if bailian["configured"] else "未配置",
-            "V3.5已有保存的真实闭环及RAG样本；不代表当前Key实时验证", ("query_tickets","search_policy"), "适配服务：阿里云百炼；模型ID qwen3.8-flash。显式旧模型只作兼容，不回退；独立预算、只读")]
+            "V3.5已有保存的真实闭环及RAG样本；不代表当前Key实时验证", ("query_tickets","search_policy"), "适配服务：阿里云百炼；模型ID qwen3.8-flash。显式旧模型只作兼容，不回退；本地累计请求次数不限、只读")]
 
 
 def observation_envelope(audit):
@@ -62,6 +62,10 @@ def observation_envelope(audit):
 
 def integrations_page():
     header("集成中心", "检查已有能力与未来边界。配置存在不等于真实验证通过。", "远端追踪须显式确认")
+    st.info('Live模式支持已开启：本地请求次数不设上限，实际费用和服务商配额以API提供方为准。配置和单次连接结果仍分别核验。')
+    from target.api_usage import provider_usage
+    with st.expander('API用量统计（只读；未知Token不填0）'):
+        st.json([provider_usage(p) for p in ('deepseek','bailian','embedding')])
     for row in registry():
         with st.container(border=True):
             left, right = st.columns([1, 3])

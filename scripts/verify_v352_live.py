@@ -50,7 +50,7 @@ def environment(values):
         importlib.reload(config)
 
 
-def execute_pair(*,model_factory=None,resume_unattempted_qwen=False):
+def _execute_pair(*,model_factory=None,resume_unattempted_qwen=False):
     from target.v352_validation import AUTH,QUESTION,read,new_json,canonical_hash,embedding_settings,cache_survey
     from target.rag_protection import BASELINE,tree_hashes,hash_tree,copy_workspace
     from target.request_accounting import snapshot
@@ -69,31 +69,22 @@ def execute_pair(*,model_factory=None,resume_unattempted_qwen=False):
         previous=read(AUTH/'paired-report.json')
         qwen=next(r for r in previous['records'] if r['provider']=='bailian')
         deep=next(r for r in previous['records'] if r['provider']=='deepseek')
-        state=snapshot(AUTH/'generation-total.db',4)
-        deep_state=snapshot(AUTH/'deepseek-generation.db',2)
-        expected_mode='offline_sdk_stub' if model_factory else 'real_api'
-        if (qwen['generation_requests']!=0 or (qwen.get('error') or {}).get('category')!='v352_model_identity_required'
-            or not deep['protocol_closure'] or not deep['agent_completed']
-            or previous.get('evidence_mode')!=expected_mode or deep['generation_requests']!=2
-            or read(AUTH/'generation-attempt.json').get('explicit_command_authorization')!=4
-            or snapshot(AUTH/'bailian-generation.db',2)['reserved_requests']!=0
-            or len(state['requests'])!=2 or any(r['provider']!='deepseek' or r['status']!=200 for r in state['requests'])
-            or state['requests']!=deep_state['requests']):
-            raise ValueError('resume_requires_zero_qwen_dispatch_and_completed_deepseek')
+        if not deep.get('protocol_closure') or not deep.get('agent_completed'):
+            raise ValueError('resume_requires_completed_deepseek_evidence')
         continued_from=hashlib.sha256((AUTH/'paired-report.json').read_bytes()).hexdigest()
-        new_json(AUTH/'qwen-unattempted-resume.json',{'reason':'Local configuration rejected before any Qwen HTTP; no API retry',
-            'original_report_sha256':continued_from,'existing_shared_used':2,'remaining_qwen_limit':2,'new_budget_created':False})
+        new_json(AUTH/('qwen-resume-'+uuid.uuid4().hex+'.json'),
+                 {'reason':'Explicit current Qwen run, no cumulative quota', 'original_report_sha256':continued_from})
         records=[deep]
     else:
-        new_json(AUTH/'generation-attempt.json',{'explicit_command_authorization':4,'provider_limits':{'bailian':2,'deepseek':2},
+        new_json(AUTH/'generation-attempt.json',{'explicit_command_authorization':True,'local_request_limit':None,
             'evidence_mode':'offline_sdk_stub' if model_factory else 'real_api','tool_result_sha256':frozen['tool_result_sha256']})
     before=tree_hashes(BASELINE);new_requests=0
     for provider in (('bailian',) if resume_unattempted_qwen else ('bailian','deepseek')):
-        root=AUTH/'runs'/(provider+'-resumed' if resume_unattempted_qwen else provider);root.mkdir(parents=True,exist_ok=False)
+        root=AUTH/'runs'/(provider+'-resumed-'+uuid.uuid4().hex if resume_unattempted_qwen else provider);root.mkdir(parents=True,exist_ok=False)
         workspace,_=copy_workspace(BASELINE,root/'chroma-work')
         shutil.copyfile(AUTH/'prepared/embedding-cache.db',workspace/'embedding-cache.db')
         env=isolated_environment(provider,root,profile='v352')
-        env.update(RAG_INDEX_DIR=str(workspace/'index'),RAG_EMBEDDING_CACHE=str(workspace/'embedding-cache.db'),
+        env.update(TICKET_API_VALIDATION_PROFILE='v352',TICKET_FROZEN_RAG_EVIDENCE=str(AUTH/'prepared/frozen.json'),DEEPSEEK_MAX_MODEL_CALLS='2',BAILIAN_MAX_MODEL_CALLS='2',AGENT_MAX_STEPS='2',AGENT_RAG_MODE='hybrid',RAG_TOP_K='3',RAG_VECTOR_THRESHOLD='0.35',RAG_INDEX_DIR=str(workspace/'index'),RAG_EMBEDDING_CACHE=str(workspace/'embedding-cache.db'),
                    TICKET_CASE_ID='v352-shared-policy',DASHSCOPE_EMBEDDING_BASE_URL=embedding_settings().base_url)
         with environment(env):
             from data.seed import build_db
@@ -123,7 +114,7 @@ def execute_pair(*,model_factory=None,resume_unattempted_qwen=False):
             ragfile=config.TRACE_DIR/'rag_runs.jsonl'
             rag=[json.loads(s) for s in ragfile.read_text(encoding='utf-8').splitlines()] if ragfile.exists() else []
             answer=next((r for r in reversed(rag) if r.get('schema')=='ticket-rag-answer/1'),None)
-            request_count=snapshot(AUTH/(provider+'-generation.db'),2)['reserved_requests']
+            request_count=sum(e.get('event')=='http_request' for e in events)
             if model_factory is None:new_requests+=request_count
             closure=bool(correct and delivered and raw and len([e for e in events if e.get('event')=='model_response'])==2)
             expected_model='qwen3.8-flash' if provider=='bailian' else 'deepseek-flash'
@@ -151,32 +142,63 @@ def execute_pair(*,model_factory=None,resume_unattempted_qwen=False):
         'records':records,'same_tool_evidence_verified':all(r['tool_result_delivered_with_http200'] for r in records),
         'same_system_prompt_verified':all(prompt_hashes) and len(set(prompt_hashes))==1,
         'source_index_unchanged':before==after,'source_tree_sha256':hash_tree(before),
-        'real_generation_requests':sum(r['real_generation_requests'] for r in records),'generation_limit':4,
+        'real_generation_requests':sum(r['real_generation_requests'] for r in records),'generation_limit':None,
         'real_generation_requests_this_command':new_requests,'continued_from_sha256':continued_from,
         'real_embedding_requests':0,'langsmith_requests':0,'cost':None,
         'faithfulness_scope':'Finite checks and manual review, independent of protocol closure; no overall model accuracy inferred.'}
-    new_json(AUTH/('paired-report-resumed.json' if resume_unattempted_qwen else 'paired-report.json'),report);return report
+    new_json(AUTH/('paired-report-resumed-'+uuid.uuid4().hex+'.json' if resume_unattempted_qwen else 'paired-report.json'),report);return report
+
+
+@contextmanager
+def fresh_workspace(out=None):
+    """An automatic output location, never a user-created authorization batch."""
+    from target import v352_validation as validation
+    original=validation.AUTH
+    destination=Path(out) if out else ROOT/'artifacts/runtime/live-checks'/('rag-pair-'+uuid.uuid4().hex)
+    destination=destination.resolve()
+    if not destination.is_relative_to(ROOT/'artifacts/runtime'):raise ValueError('isolated_output_required')
+    source=validation.cached_source()
+    destination.mkdir(parents=True,exist_ok=False)
+    if source.exists():shutil.copyfile(source,destination/'embedding-cache.db')
+    validation.AUTH=destination
+    try:yield destination
+    finally:validation.AUTH=original
+
+
+def execute_pair(*,model_factory=None,resume_unattempted_qwen=False,out=None):
+    from target import v352_validation as validation
+    historical=ROOT/'artifacts/runtime/v352-rag-live-eval/authorization-20261026'
+    if out is not None or validation.AUTH.resolve()==historical.resolve():
+        with fresh_workspace(out):
+            return _execute_pair(model_factory=model_factory,resume_unattempted_qwen=resume_unattempted_qwen)
+    # Explicit isolated SDK fixtures may supply their own output directory.
+    return _execute_pair(model_factory=model_factory,resume_unattempted_qwen=resume_unattempted_qwen)
 
 
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--prepare',action='store_true',help='Only prepare actual cached evidence, no model or Embedding calls')
-    parser.add_argument('--run',action='store_true',help='Explicit authorization: Qwen<=2 and DeepSeek<=2 generation requests, 4 total')
-    parser.add_argument('--resume-unattempted-qwen',action='store_true',help='Only complete two unused Qwen attempts after a zero-HTTP local model-selection rejection')
+    parser.add_argument('--prepare',action='store_true',help='Only prepare cached evidence, no model or Embedding calls')
+    parser.add_argument('--run',action='store_true',help='显式执行双模型只读对照；无累计请求上限，保留单轮步数')
+    parser.add_argument('--resume-unattempted-qwen',action='store_true',help='兼容：仅执行新的千问政策场景，不读取旧额度')
+    parser.add_argument('--out',type=Path)
     args=parser.parse_args()
-    from target.v352_validation import AUTH,new_json
-    if args.resume_unattempted_qwen and not args.run:raise ValueError('resume_requires_explicit_run')
+    if args.resume_unattempted_qwen:
+        if not args.run:raise ValueError('resume_requires_explicit_run')
+        from scripts.live_providers import main as live
+        forwarded=['--provider','bailian','--scenario','policy','--run']
+        if args.out:forwarded.extend(['--out',str(args.out)])
+        return live(forwarded)
     if not args.run:
         if args.prepare:
-            frozen=prepare();print(json.dumps({'status':'prepared_not_live_verified','evidence_sha256':frozen['tool_result_sha256'],'generation_requests':0,'embedding_requests':0}))
-        else:print(json.dumps({'status':'not_run','required_new_generation_authorization':4,'provider_caps':{'qwen':2,'deepseek':2},'embedding_required_if_cached':0,'max_retries':0}))
+            with fresh_workspace(args.out) as root:
+                frozen=prepare();print(json.dumps({'status':'prepared_not_live_verified','evidence_sha256':frozen['tool_result_sha256'],'generation_requests':0,'embedding_requests':0,'output':root.relative_to(ROOT).as_posix()}))
+        else:print(json.dumps({'status':'not_run','local_request_limit':None,'per_turn_model_calls':2,'embedding_required_if_cached':0,'max_retries':0}))
         return 0
     from target.api_config import bootstrap
     bootstrap(ROOT)
-    required=('DASHSCOPE_API_KEY',) if args.resume_unattempted_qwen else ('DASHSCOPE_API_KEY','DEEPSEEK_API_KEY')
-    if any(not os.getenv(k,'').strip() for k in required):
+    if any(not os.getenv(k,'').strip() for k in ('DASHSCOPE_API_KEY','DEEPSEEK_API_KEY')):
         print(json.dumps({'status':'not_run','category':'required_provider_key_missing','new_requests':0}));return 2
-    report=execute_pair(resume_unattempted_qwen=args.resume_unattempted_qwen)
+    report=execute_pair(out=args.out)
     print(json.dumps({k:v for k,v in report.items() if k!='records'}))
     return 0 if all(r['protocol_closure'] and r['agent_completed'] for r in report['records']) and report['same_system_prompt_verified'] and report['source_index_unchanged'] else 1
 

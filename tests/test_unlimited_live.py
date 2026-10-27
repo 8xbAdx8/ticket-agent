@@ -15,11 +15,12 @@ ROOT=Path(__file__).resolve().parent.parent
 
 def historical(path, count=8, *, linked=False):
     path.parent.mkdir(parents=True,exist_ok=True)
-    with sqlite3.connect(path) as c:
+    with contextlib.closing(sqlite3.connect(path)) as c:
         c.execute('CREATE TABLE requests(id INTEGER PRIMARY KEY, status INTEGER, category TEXT)')
         c.executemany('INSERT INTO requests(status,category) VALUES(NULL,?)',[('reserved_outcome_unknown',)]*count)
         c.execute('CREATE TABLE budget_policy(id INTEGER PRIMARY KEY,limit_value INTEGER)')
         c.execute('INSERT INTO budget_policy VALUES(1,1)')
+        c.commit()
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 

@@ -56,5 +56,8 @@ def isolated_environment(provider, root, *, profile=None):
     Existing profile names remain accepted as labels, never as request gates.
     """
     env = manual_environment(provider, root)
+    env['AGENT_RAG_MODE']=os.getenv('AGENT_RAG_MODE') or 'hybrid'
+    if profile in ('v35','v352') and provider=='bailian':
+        env.update(AGENT_MODEL='qwen3.8-flash',DASHSCOPE_MODEL='qwen3.8-flash')
     env['TICKET_TEST_PROFILE_LABEL'] = profile or os.getenv('TICKET_API_VALIDATION_PROFILE', 'current')
     return env

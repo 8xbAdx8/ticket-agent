@@ -13,7 +13,7 @@ sys.path.insert(0,str(ROOT))
 def main():
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument('action',choices=('plan','status','build','retrieve'))
-    p.add_argument('--run',action='store_true',help='Explicit consent to real embedding requests within fixed V3.5 cap')
+    p.add_argument('--run',action='store_true',help='显式同意真实Embedding费用，无本地累计请求上限')
     p.add_argument('--rebuild',action='store_true')
     p.add_argument('--mode',choices=('keyword','vector','hybrid'),default='hybrid')
     p.add_argument('--quality-profile',choices=('v35','v351'),default='v351')
@@ -26,7 +26,7 @@ def main():
     plan={'documents':len({c['doc_id'] for c in chunks}),'chunks':len(chunks),'embedding_model':'text-embedding-v4',
           'dimensions':int(os.getenv('RAG_EMBEDDING_DIMENSIONS','1024')),'batch_size':10,
           'estimated_index_requests':math.ceil(len(chunks)/10),'evaluation_questions':30,'estimated_evaluation_requests':3,
-          'embedding_limit':8,'generation_limit':4,'model_requests_this_command':0,'max_retries':0}
+          'embedding_limit':None,'generation_limit':None,'usage_policy':'unlimited_usage_only','model_requests_this_command':0,'max_retries':0}
     try:
         if a.action=='plan':result=plan
         elif a.action=='retrieve' and a.mode=='keyword':

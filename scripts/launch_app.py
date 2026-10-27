@@ -23,7 +23,6 @@ def build_environment(mode, runtime_root, inherited=None):
     env=dict(os.environ if inherited is None else inherited)
     if 'TICKET_LANGSMITH_EXPORT_ENABLED' not in env and any(env.get(k,'').lower()=='true' for k in ('LANGCHAIN_TRACING_V2','LANGSMITH_TRACING')):
         env['TICKET_LANGSMITH_EXPORT_ENABLED']='true'
-    original_limit=env.get("DEEPSEEK_MAX_REQUESTS", "0")
     for name in list(env):
         if name.startswith("DEEPSEEK_") and name!="DEEPSEEK_API_KEY":env.pop(name)
     env.pop("AGENT_API_KEY",None)
@@ -43,12 +42,11 @@ def build_environment(mode, runtime_root, inherited=None):
     elif mode=="live":
         env.update(TICKET_WEB_OFFLINE_ONLY='0',TICKET_DISABLE_LOCAL_SECRETS='0')
         if "DEEPSEEK_API_KEY" in env:env["DEEPSEEK_API_KEY"]=env["DEEPSEEK_API_KEY"].strip()
-        if original_limit not in ("0","1","2","3","4","5"):
-            raise ValueError("DEEPSEEK_MAX_REQUESTS 必须是 0—5；0 表示此前授权的手动不限累计次数模式。")
         env.update(AGENT_PROVIDER="deepseek",AGENT_ENGINE="langchain",AGENT_LC_TOOLSET="read_only",
             AGENT_MODEL="deepseek-flash",AGENT_BASE_URL="https://api.deepseek.com",
             DEEPSEEK_LIVE_TEST_PROFILE="read_only",DEEPSEEK_THINKING="disabled",
-            DEEPSEEK_MAX_REQUESTS=original_limit,DEEPSEEK_BUDGET_PATH=str(Path(runtime_root)/"live"/"requests.db"))
+            DEEPSEEK_MAX_REQUESTS='0',BAILIAN_MAX_REQUESTS='0',TICKET_INITIAL_LIVE_BUDGET='',TICKET_TOTAL_REQUEST_LIMIT='',
+            DEEPSEEK_BUDGET_PATH=str(Path(runtime_root)/"live"/"requests.db"))
     else:raise ValueError("unknown launch mode")
     return env
 
@@ -157,9 +155,9 @@ def main(argv=None):
                "database":str(Path(env["AGENT_DB_PATH"]).relative_to(ROOT)),
                "trace_dir":str(Path(env["AGENT_TRACE_DIR"]).relative_to(ROOT)),"model_requests_sent":0}
         if args.mode=="live":
-            state.update(request_limit=int(env["DEEPSEEK_MAX_REQUESTS"]),
-                         budget_reserved=budget_count(env["DEEPSEEK_BUDGET_PATH"]),
-                         budget_path=str(Path(env["DEEPSEEK_BUDGET_PATH"]).relative_to(ROOT)))
+            from target.api_usage import provider_usage
+            state.update(request_limit=None,usage_policy='unlimited_usage_only',
+                         usage=provider_usage('deepseek'),historical_budgets_used_for_admission=False)
         if args.check_only:
             state["status"]="missing_key" if args.mode=="live" and not key_present else "passed"
             print(json.dumps(state,ensure_ascii=False))
@@ -167,14 +165,11 @@ def main(argv=None):
         if args.mode=="live" and not key_present:
             print("DEEPSEEK_API_KEY 未配置；请重新双击在线入口并在窗口隐藏输入 Key。没有发送模型请求。")
             return 2
-        if args.mode=="live" and state["request_limit"] and state["budget_reserved"]>=state["request_limit"]:
-            print("手动运行账本已达到当前请求上限。不会删除账本、增加上限或发送请求；请核对自己的环境配置。")
-            return 2
         port=available_port(args.port if args.port is not None else (8501 if args.mode=="offline" else 8502),exact=args.port is not None)
         print("\n离线模式：Mock，支持全部八个模拟工具，不调用模型 API。" if args.mode=="offline" else
               "\n在线模式：DeepSeek Live，仅模拟查票和政策咨询。点击网页发送才调用真实模型并产生费用。",flush=True)
         if args.mode=="live":
-            print("网页日常对话：DeepSeek/千问使用各自手动账本，不设累计请求次数上限；每次点击发送才产生费用。"
+            print("所有Live入口：DeepSeek/千问/Embedding不设本地累计请求次数上限；每次显式发送才可能产生费用。"
                   "单轮防循环与零自动重试仍生效，旧验收账本保留。",flush=True)
         print("数据库："+state["database"]+"\nTrace："+state["trace_dir"],flush=True)
         prepare_database(env)

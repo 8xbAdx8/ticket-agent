@@ -78,7 +78,7 @@ class EmbeddingProvider:
             raise EmbeddingError('unsupported_embedding_configuration')
         self.url=endpoint(s.base_url);self.transport=transport
         self.origin='offline_stub' if transport is not None else 'real_api'
-        self.budget=EmbeddingBudget(s.ledger,s.limit);self.last_receipts=[]
+        self.budget=EmbeddingBudget(s.ledger,s.limit);self.last_receipts=[];self.request_ids=[]
 
     def cache_key(self,text):
         s=self.settings
@@ -92,7 +92,7 @@ class EmbeddingProvider:
     def embed_many(self,texts,*,allow_network=False):
         if not isinstance(texts,list) or any(not isinstance(t,str) or not t.strip() or len(t)>8000 for t in texts):
             raise EmbeddingError('invalid_embedding_input')
-        self.last_receipts=[];result=[None]*len(texts);missing={}
+        self.last_receipts=[];self.request_ids=[];result=[None]*len(texts);missing={}
         with closing(self._cache()) as c:
             for i,text in enumerate(texts):
                 row=c.execute('SELECT vector,receipt FROM vectors WHERE cache_key=?',(self.cache_key(text),)).fetchone()
@@ -116,6 +116,7 @@ class EmbeddingProvider:
         key=os.getenv('DASHSCOPE_API_KEY','').strip()
         if not key:raise EmbeddingError('missing_DASHSCOPE_API_KEY')
         uid=self.budget.reserve(self.settings,texts,self.origin);started=time.perf_counter();status=None
+        self.request_ids.append(uid)
         try:
             with httpx.Client(timeout=self.settings.timeout,follow_redirects=False,transport=self.transport) as c:
                 r=c.post(self.url,headers={'Authorization':'Bearer '+key},json={'model':self.settings.model,'input':texts,

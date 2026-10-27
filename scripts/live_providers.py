@@ -22,7 +22,7 @@ def main(argv=None):
     parser.add_argument("--provider",choices=("deepseek","bailian"),required=True)
     parser.add_argument("--profile",choices=("v33","v34","v35"),default="v33")
     action=parser.add_mutually_exclusive_group()
-    action.add_argument("--run",action="store_true",help="Explicitly send real model requests, within the initial total-three ceiling")
+    action.add_argument("--run",action="store_true",help="显式调用真实模型；无本地累计请求上限，可能产生费用")
     action.add_argument("--serve",action="store_true",help="Start localhost; opening a page does not generate")
     parser.add_argument("--scenario",choices=tuple(SCENARIOS),default="tickets")
     parser.add_argument("--case-id")
@@ -37,7 +37,7 @@ def main(argv=None):
     if args.profile=="v34":os.environ["TICKET_API_VALIDATION_PROFILE"]="v34"
     if args.profile=="v35":os.environ["TICKET_API_VALIDATION_PROFILE"]="v35"
     from target.live_providers import configuration,isolated_environment
-    from target.deepseek_runtime import RequestBudget,Settings,safe_error
+    from target.deepseek_runtime import RequestBudget,safe_error
     from target.diagnostics import sanitize
     import config
     out=(args.out or ROOT/"artifacts/runtime/v33-live-providers"/(args.provider+"-"+uuid.uuid4().hex[:10])).resolve()
@@ -55,8 +55,7 @@ def main(argv=None):
         settings=runtime.Settings.from_env()
         state=sanitize(configuration(args.provider))
         state.update(engine="langchain",tools=["query_tickets","search_policy"],max_retries=0,
-            provider_budget=RequestBudget(settings).snapshot(),
-            initial_total_budget=RequestBudget(Settings(max_requests=int(env["TICKET_TOTAL_REQUEST_LIMIT"]),ledger_path=Path(env["TICKET_INITIAL_LIVE_BUDGET"]))).snapshot(),
+            usage=RequestBudget(settings).snapshot(),usage_policy='unlimited_usage_only',local_request_limit=None,
             model_requests_this_command=0)
         from target.observability import configuration_status,UPLOAD_SCOPE
         state["langsmith"]=configuration_status()
@@ -66,9 +65,6 @@ def main(argv=None):
             print("LangSmith 导出需要环境显式启用、有效配置及 --confirm-upload。没有发送模型请求。")
             return 2
         if args.upload_langsmith: print("已确认上传范围："+UPLOAD_SCOPE,flush=True)
-        if state["initial_total_budget"]["reserved_requests"]>=state["initial_total_budget"]["limit"] or state["provider_budget"]["reserved_requests"]>=settings.max_requests:
-            print("初次验证预算已耗尽；停止，不重置账本、不增加额度。")
-            return 2
         if args.serve:
             from scripts.launch_app import prepare_database,serve
             prepare_database(dict(os.environ))
@@ -80,7 +76,6 @@ def main(argv=None):
         build_db(config.DB_PATH)
         from target.agent import Agent
         agent=Agent()
-        before=state["provider_budget"]["reserved_requests"]
         result=None; error=None
         execution_started=True
         try: result=agent.chat("live-"+uuid.uuid4().hex,SCENARIOS[args.scenario])
@@ -103,7 +98,8 @@ def main(argv=None):
             "function_calling_verified":tool_ok and returned and complete,"business_success":None,
             "validation_scope":"HTTP/model/tool protocol closure; semantic business accuracy requires B review",
             "reply_data_consistency_verified":None,"policy_grounding_verified":None,
-            "reserved_generation_attempts_this_command":after["reserved_requests"]-before,
+            "generation_attempts_this_command":sum(e.get('event')=='http_request' for e in events),
+            "usage_policy":"unlimited_usage_only","usage_log":after,
             "tokens":(evidence or {}).get("tokens"),"cost":None,"cost_basis":"No reliable billing/price evidence",
             "error":error,"public_trace":result,"live_evidence":evidence,"langsmith_receipt":receipt,
             "formal_deepseek_ledger_unchanged":formal_hash==(hashlib.sha256(formal.read_bytes()).hexdigest() if formal.exists() else None)}

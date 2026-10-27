@@ -43,8 +43,10 @@ def lab_page():
     signature = (engine, live, live_provider, case_id, tuple(sorted(enabled.items())), max_steps)
     if st.session_state.get("lab_signature") != signature:
         st.session_state["lab_signature"] = signature
+        st.session_state['lab_allow_live']=False
+        st.session_state['lab_allow_embedding']=False
         session = Conversation("lab", engine=engine, live=live, live_provider=live_provider,
-                               live_model="qwen3.8-flash" if live_provider=="bailian" else None,case_id=case_id,initial_budget=True,mutations=enabled)
+                               live_model="qwen3.8-flash" if live_provider=="bailian" else None,case_id=case_id,mutations=enabled)
         st.session_state.setdefault("lab_archives", []).append(session)
         st.session_state["lab_session"] = session
     session = st.session_state["lab_session"]
@@ -65,6 +67,10 @@ def lab_page():
         with st.form("lab_submit"):
             text = st.text_input("输入消息", value=message, key="lab_message_"+preset)
             live_confirm = st.checkbox("确认真实模型请求与费用", key="lab_allow_live") if live else False
+            if live:
+                session.rag_mode=st.selectbox('政策检索方式',['keyword','hybrid','vector'],key='lab_rag_mode')
+                session.allow_rag_network=st.checkbox('允许本轮RAG调用真实Embedding（可能产生费用）',key='lab_allow_embedding')
+                st.caption('Live累计请求次数不设上限；与出行助手使用相同策略，实验数据继续隔离。')
             send = st.form_submit_button("执行测试", type="primary", disabled=bool(enabled.get("concurrent_duplicate_order")) or live and not live_ready(live_provider))
         if send and text.strip():
             if live and not live_confirm:
