@@ -26,6 +26,8 @@ def main(argv=None):
     action.add_argument("--serve",action="store_true",help="Start localhost; opening a page does not generate")
     parser.add_argument("--scenario",choices=tuple(SCENARIOS),default="tickets")
     parser.add_argument("--case-id")
+    parser.add_argument('--rag-mode',choices=('keyword','vector','hybrid'))
+    parser.add_argument('--allow-embedding',action='store_true',help='显式允许本轮RAG调用真实Embedding，可能产生费用；无次数额度')
     parser.add_argument("--out",type=Path)
     parser.add_argument("--upload-langsmith",action="store_true")
     parser.add_argument("--confirm-upload",action="store_true",help="Consent to the printed filtered upload scope")
@@ -46,6 +48,8 @@ def main(argv=None):
     execution_started=False
     try:
         env=isolated_environment(args.provider,out)
+        env['AGENT_RAG_MODE']=args.rag_mode or os.getenv('AGENT_RAG_MODE') or 'keyword'
+        env['RAG_ALLOW_NETWORK']='1' if args.allow_embedding else '0'
         os.environ.update(env)
         os.environ["TICKET_CASE_ID"]=args.case_id or args.scenario
         importlib.reload(config)

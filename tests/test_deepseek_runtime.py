@@ -51,22 +51,18 @@ class DeepSeekRuntimeTests(unittest.TestCase):
             with self.assertRaisesRegex(DeepSeekError,"deepseek_flash_required"):
                 validate_configuration()
 
-    def test_global_budget_is_persistent_and_sixth_request_never_reaches_transport(self):
-        sent = []
+    def test_more_than_five_requests_are_recorded_without_touching_old_ledger(self):
+        sent=[]
         def respond(request):
             sent.append(True)
             return httpx.Response(200,json={"model":"deepseek-flash","usage":{"prompt_tokens":2,"completion_tokens":1}})
         with guarded_client(self.settings,transport=httpx.MockTransport(respond)) as client:
-            for _ in range(5):
-                client.post("https://api.deepseek.com/chat/completions",json=self.payload())
-            with self.assertRaisesRegex(DeepSeekError,"request_budget_exhausted"):
-                client.post("https://api.deepseek.com/chat/completions",json=self.payload())
-        self.assertEqual(len(sent),5)
-        another = RequestBudget(self.settings)
-        self.assertEqual(another.snapshot()["reserved_requests"],5)
-        with self.assertRaises(DeepSeekError):
-            another.reserve()
+            for _ in range(7):client.post("https://api.deepseek.com/chat/completions",json=self.payload())
+        self.assertEqual(len(sent),7)
+        another=RequestBudget(self.settings)
+        self.assertEqual(another.snapshot()["request_count"],7)
         self.assertEqual(another.snapshot()["requests"][-1]["prompt"],2)
+        self.assertFalse(self.settings.ledger_path.exists())
 
     def test_unknown_usage_is_null_in_ledger_not_invented_zero(self):
         with guarded_client(self.settings,transport=httpx.MockTransport(lambda r:httpx.Response(200,json={"model":"deepseek-flash"}))) as client:
@@ -94,13 +90,11 @@ class DeepSeekRuntimeTests(unittest.TestCase):
         snapshot = RequestBudget(settings).snapshot()
         self.assertEqual(len(sent), 7)
         self.assertEqual(snapshot["reserved_requests"], 7)
-        self.assertEqual(snapshot["limit"], 0)
+        self.assertIsNone(snapshot["limit"])
         self.assertTrue(all(row["status"] == 200 and row["prompt"] == 2 for row in snapshot["requests"]))
-        # Re-enabling the original capped configuration blocks further requests,
-        # without discarding any of the seven recorded attempts.
-        with self.assertRaisesRegex(DeepSeekError, "request_budget_exhausted"):
-            RequestBudget(self.settings).reserve()
-        self.assertEqual(RequestBudget(settings).snapshot()["reserved_requests"], 7)
+        # An obsolete positive cap cannot re-enable request admission limits.
+        RequestBudget(self.settings).reserve()
+        self.assertEqual(RequestBudget(settings).snapshot()["request_count"], 8)
 
     def test_unlimited_requests_still_reject_write_tools_before_transport(self):
         settings = Settings(max_requests=0, ledger_path=self.settings.ledger_path)
@@ -111,13 +105,12 @@ class DeepSeekRuntimeTests(unittest.TestCase):
                     client.post("https://api.deepseek.com/chat/completions", json=body)
         self.assertEqual(RequestBudget(settings).snapshot()["reserved_requests"], 0)
 
-    def test_default_stays_capped_and_negative_limit_is_rejected(self):
-        with patch.dict(os.environ, {"DEEPSEEK_THINKING":"disabled"}):
-            os.environ.pop("DEEPSEEK_MAX_REQUESTS", None)
-            self.assertEqual(Settings.from_env().max_requests, 5)
-            os.environ["DEEPSEEK_MAX_REQUESTS"] = "-1"
-            with self.assertRaisesRegex(DeepSeekError, "invalid_safety_limits"):
-                Settings.from_env()
+    def test_default_and_obsolete_cap_values_are_unlimited(self):
+        with patch.dict(os.environ,{"DEEPSEEK_THINKING":"disabled"}):
+            for old in (None,"-1","6","invalid"):
+                if old is None:os.environ.pop("DEEPSEEK_MAX_REQUESTS",None)
+                else:os.environ["DEEPSEEK_MAX_REQUESTS"]=old
+                self.assertEqual(Settings.from_env().max_requests,0)
 
     def test_balance_get_does_not_consume_generation_budget(self):
         with guarded_client(self.settings,transport=httpx.MockTransport(lambda r:httpx.Response(200,json={"is_available":True}))) as client:
@@ -150,7 +143,7 @@ class DeepSeekRuntimeTests(unittest.TestCase):
         self.assertEqual(safe_error(outer)["category"],"request_budget_exhausted")
 
     def test_unsafe_limits_and_thinking_opt_in_are_rejected(self):
-        with patch.dict(os.environ,{"DEEPSEEK_MAX_REQUESTS":"6"}):
+        with patch.dict(os.environ,{"DEEPSEEK_TIMEOUT":"0"}):
             with self.assertRaises(DeepSeekError):
                 Settings.from_env()
         with patch.dict(os.environ,{"DEEPSEEK_THINKING":"enabled"}):

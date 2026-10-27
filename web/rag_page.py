@@ -74,7 +74,7 @@ def rag_page():
     generation=saved('generation-result.json');review=saved('generation-assessment-review.json')
     if generation:
         if model.startswith('DeepSeek'):
-            st.info('本轮没有DeepSeek同证据真实生成；以下Qwen记录不作为DeepSeek成绩。')
+            st.info('V3.5历史样本未包含DeepSeek同证据生成；以下Qwen记录不作为DeepSeek成绩。V3.5.2双模型证据见上方单独回放。')
         st.caption('只读回放：真实调用源码与当前后续UI代码可能不同；没有新增模型请求。新的只读Live对话可在出行助手或测试实验室显式执行，无累计请求上限。')
         scenario=st.selectbox('已保存的真实生成样本',['function_calling','RQ01','RQ26'],key='rag_replay')
         record=next(r for r in generation['records'] if r['scenario']==scenario)

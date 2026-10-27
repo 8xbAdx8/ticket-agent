@@ -203,7 +203,10 @@ def guarded_client(settings, *, transport=None):
         names = {t.get("function",{}).get("name") for t in body.get("tools",[])}
         if body.get("model") != "deepseek-flash" or body.get("thinking") != {"type":"disabled"}:
             raise DeepSeekError("request_configuration_rejected")
-        if not names <= allowed_tools(settings):
+        permitted=allowed_tools(settings)
+        if not isinstance(transport,httpx.MockTransport):
+            permitted=permitted & READ_ONLY  # Full-tool fault sandboxes remain offline only.
+        if not names <= permitted:
             raise DeepSeekError("read_only_tools_required")
         if body.get("stream"):
             raise DeepSeekError("streaming_not_validated")

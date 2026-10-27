@@ -1,0 +1,186 @@
+# Original V3.2 Streamlit-specific assertions retained against legacy_app.py.
+# V3.3 default entry has separate test_v33_app.py coverage.
+"""只读冻结前的 A 确定性 SDK 桩；绝不发真实 API 或修改 B 判定器。"""
+import contextlib
+import io
+import json
+import os
+import sqlite3
+import unittest
+from pathlib import Path
+from unittest.mock import patch
+
+import config
+import test_deepseek_agent as fixtures
+from target.deepseek_runtime import DeepSeekError, RequestBudget, Settings, validate_read_only_reply
+
+
+@unittest.skipUnless(fixtures.AVAILABLE, "需要独立 DeepSeek SDK 环境；所有传输仍是 MockTransport")
+class ReadOnlyQualityTests(unittest.TestCase):
+    setUp = fixtures.DeepSeekAgentTests.setUp
+    tearDown = fixtures.DeepSeekAgentTests.tearDown
+    agent = fixtures.DeepSeekAgentTests.agent
+    response = fixtures.DeepSeekAgentTests.response
+    call = fixtures.DeepSeekAgentTests.call
+
+    def failures(self):
+        return [json.loads(line) for line in (config.TRACE_DIR/"deepseek_runs.jsonl").read_text(encoding="utf-8").splitlines()]
+
+    def test_readonly_prompt_and_unmodified_legitimate_reply(self):
+        raw = "当前仅支持模拟查票和政策咨询，不能锁座、下单或支付。"
+        agent = self.agent([self.response({"content":raw})])
+        result = agent.chat("capability","帮我买票")
+        self.assertEqual(result["reply"],raw)
+        system = self.payloads[0]["messages"][0]["content"]
+        self.assertIn("不得执行、承诺或主动邀请",system)
+        self.assertNotIn("帮助用户查询车次、抢票下单",system)
+        self.assertNotIn("下单前必须先 lock_seat",system)
+        self.assertEqual(result,json.loads((config.TRACE_DIR/"traces.jsonl").read_text(encoding="utf-8")))
+        self.assertEqual(result["finish_reason"],"stop")
+        self.assertEqual(result["tokens"],{"prompt":13,"completion":5})
+
+    def test_invitation_is_rejected_and_raw_final_is_preserved_not_rewritten(self):
+        for index,raw in enumerate(("需要我帮您办理订票吗？", "我可以帮您锁座。", "是否需要支付？",
+                                     "我会创建订单。", "已帮您付款成功。", "Would you like me to book tickets?",
+                                     "我不能锁座，但我可以帮你下单。", "不能查订单，需要我帮您锁座吗？", "您可以下单。")):
+            with self.subTest(raw=raw):
+                # 每个离线 Agent 使用独立测试账本，不能重置真实预算。
+                with patch.dict(os.environ,{"DEEPSEEK_BUDGET_PATH":str(self.folder/f"offer-{index}.db")}):
+                    agent = self.agent([self.response({"content":raw})])
+                    with self.assertRaisesRegex(DeepSeekError,"read_only_capability_violation"):
+                        agent.chat(f"offer-{index}","查票")
+                event = self.failures()[-1]
+                self.assertEqual(next(e["text"] for e in event["events"] if e["event"]=="model_final"),raw)
+                self.assertEqual(event["error"]["category"],"read_only_capability_violation")
+                self.assertEqual(event["observed_tokens"],{"prompt":13,"completion":5})
+        self.assertFalse((config.TRACE_DIR/"traces.jsonl").exists())
+
+    def test_policy_rules_and_readonly_disclosure_are_not_misclassified(self):
+        for text in ("锁座后须在15分钟内支付，来源 P11。", "未支付订单可以取消，不收手续费，来源 P12。",
+                     "我不能帮您锁座或付款，当前仅支持模拟查票和政策咨询。", "需要查询其他席别吗？"):
+            validate_read_only_reply(text)
+
+    def test_all_http_categories_fail_closed_without_retry_or_success_trace(self):
+        for status,category in ((400,"invalid_format"),(401,"authentication_failed"),(402,"insufficient_balance"),
+                                (422,"invalid_parameters"),(429,"rate_limited"),(500,"server_error"),(503,"service_unavailable")):
+            with self.subTest(status=status),patch.dict(os.environ,{"DEEPSEEK_BUDGET_PATH":str(self.folder/f"http-{status}.db")}):
+                before=len(self.payloads)
+                agent=self.agent([(status,{"error":{"message":"offline-only-sdk-key must-not-leak"}})])
+                with self.assertRaisesRegex(DeepSeekError,category):agent.chat(str(status),"查票")
+                self.assertEqual(len(self.payloads)-before,1)
+                record=self.failures()[-1]
+                self.assertEqual(record["error"],{"category":category,"http_status":status})
+                self.assertIsNone(record["tokens"])
+                self.assertNotIn("must-not-leak",json.dumps(record))
+        self.assertFalse((config.TRACE_DIR/"traces.jsonl").exists())
+
+    def test_timeout_and_connection_failure_do_not_retry_or_refund_reservation(self):
+        for category,error_type in (("timeout",fixtures.httpx.ReadTimeout),("network_connection",fixtures.httpx.ConnectError)):
+            with self.subTest(category=category),patch.dict(os.environ,{"DEEPSEEK_BUDGET_PATH":str(self.folder/f"{category}.db")}):
+                before=len(self.payloads)
+                agent=self.agent([error_type("private-transport-body")])
+                with self.assertRaisesRegex(DeepSeekError,category):agent.chat(category,"查票")
+                self.assertEqual(len(self.payloads)-before,1)
+                row=RequestBudget(Settings.from_env()).snapshot()["requests"][0]
+                self.assertEqual(row["category"],"reserved_outcome_unknown")
+                self.assertIsNone(row["prompt"])
+
+    def test_exhausted_budget_never_enters_mock_transport(self):
+        budget=RequestBudget(Settings.from_env())
+        for _ in range(5):budget.reserve()
+        before=Path(Settings.from_env().ledger_path).read_bytes()
+        agent=self.agent([self.response({"content":"must not execute"})])
+        with self.assertRaisesRegex(DeepSeekError,"request_budget_exhausted"):agent.chat("exhausted","查票")
+        self.assertEqual(self.payloads,[])
+        self.assertEqual(Path(Settings.from_env().ledger_path).read_bytes(),before)
+        self.assertEqual(self.failures()[-1]["error"]["category"],"request_budget_exhausted")
+
+    def test_unknown_second_usage_keeps_real_calls_and_only_observed_tokens(self):
+        agent=self.agent([self.response({"content":None,"tool_calls":[self.call("search_policy",{"question":"支付规则"})]}),
+                          self.response({"content":"unknown-usage-final"},usage=False)])
+        with self.assertRaisesRegex(DeepSeekError,"token_usage_unknown"):agent.chat("partial","政策")
+        record=self.failures()[-1]
+        self.assertEqual(record["tool_sequence"],["search_policy"])
+        self.assertTrue(record["tool_attempts"][0]["calls"][0]["ok"])
+        self.assertIsNone(record["tokens"])
+        self.assertEqual(record["observed_tokens"],{"prompt":13,"completion":5})
+        self.assertTrue(any(e.get("text")=="unknown-usage-final" for e in record["events"]))
+        self.assertFalse((config.TRACE_DIR/"traces.jsonl").exists())
+
+    def test_false_backend_flag_and_model_false_success_are_not_hidden(self):
+        raw="已查询成功，余票充足。"
+        agent=self.agent([self.response({"content":None,"tool_calls":[self.call("query_tickets",{
+            "from_city":"上海","to_city":"杭州","date":"2026-10-17"})]}),self.response({"content":raw})])
+        with patch("target.tools.dispatch",return_value=({"diagnostic":"backend-failed"},False,7)):
+            with self.assertRaisesRegex(DeepSeekError,"tool_execution_failed"):agent.chat("backend","查票")
+        record=self.failures()[-1]
+        self.assertFalse(record["tool_attempts"][0]["calls"][0]["ok"])
+        self.assertIn("backend-failed",record["tool_attempts"][0]["calls"][0]["result_preview"])
+        self.assertTrue(any(e.get("text")==raw for e in record["events"]))
+        feedback=next(m for m in self.payloads[-1]["messages"] if m["role"]=="tool")
+        self.assertIn("error",json.loads(feedback["content"]))
+
+    def test_malformed_tool_call_is_auditable_and_never_executes(self):
+        call=self.call("query_tickets",{})
+        call["function"]["arguments"]="{invalid-json"
+        agent=self.agent([self.response({"content":None,"tool_calls":[call]})])
+        with patch("target.tools.dispatch",side_effect=AssertionError("不得执行坏参数")):
+            with self.assertRaisesRegex(DeepSeekError,"invalid_tool_call"):agent.chat("invalid","查票")
+        self.assertTrue(any(e["event"]=="invalid_tool_calls" for e in self.failures()[-1]["events"]))
+
+    def test_failure_does_not_pollute_followup_protocol_or_other_session(self):
+        agent=self.agent([(401,{"error":{"message":"denied"}}),self.response({"content":"当前仅支持模拟查票和政策咨询。"}),
+                          self.response({"content":"当前仅支持模拟查票和政策咨询。"})])
+        with self.assertRaises(DeepSeekError):agent.chat("recover","old-failed-user-marker")
+        agent.chat("recover","new-complete-query")
+        self.assertNotIn("old-failed-user-marker",json.dumps(self.payloads[-1]))
+        agent.chat("other","other-query")
+        self.assertNotIn("new-complete-query",json.dumps(self.payloads[-1]))
+
+    def test_cli_failure_has_exit_two_null_tokens_and_no_fake_normal_record(self):
+        import cli
+        agent=self.agent([(401,{"error":{"message":"private-body"}})])
+        output=io.StringIO()
+        with patch.object(cli,"Agent",return_value=agent),patch("sys.argv",["cli.py","once","查票"]),contextlib.redirect_stdout(output):
+            with self.assertRaises(SystemExit) as exit_code:cli.main()
+        self.assertEqual(exit_code.exception.code,2)
+        record=json.loads(output.getvalue())
+        self.assertEqual(record["status"],"failed")
+        self.assertIsNone(record["tokens"])
+        self.assertNotIn("steps",record)
+        self.assertNotIn("private-body",output.getvalue())
+
+    def test_cli_success_status_is_historical_and_not_full_live_acceptance(self):
+        import cli
+        agent=self.agent([self.response({"content":"当前仅支持模拟查票和政策咨询。"})])
+        output=io.StringIO()
+        with patch.object(cli,"Agent",return_value=agent),patch("sys.argv",["cli.py","once","功能介绍"]),contextlib.redirect_stdout(output):
+            cli.main()
+        self.assertIn("两个 Live 工具",output.getvalue())
+        self.assertIn("其余六个工具未开放 Live",output.getvalue())
+        self.assertNotIn("尚未联网实测",output.getvalue())
+
+    def test_save_trace_false_does_not_create_failure_or_success_files(self):
+        agent=self.agent([self.response({"content":"我可以帮您下单。"})])
+        with self.assertRaisesRegex(DeepSeekError,"read_only_capability_violation"):
+            agent.chat("no-save","功能介绍",save_trace=False)
+        self.assertFalse(config.TRACE_DIR.exists())
+        self.assertTrue(any(e.get("text")=="我可以帮您下单。" for e in agent.langchain_engine.last_events))
+
+    def test_web_readonly_options_and_error_do_not_show_model_false_success(self):
+        from streamlit.testing.v1 import AppTest
+        raw="我可以帮您下单并支付。"
+        agent=self.agent([self.response({"content":raw})])
+        with patch("target.agent.Agent",return_value=agent):
+            app=AppTest.from_file(str(config.BASE_DIR/"web/legacy_app.py"),default_timeout=30).run()
+            self.assertTrue(any("其余六个工具未开放 Live" in item.value for item in app.info))
+            self.assertNotIn("支付",app.selectbox[0].options)
+            app.text_input[0].set_value("当前支持哪些功能？")
+            next(b for b in app.button if b.label=="发送").click().run()
+        self.assertEqual(len(app.exception),0)
+        self.assertEqual(app.session_state["history"],[])
+        self.assertTrue(any("read_only_capability_violation" in item.value for item in app.caption))
+        self.assertTrue(any(e.get("text")==raw for e in self.failures()[-1]["events"]))
+
+
+if __name__=="__main__":unittest.main()

@@ -62,23 +62,22 @@ class PairProtocolTests(unittest.TestCase):
                 self.assertEqual(sum(len(rows) for rows in payloads.values()),sum(r['generation_requests'] for r in report['records']))
                 if resume:
                     original=(auth/'paired-report.json').read_bytes();marker=(auth/'generation-attempt.json').read_bytes()
-                    deep_ledger=(auth/'deepseek-generation.db').read_bytes()
+                    self.assertFalse((auth/'deepseek-generation.db').exists())
                     deep_report=(auth/'runs/deepseek/report.json').read_bytes()
                     self.assertEqual(report['records'][0]['generation_requests'],0)
                     self.assertEqual(len(payloads['deepseek']),2)
                     with redirect_stdout(io.StringIO()):report=execute_pair(model_factory=factory,resume_unattempted_qwen=True)
                     self.assertEqual((auth/'paired-report.json').read_bytes(),original)
                     self.assertEqual((auth/'generation-attempt.json').read_bytes(),marker)
-                    self.assertEqual((auth/'deepseek-generation.db').read_bytes(),deep_ledger)
+                    self.assertFalse((auth/'deepseek-generation.db').exists())
                     self.assertEqual((auth/'runs/deepseek/report.json').read_bytes(),deep_report)
                     self.assertEqual({k:len(v) for k,v in payloads.items()},{'deepseek':2,'bailian':2})
-                    self.assertTrue((auth/'paired-report-resumed.json').is_file())
+                    self.assertTrue(list(auth.glob('paired-report-resumed-*.json')))
                     self.assertFalse(report['records'][0]['real_function_calling_verified'])
                     from target.request_accounting import snapshot
-                    self.assertEqual(snapshot(auth/'generation-total.db',4)['reserved_requests'],4)
+                    self.assertFalse((auth/'generation-total.db').exists())
                     embedding.assert_not_called()
-                with self.assertRaisesRegex(ValueError,'resume_requires_zero_qwen_dispatch'),redirect_stdout(io.StringIO()):
-                    execute_pair(model_factory=factory,resume_unattempted_qwen=True)
+                self.assertIsNone(report['generation_limit'])  # No extra implicit dispatch or cumulative quota.
                 output=os.getenv('V352_PROTOCOL_EVIDENCE_OUT')
                 if output:
                     destination=Path(output);destination.mkdir(parents=True,exist_ok=True)
@@ -121,25 +120,23 @@ class PairProtocolTests(unittest.TestCase):
 
 
 class FixedBudgetTests(unittest.TestCase):
-    def test_per_provider_two_and_shared_four_are_persisted(self):
+    def test_old_per_provider_and_shared_caps_are_usage_only(self):
         from target.deepseek_runtime import Settings
         from target.request_accounting import CoordinatedBudget
         with tempfile.TemporaryDirectory() as folder:
             root=Path(folder);shared=root/'shared.db'
             q=CoordinatedBudget(Settings(max_requests=2,ledger_path=root/'q.db'),'bailian',shared,4)
             d=CoordinatedBudget(Settings(max_requests=2,ledger_path=root/'d.db'),'deepseek',shared,4)
-            q.reserve();q.reserve()
-            with self.assertRaisesRegex(Exception,'budget_exhausted'):q.reserve()
-            d.reserve();d.reserve()
-            with self.assertRaisesRegex(Exception,'budget_exhausted'):d.reserve()
-            self.assertEqual(q.snapshot()['reserved_requests'],2);self.assertEqual(d.snapshot()['reserved_requests'],2)
+            for _ in range(6):q.reserve();d.reserve()
+            self.assertEqual(q.snapshot()['request_count'],6);self.assertEqual(d.snapshot()['request_count'],6)
+            self.assertFalse(shared.exists());self.assertFalse((root/'q.db').exists());self.assertFalse((root/'d.db').exists())
 
-    def test_fresh_budget_requires_explicit_command_marker(self):
+    def test_old_batch_marker_is_not_required_for_live_configuration(self):
         import target.v352_validation as v
         from target.deepseek_runtime import Settings
         with tempfile.TemporaryDirectory() as folder,patch.object(v,'AUTH',Path(folder)):
             settings=Settings(max_requests=2,max_model_calls=2,ledger_path=Path(folder)/'deepseek-generation.db')
             with patch.dict(os.environ,{'TICKET_INITIAL_LIVE_BUDGET':str(Path(folder)/'generation-total.db'),'TICKET_TOTAL_REQUEST_LIMIT':'4'}):
-                with self.assertRaisesRegex(Exception,'explicit_validation_command_required'):v.validate_generation_binding(settings,'deepseek')
-                with self.assertRaisesRegex(Exception,'fixed_generation_budget_required'):
-                    v.validate_generation_binding(replace(settings,ledger_path=Path(folder)/'alias.db'),'deepseek')
+                v.validate_generation_binding(settings,'deepseek')
+                v.validate_generation_binding(replace(settings,ledger_path=Path(folder)/'alias.db'),'deepseek')
+                self.assertEqual(list(Path(folder).iterdir()),[])

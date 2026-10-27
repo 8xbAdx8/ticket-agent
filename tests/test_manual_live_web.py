@@ -22,12 +22,13 @@ class ManualConfigTests(unittest.TestCase):
                 setting=Settings(max_requests=0,ledger_path=Path(env['DEEPSEEK_BUDGET_PATH'] if provider=='deepseek' else env['BAILIAN_BUDGET_PATH']))
                 with patch.dict(os.environ,env):validate_manual_binding(setting,provider)
                 self.assertIn('manual-live',str(setting.ledger_path))
-    def test_manual_binding_rejects_formal_path_and_shared_budget(self):
+    def test_old_ledger_binding_is_not_an_admission_rule_but_readonly_remains(self):
         from target.live_providers import validate_manual_binding
         from target.deepseek_runtime import Settings
-        with patch.dict(os.environ,{'TICKET_INITIAL_LIVE_BUDGET':''}):
-            with self.assertRaisesRegex(Exception,'manual_live_configuration'):
-                validate_manual_binding(Settings(max_requests=0,ledger_path=Path('formal.db')),'deepseek')
+        with patch.dict(os.environ,{'TICKET_INITIAL_LIVE_BUDGET':'historical.db'}):
+            validate_manual_binding(Settings(max_requests=0,ledger_path=Path('formal.db')),'deepseek')
+            with self.assertRaisesRegex(Exception,'read_only_tools_required'):
+                validate_manual_binding(Settings(profile='full_sandbox'),'deepseek')
     def test_daily_web_preflight_does_not_inherit_old_cli_limit(self):
         from scripts import launch_app
         with tempfile.TemporaryDirectory() as folder,patch.object(launch_app,'ROOT',Path(folder)),patch.dict(os.environ,
@@ -36,8 +37,8 @@ class ManualConfigTests(unittest.TestCase):
             output=io.StringIO()
             with redirect_stdout(output):code=launch_app.main(['--mode','live','--check-only'])
             self.assertEqual(code,0)
-            state=json.loads(output.getvalue());self.assertEqual(state['request_limit'],0)
-            self.assertIn('manual-live',state['budget_path']);self.assertEqual(state['model_requests_sent'],0)
+            state=json.loads(output.getvalue());self.assertIsNone(state['request_limit'])
+            self.assertEqual(state['usage_policy'],'unlimited_usage_only');self.assertEqual(state['model_requests_sent'],0)
     def test_launcher_keeps_export_preference_but_disables_implicit_callbacks(self):
         from scripts.launch_app import build_environment
         env=build_environment('live',Path('runtime'),{'LANGCHAIN_TRACING_V2':'true'})
@@ -109,7 +110,8 @@ class ManualSDKTests(unittest.TestCase):
                     self.assertEqual(len(calls[provider]),6)
                     ledger=root/'artifacts/runtime/manual-live'/provider/'requests.db'
                     from target.deepseek_runtime import RequestBudget,Settings
-                    self.assertEqual(RequestBudget(Settings(max_requests=0,ledger_path=ledger)).snapshot()['reserved_requests'],6)
+                    settings_cls=deepseek_runtime.Settings if provider=="deepseek" else bailian_runtime.Settings
+                    self.assertEqual(RequestBudget(settings_cls(max_requests=0,ledger_path=ledger)).snapshot()["request_count"],6)
                 self.assertFalse((root/'artifacts/runtime/v33-live-providers').exists())
             for model in models:model.root_client.close()
 
@@ -147,4 +149,4 @@ class ManualUIBehaviorTests(unittest.TestCase):
         with patch('web.runtime.live_ready',return_value=False):
             with self.assertRaises(ValueError):session.send('查票','no-key')
         self.assertIsNotNone(session.error);self.assertTrue(callable(session.export_last));self.assertTrue(callable(session.concurrency))
-        self.assertIn('旧验收账本',failure_hint('historical_unlinked_ledger_requires_new_validation_pair'))
+        self.assertIn('已移除',failure_hint('historical_unlinked_ledger_requires_new_validation_pair'))

@@ -1,0 +1,306 @@
+{
+  "schema": "ticket-a-policy-migration/1",
+  "scope": "A source tests only; B raw assertions/datasets/reports unchanged",
+  "files": {
+    "test_deepseek_runtime.py": {
+      "source_commit": "97213a7d60e4cecaef88b9cbe634f8df817d772d",
+      "original_sha256": "8a36b8b29272a44e885e00ed5450c3d7df2152000690c962320b40f00c155f96",
+      "changes": [
+        {
+          "old_method": "test_global_budget_is_persistent_and_sixth_request_never_reaches_transport",
+          "new_method": "test_more_than_five_requests_are_recorded_without_touching_old_ledger",
+          "reason": "Explicit current unlimited policy / new usage evidence; not a B assertion edit"
+        },
+        {
+          "old_fragment": "self.assertEqual(snapshot[\"limit\"], 0)",
+          "new_fragment": "self.assertIsNone(snapshot[\"limit\"])",
+          "reason": "Current usage-only policy or its evidence format"
+        },
+        {
+          "old_fragment": "        # Re-enabling the original capped configuration blocks further requests,\n        # without discarding any of the seven recorded attempts.\n        with self.assertRaisesRegex(DeepSeekError, \"request_budget_exhausted\"):\n            RequestBudget(self.settings).reserve()\n        self.assertEqual(RequestBudget(settings).snapshot()[\"reserved_requests\"], 7)",
+          "new_fragment": "        # An obsolete positive cap cannot re-enable request admission limits.\n        RequestBudget(self.settings).reserve()\n        self.assertEqual(RequestBudget(settings).snapshot()[\"request_count\"], 8)",
+          "reason": "Current usage-only policy or its evidence format"
+        },
+        {
+          "old_method": "test_default_stays_capped_and_negative_limit_is_rejected",
+          "new_method": "test_default_and_obsolete_cap_values_are_unlimited",
+          "reason": "Explicit current unlimited policy / new usage evidence; not a B assertion edit"
+        },
+        {
+          "old_fragment": "        with patch.dict(os.environ,{\"DEEPSEEK_MAX_REQUESTS\":\"6\"}):\n            with self.assertRaises(DeepSeekError):\n                Settings.from_env()",
+          "new_fragment": "        with patch.dict(os.environ,{\"DEEPSEEK_TIMEOUT\":\"0\"}):\n            with self.assertRaises(DeepSeekError):\n                Settings.from_env()",
+          "reason": "Current usage-only policy or its evidence format"
+        }
+      ],
+      "current_sha256": "e244c46c02eddec6b0685488bbf4ef81e5e6fe2457bb40635cfa92164ab6e211",
+      "original_copy": "docs/evidence/unlimited-live-20261027/a-assertions-original/test_deepseek_runtime.py.txt"
+    },
+    "test_deepseek_readonly_quality.py": {
+      "source_commit": "97213a7d60e4cecaef88b9cbe634f8df817d772d",
+      "original_sha256": "344fc7fc3ea18c522c5da8943f834d2e7ba33d8b1145fe0d62d501de65138db7",
+      "changes": [
+        {
+          "old_fragment": "self.assertEqual(row[\"category\"],\"reserved_outcome_unknown\")",
+          "new_fragment": "self.assertEqual(row[\"category\"],category+\"_outcome_unknown\")",
+          "reason": "Current usage-only policy or its evidence format"
+        },
+        {
+          "old_method": "test_exhausted_budget_never_enters_mock_transport",
+          "new_method": "test_five_prior_attempts_do_not_block_a_new_model_request",
+          "reason": "Explicit current unlimited policy / new usage evidence; not a B assertion edit"
+        }
+      ],
+      "current_sha256": "fe97763edd06f6cd34e7e635714fa6a4558475a0d4d12bfe5f39ca5f21583acf",
+      "original_copy": "docs/evidence/unlimited-live-20261027/a-assertions-original/test_deepseek_readonly_quality.py.txt"
+    },
+    "test_live_faults.py": {
+      "source_commit": "97213a7d60e4cecaef88b9cbe634f8df817d772d",
+      "original_sha256": "d63e762703830079f2caac0e02e5f28252e247551b46130a984ba9a8fbf70cf1",
+      "changes": [
+        {
+          "old_method": "test_budget_exhaustion_retains_successful_injection_evidence",
+          "new_method": "test_ignored_request_cap_retains_real_injection_evidence",
+          "reason": "Explicit current unlimited policy / new usage evidence; not a B assertion edit"
+        }
+      ],
+      "current_sha256": "6ad9c3b8d6cd5f85820486112aed4d0f9502fb1791076a1ec6e92179c24193b0",
+      "original_copy": "docs/evidence/unlimited-live-20261027/a-assertions-original/test_live_faults.py.txt"
+    },
+    "test_launcher.py": {
+      "source_commit": "97213a7d60e4cecaef88b9cbe634f8df817d772d",
+      "original_sha256": "4f2fbad8f619604f0e1c7693aea9d8a4a44e4ff47e8df12cf1de4f4d93c46699",
+      "changes": [
+        {
+          "old_fragment": "self.assertEqual(env[\"DEEPSEEK_MAX_REQUESTS\"],\"5\")",
+          "new_fragment": "self.assertEqual(env[\"DEEPSEEK_MAX_REQUESTS\"],\"0\")",
+          "reason": "Current usage-only policy or its evidence format"
+        },
+        {
+          "old_fragment": "with self.assertRaises(ValueError):launch_app.build_environment(\"live\",Path(\"runtime\"),{\"DEEPSEEK_MAX_REQUESTS\":\"6\"})",
+          "new_fragment": "self.assertEqual(launch_app.build_environment(\"live\",Path(\"runtime\"),{\"DEEPSEEK_MAX_REQUESTS\":\"6\"})[\"DEEPSEEK_MAX_REQUESTS\"],\"0\")",
+          "reason": "Current usage-only policy or its evidence format"
+        }
+      ],
+      "current_sha256": "abc8be26e21e376da111622d9d5519be7d80e5af494564de08493564657b13aa",
+      "original_copy": "docs/evidence/unlimited-live-20261027/a-assertions-original/test_launcher.py.txt"
+    },
+    "test_live_providers.py": {
+      "source_commit": "97213a7d60e4cecaef88b9cbe634f8df817d772d",
+      "original_sha256": "1eb5f326d8e51b8315c6d87bd0a0ca773b8ce303d48324bf4fa96c41693193fb",
+      "changes": [
+        {
+          "old_fragment": "        with patch.dict(os.environ,{\"BAILIAN_BUDGET_PATH\":os.environ[\"DEEPSEEK_BUDGET_PATH\"]}),self.assertRaisesRegex(DeepSeekError,\"independent\"): bailian.Settings.from_env()\n        with patch.dict(os.environ,{\"BAILIAN_MAX_REQUESTS\":\"0\"}),self.assertRaises(DeepSeekError): bailian.Settings.from_env()",
+          "new_fragment": "        with patch.dict(os.environ,{\"BAILIAN_BUDGET_PATH\":os.environ[\"DEEPSEEK_BUDGET_PATH\"],\"BAILIAN_MAX_REQUESTS\":\"0\"}):\n            self.assertEqual(bailian.Settings.from_env().max_requests,0)",
+          "reason": "Current usage-only policy or its evidence format"
+        },
+        {
+          "old_method": "test_budget_three_stops_fourth_before_transport",
+          "new_method": "test_six_bailian_requests_are_not_capped_at_three",
+          "reason": "Explicit current unlimited policy / new usage evidence; not a B assertion edit"
+        },
+        {
+          "old_fragment": "                with self.assertRaises(DeepSeekError): client.post(\"https://api.deepseek.com/chat/completions\",json=body)\n        self.assertEqual(len(sent),3)",
+          "new_fragment": "                client.post(\"https://api.deepseek.com/chat/completions\",json=body)\n        self.assertEqual(len(sent),4)\n        self.assertFalse((self.root/\"shared.db\").exists())",
+          "reason": "Current usage-only policy or its evidence format"
+        },
+        {
+          "old_fragment": "def test_shared_initial_budget_limits_both_providers_together",
+          "new_fragment": "def test_deprecated_shared_budget_does_not_limit_providers",
+          "reason": "Current usage-only policy or its evidence format"
+        },
+        {
+          "old_fragment": "def test_endpoint_model_and_independent_ledger_fail_closed",
+          "new_fragment": "def test_endpoint_and_model_fail_closed_ledger_labels_are_nonblocking",
+          "reason": "Current usage-only policy or its evidence format"
+        }
+      ],
+      "current_sha256": "900e33f5942f7c30f6b53aab2054dd176782c087f6e1de332768030c490e8c4e",
+      "original_copy": "docs/evidence/unlimited-live-20261027/a-assertions-original/test_live_providers.py.txt"
+    },
+    "test_v35_rag.py": {
+      "source_commit": "97213a7d60e4cecaef88b9cbe634f8df817d772d",
+      "original_sha256": "4761ec2084805fa0280d44dc1a8f9e7a1a3c494a8fb55984ecc3e33c85aa381f",
+      "changes": [
+        {
+          "old_method": "test_budget_exhaustion_prevents_http_and_cannot_increase_cap",
+          "new_method": "test_obsolete_embedding_caps_do_not_reject_uncached_inputs",
+          "reason": "Explicit current unlimited policy / new usage evidence; not a B assertion edit"
+        },
+        {
+          "old_method": "test_real_qwen_entry_rejects_old_or_alias_ledger_before_client",
+          "new_method": "test_qwen38_old_ledger_label_does_not_require_validation_pair",
+          "reason": "Explicit current unlimited policy / new usage evidence; not a B assertion edit"
+        },
+        {
+          "old_method": "test_v35_four_request_cap_does_not_change_older_profiles",
+          "new_method": "test_every_bailian_profile_ignores_obsolete_request_count",
+          "reason": "Explicit current unlimited policy / new usage evidence; not a B assertion edit"
+        }
+      ],
+      "current_sha256": "519bb32fb4f2d35396d116d3dccd7289442a92bbf2b2e5f17f08c913404fc4d4",
+      "original_copy": "docs/evidence/unlimited-live-20261027/a-assertions-original/test_v35_rag.py.txt"
+    },
+    "test_manual_live_web.py": {
+      "source_commit": "97213a7d60e4cecaef88b9cbe634f8df817d772d",
+      "original_sha256": "68fca30b5833498741608be0f3957c294a22520b1c3db72ef476d452bebe198a",
+      "changes": [
+        {
+          "old_fragment": "state=json.loads(output.getvalue());self.assertEqual(state['request_limit'],0)",
+          "new_fragment": "state=json.loads(output.getvalue());self.assertIsNone(state['request_limit'])",
+          "reason": "Current usage-only policy or its evidence format"
+        },
+        {
+          "old_fragment": "self.assertIn('manual-live',state['budget_path']);self.assertEqual(state['model_requests_sent'],0)",
+          "new_fragment": "self.assertEqual(state['usage_policy'],'unlimited_usage_only');self.assertEqual(state['model_requests_sent'],0)",
+          "reason": "Current usage-only policy or its evidence format"
+        },
+        {
+          "old_method": "test_manual_binding_rejects_formal_path_and_shared_budget",
+          "new_method": "test_old_ledger_binding_is_not_an_admission_rule_but_readonly_remains",
+          "reason": "Explicit current unlimited policy / new usage evidence; not a B assertion edit"
+        },
+        {
+          "old_fragment": "self.assertEqual(RequestBudget(Settings(max_requests=0,ledger_path=ledger)).snapshot()['reserved_requests'],6)",
+          "new_fragment": "settings_cls=deepseek_runtime.Settings if provider==\"deepseek\" else bailian_runtime.Settings\n                    self.assertEqual(RequestBudget(settings_cls(max_requests=0,ledger_path=ledger)).snapshot()[\"request_count\"],6)",
+          "reason": "Current usage-only policy or its evidence format"
+        },
+        {
+          "old_fragment": "self.assertIn('旧验收账本',failure_hint('historical_unlinked_ledger_requires_new_validation_pair'))",
+          "new_fragment": "self.assertIn('已移除',failure_hint('historical_unlinked_ledger_requires_new_validation_pair'))",
+          "reason": "Current usage-only policy or its evidence format"
+        }
+      ],
+      "current_sha256": "6dccfee6587a2cfecd76107a9b482ab2a5d3d8ebdb6fa3bb598d9112c8e9eb2a",
+      "original_copy": "docs/evidence/unlimited-live-20261027/a-assertions-original/test_manual_live_web.py.txt"
+    },
+    "test_v34_api_audit.py": {
+      "source_commit": "97213a7d60e4cecaef88b9cbe634f8df817d772d",
+      "original_sha256": "0092ab51aa74ba9fde3c9198d5c1e15569ffee8e790fb7c9a287e8551cad6fa0",
+      "changes": [
+        {
+          "old_method": "test_same_uuid_atomic_pair_and_idempotent_settlement",
+          "new_method": "test_same_uuid_usage_identity_and_idempotent_settlement",
+          "reason": "Explicit current unlimited policy / new usage evidence; not a B assertion edit"
+        },
+        {
+          "old_method": "test_provider_limit_does_not_leak_total_reservation",
+          "new_method": "test_provider_history_does_not_create_or_limit_shared_reservations",
+          "reason": "Explicit current unlimited policy / new usage evidence; not a B assertion edit"
+        },
+        {
+          "old_method": "test_concurrent_providers_never_exceed_four_and_ids_match",
+          "new_method": "test_concurrent_unlimited_usage_has_unique_correlated_ids",
+          "reason": "Explicit current unlimited policy / new usage evidence; not a B assertion edit"
+        },
+        {
+          "old_fragment": "with self.assertRaisesRegex(DeepSeekError,'historical_unlinked'):self.budget.reserve()",
+          "new_fragment": "self.assertTrue(self.budget.reserve())",
+          "reason": "Current usage-only policy or its evidence format"
+        },
+        {
+          "old_fragment": "def test_legacy_ledger_is_rejected_without_rewrite",
+          "new_fragment": "def test_legacy_unlinked_ledger_does_not_block_and_is_not_rewritten",
+          "reason": "Current usage-only policy or its evidence format"
+        },
+        {
+          "old_method": "test_policy_cannot_be_silently_raised",
+          "new_method": "test_legacy_policy_numbers_do_not_restore_limits",
+          "reason": "Explicit current unlimited policy / new usage evidence; not a B assertion edit"
+        },
+        {
+          "old_fragment": "self.assertEqual(a['TICKET_TOTAL_REQUEST_LIMIT'],'4')",
+          "new_fragment": "self.assertEqual(a['TICKET_TOTAL_REQUEST_LIMIT'],'')",
+          "reason": "Current usage-only policy or its evidence format"
+        },
+        {
+          "old_fragment": "self.assertEqual((a['DEEPSEEK_MAX_REQUESTS'],b['BAILIAN_MAX_REQUESTS']),('2','2'))",
+          "new_fragment": "self.assertEqual((a['DEEPSEEK_MAX_REQUESTS'],b['BAILIAN_MAX_REQUESTS']),('0','0'))",
+          "reason": "Current usage-only policy or its evidence format"
+        },
+        {
+          "old_fragment": "def test_authorization_plan_is_fixed_two_two_four",
+          "new_fragment": "def test_all_entry_profiles_use_the_same_unlimited_policy",
+          "reason": "Current usage-only policy or its evidence format"
+        },
+        {
+          "old_method": "test_first_200_survives_second_timeout_and_partial_tokens",
+          "new_method": "test_first_200_survives_second_timeout_and_partial_tokens",
+          "reason": "Explicit current unlimited policy / new usage evidence; not a B assertion edit"
+        },
+        {
+          "old_fragment": "row=snapshot(f.root/'total.db',4)['requests'][1]",
+          "new_fragment": "from target.bailian_runtime import RequestBudget,Settings as BailianSettings\n        row=RequestBudget(BailianSettings.from_env()).snapshot()['requests'][1]",
+          "reason": "Current usage-only policy or its evidence format"
+        },
+        {
+          "old_fragment": "json.loads(row['request_summary'])['returned_tool_call_ids']",
+          "new_fragment": "row['request_summary']['returned_tool_call_ids']",
+          "reason": "Current usage-only policy or its evidence format"
+        },
+        {
+          "old_method": "test_budget_blocks_before_network_without_phantom_total_row",
+          "new_method": "test_old_shared_cap_does_not_block_or_create_phantom_history_rows",
+          "reason": "Explicit current unlimited policy / new usage evidence; not a B assertion edit"
+        }
+      ],
+      "current_sha256": "99326b9b08d95eab5d889426071931e63474f10d5cce567374032412a1842b39",
+      "original_copy": "docs/evidence/unlimited-live-20261027/a-assertions-original/test_v34_api_audit.py.txt"
+    },
+    "test_v352_chroma_protection.py": {
+      "source_commit": "97213a7d60e4cecaef88b9cbe634f8df817d772d",
+      "original_sha256": "2b65dba0a6ede2977c4bea9c20c7c214f64fe75c5c41cdee9f9f58fc555c486c",
+      "changes": [
+        {
+          "old_method": "test_baseline_wrapper_does_not_allow_network_or_rebuild",
+          "new_method": "test_query_embedding_uses_copy_while_baseline_rebuild_stays_forbidden",
+          "reason": "Explicit current unlimited policy / new usage evidence; not a B assertion edit"
+        }
+      ],
+      "current_sha256": "fc4fcc00a15131fc551f49c76f88d14b8ec53a9c12a7c9d98863cb0f0d8e943a",
+      "original_copy": "docs/evidence/unlimited-live-20261027/a-assertions-original/test_v352_chroma_protection.py.txt"
+    },
+    "test_v352_live_protocol.py": {
+      "source_commit": "97213a7d60e4cecaef88b9cbe634f8df817d772d",
+      "original_sha256": "6cf979cc0ae924834a847f09d17f92e54c2f1ea374e3be9f15ef86a57b1a005d",
+      "changes": [
+        {
+          "old_fragment": "                    deep_ledger=(auth/'deepseek-generation.db').read_bytes()",
+          "new_fragment": "                    self.assertFalse((auth/'deepseek-generation.db').exists())",
+          "reason": "Current usage-only policy or its evidence format"
+        },
+        {
+          "old_fragment": "                    self.assertEqual((auth/'deepseek-generation.db').read_bytes(),deep_ledger)",
+          "new_fragment": "                    self.assertFalse((auth/'deepseek-generation.db').exists())",
+          "reason": "Current usage-only policy or its evidence format"
+        },
+        {
+          "old_fragment": "self.assertTrue((auth/'paired-report-resumed.json').is_file())",
+          "new_fragment": "self.assertTrue(list(auth.glob('paired-report-resumed-*.json')))",
+          "reason": "Current usage-only policy or its evidence format"
+        },
+        {
+          "old_fragment": "self.assertEqual(snapshot(auth/'generation-total.db',4)['reserved_requests'],4)",
+          "new_fragment": "self.assertFalse((auth/'generation-total.db').exists())",
+          "reason": "Current usage-only policy or its evidence format"
+        },
+        {
+          "old_fragment": "                with self.assertRaisesRegex(ValueError,'resume_requires_zero_qwen_dispatch'),redirect_stdout(io.StringIO()):\n                    execute_pair(model_factory=factory,resume_unattempted_qwen=True)",
+          "new_fragment": "                self.assertIsNone(report['generation_limit'])  # No extra implicit dispatch or cumulative quota.",
+          "reason": "Current usage-only policy or its evidence format"
+        },
+        {
+          "old_method": "test_per_provider_two_and_shared_four_are_persisted",
+          "new_method": "test_old_per_provider_and_shared_caps_are_usage_only",
+          "reason": "Explicit current unlimited policy / new usage evidence; not a B assertion edit"
+        },
+        {
+          "old_method": "test_fresh_budget_requires_explicit_command_marker",
+          "new_method": "test_old_batch_marker_is_not_required_for_live_configuration",
+          "reason": "Explicit current unlimited policy / new usage evidence; not a B assertion edit"
+        }
+      ],
+      "current_sha256": "783c8888574434174a6b0446a17af0ebdddb1a66eb0fcf21d0578e9f0c923ecc",
+      "original_copy": "docs/evidence/unlimited-live-20261027/a-assertions-original/test_v352_live_protocol.py.txt"
+    }
+  }
+}

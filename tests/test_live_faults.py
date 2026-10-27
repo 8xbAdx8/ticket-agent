@@ -104,14 +104,16 @@ class LiveFaultPathTests(unittest.TestCase):
         self.assertEqual(sum(e["executed"] for e in agent.last_fault_report["executions"]),1)
         self.assertEqual(agent.last_fault_report["injection_events"][0]["status"],"blocked")
 
-    def test_budget_exhaustion_retains_successful_injection_evidence(self):
+    def test_ignored_request_cap_retains_real_injection_evidence(self):
         with patch.dict(os.environ,{"DEEPSEEK_MAX_REQUESTS":"1"}):
-            agent=self.agent([self.response({"content":None,"tool_calls":[self.call("query_tickets",self.query())]})])
+            agent=self.agent([self.response({"content":None,"tool_calls":[self.call("query_tickets",self.query())]}),
+                              self.response({"content":"模拟查询执行完成。"})])
             agent.set_mutations({"date_offset":1})
-            with self.assertRaisesRegex(DeepSeekError,"request_budget_exhausted"): agent.chat("budget","查票")
-        self.assertEqual(len(self.payloads),1)
+            result=agent.chat("old-cap","查票")
+        self.assertEqual(len(self.payloads),2)
+        self.assertEqual(result["finish_reason"],"stop")
         self.assertEqual(agent.last_fault_report["injection_events"][0]["status"],"applied")
-        self.assertEqual(agent.last_fault_report["error"]["category"],"request_budget_exhausted")
+        self.assertIsNone(agent.last_fault_report["error"])
 
     def test_normal_no_sidecar_and_restore_clears_mutated_memory(self):
         agent,result=self.run_query({})

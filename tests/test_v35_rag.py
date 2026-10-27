@@ -64,13 +64,15 @@ class EmbeddingTests(unittest.TestCase):
         self.assertEqual(len(calls),1);self.assertEqual(p.budget.snapshot()['used'],1)
         self.assertNotIn('offline-embedding-key',json.dumps(p.budget.snapshot()))
 
-    def test_budget_exhaustion_prevents_http_and_cannot_increase_cap(self):
+    def test_obsolete_embedding_caps_do_not_reject_uncached_inputs(self):
         p=self.provider(settings=replace(self.settings,limit=1))
         p.embed_many(['a'],allow_network=True)
-        with self.assertRaisesRegex(EmbeddingError,'budget_exhausted'):p.embed_many(['b'],allow_network=True)
-        self.assertEqual(len(self.calls),1)
+        p.embed_many(['b'],allow_network=True)
         q=self.provider()
-        with self.assertRaisesRegex(EmbeddingError,'persisted_budget_limit_mismatch'):q.embed_many(['b'],allow_network=True)
+        q.embed_many(['c'],allow_network=True)
+        self.assertEqual(len(self.calls),3)
+        self.assertEqual(q.budget.snapshot()['request_count'],3)
+        self.assertFalse(self.settings.ledger.exists())
 
     def test_unknown_usage_not_zero(self):
         def respond(req):
@@ -166,16 +168,18 @@ del StoreTests
 
 class CompatibilityTests(unittest.TestCase):
     @unittest.skipUnless(HTTP,'httpx only; no outbound calls')
-    def test_real_qwen_entry_rejects_old_or_alias_ledger_before_client(self):
+    def test_qwen38_old_ledger_label_does_not_require_validation_pair(self):
         import config
         from target import bailian_runtime
-        with tempfile.TemporaryDirectory() as folder,patch.dict(os.environ,{'TICKET_INITIAL_LIVE_BUDGET':''}),\
-             patch.multiple(config,MODEL_NAME='qwen3.8-flash',BASE_URL='https://dashscope.aliyuncs.com/compatible-mode/v1'),\
-             patch('httpx.Client') as client:
-            with self.assertRaisesRegex(Exception,'v35_fixed_generation_budget_required'):
-                bailian_runtime.guarded_client(replace(bailian_runtime.Settings(),ledger_path=Path(folder)/'old.db'))
-            client.assert_not_called()
-            self.assertFalse((Path(folder)/'old.db').exists())
+        calls=[]
+        def respond(request):
+            calls.append(request)
+            return httpx.Response(200,json={'model':'qwen3.8-flash','usage':{}})
+        with tempfile.TemporaryDirectory() as folder,patch.dict(os.environ,{'TICKET_INITIAL_LIVE_BUDGET':''}),     patch.multiple(config,MODEL_NAME='qwen3.8-flash',BASE_URL='https://dashscope.aliyuncs.com/compatible-mode/v1'):
+            old=Path(folder)/'old.db'
+            with bailian_runtime.guarded_client(replace(bailian_runtime.Settings(),ledger_path=old),transport=httpx.MockTransport(respond)) as client:
+                client.post(config.BASE_URL+'/chat/completions',json={'model':'qwen3.8-flash','max_tokens':16})
+            self.assertEqual(len(calls),1);self.assertFalse(old.exists())
     def test_refusal_can_describe_irrelevant_retrieved_sources(self):
         from target.rag_quality import answer_metrics
         case={'expected_doc_ids':[],'allowed_citations':[],'answer_points':[]}
@@ -196,12 +200,12 @@ class CompatibilityTests(unittest.TestCase):
             os.environ['DASHSCOPE_MODEL']='qwen-plus'
             self.assertEqual(model_config('bailian')['model'],'qwen-plus')
 
-    def test_v35_four_request_cap_does_not_change_older_profiles(self):
+    def test_every_bailian_profile_ignores_obsolete_request_count(self):
         from target.bailian_runtime import Settings
-        with patch.dict(os.environ,{'BAILIAN_MAX_REQUESTS':'4','TICKET_API_VALIDATION_PROFILE':'v35'}):
-            self.assertEqual(Settings.from_env().max_requests,4)
-            os.environ['TICKET_API_VALIDATION_PROFILE']='v34'
-            with self.assertRaisesRegex(Exception,'invalid_safety_limits'):Settings.from_env()
+        with patch.dict(os.environ,{'BAILIAN_MAX_REQUESTS':'4'}):
+            for profile in ('v35','v34','interactive',''):
+                os.environ['TICKET_API_VALIDATION_PROFILE']=profile
+                self.assertEqual(Settings.from_env().max_requests,0)
 
     def test_fixed_dataset_metrics_and_unknown_faithfulness(self):
         from target.rag_store import ROOT

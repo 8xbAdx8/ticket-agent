@@ -82,18 +82,18 @@ class ReadOnlyQualityTests(unittest.TestCase):
                 with self.assertRaisesRegex(DeepSeekError,category):agent.chat(category,"查票")
                 self.assertEqual(len(self.payloads)-before,1)
                 row=RequestBudget(Settings.from_env()).snapshot()["requests"][0]
-                self.assertEqual(row["category"],"reserved_outcome_unknown")
+                self.assertEqual(row["category"],category+"_outcome_unknown")
                 self.assertIsNone(row["prompt"])
 
-    def test_exhausted_budget_never_enters_mock_transport(self):
+    def test_five_prior_attempts_do_not_block_a_new_model_request(self):
         budget=RequestBudget(Settings.from_env())
         for _ in range(5):budget.reserve()
-        before=Path(Settings.from_env().ledger_path).read_bytes()
-        agent=self.agent([self.response({"content":"must not execute"})])
-        with self.assertRaisesRegex(DeepSeekError,"request_budget_exhausted"):agent.chat("exhausted","查票")
-        self.assertEqual(self.payloads,[])
-        self.assertEqual(Path(Settings.from_env().ledger_path).read_bytes(),before)
-        self.assertEqual(self.failures()[-1]["error"]["category"],"request_budget_exhausted")
+        agent=self.agent([self.response({"content":"当前仅支持模拟查票和政策咨询。"})])
+        result=agent.chat("after-five","你好")
+        self.assertEqual(len(self.payloads),1)
+        self.assertEqual(result["tool_sequence"],[])
+        self.assertEqual(budget.snapshot()["request_count"],6)
+        self.assertFalse(Path(Settings.from_env().ledger_path).exists())
 
     def test_unknown_second_usage_keeps_real_calls_and_only_observed_tokens(self):
         agent=self.agent([self.response({"content":None,"tool_calls":[self.call("search_policy",{"question":"支付规则"})]}),

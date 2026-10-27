@@ -80,15 +80,15 @@ class LiveProviderTests(unittest.TestCase):
             with self.assertRaisesRegex(DeepSeekError,"missing_DASHSCOPE_API_KEY"): bailian.make_model()
             factory.assert_not_called()
 
-    def test_endpoint_model_and_independent_ledger_fail_closed(self):
+    def test_endpoint_and_model_fail_closed_ledger_labels_are_nonblocking(self):
         for address in ("http://dashscope.aliyuncs.com/compatible-mode/v1","https://dashscope.aliyuncs.com.evil.invalid/compatible-mode/v1",
                         "https://secret@dashscope.aliyuncs.com/compatible-mode/v1","https://coding.dashscope.aliyuncs.com/v1",
                         "https://attacker.oss-cn-beijing.aliyuncs.com/compatible-mode/v1",
                         "https://dashscope.aliyuncs.com/compatible-mode/v1?key=x"):
             with patch.object(config,"BASE_URL",address),self.assertRaises(DeepSeekError): bailian.validate_configuration()
         with patch.object(config,"MODEL_NAME",""),self.assertRaisesRegex(DeepSeekError,"missing_DASHSCOPE_MODEL"): bailian.validate_configuration()
-        with patch.dict(os.environ,{"BAILIAN_BUDGET_PATH":os.environ["DEEPSEEK_BUDGET_PATH"]}),self.assertRaisesRegex(DeepSeekError,"independent"): bailian.Settings.from_env()
-        with patch.dict(os.environ,{"BAILIAN_MAX_REQUESTS":"0"}),self.assertRaises(DeepSeekError): bailian.Settings.from_env()
+        with patch.dict(os.environ,{"BAILIAN_BUDGET_PATH":os.environ["DEEPSEEK_BUDGET_PATH"],"BAILIAN_MAX_REQUESTS":"0"}):
+            self.assertEqual(bailian.Settings.from_env().max_requests,0)
 
     def test_only_two_tools_and_real_sdk_tool_result_roundtrip(self):
         args={"from_city":"上海","to_city":"杭州","date":str(config.today()),"kind":"高铁","seat_type":"二等座"}
@@ -168,13 +168,13 @@ class LiveProviderTests(unittest.TestCase):
         executions=[e for e in agent.langchain_engine.last_events if e["event"]=="tool_end"]
         self.assertEqual(executions[0]["executed"],False)
 
-    def test_budget_three_stops_fourth_before_transport(self):
+    def test_six_bailian_requests_are_not_capped_at_three(self):
         agent=self.agent([self.response({"content":"当前只支持模拟查票和政策咨询。"})])
-        for i in range(3): agent.chat(str(i),"你好")
-        with self.assertRaisesRegex(DeepSeekError,"request_budget_exhausted"): agent.chat("four","你好")
-        self.assertEqual(len(self.payloads),3)
+        for i in range(6):agent.chat(str(i),"你好")
+        self.assertEqual(len(self.payloads),6)
+        self.assertEqual(RequestBudget(bailian.Settings.from_env()).snapshot()["request_count"],6)
 
-    def test_shared_initial_budget_limits_both_providers_together(self):
+    def test_deprecated_shared_budget_does_not_limit_providers(self):
         from target.deepseek_runtime import guarded_client
         sent=[]
         transport=httpx.MockTransport(lambda r:(sent.append(r.url.host) or httpx.Response(200,json={"model":"fixture"})))
@@ -185,8 +185,9 @@ class LiveProviderTests(unittest.TestCase):
             with guarded_client(settings,transport=transport) as client:
                 body={"model":"deepseek-flash","max_tokens":16,"thinking":{"type":"disabled"}}
                 client.post("https://api.deepseek.com/chat/completions",json=body)
-                with self.assertRaises(DeepSeekError): client.post("https://api.deepseek.com/chat/completions",json=body)
-        self.assertEqual(len(sent),3)
+                client.post("https://api.deepseek.com/chat/completions",json=body)
+        self.assertEqual(len(sent),4)
+        self.assertFalse((self.root/"shared.db").exists())
 
     def test_six_write_tools_rejected_before_sending(self):
         settings=bailian.Settings.from_env()

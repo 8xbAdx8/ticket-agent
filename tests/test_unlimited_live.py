@@ -1,6 +1,7 @@
 """Current cumulative-quota policy. Offline fixtures never send real API traffic."""
 import contextlib
 import hashlib
+import importlib.util
 import io
 import json
 import os
@@ -100,6 +101,22 @@ class UsageOnlyTests(unittest.TestCase):
         self.assertEqual(state['request_count'],1);self.assertEqual(state['offline_stub_requests'],1)
         self.assertEqual(state['prompt_tokens'],7);self.assertEqual(state['completion_tokens'],2)
 
+    @unittest.skipUnless(importlib.util.find_spec('httpx') is not None,'HTTP transport dependency required')
+    def test_non_mock_transport_cannot_expand_live_write_tools(self):
+        import httpx
+        from target.deepseek_runtime import guarded_client,Settings,DeepSeekError
+        calls=[]
+        class LocalTransport(httpx.BaseTransport):
+            def handle_request(self,request):
+                calls.append(request)
+                return httpx.Response(200,json={})
+        with patch('target.deepseek_runtime.allowed_tools',return_value={'query_tickets','pay_order'}):
+            with guarded_client(Settings(),transport=LocalTransport()) as client:
+                with self.assertRaisesRegex(DeepSeekError,'read_only_tools_required'):
+                    client.post('https://api.deepseek.com/chat/completions',json={'model':'deepseek-flash',
+                        'thinking':{'type':'disabled'},'max_tokens':16,'tools':[{'function':{'name':'pay_order'}}]})
+        self.assertEqual(calls,[])
+
 
 try:
     import test_deepseek_agent as deep_fixture
@@ -144,6 +161,13 @@ class UnlimitedProviderTests(unittest.TestCase):
                     self.assertEqual(result['reply'],'请补充出发地、目的地和日期。')
                     self.assertTrue(any(e['event']=='usage_recording_warning' for e in agent.langchain_engine.last_events))
                     self.assertEqual(len(fixture.payloads),1)
+                elif scenario=='log_corrupt':
+                    log=RequestBudget(runtime.Settings.from_env())
+                    log.path.parent.mkdir(parents=True,exist_ok=True);log.path.write_text('invalid-json\n',encoding='utf-8')
+                    agent=fixture.agent([response]);result=agent.chat('corrupt-statistics','您好')
+                    self.assertEqual(result['reply'],'请补充出发地、目的地和日期。')
+                    self.assertEqual(len(fixture.payloads),1)
+                    self.assertIsNone(log.snapshot()['request_count'])
                 elif scenario=='steps':
                     from datetime import timedelta
                     args={'from_city':'上海','to_city':'杭州','date':(config.today()+timedelta(days=1)).isoformat()}
@@ -171,12 +195,36 @@ def provider_case(provider,scenario):
 
 
 for _provider in ('deepseek','bailian'):
-    for _scenario in ('repeat','log_failure','steps','401','403','429','500','503'):
+    for _scenario in ('repeat','log_failure','log_corrupt','steps','401','403','429','500','503'):
         setattr(UnlimitedProviderTests,'test_'+_provider+'_'+_scenario,provider_case(_provider,_scenario))
 
 
 @unittest.skipUnless(SDK,'httpx required; no real Embedding calls')
 class UnlimitedEmbeddingTests(unittest.TestCase):
+    def test_cached_vectors_do_not_count_as_new_requests_and_rag_ids_are_linked(self):
+        import httpx
+        from target.embeddings import EmbeddingProvider,EmbeddingSettings
+        from target.rag_service import scope
+        with tempfile.TemporaryDirectory() as folder:
+            root=Path(folder);calls=[]
+            def respond(request):
+                calls.append(request)
+                return httpx.Response(200,json={'id':'fixture-server-id','model':'text-embedding-v4',
+                    'data':[{'index':0,'embedding':[1.0]+[0.0]*63}],'usage':{'total_tokens':2}})
+            settings=EmbeddingSettings(base_url='https://dashscope.aliyuncs.com/compatible-mode/v1',dimensions=64,
+                ledger=root/'old.db',cache=root/'cache.db')
+            with patch.dict(os.environ,{'DASHSCOPE_API_KEY':'offline-key','TICKET_API_USAGE_DIR':str(root/'usage')}):
+                provider=EmbeddingProvider(settings,transport=httpx.MockTransport(respond))
+                with scope(trace_id='rag-trace',call_id='search-policy-call'):
+                    provider.embed_many(['query'],allow_network=True)
+                self.assertEqual(len(provider.request_ids),1)
+                provider.embed_many(['query'],allow_network=False)
+                self.assertEqual(provider.request_ids,[]);self.assertEqual(len(calls),1)
+                row=provider.budget.snapshot()['requests'][0]
+                self.assertEqual(row['trace_id'],'rag-trace');self.assertEqual(row['tool_call_id'],'search-policy-call')
+                self.assertEqual(row['server_request_id'],'fixture-server-id');self.assertEqual(row['tokens'],2)
+                self.assertEqual(row['requested_model'],'text-embedding-v4')
+
     def test_more_than_eight_requests_leave_old_embedding_ledger_unchanged(self):
         import httpx
         from target.embeddings import EmbeddingProvider,EmbeddingSettings

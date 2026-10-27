@@ -32,7 +32,7 @@ class LauncherTests(unittest.TestCase):
                 "DEEPSEEK_SANDBOX_DIR":"old-sandbox","AGENT_LC_TOOLSET":"all"}
         env=launch_app.build_environment("live",Path("runtime"),source)
         self.assertEqual(env["DEEPSEEK_API_KEY"],"test-launcher-key")
-        self.assertEqual(env["DEEPSEEK_MAX_REQUESTS"],"5")
+        self.assertEqual(env["DEEPSEEK_MAX_REQUESTS"],"0")
         self.assertEqual(Path(env["DEEPSEEK_BUDGET_PATH"]),Path("runtime/live/requests.db"))
         self.assertEqual(env["AGENT_LC_TOOLSET"],"read_only")
         self.assertEqual(env["DEEPSEEK_LIVE_TEST_PROFILE"],"read_only")
@@ -46,7 +46,7 @@ class LauncherTests(unittest.TestCase):
         self.assertNotEqual(offline["AGENT_DB_PATH"],live["AGENT_DB_PATH"])
         self.assertNotEqual(offline["AGENT_TRACE_DIR"],live["AGENT_TRACE_DIR"])
         self.assertEqual(live["DEEPSEEK_MAX_REQUESTS"],"0")
-        with self.assertRaises(ValueError):launch_app.build_environment("live",Path("runtime"),{"DEEPSEEK_MAX_REQUESTS":"6"})
+        self.assertEqual(launch_app.build_environment("live",Path("runtime"),{"DEEPSEEK_MAX_REQUESTS":"6"})["DEEPSEEK_MAX_REQUESTS"],"0")
 
     def test_fake_key_preflight_never_connects_or_creates_files(self):
         with tempfile.TemporaryDirectory() as temp,patch.object(launch_app,"ROOT",Path(temp)),patch.dict("os.environ",{"DEEPSEEK_API_KEY":"test-launcher-secret"},clear=True),patch.object(launch_app,"missing_dependencies",return_value=[]),patch.object(socket.socket,"connect",side_effect=AssertionError("No network")),patch.object(launch_app,"serve",side_effect=AssertionError("No service")):

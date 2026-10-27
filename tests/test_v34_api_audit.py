@@ -24,38 +24,37 @@ class AccountingTests(unittest.TestCase):
 
     def tearDown(self):self.tmp.cleanup()
 
-    def test_same_uuid_atomic_pair_and_idempotent_settlement(self):
+    def test_same_uuid_usage_identity_and_idempotent_settlement(self):
         uid=self.budget.reserve({'model':'fixture'})
         self.assertEqual(self.budget.reserve(request_id=uid),uid)
         for _ in range(2):self.budget.record(uid,status=200,usage={'prompt_tokens':7,'completion_tokens':2},model='fixture')
-        a=snapshot(self.root/'total.db',4)['requests'];b=self.budget.snapshot()['requests']
-        self.assertEqual(a,b);self.assertEqual(len(a),1);self.assertEqual(a[0]['request_id'],uid)
+        rows=self.budget.snapshot()['requests']
+        self.assertEqual(len(rows),1);self.assertEqual(rows[0]['request_id'],uid)
+        self.assertFalse((self.root/'total.db').exists());self.assertFalse(self.settings.ledger_path.exists())
         self.budget.record(uid,category='sdk_error_outcome_unknown')
         self.assertEqual(self.budget.snapshot()['requests'][0]['status'],200)
 
-    def test_provider_limit_does_not_leak_total_reservation(self):
-        for _ in range(2):self.budget.reserve()
-        with self.assertRaises(DeepSeekError):self.budget.reserve()
-        self.assertEqual(snapshot(self.root/'total.db',4)['reserved_requests'],2)
-        self.assertEqual(self.budget.snapshot()['reserved_requests'],2)
+    def test_provider_history_does_not_create_or_limit_shared_reservations(self):
+        for _ in range(7):self.budget.reserve()
+        self.assertEqual(self.budget.snapshot()['request_count'],7)
+        self.assertFalse((self.root/'total.db').exists())
+        self.assertFalse(self.settings.ledger_path.exists())
 
-    def test_concurrent_providers_never_exceed_four_and_ids_match(self):
+    def test_concurrent_unlimited_usage_has_unique_correlated_ids(self):
         second=CoordinatedBudget(replace(self.settings,ledger_path=self.root/'q.db'),'bailian',self.root/'total.db',4)
-        def work(i):
-            try:return (self.budget if i%2 else second).reserve()
-            except DeepSeekError:return None
+        def work(i):return (self.budget if i%2 else second).reserve()
         with concurrent.futures.ThreadPoolExecutor(max_workers=8) as pool:ids=list(pool.map(work,range(12)))
-        a=snapshot(self.root/'total.db',4)['requests']
-        b=self.budget.snapshot()['requests']+second.snapshot()['requests']
-        self.assertEqual(len(a),4);self.assertEqual(len(set(filter(None,ids))),4)
-        self.assertEqual({r['request_id'] for r in a},{r['request_id'] for r in b})
+        rows=self.budget.snapshot()['requests']+second.snapshot()['requests']
+        self.assertEqual(len(set(ids)),12);self.assertEqual(len(rows),12)
+        self.assertEqual(set(ids),{r['request_id'] for r in rows})
+        self.assertFalse((self.root/'total.db').exists())
 
-    def test_legacy_ledger_is_rejected_without_rewrite(self):
+    def test_legacy_unlinked_ledger_does_not_block_and_is_not_rewritten(self):
         path=self.root/'total.db'
         with closing(sqlite3.connect(path)) as db:
             db.execute('CREATE TABLE requests(id INTEGER PRIMARY KEY,category TEXT)');db.execute("INSERT INTO requests VALUES(1,'reserved_outcome_unknown')");db.commit()
         before=path.read_bytes()
-        with self.assertRaisesRegex(DeepSeekError,'historical_unlinked'):self.budget.reserve()
+        self.assertTrue(self.budget.reserve())
         self.assertEqual(path.read_bytes(),before)
         self.assertTrue(snapshot(path,3)['historical_unlinked'])
 
@@ -74,11 +73,13 @@ class AccountingTests(unittest.TestCase):
         self.assertEqual(self.budget.snapshot()['reserved_requests'],1)
         self.assertEqual(len(self.budget.snapshot()['unsettled_ids']),1)
 
-    def test_policy_cannot_be_silently_raised(self):
+    def test_legacy_policy_numbers_do_not_restore_limits(self):
         self.budget.reserve()
         other=CoordinatedBudget(self.settings,'deepseek',self.root/'total.db',3)
-        with self.assertRaisesRegex(DeepSeekError,'persisted_budget_limit'):other.reserve()
-        self.assertEqual(snapshot(self.root/'total.db',4)['reserved_requests'],1)
+        other.reserve()
+        self.assertEqual(other.snapshot()['request_count'],2)
+        self.assertIsNone(other.snapshot()['limit'])
+        self.assertFalse((self.root/'total.db').exists())
 
     def test_snapshot_missing_is_readonly(self):
         self.assertEqual(self.budget.snapshot()['reserved_requests'],0)
@@ -97,14 +98,14 @@ class ConfigTests(unittest.TestCase):
             path=Path(tmp)/'report.json';path.write_text(json.dumps({'status':'failed','real_api_requests':0,'tested_source_head':'not-current'}))
             with self.assertRaisesRegex(ValueError,'matching_frozen'):gate(path)
 
-    def test_authorization_plan_is_fixed_two_two_four(self):
+    def test_all_entry_profiles_use_the_same_unlimited_policy(self):
         from target.live_providers import isolated_environment
         import config
         with patch.dict(os.environ,{'TICKET_API_VALIDATION_PROFILE':'v34'}):
             a=isolated_environment('deepseek',config.BASE_DIR/'artifacts/runtime/v34-test-case')
             b=isolated_environment('bailian',config.BASE_DIR/'artifacts/runtime/v34-test-case-b')
-        self.assertEqual(a['TICKET_TOTAL_REQUEST_LIMIT'],'4')
-        self.assertEqual((a['DEEPSEEK_MAX_REQUESTS'],b['BAILIAN_MAX_REQUESTS']),('2','2'))
+        self.assertEqual(a['TICKET_TOTAL_REQUEST_LIMIT'],'')
+        self.assertEqual((a['DEEPSEEK_MAX_REQUESTS'],b['BAILIAN_MAX_REQUESTS']),('0','0'))
         self.assertEqual(a['TICKET_INITIAL_LIVE_BUDGET'],b['TICKET_INITIAL_LIVE_BUDGET'])
         self.assertNotEqual(a['DEEPSEEK_BUDGET_PATH'],b['BAILIAN_BUDGET_PATH'])
 
@@ -147,13 +148,13 @@ class SDKLifecycleTests(unittest.TestCase):
     def tearDown(self):self.env.stop();self.fixture.tearDown()
 
     def test_first_200_survives_second_timeout_and_partial_tokens(self):
+        from target.bailian_runtime import RequestBudget,Settings as BailianSettings
         f=self.fixture
         agent=f.agent([f.response({'tool_calls':[f.call('search_policy',{'question':'锁座政策'})]}),httpx.ReadTimeout('fixture timeout')])
         with self.assertRaisesRegex(DeepSeekError,'timeout'):agent.chat('partial','锁座政策')
-        p=snapshot(f.root/'bailian.db',2)['requests'];g=snapshot(f.root/'total.db',4)['requests']
-        self.assertEqual([r['request_id'] for r in p],[r['request_id'] for r in g])
-        self.assertEqual([r['status'] for r in g],[200,None])
-        self.assertEqual(g[0]['prompt'],13)
+        rows=RequestBudget(BailianSettings.from_env()).snapshot()['requests']
+        self.assertEqual([r['status'] for r in rows],[200,None]);self.assertEqual(rows[0]['prompt'],13)
+        self.assertFalse((f.root/'total.db').exists())
         record=agent.langchain_engine.last_live_run
         self.assertTrue(record['model_response_received']);self.assertFalse(record['agent_completed'])
         self.assertIsNone(record['tokens']);self.assertEqual(record['observed_tokens'],{'prompt':13,'completion':5})
@@ -167,17 +168,19 @@ class SDKLifecycleTests(unittest.TestCase):
         ids=[e['request_id'] for e in events if e['event']=='http_request']
         self.assertEqual(len(set(ids)),2)
         self.assertEqual([e['request_id'] for e in events if e['event']=='model_response'],ids)
-        row=snapshot(f.root/'total.db',4)['requests'][1]
-        self.assertEqual(json.loads(row['request_summary'])['returned_tool_call_ids'],['offline-call'])
+        from target.bailian_runtime import RequestBudget,Settings as BailianSettings
+        row=RequestBudget(BailianSettings.from_env()).snapshot()['requests'][1]
+        self.assertEqual(row['request_summary']['returned_tool_call_ids'],['offline-call'])
         self.assertEqual(result['tool_sequence'],['search_policy'])
         self.assertEqual(agent.langchain_engine.last_events[-2]['text'],'锁座15分钟，来源P11。')
 
-    def test_budget_blocks_before_network_without_phantom_total_row(self):
+    def test_old_shared_cap_does_not_block_or_create_phantom_history_rows(self):
+        from target.bailian_runtime import RequestBudget,Settings as BailianSettings
         f=self.fixture;agent=f.agent([f.response({'content':'当前只读咨询。'})])
-        agent.chat('1','你好');agent.chat('2','你好')
-        with self.assertRaises(DeepSeekError):agent.chat('3','你好')
-        self.assertEqual(len(f.payloads),2)
-        self.assertEqual(snapshot(f.root/'total.db',4)['reserved_requests'],2)
+        for i in range(6):agent.chat(str(i),'你好')
+        self.assertEqual(len(f.payloads),6)
+        self.assertEqual(RequestBudget(BailianSettings.from_env()).snapshot()['request_count'],6)
+        self.assertFalse((f.root/'total.db').exists())
 
     def test_known_tokens_survive_business_failure(self):
         f=self.fixture

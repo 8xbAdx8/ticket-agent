@@ -61,13 +61,16 @@ class ChromaProtectionTests(unittest.TestCase):
         self.assertNotEqual(rows[0][0],rows[1][0]);self.assertEqual(rows[0][1],rows[1][1])
         self.assertEqual(tree_hashes(self.source),before)
 
-    def test_baseline_wrapper_does_not_allow_network_or_rebuild(self):
-        from target.rag_protection import ProtectedPolicyIndex
+    def test_query_embedding_uses_copy_while_baseline_rebuild_stays_forbidden(self):
+        from target.rag_protection import ProtectedPolicyIndex,tree_hashes
         from target.rag_store import RagError
-        safe=ProtectedPolicyIndex(self.source,provider=self.provider,parent=self.root/'blocked')
-        with self.assertRaisesRegex(RagError,'cache_only'):safe.retrieve('uncached',allow_network=True)
+        before=tree_hashes(self.source)
+        safe=ProtectedPolicyIndex(self.source,provider=self.provider,parent=self.root/'query-copy')
+        result=safe.retrieve('锁座支付新查询',allow_network=True,require_real=False)
+        self.assertTrue(result['index_protection']['opened_working_copy_only'])
+        self.assertEqual(tree_hashes(self.source),before)
         with self.assertRaisesRegex(RagError,'rebuild_forbidden'):safe.build(allow_network=True)
-        self.assertFalse((self.root/'blocked').exists())
+        self.assertEqual(tree_hashes(self.source),before)
 
     def test_modification_of_working_index_is_not_source_modification(self):
         from target.rag_protection import working_index,tree_hashes

@@ -62,7 +62,10 @@ def observation_envelope(audit):
 
 def integrations_page():
     header("集成中心", "检查已有能力与未来边界。配置存在不等于真实验证通过。", "远端追踪须显式确认")
-    st.info('Live模式支持已开启：本地请求次数不设上限，实际费用和服务商配额以API提供方为准。配置和单次连接结果仍分别核验。')
+    if os.getenv('TICKET_WEB_OFFLINE_ONLY')=='1':
+        st.info('当前为离线模式，不发送真实API请求。在线启动后本地累计请求次数不限，实际费用与配额以服务商为准。')
+    else:
+        st.info('Live模式：已开启。本地请求次数不设上限，实际费用和服务商配额以API提供方为准；配置和单次连接结果仍分别核验。')
     from target.api_usage import provider_usage
     with st.expander('API用量统计（只读；未知Token不填0）'):
         st.json([provider_usage(p) for p in ('deepseek','bailian','embedding')])
