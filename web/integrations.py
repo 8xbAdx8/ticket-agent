@@ -44,13 +44,13 @@ def registry():
     from target.tools import TOOL_NAMES
     return [ProviderCapability("Legacy Mock", True, True, "离线可用", "A 基线 / B 独立测试", tuple(TOOL_NAMES), "规则模型，不是自主大模型"),
         ProviderCapability("LangChain Mock", True, lc, "依赖已安装" if lc else "缺少依赖", "B 双引擎独立回归", tuple(TOOL_NAMES), "Mock 模型经真实 create_agent 框架执行"),
-        ProviderCapability("DeepSeek Live", True, key, ("已配置，当前为离线验收" if offline else "已配置，可发送真实请求") if key else "未配置", "V3.5.2已有真实search_policy闭环；当前会话以实际执行记录为准", ("query_tickets", "search_policy"), "本地累计请求次数不限；只读，打开本页不发送请求"),
+        ProviderCapability("DeepSeek Live", True, key, ("已配置，当前为离线验收" if offline else "已配置，可发送真实请求") if key else "未配置", "八工具沙箱以实际执行记录为准", tuple(TOOL_NAMES), "本地累计请求次数不限；模拟业务，打开本页不发送请求"),
         ProviderCapability("LangGraph 执行增强", True, graph, "已有 create_agent 图执行与 InMemorySaver", "本地 Mock 运行路径已验证", (), "自定义图、持久化 checkpoint、人工 interrupt、失败恢复尚未实现"),
         ProviderCapability("LangSmith", True, ls["key_configured"],
             {"user_disabled":"脱敏导出未开启","not_configured":"未配置","configured_unverified":"已启用脱敏导出；当前远端待核验"}.get(ls["state"],"配置错误"),
             "以单次导出回执为准；未自动验证", (), "显式确认后仅导出白名单记录，POST + GET 回读验证；本地审计独立保留"),
         ProviderCapability("Qwen3.8-Flash Live", True, bailian["configured"], "已配置，单次状态以证据为准" if bailian["configured"] else "未配置",
-            "V3.5已有保存的真实闭环及RAG样本；不代表当前Key实时验证", ("query_tickets","search_policy"), "适配服务：阿里云百炼；模型ID qwen3.8-flash。显式旧模型只作兼容，不回退；本地累计请求次数不限、只读")]
+            "八工具沙箱以实际执行记录为准；不代表当前Key实时验证", tuple(TOOL_NAMES), "适配服务：阿里云百炼；模型ID qwen3.8-flash。模拟票务，不回退，本地累计请求次数不限")]
 
 
 def observation_envelope(audit):

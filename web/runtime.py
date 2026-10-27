@@ -74,6 +74,7 @@ class Conversation:
     rag_mode: str | None = None
     allow_rag_network: bool = False
     interactive: bool = False
+    full_tools: bool = False
     mutations: dict = field(default_factory=dict)
     root: Path | None = None
     sid: str = field(default_factory=lambda: "web-"+uuid.uuid4().hex[:12])
@@ -110,7 +111,7 @@ class Conversation:
         if self.live and self.live_model:model=self.live_model
         address=LIVE_URL if self.live_provider=="deepseek" and LIVE_AVAILABLE else cfg.get("base_url")
         return dict(DB_PATH=self.root/"tickets.db", TRACE_DIR=self.trace_dir, PROVIDER=self.live_provider if self.live else "mock",
-                    ENGINE=self.engine, LC_TOOLSET="read_only" if self.live else "all", USE_HTTP_MOCK=False, USE_VECTOR_RAG=False,
+                    ENGINE=self.engine, LC_TOOLSET="all" if not self.live or self.full_tools else "read_only", USE_HTTP_MOCK=False, USE_VECTOR_RAG=False,
                     MODEL_NAME=model if self.live else "langchain-mock" if self.engine=="langchain" else "mock-offline",
                     BASE_URL=address if self.live else "https://api.deepseek.com", API_KEY=os.getenv(cfg["key_env"],"") if self.live else "")
 
@@ -137,7 +138,7 @@ class Conversation:
         if self.live:
             env["DEEPSEEK_LIVE_TEST_PROFILE"]="read_only"
             from target.live_providers import manual_environment
-            env.update(manual_environment(self.live_provider,self.root,model=self.live_model))
+            env.update(manual_environment(self.live_provider,self.root,model=self.live_model,full_tools=self.full_tools))
             if self.rag_mode is not None:env['AGENT_RAG_MODE']=self.rag_mode
             env['RAG_ALLOW_NETWORK']='1' if self.allow_rag_network else '0'
             env["TICKET_CASE_ID"]=self.case_id or "interactive"
@@ -150,8 +151,12 @@ class Conversation:
             try:
                 self.root.mkdir(parents=True,exist_ok=True)
                 self.trace_dir.mkdir(exist_ok=True)
-                if not self.live and env.get("DEEPSEEK_LIVE_TEST_PROFILE")=="full_sandbox":
-                    (self.root/".ticket-agent-sandbox.json").write_text(json.dumps({"purpose":"ticket-agent-fault-test","version":1,"simulated_only":True}),encoding="utf-8")
+                if env.get("DEEPSEEK_LIVE_TEST_PROFILE")=="full_sandbox":
+                    marker=self.root/".ticket-agent-sandbox.json"
+                    if not marker.exists() and config.DB_PATH.exists():
+                        raise ValueError('已有数据库不能自动转换为全工具沙箱')
+                    if not marker.exists():
+                        marker.write_text(json.dumps({"purpose":"ticket-agent-fault-test","version":1,"simulated_only":True}),encoding="utf-8")
                 if not config.DB_PATH.exists():
                     from data.seed import build_db
                     with contextlib.redirect_stdout(io.StringIO()):
@@ -260,6 +265,6 @@ def operation_kind(message):
         return None
     if re.search(r"不要|别|不想|不能|不需要", message):
         return None
-    if re.search(r"支付|付款|退票|退掉|取消订单|候补|抢票|监控|锁座|下单|订票|我要买|帮我订|^(?:请)?订|购买",message):
+    if re.search(r"支付|付款|退票|退掉|取消订单|候补|抢票|监控|锁座|下单|订票|我要买|我想买|买票|帮我订|^(?:请)?订|购买",message):
         return "模拟业务操作"
     return None

@@ -99,7 +99,7 @@ def _prose(text):
             for m in re.finditer(r'(?:'+label+r')(?!地|城市)\s*([0-9一二三四五六七八九十]+点[^，,。；;\s]*)',text):add(f,m[1])
     if re.search(r'售罄|无余票|没有余票|已无票',text):add('seats_left','0')
     elif re.search(r'有余票|有票',text):add('seats_left','有票')
-    route=r'(?:^|[\s，,：:（(）)])([\u4e00-\u9fff]{2,6})(?:→|->|到|至)([\u4e00-\u9fff]{2,6}?)(?=的|[，,。\s(（]|$)'
+    route=r'(?:^|[\s，,：:（(）)])([\u4e00-\u9fff]{2,6})(?:→|->|到|至)([\u4e00-\u9fff]{2,6}?)(?=高铁|火车|航班|机票|飞机|的|[，,。\s(（]|$)'
     for m in re.finditer(route,text):
         # "以下为查询到的班次" contains 到, but is not a city route.
         if any(word in m[1]+m[2] for word in ('查询','车次','班次','以下','的','支持','结果','根据')):continue

@@ -11,6 +11,7 @@ import importlib.util
 from unittest.mock import patch
 
 from target.reply_consistency import check
+from target.reply_consistency import _prose
 from target.rag_faithfulness import check_answer
 
 RECORDED = json.loads((Path(__file__).parent / 'fixtures/ticket_buy_clarification.json').read_text(encoding='utf-8'))
@@ -18,6 +19,10 @@ PURCHASE_ADVICE = json.loads((Path(__file__).parent / 'fixtures/ticket_purchase_
 
 
 class ClarificationOfferTests(unittest.TestCase):
+    def test_route_does_not_absorb_transport_type(self):
+        self.assertIn(('to_city', '杭州'), _prose('上海→杭州高铁的模拟余票如下'))
+        self.assertNotIn(('to_city', '杭州高铁'), _prose('上海→杭州高铁的模拟余票如下'))
+
     def test_recorded_official_channel_advice_is_not_a_ticket_claim(self):
         result = check(PURCHASE_ADVICE['reply'], [])
         self.assertEqual(result['status'], 'not_verified', result)

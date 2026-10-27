@@ -69,10 +69,10 @@ class LiveProviderUITests(unittest.TestCase):
     def test_both_live_modes_available_in_lab_and_rerun_never_calls_agent(self):
         self.nav("测试实验室")
         selector=next(s for s in self.app.selectbox if s.label=="执行模式")
-        self.assertIn("Qwen3.8-Flash Live · 只读",selector.options)
+        self.assertIn("Qwen3.8-Flash Live · 模拟票务",selector.options)
         from web import runtime
         with patch.object(runtime,"Agent") as agent:
-            selector.select("Qwen3.8-Flash Live · 只读").run()
+            selector.select("Qwen3.8-Flash Live · 模拟票务").run()
             self.app.run()
             agent.assert_not_called()
         self.assertEqual([e.message for e in self.app.exception],[])

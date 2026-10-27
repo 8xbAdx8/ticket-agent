@@ -186,7 +186,7 @@ def main(argv=None):
         port=available_port(args.port if args.port is not None else (8501 if args.mode=="offline" else 8502),exact=args.port is not None)
         print("\n离线模式：Mock，支持全部八个模拟工具，不调用模型 API。" if args.mode=="offline" else
               "\n在线模式："+('Qwen3.8-Flash Live' if env['AGENT_PROVIDER']=='bailian' else 'DeepSeek Live')+
-              "，仅模拟查票和政策咨询。点击网页发送才调用真实模型并产生费用。",flush=True)
+              "，支持八个模拟票务工具。点击网页发送才调用真实模型并产生费用。",flush=True)
         if args.mode=="live":
             print("所有Live入口：DeepSeek/千问/Embedding不设本地累计请求次数上限；每次显式发送才可能产生费用。"
                   "单轮防循环与零自动重试仍生效，旧验收账本保留。",flush=True)

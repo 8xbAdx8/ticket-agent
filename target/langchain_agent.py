@@ -284,7 +284,10 @@ class LangChainAgent:
                                   system_prompt=system_prompt+f"\n当前北京时间日期 {config.today().isoformat()}；业务全部虚构。"
                                   + ("" if self.deepseek_settings and self.deepseek_settings.profile == "read_only" else
                                   "\n写操作必须获得本轮明确授权；订票不包含支付。锁座一轮至多一次成功，下单必须用本轮成功 lock_id。"
-                                  "支付/退票使用用户指定或最近工具结果订单；不明确时先澄清。"),
+                                  "支付/退票使用用户指定或最近工具结果订单；不明确时先澄清。"
+                                  "\n这是隔离的虚构票务沙箱，不连接真实售票或支付。当前模拟账户的联系号码为 "
+                                  + config.CURRENT_USER_PHONE + "；仅使用用户明确提供的模拟乘客姓名。"
+                                  "候补工具仅返回模拟任务，不会后台持续监控或推送通知，不得声称会自动通知。"),
                                   middleware=[ContractMiddleware()],context_schema=TurnContext,
                                   checkpointer=self.checkpointer)
         self.threads: set[str] = set()
@@ -322,12 +325,18 @@ class LangChainAgent:
                     raise DeepSeekError("tool_execution_failed")
                 if self.deepseek_settings.profile == "read_only":
                     validate_read_only_reply(reply)
-                    from target.reply_consistency import check
-                    consistency=check(reply,context.events)
-                    final_event=next((e for e in reversed(context.events) if e.get("event")=="model_final"),None)
-                    if final_event is not None:final_event["reply_consistency"]=consistency
+                from target.reply_consistency import check
+                consistency=check(reply,context.events)
+                final_event=next((e for e in reversed(context.events) if e.get("event")=="model_final"),None)
+                if final_event is not None:final_event["reply_consistency"]=consistency
+                if self.deepseek_settings.profile == 'read_only':
                     if consistency["status"]=="failed":raise DeepSeekError("reply_tool_mismatch")
                     if consistency["status"]=="indeterminate":raise DeepSeekError("reply_data_indeterminate")
+                elif consistency['status']=='failed':
+                    # Do not hide a completed simulated write behind a generic
+                    # exception: its tool result and original model text remain
+                    # in the trace, while the public response clearly warns.
+                    reply='模型回答中的票务信息与工具记录不一致，请以本轮工具结果和执行轨迹为准。'
                 if self.mutations.get("no_citation") and any(e["mutation"] == "no_citation" and e["status"] == "applied" for e in context.fault_run.events):
                     import re
                     if re.search(r"\bP\d+\b",reply):

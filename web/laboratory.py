@@ -29,17 +29,20 @@ def lab_page():
     config_col, run_col = st.columns([1, 2.35], gap="large")
     with config_col, st.container(border=True):
         st.markdown("### 实验配置")
+        # Retain stable widget values for saved sessions; display the actual
+        # full-sandbox capability instead of the former read-only label.
         choices = ["Legacy Mock", "LangChain Mock", "DeepSeek Live · 只读", "Qwen3.8-Flash Live · 只读"]
-        selected = st.selectbox("执行模式", choices, key="lab_engine")
+        selected = st.selectbox("执行模式", choices, key="lab_engine",
+                                format_func=lambda name: name.replace('· 只读', '· 模拟票务'))
         live = "Live" in selected
         live_provider="bailian" if selected.startswith("Qwen") else "deepseek"
         case_id=st.text_input("测试用例 ID",value="interactive-lab",key="lab_case_id")
         engine = "legacy" if selected.startswith("Legacy") else "langchain"
-        st.caption("工具集：query_tickets / search_policy" if live else "工具集：8 个本地模拟工具")
+        st.caption("工具集：8 个本地模拟工具；订单与支付均为模拟")
         st.markdown("**八种缺陷注入**")
         enabled = {}
         for name in MUTATIONS:
-            disabled = live and name in ("skip_lock", "infinite_loop")
+            disabled = False
             value = st.checkbox(name, key="lab_mutation_"+name, disabled=disabled, help=DESCRIPTIONS[name])
             st.caption(DESCRIPTIONS[name] + (" · 当前工具集不适用" if disabled else ""))
             if value and not disabled:
@@ -48,8 +51,9 @@ def lab_page():
             for name in MUTATIONS:
                 st.session_state["lab_mutation_"+name] = False
         st.button("恢复正常模式", on_click=reset_mutations, width="stretch")
-        max_steps = st.number_input("最大模型步骤", min_value=1, max_value=8, value=8, step=1, disabled=live,
-            help="仅离线实验；Live 沿用现有单轮安全限制")
+        max_steps = st.number_input("最大模型步骤", min_value=1, max_value=8, value=4 if live else 8, step=1, disabled=live,
+            key='lab_steps_live' if live else 'lab_steps_mock',
+            help="Live 单轮最多 4 次模型调用；离线实验可调整")
         scenario = st.selectbox("并发场景", ["same_lock_two", "same_lock_many", "same_request_retry", "different_locks", "expired_lock", "worker_failure", "query_after_retry"])
     signature = (engine, live, live_provider, case_id, tuple(sorted(enabled.items())), max_steps)
     if st.session_state.get("lab_signature") != signature:
@@ -60,7 +64,8 @@ def lab_page():
         st.session_state['lab_concurrency_nonce']=uuid.uuid4().hex
         st.session_state.pop('lab_concurrency_notice',None)
         session = Conversation("lab", engine=engine, live=live, live_provider=live_provider,
-                               live_model="qwen3.8-flash" if live_provider=="bailian" else None,case_id=case_id,mutations=enabled)
+                               live_model="qwen3.8-flash" if live_provider=="bailian" else None,case_id=case_id,mutations=enabled,
+                               full_tools=live)
         st.session_state.setdefault("lab_archives", []).append(session)
         st.session_state["lab_session"] = session
     session = st.session_state["lab_session"]
@@ -118,7 +123,15 @@ def lab_page():
         notice=st.session_state.pop('lab_concurrency_notice',None)
         if notice:getattr(st,notice[0])(notice[1])
         if session.error:
-            st.error("上次执行失败：" + session.error["category"] + "；未自动重试，也没有把旧结果作为新结果。")
+            dimensions=(session.audits[-1].get('judgement',{}).get('dimensions',{}) if session.audits else {})
+            guarded_fault=(any(enabled.get(name) for name in ('skip_lock','infinite_loop'))
+                           and dimensions.get('injection_applied') is True
+                           and dimensions.get('platform_defect_detected') is True
+                           and session.error['category'] in ('tool_execution_failed','tool_call_limit_exceeded'))
+            if guarded_fault:
+                st.info('变异已注入，实验被业务或调用上限保护终止；请查看下方 Trace。结果不是购票成功。错误类别：'+session.error['category'])
+            else:
+                st.error("上次执行失败：" + session.error["category"] + "；未自动重试，也没有把旧结果作为新结果。")
         if live:
             show_remote_export(session)
         if session.history and not session.error:
@@ -128,6 +141,8 @@ def lab_page():
             with st.chat_message("assistant", avatar=":material/smart_toy:"):
                 st.write(record["reply"])
             show_business(session.results[-1])
+            if any(name in record['tool_sequence'] for name in ('monitor_seat','lock_seat','create_order','pay_order','cancel_order')):
+                st.info('本轮工具操作使用独立模拟数据库，不涉及真实购票或扣款。')
         if session.audits:
             i = st.selectbox("本实验执行记录", range(len(session.audits)), index=len(session.audits)-1,
                 format_func=lambda i: session.audits[i].get("trace_id", "记录")[:12] + " · " + str(session.audits[i].get("scenario", "Agent 对话")))

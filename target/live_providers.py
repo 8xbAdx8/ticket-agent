@@ -14,7 +14,7 @@ def configuration(provider):
     return model_config(provider,active=os.getenv("AGENT_PROVIDER")==provider)
 
 
-def manual_environment(provider,root,*,model=None):
+def manual_environment(provider,root,*,model=None,full_tools=False):
     """User-authorized daily dialogue; never borrows a frozen acceptance ledger."""
     if provider not in LIVE_PROVIDERS:raise ValueError('unknown_manual_provider')
     root=Path(root).resolve();base=(config.BASE_DIR/'artifacts/runtime').resolve()
@@ -34,6 +34,11 @@ def manual_environment(provider,root,*,model=None):
         'BAILIAN_BUDGET_PATH':str(base/'manual-live/bailian/requests.db')}
     if provider=='bailian':env['DASHSCOPE_MODEL']=selected
     else:env['DEEPSEEK_MODEL']=selected
+    if full_tools:
+        # Four model rounds allow query → lock → order → final reply while
+        # retaining the existing bounded execution and explicit pay guard.
+        env.update(DEEPSEEK_LIVE_TEST_PROFILE='full_sandbox',DEEPSEEK_SANDBOX_DIR=str(root),AGENT_LC_TOOLSET='all',
+                   DEEPSEEK_MAX_MODEL_CALLS='4',BAILIAN_MAX_MODEL_CALLS='4',AGENT_MAX_STEPS='4')
     return env
 
 

@@ -46,7 +46,8 @@ def user_page():
     def new_session():
         return Conversation("user",engine=st.session_state["default_engine"],live=st.session_state["default_live"],
                             live_provider=st.session_state.get("default_provider","deepseek"),
-                            live_model=st.session_state.get("default_live_model"),interactive=True)
+                            live_model=st.session_state.get("default_live_model"),interactive=True,
+                            full_tools=st.session_state['default_live'])
     signature=(st.session_state["default_engine"],st.session_state["default_live"],st.session_state.get("default_provider","deepseek"),st.session_state.get('default_live_model'),'manual-live-v1')
     if not sessions:
         sessions.append(new_session())
@@ -70,7 +71,7 @@ def user_page():
     st.session_state['user_active_session_index']=index
     session=sessions[index]
     live_name="Qwen3.8-Flash" if session.live_provider=="bailian" and session.live_model=="qwen3.8-flash" else session.live_model or "Qwen (兼容旧配置)" if session.live_provider=="bailian" else "DeepSeek"
-    header("出行助手","查询模拟余票，了解票务政策。每次回答都以工具结果为依据。",live_name+" Live · 只读" if session.live else "离线 Mock")
+    header("出行助手","查询模拟余票，了解票务政策。每次回答都以工具结果为依据。",live_name+" Live · 模拟票务" if session.live and session.full_tools else live_name+" Live · 只读" if session.live else "离线 Mock")
     if (session.engine,session.live,session.live_provider)!=(st.session_state['default_engine'],st.session_state['default_live'],st.session_state.get('default_provider','deepseek')):
         st.info('正在查看历史会话，当前使用 '+(live_name+' Live' if session.live else '离线 Mock')+'；左侧模型用于新建会话。')
     st.caption("真实模型负责理解与工具选择；所有票务数据为模拟。Qwen3.8-Flash已有V3.5真实闭环记录，DeepSeek有历史证据；新会话不等于已验证成功。" if session.live else "当前使用离线规则模型，不产生模型 API 费用。支持 8 个模拟工具。")
@@ -91,6 +92,8 @@ def user_page():
     if session.history and not session.error:
         show_business(session.results[-1])
         record=session.history[-1]
+        if any(name in record['tool_sequence'] for name in ('monitor_seat','lock_seat','create_order','pay_order','cancel_order')):
+            st.info('本轮操作发生在模拟票务沙箱；未购买真实车票，也没有真实扣款。')
         with st.expander("本轮执行摘要"):
             st.write(" → ".join(record["tool_sequence"]) or "本轮未调用工具")
             st.caption(f"结束原因 {record['finish_reason']} · {record['total_latency_ms']} ms；stop 仅表示循环结束。")
@@ -103,26 +106,29 @@ def user_page():
         st.session_state['user_allow_embedding']=False
         st.session_state['user_rag_mode']=session.rag_mode or 'keyword'
         st.session_state['user_compose_session']=session.sid
+        st.session_state['user_submit_nonce']=uuid.uuid4().hex
     with st.form("user_compose"):
         message=st.text_input("输入消息",key="user_message",placeholder="例如：查明天上海到杭州的高铁二等座")
         allow_live=st.checkbox("确认发送真实 "+live_name+" 请求（会产生 API 费用）",key="user_allow_live") if session.live else False
         if session.live:
             session.rag_mode=st.selectbox('政策检索方式',['keyword','hybrid','vector'],key='user_rag_mode')
             session.allow_rag_network=st.checkbox('允许本轮RAG调用真实Embedding（可能产生费用；仅发送问题时执行）',key='user_allow_embedding')
-            st.caption('本地累计请求次数不设上限；单轮步数、超时和只读工具保护仍然生效。')
-        send=st.form_submit_button("发送",type="primary",disabled=session.live and not live_ready(session.live_provider))
+            st.caption('本地累计请求次数不设上限；订单和支付均为模拟，单轮步数与超时保护仍然生效。')
+        send=st.form_submit_button("发送",key='user_send_'+st.session_state['user_submit_nonce'],type="primary",disabled=session.live and not live_ready(session.live_provider))
     if session.live and not live_ready(session.live_provider):
         st.info(live_name+" 未配置完整或本次为离线验收。可查看历史证据；不会自动切换 Mock。")
     if send and message.strip():
         if session.live and not allow_live:
             st.warning("请先确认真实请求费用；尚未调用模型。")
-        elif session.live and operation_kind(message):
+        elif session.live and not session.full_tools and operation_kind(message):
             st.info("当前 Live 仅支持模拟查票和政策咨询，其余六个工具未开放。未发送请求。")
-        elif operation_kind(message):
-            st.session_state["pending_operation"]={"sid":session.sid,"message":message,"request_id":uuid.uuid4().hex}
-            st.rerun()
         else:
-            execute(session,message,uuid.uuid4().hex)
+            request_id=st.session_state['user_submit_nonce']
+            st.session_state['user_submit_nonce']=uuid.uuid4().hex
+            if operation_kind(message):
+                st.session_state["pending_operation"]={"sid":session.sid,"message":message,"request_id":request_id}
+            else:
+                execute(session,message,request_id)
             st.rerun()
     pending=st.session_state.get("pending_operation")
     if pending and pending["sid"]==session.sid:

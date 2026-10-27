@@ -39,7 +39,7 @@ def main():
             page = "出行助手"
         st.divider()
         selected_theme = st.radio("外观", ["深色", "浅色"], horizontal=True, key="theme")
-        st.caption("新会话模型："+selection+(" · 两工具只读" if selection.endswith("Live") else ""))
+        st.caption("新会话模型："+selection+(" · 八工具模拟沙箱" if selection.endswith("Live") else ""))
         st.caption("用户与实验会话、模拟库、Trace 分离。B 测试快照只读。")
     theme(selected_theme)
     if page == "出行助手":

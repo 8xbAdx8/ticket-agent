@@ -204,8 +204,8 @@ def guarded_client(settings, *, transport=None):
         if body.get("model") != "deepseek-flash" or body.get("thinking") != {"type":"disabled"}:
             raise DeepSeekError("request_configuration_rejected")
         permitted=allowed_tools(settings)
-        if not isinstance(transport,httpx.MockTransport):
-            permitted=permitted & READ_ONLY  # Full-tool fault sandboxes remain offline only.
+        if settings.profile != 'full_sandbox':
+            permitted=permitted & READ_ONLY
         if not names <= permitted:
             raise DeepSeekError("read_only_tools_required")
         if body.get("stream"):

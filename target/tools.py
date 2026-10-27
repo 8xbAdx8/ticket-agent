@@ -44,7 +44,7 @@ TOOLS = [
         "type": "function",
         "function": {
             "name": "monitor_seat",
-            "description": "当目标车次无余票时，订阅该车次的余票监控（候补），返回监控任务 ID。",
+            "description": "当目标车次无余票时创建模拟候补记录并返回模拟任务 ID；不会在后台持续监控，也不会发送通知。",
             "parameters": {
                 "type": "object",
                 "properties": {

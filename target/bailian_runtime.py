@@ -8,7 +8,7 @@ from pathlib import Path
 from urllib.parse import urlsplit
 from typing import ClassVar
 import config
-from target.deepseek_runtime import Settings as DeepSeekSettings, RequestBudget, DeepSeekError, ERRORS
+from target.deepseek_runtime import Settings as DeepSeekSettings, RequestBudget, DeepSeekError, ERRORS, allowed_tools, validate_sandbox
 from target.live_providers import READ_ONLY
 
 
@@ -30,11 +30,17 @@ class Settings(DeepSeekSettings):
             settings = cls(timeout=float(os.getenv("BAILIAN_TIMEOUT", "20")),
                 max_requests=0,
                 max_model_calls=int(os.getenv("BAILIAN_MAX_MODEL_CALLS","3")),
+                profile=os.getenv("DEEPSEEK_LIVE_TEST_PROFILE", "read_only"),
+                sandbox_root=Path(os.environ['DEEPSEEK_SANDBOX_DIR']) if os.getenv('DEEPSEEK_SANDBOX_DIR') else None,
                 ledger_path=Path(os.getenv("BAILIAN_BUDGET_PATH", str(cls.ledger_path))))
         except ValueError:
             raise BailianError("invalid_safety_limits") from None
         if not 1 <= settings.timeout <= 60 or not 1<=settings.max_model_calls<=4:
             raise BailianError("invalid_safety_limits")
+        if settings.profile not in ('read_only', 'full_sandbox'):
+            raise BailianError('invalid_test_profile')
+        if settings.profile == 'full_sandbox':
+            validate_sandbox(settings)
         return settings
 
 
@@ -77,7 +83,10 @@ def guarded_client(settings, *, transport=None):
             raise BailianError("invalid_api_address")
         body = json.loads(request.content)
         names = {t.get("function",{}).get("name") for t in body.get("tools",[])}
-        if not names <= READ_ONLY:
+        permitted = allowed_tools(settings)
+        if settings.profile != 'full_sandbox':
+            permitted = permitted & READ_ONLY
+        if not names <= permitted:
             raise BailianError("read_only_tools_required")
         limit = body.get("max_tokens", body.get("max_completion_tokens"))
         if (body.get("model") != config.MODEL_NAME or body.get("stream")
@@ -85,7 +94,7 @@ def guarded_client(settings, *, transport=None):
             raise BailianError("request_configuration_rejected")
         if len(request.content) > settings.max_payload_bytes:
             raise BailianError("request_payload_limit")
-        reserve(request,budget,"bailian",body,permitted=READ_ONLY)
+        reserve(request,budget,"bailian",body,permitted=permitted)
 
     def after(response):
         identity = response.request.extensions.get("ticket_budget_id")
