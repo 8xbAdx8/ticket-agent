@@ -1,0 +1,14 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+_ LabAuditRegression.test_live_unavailable_reason_distinguishes_offline_missing_key_and_endpoint _
+
+self = <test_lab_audit_regression.LabAuditRegression testMethod=test_live_unavailable_reason_distinguishes_offline_missing_key_and_endpoint>
+
+    def test_live_unavailable_reason_distinguishes_offline_missing_key_and_endpoint(self):
+>       from web.laboratory import live_unavailable_reason
+E       ImportError: cannot import name 'live_unavailable_reason' from 'web.laboratory' (<project>\web\laboratory.py)
+
+tests\test_lab_audit_regression.py:17: ImportError
+=========================== short test summary info ===========================
+FAILED tests/test_lab_audit_regression.py::LabAuditRegression::test_live_unavailable_reason_distinguishes_offline_missing_key_and_endpoint
+1 failed in 0.55s

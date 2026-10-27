@@ -1,0 +1,102 @@
+[
+  {
+    "iteration": 1,
+    "mutant": false,
+    "trace_id": "a81a2389a05b4286a83d26bb54ec53d0",
+    "orders": 1,
+    "expected": 1,
+    "test_verdict": "pass",
+    "cleaned": true,
+    "source_unchanged": null
+  },
+  {
+    "iteration": 1,
+    "mutant": true,
+    "trace_id": "921c168e08834d1eaa3228f03a9a4c49",
+    "orders": 8,
+    "expected": 8,
+    "test_verdict": "pass",
+    "cleaned": true,
+    "source_unchanged": true
+  },
+  {
+    "iteration": 2,
+    "mutant": false,
+    "trace_id": "e47c4b2146ed4796a12202637d6d3eac",
+    "orders": 1,
+    "expected": 1,
+    "test_verdict": "pass",
+    "cleaned": true,
+    "source_unchanged": null
+  },
+  {
+    "iteration": 2,
+    "mutant": true,
+    "trace_id": "68089fb08d70480787e69ceb84f3be01",
+    "orders": 8,
+    "expected": 8,
+    "test_verdict": "pass",
+    "cleaned": true,
+    "source_unchanged": true
+  },
+  {
+    "iteration": 3,
+    "mutant": false,
+    "trace_id": "bda9e8fc66484e339d04f950c58b0574",
+    "orders": 1,
+    "expected": 1,
+    "test_verdict": "pass",
+    "cleaned": true,
+    "source_unchanged": null
+  },
+  {
+    "iteration": 3,
+    "mutant": true,
+    "trace_id": "bc816a76232245b59f8a59f5b9eeb2ba",
+    "orders": 8,
+    "expected": 8,
+    "test_verdict": "pass",
+    "cleaned": true,
+    "source_unchanged": true
+  },
+  {
+    "iteration": 4,
+    "mutant": false,
+    "trace_id": "46b8c997c26c4b73a64806e58ffb020c",
+    "orders": 1,
+    "expected": 1,
+    "test_verdict": "pass",
+    "cleaned": true,
+    "source_unchanged": null
+  },
+  {
+    "iteration": 4,
+    "mutant": true,
+    "trace_id": "c2b53496fca54e24927e3c8e496a45b2",
+    "orders": 8,
+    "expected": 8,
+    "test_verdict": "pass",
+    "cleaned": true,
+    "source_unchanged": true
+  },
+  {
+    "iteration": 5,
+    "mutant": false,
+    "trace_id": "d08c01e0b1994659a76b2d9013e4ea3c",
+    "orders": 1,
+    "expected": 1,
+    "test_verdict": "pass",
+    "cleaned": true,
+    "source_unchanged": null
+  },
+  {
+    "iteration": 5,
+    "mutant": true,
+    "trace_id": "64ed5b3a012448f280f61017a1b0607d",
+    "orders": 8,
+    "expected": 8,
+    "test_verdict": "pass",
+    "cleaned": true,
+    "source_unchanged": true
+  }
+]

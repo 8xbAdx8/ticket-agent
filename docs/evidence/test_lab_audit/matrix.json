@@ -1,0 +1,3545 @@
+{
+  "schema": "test-lab-offline-matrix/1",
+  "status": "passed",
+  "scope": "actual offline mock/backend execution, not live model evidence or B score",
+  "real_model_requests": 0,
+  "embedding_requests": 0,
+  "langsmith_requests": 0,
+  "rows": [
+    {
+      "engine": "legacy",
+      "mutation": "date_offset",
+      "checks": {
+        "baseline_trace_saved": true,
+        "mutant_trace_saved": true,
+        "baseline_has_no_injection": true,
+        "actual_injection_applied": true,
+        "baseline_no_false_alarm": true,
+        "platform_detected": true
+      },
+      "baseline": {
+        "trace_id": "778a5a10977b4b149b1c3b0e3480f78e",
+        "trace_dir": "artifacts/runtime/test-lab-audit-20261027/matrix-committed/legacy/date_offset/baseline/traces",
+        "input": "查明天上海到杭州的高铁二等座",
+        "tool_sequence": [
+          "query_tickets"
+        ],
+        "finish_reason": "stop",
+        "error": null,
+        "injections": [],
+        "dimensions": {
+          "injection_applied": null,
+          "platform_defect_detected": false,
+          "agent_anomaly_recognized": null,
+          "agent_recovered": null,
+          "safe_stop": false,
+          "business_correct": true
+        },
+        "quality_verdict": "indeterminate",
+        "failure_reasons": [],
+        "indeterminate_reasons": [
+          "Legacy脚本参数已经过Provider变异，不能冒充独立的原模型参数"
+        ],
+        "assertions": [
+          {
+            "assertion": "reply_train_authority",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:778a5a10977b4b149b1c3b0e3480f78e#/authority",
+              "audit:778a5a10977b4b149b1c3b0e3480f78e#/judgement/hallucination"
+            ]
+          },
+          {
+            "assertion": "model_original_date_matches_user",
+            "result": "indeterminate",
+            "passed": null,
+            "failure_reason": "Legacy脚本参数已经过Provider变异，不能冒充独立的原模型参数",
+            "evidence_refs": [
+              "audit:778a5a10977b4b149b1c3b0e3480f78e#/fault_report/model_requests",
+              "audit:778a5a10977b4b149b1c3b0e3480f78e#/judgement/actual_behavior/user_requested_date"
+            ]
+          },
+          {
+            "assertion": "executed_query_date_matches_user",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:778a5a10977b4b149b1c3b0e3480f78e#/fault_report/executions",
+              "audit:778a5a10977b4b149b1c3b0e3480f78e#/judgement/actual_behavior/user_requested_date"
+            ]
+          },
+          {
+            "assertion": "no_extra_execution_per_model_call",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:778a5a10977b4b149b1c3b0e3480f78e#/fault_report/model_requests",
+              "audit:778a5a10977b4b149b1c3b0e3480f78e#/fault_report/executions"
+            ]
+          },
+          {
+            "assertion": "query_result_train_authority",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:778a5a10977b4b149b1c3b0e3480f78e#/authority",
+              "audit:778a5a10977b4b149b1c3b0e3480f78e#/fault_report/executions"
+            ]
+          },
+          {
+            "assertion": "one_order_per_lock",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:778a5a10977b4b149b1c3b0e3480f78e#/authority/orders"
+            ]
+          }
+        ],
+        "contract_returned": true
+      },
+      "mutant": {
+        "trace_id": "775738f0a4494587b29290d6dc49d355",
+        "trace_dir": "artifacts/runtime/test-lab-audit-20261027/matrix-committed/legacy/date_offset/mutant/traces",
+        "input": "查明天上海到杭州的高铁二等座",
+        "tool_sequence": [
+          "query_tickets"
+        ],
+        "finish_reason": "stop",
+        "error": null,
+        "injections": [
+          {
+            "mutation_id": "M1",
+            "event_id": "dbf1938c157f42cfaa09a0710bea0c4c",
+            "mutation_name": "date_offset",
+            "enabled": true,
+            "applicable": true,
+            "status": "applied",
+            "injection_stage": "legacy_date_parser",
+            "target": "query_tickets.date",
+            "before": "2026-10-28",
+            "after": "2026-10-29",
+            "reason": null,
+            "related_step": 1,
+            "related_tool_call_id": "call_dbb1cec7",
+            "timestamp": "2026-10-27T14:32:10.484592+00:00",
+            "evidence_ref": "audit:775738f0a4494587b29290d6dc49d355#/fault_report/injection_events/0"
+          }
+        ],
+        "dimensions": {
+          "injection_applied": true,
+          "platform_defect_detected": true,
+          "agent_anomaly_recognized": null,
+          "agent_recovered": null,
+          "safe_stop": false,
+          "business_correct": false
+        },
+        "quality_verdict": "fail",
+        "failure_reasons": [
+          "actual query date differs from user requirement"
+        ],
+        "indeterminate_reasons": [
+          "Legacy脚本参数已经过Provider变异，不能冒充独立的原模型参数"
+        ],
+        "assertions": [
+          {
+            "assertion": "reply_train_authority",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:775738f0a4494587b29290d6dc49d355#/authority",
+              "audit:775738f0a4494587b29290d6dc49d355#/judgement/hallucination"
+            ]
+          },
+          {
+            "assertion": "model_original_date_matches_user",
+            "result": "indeterminate",
+            "passed": null,
+            "failure_reason": "Legacy脚本参数已经过Provider变异，不能冒充独立的原模型参数",
+            "evidence_refs": [
+              "audit:775738f0a4494587b29290d6dc49d355#/fault_report/model_requests",
+              "audit:775738f0a4494587b29290d6dc49d355#/judgement/actual_behavior/user_requested_date"
+            ]
+          },
+          {
+            "assertion": "executed_query_date_matches_user",
+            "result": "fail",
+            "passed": false,
+            "failure_reason": "actual query date differs from user requirement",
+            "evidence_refs": [
+              "audit:775738f0a4494587b29290d6dc49d355#/fault_report/executions",
+              "audit:775738f0a4494587b29290d6dc49d355#/judgement/actual_behavior/user_requested_date"
+            ]
+          },
+          {
+            "assertion": "no_extra_execution_per_model_call",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:775738f0a4494587b29290d6dc49d355#/fault_report/model_requests",
+              "audit:775738f0a4494587b29290d6dc49d355#/fault_report/executions"
+            ]
+          },
+          {
+            "assertion": "query_result_train_authority",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:775738f0a4494587b29290d6dc49d355#/authority",
+              "audit:775738f0a4494587b29290d6dc49d355#/fault_report/executions"
+            ]
+          },
+          {
+            "assertion": "one_order_per_lock",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:775738f0a4494587b29290d6dc49d355#/authority/orders"
+            ]
+          }
+        ],
+        "contract_returned": true
+      }
+    },
+    {
+      "engine": "legacy",
+      "mutation": "skip_lock",
+      "checks": {
+        "baseline_trace_saved": true,
+        "mutant_trace_saved": true,
+        "baseline_has_no_injection": true,
+        "actual_injection_applied": true,
+        "baseline_no_false_alarm": true,
+        "platform_detected": true
+      },
+      "baseline": {
+        "trace_id": "0f8e7102fde54e618e272faca2b15cc4",
+        "trace_dir": "artifacts/runtime/test-lab-audit-20261027/matrix-committed/legacy/skip_lock/baseline/traces",
+        "input": "订明天上海到杭州的高铁二等座",
+        "tool_sequence": [
+          "query_tickets",
+          "lock_seat",
+          "create_order"
+        ],
+        "finish_reason": "stop",
+        "error": null,
+        "injections": [],
+        "dimensions": {
+          "injection_applied": null,
+          "platform_defect_detected": false,
+          "agent_anomaly_recognized": null,
+          "agent_recovered": null,
+          "safe_stop": false,
+          "business_correct": true
+        },
+        "quality_verdict": "indeterminate",
+        "failure_reasons": [],
+        "indeterminate_reasons": [
+          "Legacy脚本参数已经过Provider变异，不能冒充独立的原模型参数"
+        ],
+        "assertions": [
+          {
+            "assertion": "reply_train_authority",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:0f8e7102fde54e618e272faca2b15cc4#/authority",
+              "audit:0f8e7102fde54e618e272faca2b15cc4#/judgement/hallucination"
+            ]
+          },
+          {
+            "assertion": "model_original_date_matches_user",
+            "result": "indeterminate",
+            "passed": null,
+            "failure_reason": "Legacy脚本参数已经过Provider变异，不能冒充独立的原模型参数",
+            "evidence_refs": [
+              "audit:0f8e7102fde54e618e272faca2b15cc4#/fault_report/model_requests",
+              "audit:0f8e7102fde54e618e272faca2b15cc4#/judgement/actual_behavior/user_requested_date"
+            ]
+          },
+          {
+            "assertion": "executed_query_date_matches_user",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:0f8e7102fde54e618e272faca2b15cc4#/fault_report/executions",
+              "audit:0f8e7102fde54e618e272faca2b15cc4#/judgement/actual_behavior/user_requested_date"
+            ]
+          },
+          {
+            "assertion": "no_extra_execution_per_model_call",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:0f8e7102fde54e618e272faca2b15cc4#/fault_report/model_requests",
+              "audit:0f8e7102fde54e618e272faca2b15cc4#/fault_report/executions"
+            ]
+          },
+          {
+            "assertion": "query_result_train_authority",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:0f8e7102fde54e618e272faca2b15cc4#/authority",
+              "audit:0f8e7102fde54e618e272faca2b15cc4#/fault_report/executions"
+            ]
+          },
+          {
+            "assertion": "create_order_requires_successful_lock",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:0f8e7102fde54e618e272faca2b15cc4#/fault_report/executions"
+            ]
+          },
+          {
+            "assertion": "one_order_per_lock",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:0f8e7102fde54e618e272faca2b15cc4#/authority/orders"
+            ]
+          }
+        ],
+        "contract_returned": true
+      },
+      "mutant": {
+        "trace_id": "d55f092b08cd4593b4930a70879d441a",
+        "trace_dir": "artifacts/runtime/test-lab-audit-20261027/matrix-committed/legacy/skip_lock/mutant/traces",
+        "input": "订明天上海到杭州的高铁二等座",
+        "tool_sequence": [
+          "query_tickets",
+          "create_order"
+        ],
+        "finish_reason": "stop",
+        "error": null,
+        "injections": [
+          {
+            "mutation_id": "M2",
+            "event_id": "88dfed9205db49d1ada584bc4f9dafa7",
+            "mutation_name": "skip_lock",
+            "enabled": true,
+            "applicable": true,
+            "status": "applied",
+            "injection_stage": "legacy_decision",
+            "target": "lock_seat/create_order",
+            "before": "lock_seat",
+            "after": "create_order with LK_INJECTED_MISSING",
+            "reason": null,
+            "related_step": 2,
+            "related_tool_call_id": "call_f31d00e8",
+            "timestamp": "2026-10-27T14:32:10.543010+00:00",
+            "evidence_ref": "audit:d55f092b08cd4593b4930a70879d441a#/fault_report/injection_events/0"
+          }
+        ],
+        "dimensions": {
+          "injection_applied": true,
+          "platform_defect_detected": true,
+          "agent_anomaly_recognized": null,
+          "agent_recovered": null,
+          "safe_stop": true,
+          "business_correct": false
+        },
+        "quality_verdict": "fail",
+        "failure_reasons": [
+          "actual order attempt lacks successful lock",
+          "工具调用未成功：create_order"
+        ],
+        "indeterminate_reasons": [
+          "Legacy脚本参数已经过Provider变异，不能冒充独立的原模型参数"
+        ],
+        "assertions": [
+          {
+            "assertion": "reply_train_authority",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:d55f092b08cd4593b4930a70879d441a#/authority",
+              "audit:d55f092b08cd4593b4930a70879d441a#/judgement/hallucination"
+            ]
+          },
+          {
+            "assertion": "model_original_date_matches_user",
+            "result": "indeterminate",
+            "passed": null,
+            "failure_reason": "Legacy脚本参数已经过Provider变异，不能冒充独立的原模型参数",
+            "evidence_refs": [
+              "audit:d55f092b08cd4593b4930a70879d441a#/fault_report/model_requests",
+              "audit:d55f092b08cd4593b4930a70879d441a#/judgement/actual_behavior/user_requested_date"
+            ]
+          },
+          {
+            "assertion": "executed_query_date_matches_user",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:d55f092b08cd4593b4930a70879d441a#/fault_report/executions",
+              "audit:d55f092b08cd4593b4930a70879d441a#/judgement/actual_behavior/user_requested_date"
+            ]
+          },
+          {
+            "assertion": "no_extra_execution_per_model_call",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:d55f092b08cd4593b4930a70879d441a#/fault_report/model_requests",
+              "audit:d55f092b08cd4593b4930a70879d441a#/fault_report/executions"
+            ]
+          },
+          {
+            "assertion": "query_result_train_authority",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:d55f092b08cd4593b4930a70879d441a#/authority",
+              "audit:d55f092b08cd4593b4930a70879d441a#/fault_report/executions"
+            ]
+          },
+          {
+            "assertion": "create_order_requires_successful_lock",
+            "result": "fail",
+            "passed": false,
+            "failure_reason": "actual order attempt lacks successful lock",
+            "evidence_refs": [
+              "audit:d55f092b08cd4593b4930a70879d441a#/fault_report/executions"
+            ]
+          },
+          {
+            "assertion": "one_order_per_lock",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:d55f092b08cd4593b4930a70879d441a#/authority/orders"
+            ]
+          }
+        ],
+        "contract_returned": true
+      }
+    },
+    {
+      "engine": "legacy",
+      "mutation": "repeat_call",
+      "checks": {
+        "baseline_trace_saved": true,
+        "mutant_trace_saved": true,
+        "baseline_has_no_injection": true,
+        "actual_injection_applied": true,
+        "baseline_no_false_alarm": true,
+        "platform_detected": true
+      },
+      "baseline": {
+        "trace_id": "3c272756a2714467b27964d570eba56f",
+        "trace_dir": "artifacts/runtime/test-lab-audit-20261027/matrix-committed/legacy/repeat_call/baseline/traces",
+        "input": "查明天上海到杭州的高铁二等座",
+        "tool_sequence": [
+          "query_tickets"
+        ],
+        "finish_reason": "stop",
+        "error": null,
+        "injections": [],
+        "dimensions": {
+          "injection_applied": null,
+          "platform_defect_detected": false,
+          "agent_anomaly_recognized": null,
+          "agent_recovered": null,
+          "safe_stop": false,
+          "business_correct": true
+        },
+        "quality_verdict": "indeterminate",
+        "failure_reasons": [],
+        "indeterminate_reasons": [
+          "Legacy脚本参数已经过Provider变异，不能冒充独立的原模型参数"
+        ],
+        "assertions": [
+          {
+            "assertion": "reply_train_authority",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:3c272756a2714467b27964d570eba56f#/authority",
+              "audit:3c272756a2714467b27964d570eba56f#/judgement/hallucination"
+            ]
+          },
+          {
+            "assertion": "model_original_date_matches_user",
+            "result": "indeterminate",
+            "passed": null,
+            "failure_reason": "Legacy脚本参数已经过Provider变异，不能冒充独立的原模型参数",
+            "evidence_refs": [
+              "audit:3c272756a2714467b27964d570eba56f#/fault_report/model_requests",
+              "audit:3c272756a2714467b27964d570eba56f#/judgement/actual_behavior/user_requested_date"
+            ]
+          },
+          {
+            "assertion": "executed_query_date_matches_user",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:3c272756a2714467b27964d570eba56f#/fault_report/executions",
+              "audit:3c272756a2714467b27964d570eba56f#/judgement/actual_behavior/user_requested_date"
+            ]
+          },
+          {
+            "assertion": "no_extra_execution_per_model_call",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:3c272756a2714467b27964d570eba56f#/fault_report/model_requests",
+              "audit:3c272756a2714467b27964d570eba56f#/fault_report/executions"
+            ]
+          },
+          {
+            "assertion": "query_result_train_authority",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:3c272756a2714467b27964d570eba56f#/authority",
+              "audit:3c272756a2714467b27964d570eba56f#/fault_report/executions"
+            ]
+          },
+          {
+            "assertion": "one_order_per_lock",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:3c272756a2714467b27964d570eba56f#/authority/orders"
+            ]
+          }
+        ],
+        "contract_returned": true
+      },
+      "mutant": {
+        "trace_id": "39bc389c5c914abbb61be3ee34223b2a",
+        "trace_dir": "artifacts/runtime/test-lab-audit-20261027/matrix-committed/legacy/repeat_call/mutant/traces",
+        "input": "查明天上海到杭州的高铁二等座",
+        "tool_sequence": [
+          "query_tickets",
+          "query_tickets"
+        ],
+        "finish_reason": "stop",
+        "error": null,
+        "injections": [
+          {
+            "mutation_id": "M3",
+            "event_id": "8a91a69681644299934788839b61bebc",
+            "mutation_name": "repeat_call",
+            "enabled": true,
+            "applicable": true,
+            "status": "applied",
+            "injection_stage": "legacy_decision",
+            "target": "backend execution count",
+            "before": 1,
+            "after": 2,
+            "reason": null,
+            "related_step": 1,
+            "related_tool_call_id": "call_3c24330e",
+            "timestamp": "2026-10-27T14:32:10.586613+00:00",
+            "evidence_ref": "audit:39bc389c5c914abbb61be3ee34223b2a#/fault_report/injection_events/0"
+          }
+        ],
+        "dimensions": {
+          "injection_applied": true,
+          "platform_defect_detected": true,
+          "agent_anomaly_recognized": null,
+          "agent_recovered": null,
+          "safe_stop": false,
+          "business_correct": true
+        },
+        "quality_verdict": "fail",
+        "failure_reasons": [
+          "identical tool and parameters executed multiple times in the same model step"
+        ],
+        "indeterminate_reasons": [
+          "Legacy脚本参数已经过Provider变异，不能冒充独立的原模型参数"
+        ],
+        "assertions": [
+          {
+            "assertion": "reply_train_authority",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:39bc389c5c914abbb61be3ee34223b2a#/authority",
+              "audit:39bc389c5c914abbb61be3ee34223b2a#/judgement/hallucination"
+            ]
+          },
+          {
+            "assertion": "model_original_date_matches_user",
+            "result": "indeterminate",
+            "passed": null,
+            "failure_reason": "Legacy脚本参数已经过Provider变异，不能冒充独立的原模型参数",
+            "evidence_refs": [
+              "audit:39bc389c5c914abbb61be3ee34223b2a#/fault_report/model_requests",
+              "audit:39bc389c5c914abbb61be3ee34223b2a#/judgement/actual_behavior/user_requested_date"
+            ]
+          },
+          {
+            "assertion": "executed_query_date_matches_user",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:39bc389c5c914abbb61be3ee34223b2a#/fault_report/executions",
+              "audit:39bc389c5c914abbb61be3ee34223b2a#/judgement/actual_behavior/user_requested_date"
+            ]
+          },
+          {
+            "assertion": "no_extra_execution_per_model_call",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:39bc389c5c914abbb61be3ee34223b2a#/fault_report/model_requests",
+              "audit:39bc389c5c914abbb61be3ee34223b2a#/fault_report/executions"
+            ]
+          },
+          {
+            "assertion": "no_identical_calls_in_one_step",
+            "result": "fail",
+            "passed": false,
+            "failure_reason": "identical tool and parameters executed multiple times in the same model step",
+            "evidence_refs": [
+              "audit:39bc389c5c914abbb61be3ee34223b2a#/fault_report/model_requests",
+              "audit:39bc389c5c914abbb61be3ee34223b2a#/fault_report/executions"
+            ]
+          },
+          {
+            "assertion": "query_result_train_authority",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:39bc389c5c914abbb61be3ee34223b2a#/authority",
+              "audit:39bc389c5c914abbb61be3ee34223b2a#/fault_report/executions"
+            ]
+          },
+          {
+            "assertion": "one_order_per_lock",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:39bc389c5c914abbb61be3ee34223b2a#/authority/orders"
+            ]
+          }
+        ],
+        "contract_returned": true
+      }
+    },
+    {
+      "engine": "legacy",
+      "mutation": "infinite_loop",
+      "checks": {
+        "baseline_trace_saved": true,
+        "mutant_trace_saved": true,
+        "baseline_has_no_injection": true,
+        "actual_injection_applied": true,
+        "baseline_no_false_alarm": true,
+        "platform_detected": true
+      },
+      "baseline": {
+        "trace_id": "c95fb71b74ae4e229b7f2730bf3563f3",
+        "trace_dir": "artifacts/runtime/test-lab-audit-20261027/matrix-committed/legacy/infinite_loop/baseline/traces",
+        "input": "抢明天北京到上海的高铁票",
+        "tool_sequence": [
+          "query_tickets",
+          "monitor_seat"
+        ],
+        "finish_reason": "stop",
+        "error": null,
+        "injections": [],
+        "dimensions": {
+          "injection_applied": null,
+          "platform_defect_detected": false,
+          "agent_anomaly_recognized": null,
+          "agent_recovered": null,
+          "safe_stop": false,
+          "business_correct": true
+        },
+        "quality_verdict": "indeterminate",
+        "failure_reasons": [],
+        "indeterminate_reasons": [
+          "Legacy脚本参数已经过Provider变异，不能冒充独立的原模型参数"
+        ],
+        "assertions": [
+          {
+            "assertion": "reply_train_authority",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:c95fb71b74ae4e229b7f2730bf3563f3#/authority",
+              "audit:c95fb71b74ae4e229b7f2730bf3563f3#/judgement/hallucination"
+            ]
+          },
+          {
+            "assertion": "model_original_date_matches_user",
+            "result": "indeterminate",
+            "passed": null,
+            "failure_reason": "Legacy脚本参数已经过Provider变异，不能冒充独立的原模型参数",
+            "evidence_refs": [
+              "audit:c95fb71b74ae4e229b7f2730bf3563f3#/fault_report/model_requests",
+              "audit:c95fb71b74ae4e229b7f2730bf3563f3#/judgement/actual_behavior/user_requested_date"
+            ]
+          },
+          {
+            "assertion": "executed_query_date_matches_user",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:c95fb71b74ae4e229b7f2730bf3563f3#/fault_report/executions",
+              "audit:c95fb71b74ae4e229b7f2730bf3563f3#/judgement/actual_behavior/user_requested_date"
+            ]
+          },
+          {
+            "assertion": "no_extra_execution_per_model_call",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:c95fb71b74ae4e229b7f2730bf3563f3#/fault_report/model_requests",
+              "audit:c95fb71b74ae4e229b7f2730bf3563f3#/fault_report/executions"
+            ]
+          },
+          {
+            "assertion": "query_result_train_authority",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:c95fb71b74ae4e229b7f2730bf3563f3#/authority",
+              "audit:c95fb71b74ae4e229b7f2730bf3563f3#/fault_report/executions"
+            ]
+          },
+          {
+            "assertion": "one_order_per_lock",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:c95fb71b74ae4e229b7f2730bf3563f3#/authority/orders"
+            ]
+          }
+        ],
+        "contract_returned": true
+      },
+      "mutant": {
+        "trace_id": "4b4207b4e70347f78d8945f199a8cfb7",
+        "trace_dir": "artifacts/runtime/test-lab-audit-20261027/matrix-committed/legacy/infinite_loop/mutant/traces",
+        "input": "抢明天北京到上海的高铁票",
+        "tool_sequence": [
+          "query_tickets",
+          "monitor_seat",
+          "monitor_seat",
+          "monitor_seat",
+          "monitor_seat",
+          "monitor_seat",
+          "monitor_seat",
+          "monitor_seat"
+        ],
+        "finish_reason": "max_steps_exceeded",
+        "error": null,
+        "injections": [
+          {
+            "mutation_id": "M4",
+            "event_id": "7b7d5e1a3bdc43439544167ce3eb1324",
+            "mutation_name": "infinite_loop",
+            "enabled": true,
+            "applicable": true,
+            "status": "applied",
+            "injection_stage": "legacy_decision",
+            "target": "monitor_seat loop",
+            "before": "stop after monitor_seat",
+            "after": "monitor_seat again",
+            "reason": null,
+            "related_step": 3,
+            "related_tool_call_id": "call_56b11ecc",
+            "timestamp": "2026-10-27T14:32:10.628286+00:00",
+            "evidence_ref": "audit:4b4207b4e70347f78d8945f199a8cfb7#/fault_report/injection_events/0"
+          },
+          {
+            "mutation_id": "M4",
+            "event_id": "f56db2709bd240f0b638c9d8704e44b7",
+            "mutation_name": "infinite_loop",
+            "enabled": true,
+            "applicable": true,
+            "status": "applied",
+            "injection_stage": "legacy_decision",
+            "target": "monitor_seat loop",
+            "before": "stop after monitor_seat",
+            "after": "monitor_seat again",
+            "reason": null,
+            "related_step": 4,
+            "related_tool_call_id": "call_0b6426ef",
+            "timestamp": "2026-10-27T14:32:10.628286+00:00",
+            "evidence_ref": "audit:4b4207b4e70347f78d8945f199a8cfb7#/fault_report/injection_events/1"
+          },
+          {
+            "mutation_id": "M4",
+            "event_id": "d53c8270d8a0497bbbeecaafa97bed25",
+            "mutation_name": "infinite_loop",
+            "enabled": true,
+            "applicable": true,
+            "status": "applied",
+            "injection_stage": "legacy_decision",
+            "target": "monitor_seat loop",
+            "before": "stop after monitor_seat",
+            "after": "monitor_seat again",
+            "reason": null,
+            "related_step": 5,
+            "related_tool_call_id": "call_d10c8b48",
+            "timestamp": "2026-10-27T14:32:10.628286+00:00",
+            "evidence_ref": "audit:4b4207b4e70347f78d8945f199a8cfb7#/fault_report/injection_events/2"
+          },
+          {
+            "mutation_id": "M4",
+            "event_id": "1fe4c3a12cea46bebd83b7f70ca26ab5",
+            "mutation_name": "infinite_loop",
+            "enabled": true,
+            "applicable": true,
+            "status": "applied",
+            "injection_stage": "legacy_decision",
+            "target": "monitor_seat loop",
+            "before": "stop after monitor_seat",
+            "after": "monitor_seat again",
+            "reason": null,
+            "related_step": 6,
+            "related_tool_call_id": "call_feaf8e08",
+            "timestamp": "2026-10-27T14:32:10.628286+00:00",
+            "evidence_ref": "audit:4b4207b4e70347f78d8945f199a8cfb7#/fault_report/injection_events/3"
+          },
+          {
+            "mutation_id": "M4",
+            "event_id": "48b1e5a560b3430ba51a6a954d475821",
+            "mutation_name": "infinite_loop",
+            "enabled": true,
+            "applicable": true,
+            "status": "applied",
+            "injection_stage": "legacy_decision",
+            "target": "monitor_seat loop",
+            "before": "stop after monitor_seat",
+            "after": "monitor_seat again",
+            "reason": null,
+            "related_step": 7,
+            "related_tool_call_id": "call_fab443d6",
+            "timestamp": "2026-10-27T14:32:10.628286+00:00",
+            "evidence_ref": "audit:4b4207b4e70347f78d8945f199a8cfb7#/fault_report/injection_events/4"
+          },
+          {
+            "mutation_id": "M4",
+            "event_id": "9fbd8bce4cdd4882b7acaf5f62485e3f",
+            "mutation_name": "infinite_loop",
+            "enabled": true,
+            "applicable": true,
+            "status": "applied",
+            "injection_stage": "legacy_decision",
+            "target": "monitor_seat loop",
+            "before": "stop after monitor_seat",
+            "after": "monitor_seat again",
+            "reason": null,
+            "related_step": 8,
+            "related_tool_call_id": "call_8875aec0",
+            "timestamp": "2026-10-27T14:32:10.628286+00:00",
+            "evidence_ref": "audit:4b4207b4e70347f78d8945f199a8cfb7#/fault_report/injection_events/5"
+          }
+        ],
+        "dimensions": {
+          "injection_applied": true,
+          "platform_defect_detected": true,
+          "agent_anomaly_recognized": null,
+          "agent_recovered": null,
+          "safe_stop": true,
+          "business_correct": false
+        },
+        "quality_verdict": "fail",
+        "failure_reasons": [
+          "injected monitor repetitions observed; inspect finite stop reason"
+        ],
+        "indeterminate_reasons": [
+          "Legacy脚本参数已经过Provider变异，不能冒充独立的原模型参数"
+        ],
+        "assertions": [
+          {
+            "assertion": "reply_train_authority",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:4b4207b4e70347f78d8945f199a8cfb7#/authority",
+              "audit:4b4207b4e70347f78d8945f199a8cfb7#/judgement/hallucination"
+            ]
+          },
+          {
+            "assertion": "model_original_date_matches_user",
+            "result": "indeterminate",
+            "passed": null,
+            "failure_reason": "Legacy脚本参数已经过Provider变异，不能冒充独立的原模型参数",
+            "evidence_refs": [
+              "audit:4b4207b4e70347f78d8945f199a8cfb7#/fault_report/model_requests",
+              "audit:4b4207b4e70347f78d8945f199a8cfb7#/judgement/actual_behavior/user_requested_date"
+            ]
+          },
+          {
+            "assertion": "executed_query_date_matches_user",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:4b4207b4e70347f78d8945f199a8cfb7#/fault_report/executions",
+              "audit:4b4207b4e70347f78d8945f199a8cfb7#/judgement/actual_behavior/user_requested_date"
+            ]
+          },
+          {
+            "assertion": "no_extra_execution_per_model_call",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:4b4207b4e70347f78d8945f199a8cfb7#/fault_report/model_requests",
+              "audit:4b4207b4e70347f78d8945f199a8cfb7#/fault_report/executions"
+            ]
+          },
+          {
+            "assertion": "no_forced_monitor_loop",
+            "result": "fail",
+            "passed": false,
+            "failure_reason": "injected monitor repetitions observed; inspect finite stop reason",
+            "evidence_refs": [
+              "audit:4b4207b4e70347f78d8945f199a8cfb7#/fault_report/executions"
+            ]
+          },
+          {
+            "assertion": "query_result_train_authority",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:4b4207b4e70347f78d8945f199a8cfb7#/authority",
+              "audit:4b4207b4e70347f78d8945f199a8cfb7#/fault_report/executions"
+            ]
+          },
+          {
+            "assertion": "one_order_per_lock",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:4b4207b4e70347f78d8945f199a8cfb7#/authority/orders"
+            ]
+          }
+        ],
+        "contract_returned": true
+      }
+    },
+    {
+      "engine": "legacy",
+      "mutation": "route_error",
+      "checks": {
+        "baseline_trace_saved": true,
+        "mutant_trace_saved": true,
+        "baseline_has_no_injection": true,
+        "actual_injection_applied": true,
+        "baseline_no_false_alarm": true,
+        "platform_detected": true
+      },
+      "baseline": {
+        "trace_id": "8ddef6505a43489385a40cfcceb0d42b",
+        "trace_dir": "artifacts/runtime/test-lab-audit-20261027/matrix-committed/legacy/route_error/baseline/traces",
+        "input": "退票手续费政策是什么？",
+        "tool_sequence": [
+          "search_policy"
+        ],
+        "finish_reason": "stop",
+        "error": null,
+        "injections": [],
+        "dimensions": {
+          "injection_applied": null,
+          "platform_defect_detected": false,
+          "agent_anomaly_recognized": null,
+          "agent_recovered": null,
+          "safe_stop": false,
+          "business_correct": true
+        },
+        "quality_verdict": "pass",
+        "failure_reasons": [],
+        "indeterminate_reasons": [],
+        "assertions": [
+          {
+            "assertion": "reply_train_authority",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:8ddef6505a43489385a40cfcceb0d42b#/authority",
+              "audit:8ddef6505a43489385a40cfcceb0d42b#/judgement/hallucination"
+            ]
+          },
+          {
+            "assertion": "policy_intent_preserves_tool_route",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:8ddef6505a43489385a40cfcceb0d42b#/fault_report/model_requests",
+              "audit:8ddef6505a43489385a40cfcceb0d42b#/fault_report/executions"
+            ]
+          },
+          {
+            "assertion": "no_extra_execution_per_model_call",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:8ddef6505a43489385a40cfcceb0d42b#/fault_report/model_requests",
+              "audit:8ddef6505a43489385a40cfcceb0d42b#/fault_report/executions"
+            ]
+          },
+          {
+            "assertion": "one_order_per_lock",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:8ddef6505a43489385a40cfcceb0d42b#/authority/orders"
+            ]
+          }
+        ],
+        "contract_returned": true
+      },
+      "mutant": {
+        "trace_id": "8d78dd93497648169dc221e6582437a9",
+        "trace_dir": "artifacts/runtime/test-lab-audit-20261027/matrix-committed/legacy/route_error/mutant/traces",
+        "input": "退票手续费政策是什么？",
+        "tool_sequence": [
+          "query_tickets"
+        ],
+        "finish_reason": "stop",
+        "error": null,
+        "injections": [
+          {
+            "mutation_id": "M5",
+            "event_id": "e0312c6edc364680a1000e694180b009",
+            "mutation_name": "route_error",
+            "enabled": true,
+            "applicable": true,
+            "status": "applied",
+            "injection_stage": "legacy_decision",
+            "target": "tool.name",
+            "before": "search_policy",
+            "after": "query_tickets",
+            "reason": null,
+            "related_step": 1,
+            "related_tool_call_id": "call_0f8520ef",
+            "timestamp": "2026-10-27T14:32:10.668878+00:00",
+            "evidence_ref": "audit:8d78dd93497648169dc221e6582437a9#/fault_report/injection_events/0"
+          }
+        ],
+        "dimensions": {
+          "injection_applied": true,
+          "platform_defect_detected": true,
+          "agent_anomaly_recognized": null,
+          "agent_recovered": null,
+          "safe_stop": false,
+          "business_correct": false
+        },
+        "quality_verdict": "fail",
+        "failure_reasons": [
+          "policy-only question executed ticket search without policy search"
+        ],
+        "indeterminate_reasons": [],
+        "assertions": [
+          {
+            "assertion": "reply_train_authority",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:8d78dd93497648169dc221e6582437a9#/authority",
+              "audit:8d78dd93497648169dc221e6582437a9#/judgement/hallucination"
+            ]
+          },
+          {
+            "assertion": "policy_question_not_routed_to_ticket_query",
+            "result": "fail",
+            "passed": false,
+            "failure_reason": "policy-only question executed ticket search without policy search",
+            "evidence_refs": [
+              "audit:8d78dd93497648169dc221e6582437a9#/judgement/actual_behavior/user_requested_date",
+              "audit:8d78dd93497648169dc221e6582437a9#/fault_report/executions"
+            ]
+          },
+          {
+            "assertion": "no_extra_execution_per_model_call",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:8d78dd93497648169dc221e6582437a9#/fault_report/model_requests",
+              "audit:8d78dd93497648169dc221e6582437a9#/fault_report/executions"
+            ]
+          },
+          {
+            "assertion": "query_result_train_authority",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:8d78dd93497648169dc221e6582437a9#/authority",
+              "audit:8d78dd93497648169dc221e6582437a9#/fault_report/executions"
+            ]
+          },
+          {
+            "assertion": "one_order_per_lock",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:8d78dd93497648169dc221e6582437a9#/authority/orders"
+            ]
+          }
+        ],
+        "contract_returned": true
+      }
+    },
+    {
+      "engine": "legacy",
+      "mutation": "no_citation",
+      "checks": {
+        "baseline_trace_saved": true,
+        "mutant_trace_saved": true,
+        "baseline_has_no_injection": true,
+        "actual_injection_applied": true,
+        "baseline_no_false_alarm": true,
+        "platform_detected": true
+      },
+      "baseline": {
+        "trace_id": "29f7f42c889d4ed8a81dce21bc7d4b5f",
+        "trace_dir": "artifacts/runtime/test-lab-audit-20261027/matrix-committed/legacy/no_citation/baseline/traces",
+        "input": "退票手续费政策是什么？",
+        "tool_sequence": [
+          "search_policy"
+        ],
+        "finish_reason": "stop",
+        "error": null,
+        "injections": [],
+        "dimensions": {
+          "injection_applied": null,
+          "platform_defect_detected": false,
+          "agent_anomaly_recognized": null,
+          "agent_recovered": null,
+          "safe_stop": false,
+          "business_correct": true
+        },
+        "quality_verdict": "pass",
+        "failure_reasons": [],
+        "indeterminate_reasons": [],
+        "assertions": [
+          {
+            "assertion": "reply_train_authority",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:29f7f42c889d4ed8a81dce21bc7d4b5f#/authority",
+              "audit:29f7f42c889d4ed8a81dce21bc7d4b5f#/judgement/hallucination"
+            ]
+          },
+          {
+            "assertion": "policy_intent_preserves_tool_route",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:29f7f42c889d4ed8a81dce21bc7d4b5f#/fault_report/model_requests",
+              "audit:29f7f42c889d4ed8a81dce21bc7d4b5f#/fault_report/executions"
+            ]
+          },
+          {
+            "assertion": "no_extra_execution_per_model_call",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:29f7f42c889d4ed8a81dce21bc7d4b5f#/fault_report/model_requests",
+              "audit:29f7f42c889d4ed8a81dce21bc7d4b5f#/fault_report/executions"
+            ]
+          },
+          {
+            "assertion": "one_order_per_lock",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:29f7f42c889d4ed8a81dce21bc7d4b5f#/authority/orders"
+            ]
+          }
+        ],
+        "contract_returned": true
+      },
+      "mutant": {
+        "trace_id": "66c07611434140569d4051f221bc0ade",
+        "trace_dir": "artifacts/runtime/test-lab-audit-20261027/matrix-committed/legacy/no_citation/mutant/traces",
+        "input": "退票手续费政策是什么？",
+        "tool_sequence": [
+          "search_policy"
+        ],
+        "finish_reason": "stop",
+        "error": null,
+        "injections": [
+          {
+            "mutation_id": "M6",
+            "event_id": "08bd0cca0e0a4447b17a7867ce7468c8",
+            "mutation_name": "no_citation",
+            "enabled": true,
+            "applicable": true,
+            "status": "applied",
+            "injection_stage": "legacy_reply",
+            "target": "search_policy.hits.doc_id",
+            "before": [
+              "P01",
+              "P09"
+            ],
+            "after": [],
+            "reason": null,
+            "related_step": 2,
+            "related_tool_call_id": "call_e58d5ca6",
+            "timestamp": "2026-10-27T14:32:10.724675+00:00",
+            "evidence_ref": "audit:66c07611434140569d4051f221bc0ade#/fault_report/injection_events/0"
+          }
+        ],
+        "dimensions": {
+          "injection_applied": true,
+          "platform_defect_detected": true,
+          "agent_anomaly_recognized": null,
+          "agent_recovered": null,
+          "safe_stop": false,
+          "business_correct": false
+        },
+        "quality_verdict": "fail",
+        "failure_reasons": [
+          "reply repeats retrieved policy content without a matching source ID"
+        ],
+        "indeterminate_reasons": [],
+        "assertions": [
+          {
+            "assertion": "reply_train_authority",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:66c07611434140569d4051f221bc0ade#/authority",
+              "audit:66c07611434140569d4051f221bc0ade#/judgement/hallucination"
+            ]
+          },
+          {
+            "assertion": "policy_intent_preserves_tool_route",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:66c07611434140569d4051f221bc0ade#/fault_report/model_requests",
+              "audit:66c07611434140569d4051f221bc0ade#/fault_report/executions"
+            ]
+          },
+          {
+            "assertion": "no_extra_execution_per_model_call",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:66c07611434140569d4051f221bc0ade#/fault_report/model_requests",
+              "audit:66c07611434140569d4051f221bc0ade#/fault_report/executions"
+            ]
+          },
+          {
+            "assertion": "policy_factual_reply_has_source",
+            "result": "fail",
+            "passed": false,
+            "failure_reason": "reply repeats retrieved policy content without a matching source ID",
+            "evidence_refs": [
+              "audit:66c07611434140569d4051f221bc0ade#/fault_report/executions",
+              "audit:66c07611434140569d4051f221bc0ade#/fault_report/model_requests"
+            ]
+          },
+          {
+            "assertion": "one_order_per_lock",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:66c07611434140569d4051f221bc0ade#/authority/orders"
+            ]
+          }
+        ],
+        "contract_returned": true
+      }
+    },
+    {
+      "engine": "legacy",
+      "mutation": "hallucinated_train",
+      "checks": {
+        "baseline_trace_saved": true,
+        "mutant_trace_saved": true,
+        "baseline_has_no_injection": true,
+        "actual_injection_applied": true,
+        "baseline_no_false_alarm": true,
+        "platform_detected": true
+      },
+      "baseline": {
+        "trace_id": "ec62de6bab0c4ea9b14f346ebd56af53",
+        "trace_dir": "artifacts/runtime/test-lab-audit-20261027/matrix-committed/legacy/hallucinated_train/baseline/traces",
+        "input": "查明天上海到杭州的高铁二等座",
+        "tool_sequence": [
+          "query_tickets"
+        ],
+        "finish_reason": "stop",
+        "error": null,
+        "injections": [],
+        "dimensions": {
+          "injection_applied": null,
+          "platform_defect_detected": false,
+          "agent_anomaly_recognized": null,
+          "agent_recovered": null,
+          "safe_stop": false,
+          "business_correct": true
+        },
+        "quality_verdict": "indeterminate",
+        "failure_reasons": [],
+        "indeterminate_reasons": [
+          "Legacy脚本参数已经过Provider变异，不能冒充独立的原模型参数"
+        ],
+        "assertions": [
+          {
+            "assertion": "reply_train_authority",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:ec62de6bab0c4ea9b14f346ebd56af53#/authority",
+              "audit:ec62de6bab0c4ea9b14f346ebd56af53#/judgement/hallucination"
+            ]
+          },
+          {
+            "assertion": "model_original_date_matches_user",
+            "result": "indeterminate",
+            "passed": null,
+            "failure_reason": "Legacy脚本参数已经过Provider变异，不能冒充独立的原模型参数",
+            "evidence_refs": [
+              "audit:ec62de6bab0c4ea9b14f346ebd56af53#/fault_report/model_requests",
+              "audit:ec62de6bab0c4ea9b14f346ebd56af53#/judgement/actual_behavior/user_requested_date"
+            ]
+          },
+          {
+            "assertion": "executed_query_date_matches_user",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:ec62de6bab0c4ea9b14f346ebd56af53#/fault_report/executions",
+              "audit:ec62de6bab0c4ea9b14f346ebd56af53#/judgement/actual_behavior/user_requested_date"
+            ]
+          },
+          {
+            "assertion": "no_extra_execution_per_model_call",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:ec62de6bab0c4ea9b14f346ebd56af53#/fault_report/model_requests",
+              "audit:ec62de6bab0c4ea9b14f346ebd56af53#/fault_report/executions"
+            ]
+          },
+          {
+            "assertion": "query_result_train_authority",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:ec62de6bab0c4ea9b14f346ebd56af53#/authority",
+              "audit:ec62de6bab0c4ea9b14f346ebd56af53#/fault_report/executions"
+            ]
+          },
+          {
+            "assertion": "one_order_per_lock",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:ec62de6bab0c4ea9b14f346ebd56af53#/authority/orders"
+            ]
+          }
+        ],
+        "contract_returned": true
+      },
+      "mutant": {
+        "trace_id": "77143c52f81e4bbe96d7b97e2c905784",
+        "trace_dir": "artifacts/runtime/test-lab-audit-20261027/matrix-committed/legacy/hallucinated_train/mutant/traces",
+        "input": "查明天上海到杭州的高铁二等座",
+        "tool_sequence": [
+          "query_tickets"
+        ],
+        "finish_reason": "stop",
+        "error": null,
+        "injections": [
+          {
+            "mutation_id": "M7",
+            "event_id": "73342cd786004d5b95a42720d5fc92a5",
+            "mutation_name": "hallucinated_train",
+            "enabled": true,
+            "applicable": true,
+            "status": "applied",
+            "injection_stage": "tool_result",
+            "target": "query_tickets.trains",
+            "before": {
+              "trains": [
+                {
+                  "kind": "高铁",
+                  "train_no": "G7303",
+                  "from_city": "上海",
+                  "to_city": "杭州",
+                  "date": "2026-10-28",
+                  "depart": "12:34",
+                  "arrive": "13:34",
+                  "seat_type": "二等座",
+                  "price": 73.0,
+                  "seats_left": 51
+                },
+                {
+                  "kind": "高铁",
+                  "train_no": "G7302",
+                  "from_city": "上海",
+                  "to_city": "杭州",
+                  "date": "2026-10-28",
+                  "depart": "09:17",
+                  "arrive": "10:17",
+                  "seat_type": "二等座",
+                  "price": 73.0,
+                  "seats_left": 47
+                },
+                {
+                  "kind": "高铁",
+                  "train_no": "G7301",
+                  "from_city": "上海",
+                  "to_city": "杭州",
+                  "date": "2026-10-28",
+                  "depart": "06:00",
+                  "arrive": "07:00",
+                  "seat_type": "二等座",
+                  "price": 73.0,
+                  "seats_left": 35
+                }
+              ],
+              "count": 3
+            },
+            "after": {
+              "trains": [
+                {
+                  "kind": "高铁",
+                  "train_no": "G9999",
+                  "from_city": "上海",
+                  "to_city": "杭州",
+                  "date": "2026-10-28",
+                  "depart": "12:34",
+                  "arrive": "13:34",
+                  "seat_type": "二等座",
+                  "price": 73.0,
+                  "seats_left": 51
+                },
+                {
+                  "kind": "高铁",
+                  "train_no": "G7303",
+                  "from_city": "上海",
+                  "to_city": "杭州",
+                  "date": "2026-10-28",
+                  "depart": "12:34",
+                  "arrive": "13:34",
+                  "seat_type": "二等座",
+                  "price": 73.0,
+                  "seats_left": 51
+                },
+                {
+                  "kind": "高铁",
+                  "train_no": "G7302",
+                  "from_city": "上海",
+                  "to_city": "杭州",
+                  "date": "2026-10-28",
+                  "depart": "09:17",
+                  "arrive": "10:17",
+                  "seat_type": "二等座",
+                  "price": 73.0,
+                  "seats_left": 47
+                },
+                {
+                  "kind": "高铁",
+                  "train_no": "G7301",
+                  "from_city": "上海",
+                  "to_city": "杭州",
+                  "date": "2026-10-28",
+                  "depart": "06:00",
+                  "arrive": "07:00",
+                  "seat_type": "二等座",
+                  "price": 73.0,
+                  "seats_left": 35
+                }
+              ],
+              "count": 4
+            },
+            "reason": null,
+            "related_step": 1,
+            "related_tool_call_id": "call_0705e39d",
+            "timestamp": "2026-10-27T14:32:10.771158+00:00",
+            "evidence_ref": "audit:77143c52f81e4bbe96d7b97e2c905784#/fault_report/injection_events/0"
+          }
+        ],
+        "dimensions": {
+          "injection_applied": true,
+          "platform_defect_detected": true,
+          "agent_anomaly_recognized": null,
+          "agent_recovered": null,
+          "safe_stop": false,
+          "business_correct": false
+        },
+        "quality_verdict": "fail",
+        "failure_reasons": [
+          "reply asserts unsupported or ambiguous trains",
+          "tool-visible trains not in authoritative database"
+        ],
+        "indeterminate_reasons": [
+          "Legacy脚本参数已经过Provider变异，不能冒充独立的原模型参数"
+        ],
+        "assertions": [
+          {
+            "assertion": "reply_train_authority",
+            "result": "fail",
+            "passed": false,
+            "failure_reason": "reply asserts unsupported or ambiguous trains",
+            "evidence_refs": [
+              "audit:77143c52f81e4bbe96d7b97e2c905784#/authority",
+              "audit:77143c52f81e4bbe96d7b97e2c905784#/judgement/hallucination"
+            ]
+          },
+          {
+            "assertion": "model_original_date_matches_user",
+            "result": "indeterminate",
+            "passed": null,
+            "failure_reason": "Legacy脚本参数已经过Provider变异，不能冒充独立的原模型参数",
+            "evidence_refs": [
+              "audit:77143c52f81e4bbe96d7b97e2c905784#/fault_report/model_requests",
+              "audit:77143c52f81e4bbe96d7b97e2c905784#/judgement/actual_behavior/user_requested_date"
+            ]
+          },
+          {
+            "assertion": "executed_query_date_matches_user",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:77143c52f81e4bbe96d7b97e2c905784#/fault_report/executions",
+              "audit:77143c52f81e4bbe96d7b97e2c905784#/judgement/actual_behavior/user_requested_date"
+            ]
+          },
+          {
+            "assertion": "no_extra_execution_per_model_call",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:77143c52f81e4bbe96d7b97e2c905784#/fault_report/model_requests",
+              "audit:77143c52f81e4bbe96d7b97e2c905784#/fault_report/executions"
+            ]
+          },
+          {
+            "assertion": "query_result_train_authority",
+            "result": "fail",
+            "passed": false,
+            "failure_reason": "tool-visible trains not in authoritative database",
+            "evidence_refs": [
+              "audit:77143c52f81e4bbe96d7b97e2c905784#/authority",
+              "audit:77143c52f81e4bbe96d7b97e2c905784#/fault_report/executions"
+            ]
+          },
+          {
+            "assertion": "one_order_per_lock",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:77143c52f81e4bbe96d7b97e2c905784#/authority/orders"
+            ]
+          }
+        ],
+        "contract_returned": true
+      }
+    },
+    {
+      "engine": "langchain",
+      "mutation": "date_offset",
+      "checks": {
+        "baseline_trace_saved": true,
+        "mutant_trace_saved": true,
+        "baseline_has_no_injection": true,
+        "actual_injection_applied": true,
+        "baseline_no_false_alarm": true,
+        "platform_detected": true
+      },
+      "baseline": {
+        "trace_id": "e1612a4e4b414621b8f7b6e434e809bd",
+        "trace_dir": "artifacts/runtime/test-lab-audit-20261027/matrix-committed/langchain/date_offset/baseline/traces",
+        "input": "查明天上海到杭州的高铁二等座",
+        "tool_sequence": [
+          "query_tickets"
+        ],
+        "finish_reason": "stop",
+        "error": null,
+        "injections": [],
+        "dimensions": {
+          "injection_applied": null,
+          "platform_defect_detected": false,
+          "agent_anomaly_recognized": null,
+          "agent_recovered": null,
+          "safe_stop": false,
+          "business_correct": true
+        },
+        "quality_verdict": "pass",
+        "failure_reasons": [],
+        "indeterminate_reasons": [],
+        "assertions": [
+          {
+            "assertion": "reply_train_authority",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:e1612a4e4b414621b8f7b6e434e809bd#/authority",
+              "audit:e1612a4e4b414621b8f7b6e434e809bd#/judgement/hallucination"
+            ]
+          },
+          {
+            "assertion": "model_original_date_matches_user",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:e1612a4e4b414621b8f7b6e434e809bd#/fault_report/model_requests",
+              "audit:e1612a4e4b414621b8f7b6e434e809bd#/judgement/actual_behavior/user_requested_date"
+            ]
+          },
+          {
+            "assertion": "executed_query_date_matches_user",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:e1612a4e4b414621b8f7b6e434e809bd#/fault_report/executions",
+              "audit:e1612a4e4b414621b8f7b6e434e809bd#/judgement/actual_behavior/user_requested_date"
+            ]
+          },
+          {
+            "assertion": "no_extra_execution_per_model_call",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:e1612a4e4b414621b8f7b6e434e809bd#/fault_report/model_requests",
+              "audit:e1612a4e4b414621b8f7b6e434e809bd#/fault_report/executions"
+            ]
+          },
+          {
+            "assertion": "query_result_train_authority",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:e1612a4e4b414621b8f7b6e434e809bd#/authority",
+              "audit:e1612a4e4b414621b8f7b6e434e809bd#/fault_report/executions"
+            ]
+          },
+          {
+            "assertion": "one_order_per_lock",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:e1612a4e4b414621b8f7b6e434e809bd#/authority/orders"
+            ]
+          }
+        ],
+        "contract_returned": true
+      },
+      "mutant": {
+        "trace_id": "d9bcca38f0374037bd8b09631bb9f0ec",
+        "trace_dir": "artifacts/runtime/test-lab-audit-20261027/matrix-committed/langchain/date_offset/mutant/traces",
+        "input": "查明天上海到杭州的高铁二等座",
+        "tool_sequence": [
+          "query_tickets"
+        ],
+        "finish_reason": "stop",
+        "error": null,
+        "injections": [
+          {
+            "mutation_id": "M1",
+            "event_id": "4bf937f6e28544eda8946ee52b6f0c6f",
+            "mutation_name": "date_offset",
+            "enabled": true,
+            "applicable": true,
+            "status": "applied",
+            "injection_stage": "tool_arguments",
+            "target": "query_tickets.date",
+            "before": {
+              "from_city": "上海",
+              "to_city": "杭州",
+              "date": "2026-10-28",
+              "kind": "高铁",
+              "seat_type": "二等座"
+            },
+            "after": {
+              "from_city": "上海",
+              "to_city": "杭州",
+              "date": "2026-10-29",
+              "kind": "高铁",
+              "seat_type": "二等座"
+            },
+            "reason": null,
+            "related_step": 1,
+            "related_tool_call_id": "call_d41f175b",
+            "timestamp": "2026-10-27T14:32:11.619358+00:00",
+            "evidence_ref": "audit:d9bcca38f0374037bd8b09631bb9f0ec#/fault_report/injection_events/0"
+          }
+        ],
+        "dimensions": {
+          "injection_applied": true,
+          "platform_defect_detected": true,
+          "agent_anomaly_recognized": null,
+          "agent_recovered": null,
+          "safe_stop": false,
+          "business_correct": false
+        },
+        "quality_verdict": "fail",
+        "failure_reasons": [
+          "actual query date differs from user requirement"
+        ],
+        "indeterminate_reasons": [],
+        "assertions": [
+          {
+            "assertion": "reply_train_authority",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:d9bcca38f0374037bd8b09631bb9f0ec#/authority",
+              "audit:d9bcca38f0374037bd8b09631bb9f0ec#/judgement/hallucination"
+            ]
+          },
+          {
+            "assertion": "model_original_date_matches_user",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:d9bcca38f0374037bd8b09631bb9f0ec#/fault_report/model_requests",
+              "audit:d9bcca38f0374037bd8b09631bb9f0ec#/judgement/actual_behavior/user_requested_date"
+            ]
+          },
+          {
+            "assertion": "executed_query_date_matches_user",
+            "result": "fail",
+            "passed": false,
+            "failure_reason": "actual query date differs from user requirement",
+            "evidence_refs": [
+              "audit:d9bcca38f0374037bd8b09631bb9f0ec#/fault_report/executions",
+              "audit:d9bcca38f0374037bd8b09631bb9f0ec#/judgement/actual_behavior/user_requested_date"
+            ]
+          },
+          {
+            "assertion": "no_extra_execution_per_model_call",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:d9bcca38f0374037bd8b09631bb9f0ec#/fault_report/model_requests",
+              "audit:d9bcca38f0374037bd8b09631bb9f0ec#/fault_report/executions"
+            ]
+          },
+          {
+            "assertion": "query_result_train_authority",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:d9bcca38f0374037bd8b09631bb9f0ec#/authority",
+              "audit:d9bcca38f0374037bd8b09631bb9f0ec#/fault_report/executions"
+            ]
+          },
+          {
+            "assertion": "one_order_per_lock",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:d9bcca38f0374037bd8b09631bb9f0ec#/authority/orders"
+            ]
+          }
+        ],
+        "contract_returned": true
+      }
+    },
+    {
+      "engine": "langchain",
+      "mutation": "skip_lock",
+      "checks": {
+        "baseline_trace_saved": true,
+        "mutant_trace_saved": true,
+        "baseline_has_no_injection": true,
+        "actual_injection_applied": true,
+        "baseline_no_false_alarm": true,
+        "platform_detected": true
+      },
+      "baseline": {
+        "trace_id": "e461ec17ec154175a82568fe5a81c3be",
+        "trace_dir": "artifacts/runtime/test-lab-audit-20261027/matrix-committed/langchain/skip_lock/baseline/traces",
+        "input": "订明天上海到杭州的高铁二等座",
+        "tool_sequence": [
+          "query_tickets",
+          "lock_seat",
+          "create_order"
+        ],
+        "finish_reason": "stop",
+        "error": null,
+        "injections": [],
+        "dimensions": {
+          "injection_applied": null,
+          "platform_defect_detected": false,
+          "agent_anomaly_recognized": null,
+          "agent_recovered": null,
+          "safe_stop": false,
+          "business_correct": true
+        },
+        "quality_verdict": "pass",
+        "failure_reasons": [],
+        "indeterminate_reasons": [],
+        "assertions": [
+          {
+            "assertion": "reply_train_authority",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:e461ec17ec154175a82568fe5a81c3be#/authority",
+              "audit:e461ec17ec154175a82568fe5a81c3be#/judgement/hallucination"
+            ]
+          },
+          {
+            "assertion": "model_original_date_matches_user",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:e461ec17ec154175a82568fe5a81c3be#/fault_report/model_requests",
+              "audit:e461ec17ec154175a82568fe5a81c3be#/judgement/actual_behavior/user_requested_date"
+            ]
+          },
+          {
+            "assertion": "executed_query_date_matches_user",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:e461ec17ec154175a82568fe5a81c3be#/fault_report/executions",
+              "audit:e461ec17ec154175a82568fe5a81c3be#/judgement/actual_behavior/user_requested_date"
+            ]
+          },
+          {
+            "assertion": "no_extra_execution_per_model_call",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:e461ec17ec154175a82568fe5a81c3be#/fault_report/model_requests",
+              "audit:e461ec17ec154175a82568fe5a81c3be#/fault_report/executions"
+            ]
+          },
+          {
+            "assertion": "query_result_train_authority",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:e461ec17ec154175a82568fe5a81c3be#/authority",
+              "audit:e461ec17ec154175a82568fe5a81c3be#/fault_report/executions"
+            ]
+          },
+          {
+            "assertion": "create_order_requires_successful_lock",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:e461ec17ec154175a82568fe5a81c3be#/fault_report/executions"
+            ]
+          },
+          {
+            "assertion": "one_order_per_lock",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:e461ec17ec154175a82568fe5a81c3be#/authority/orders"
+            ]
+          }
+        ],
+        "contract_returned": true
+      },
+      "mutant": {
+        "trace_id": "c87cbe57aa614194b837006f0f2eecec",
+        "trace_dir": "artifacts/runtime/test-lab-audit-20261027/matrix-committed/langchain/skip_lock/mutant/traces",
+        "input": "订明天上海到杭州的高铁二等座",
+        "tool_sequence": [
+          "query_tickets",
+          "create_order"
+        ],
+        "finish_reason": "stop",
+        "error": null,
+        "injections": [
+          {
+            "mutation_id": "M2",
+            "event_id": "03aa5dde65804381a2c8307a576286e1",
+            "mutation_name": "skip_lock",
+            "enabled": true,
+            "applicable": true,
+            "status": "applied",
+            "injection_stage": "tool_routing",
+            "target": "lock_seat/create_order",
+            "before": {
+              "name": "lock_seat",
+              "args": {
+                "train_no": "G7303",
+                "date": "2026-10-28",
+                "seat_type": "二等座",
+                "passengers": [
+                  "person#1d841bc0ee98"
+                ]
+              },
+              "id": "call_238f932c",
+              "type": "tool_call"
+            },
+            "after": {
+              "name": "create_order",
+              "args": {
+                "lock_id": "LK_INJECTED_MISSING",
+                "passenger_ids": [
+                  "person#1d841bc0ee98"
+                ],
+                "contact": "<phone-redacted>"
+              },
+              "id": "call_238f932c",
+              "type": "tool_call"
+            },
+            "reason": null,
+            "related_step": 2,
+            "related_tool_call_id": "call_238f932c",
+            "timestamp": "2026-10-27T14:32:11.694270+00:00",
+            "evidence_ref": "audit:c87cbe57aa614194b837006f0f2eecec#/fault_report/injection_events/0"
+          }
+        ],
+        "dimensions": {
+          "injection_applied": true,
+          "platform_defect_detected": true,
+          "agent_anomaly_recognized": null,
+          "agent_recovered": null,
+          "safe_stop": true,
+          "business_correct": false
+        },
+        "quality_verdict": "fail",
+        "failure_reasons": [
+          "actual order attempt lacks successful lock",
+          "工具调用未成功：create_order"
+        ],
+        "indeterminate_reasons": [],
+        "assertions": [
+          {
+            "assertion": "reply_train_authority",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:c87cbe57aa614194b837006f0f2eecec#/authority",
+              "audit:c87cbe57aa614194b837006f0f2eecec#/judgement/hallucination"
+            ]
+          },
+          {
+            "assertion": "model_original_date_matches_user",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:c87cbe57aa614194b837006f0f2eecec#/fault_report/model_requests",
+              "audit:c87cbe57aa614194b837006f0f2eecec#/judgement/actual_behavior/user_requested_date"
+            ]
+          },
+          {
+            "assertion": "executed_query_date_matches_user",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:c87cbe57aa614194b837006f0f2eecec#/fault_report/executions",
+              "audit:c87cbe57aa614194b837006f0f2eecec#/judgement/actual_behavior/user_requested_date"
+            ]
+          },
+          {
+            "assertion": "no_extra_execution_per_model_call",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:c87cbe57aa614194b837006f0f2eecec#/fault_report/model_requests",
+              "audit:c87cbe57aa614194b837006f0f2eecec#/fault_report/executions"
+            ]
+          },
+          {
+            "assertion": "query_result_train_authority",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:c87cbe57aa614194b837006f0f2eecec#/authority",
+              "audit:c87cbe57aa614194b837006f0f2eecec#/fault_report/executions"
+            ]
+          },
+          {
+            "assertion": "create_order_requires_successful_lock",
+            "result": "fail",
+            "passed": false,
+            "failure_reason": "actual order attempt lacks successful lock",
+            "evidence_refs": [
+              "audit:c87cbe57aa614194b837006f0f2eecec#/fault_report/executions"
+            ]
+          },
+          {
+            "assertion": "one_order_per_lock",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:c87cbe57aa614194b837006f0f2eecec#/authority/orders"
+            ]
+          }
+        ],
+        "contract_returned": true
+      }
+    },
+    {
+      "engine": "langchain",
+      "mutation": "repeat_call",
+      "checks": {
+        "baseline_trace_saved": true,
+        "mutant_trace_saved": true,
+        "baseline_has_no_injection": true,
+        "actual_injection_applied": true,
+        "baseline_no_false_alarm": true,
+        "platform_detected": true
+      },
+      "baseline": {
+        "trace_id": "b3166e9db7e84785be13375caf7c0c7a",
+        "trace_dir": "artifacts/runtime/test-lab-audit-20261027/matrix-committed/langchain/repeat_call/baseline/traces",
+        "input": "查明天上海到杭州的高铁二等座",
+        "tool_sequence": [
+          "query_tickets"
+        ],
+        "finish_reason": "stop",
+        "error": null,
+        "injections": [],
+        "dimensions": {
+          "injection_applied": null,
+          "platform_defect_detected": false,
+          "agent_anomaly_recognized": null,
+          "agent_recovered": null,
+          "safe_stop": false,
+          "business_correct": true
+        },
+        "quality_verdict": "pass",
+        "failure_reasons": [],
+        "indeterminate_reasons": [],
+        "assertions": [
+          {
+            "assertion": "reply_train_authority",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:b3166e9db7e84785be13375caf7c0c7a#/authority",
+              "audit:b3166e9db7e84785be13375caf7c0c7a#/judgement/hallucination"
+            ]
+          },
+          {
+            "assertion": "model_original_date_matches_user",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:b3166e9db7e84785be13375caf7c0c7a#/fault_report/model_requests",
+              "audit:b3166e9db7e84785be13375caf7c0c7a#/judgement/actual_behavior/user_requested_date"
+            ]
+          },
+          {
+            "assertion": "executed_query_date_matches_user",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:b3166e9db7e84785be13375caf7c0c7a#/fault_report/executions",
+              "audit:b3166e9db7e84785be13375caf7c0c7a#/judgement/actual_behavior/user_requested_date"
+            ]
+          },
+          {
+            "assertion": "no_extra_execution_per_model_call",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:b3166e9db7e84785be13375caf7c0c7a#/fault_report/model_requests",
+              "audit:b3166e9db7e84785be13375caf7c0c7a#/fault_report/executions"
+            ]
+          },
+          {
+            "assertion": "query_result_train_authority",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:b3166e9db7e84785be13375caf7c0c7a#/authority",
+              "audit:b3166e9db7e84785be13375caf7c0c7a#/fault_report/executions"
+            ]
+          },
+          {
+            "assertion": "one_order_per_lock",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:b3166e9db7e84785be13375caf7c0c7a#/authority/orders"
+            ]
+          }
+        ],
+        "contract_returned": true
+      },
+      "mutant": {
+        "trace_id": "502761a7c798448eb2437b3dce4cf6e5",
+        "trace_dir": "artifacts/runtime/test-lab-audit-20261027/matrix-committed/langchain/repeat_call/mutant/traces",
+        "input": "查明天上海到杭州的高铁二等座",
+        "tool_sequence": [
+          "query_tickets",
+          "query_tickets"
+        ],
+        "finish_reason": "stop",
+        "error": null,
+        "injections": [
+          {
+            "mutation_id": "M3",
+            "event_id": "30a071fd4f6b43778f3d4a5c32d22529",
+            "mutation_name": "repeat_call",
+            "enabled": true,
+            "applicable": true,
+            "status": "applied",
+            "injection_stage": "tool_execution",
+            "target": "backend execution count",
+            "before": 1,
+            "after": 2,
+            "reason": null,
+            "related_step": 1,
+            "related_tool_call_id": "call_72d5b7d2",
+            "timestamp": "2026-10-27T14:32:11.755212+00:00",
+            "evidence_ref": "audit:502761a7c798448eb2437b3dce4cf6e5#/fault_report/injection_events/0"
+          }
+        ],
+        "dimensions": {
+          "injection_applied": true,
+          "platform_defect_detected": true,
+          "agent_anomaly_recognized": null,
+          "agent_recovered": null,
+          "safe_stop": false,
+          "business_correct": true
+        },
+        "quality_verdict": "fail",
+        "failure_reasons": [
+          "one model request caused repeated backend execution"
+        ],
+        "indeterminate_reasons": [],
+        "assertions": [
+          {
+            "assertion": "reply_train_authority",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:502761a7c798448eb2437b3dce4cf6e5#/authority",
+              "audit:502761a7c798448eb2437b3dce4cf6e5#/judgement/hallucination"
+            ]
+          },
+          {
+            "assertion": "model_original_date_matches_user",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:502761a7c798448eb2437b3dce4cf6e5#/fault_report/model_requests",
+              "audit:502761a7c798448eb2437b3dce4cf6e5#/judgement/actual_behavior/user_requested_date"
+            ]
+          },
+          {
+            "assertion": "executed_query_date_matches_user",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:502761a7c798448eb2437b3dce4cf6e5#/fault_report/executions",
+              "audit:502761a7c798448eb2437b3dce4cf6e5#/judgement/actual_behavior/user_requested_date"
+            ]
+          },
+          {
+            "assertion": "no_extra_execution_per_model_call",
+            "result": "fail",
+            "passed": false,
+            "failure_reason": "one model request caused repeated backend execution",
+            "evidence_refs": [
+              "audit:502761a7c798448eb2437b3dce4cf6e5#/fault_report/model_requests",
+              "audit:502761a7c798448eb2437b3dce4cf6e5#/fault_report/executions"
+            ]
+          },
+          {
+            "assertion": "query_result_train_authority",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:502761a7c798448eb2437b3dce4cf6e5#/authority",
+              "audit:502761a7c798448eb2437b3dce4cf6e5#/fault_report/executions"
+            ]
+          },
+          {
+            "assertion": "one_order_per_lock",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:502761a7c798448eb2437b3dce4cf6e5#/authority/orders"
+            ]
+          }
+        ],
+        "contract_returned": true
+      }
+    },
+    {
+      "engine": "langchain",
+      "mutation": "infinite_loop",
+      "checks": {
+        "baseline_trace_saved": true,
+        "mutant_trace_saved": true,
+        "baseline_has_no_injection": true,
+        "actual_injection_applied": true,
+        "baseline_no_false_alarm": true,
+        "platform_detected": true
+      },
+      "baseline": {
+        "trace_id": "deab1ef5eaad482892dc8bc096750878",
+        "trace_dir": "artifacts/runtime/test-lab-audit-20261027/matrix-committed/langchain/infinite_loop/baseline/traces",
+        "input": "抢明天北京到上海的高铁票",
+        "tool_sequence": [
+          "query_tickets",
+          "monitor_seat"
+        ],
+        "finish_reason": "stop",
+        "error": null,
+        "injections": [],
+        "dimensions": {
+          "injection_applied": null,
+          "platform_defect_detected": false,
+          "agent_anomaly_recognized": null,
+          "agent_recovered": null,
+          "safe_stop": false,
+          "business_correct": true
+        },
+        "quality_verdict": "pass",
+        "failure_reasons": [],
+        "indeterminate_reasons": [],
+        "assertions": [
+          {
+            "assertion": "reply_train_authority",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:deab1ef5eaad482892dc8bc096750878#/authority",
+              "audit:deab1ef5eaad482892dc8bc096750878#/judgement/hallucination"
+            ]
+          },
+          {
+            "assertion": "model_original_date_matches_user",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:deab1ef5eaad482892dc8bc096750878#/fault_report/model_requests",
+              "audit:deab1ef5eaad482892dc8bc096750878#/judgement/actual_behavior/user_requested_date"
+            ]
+          },
+          {
+            "assertion": "executed_query_date_matches_user",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:deab1ef5eaad482892dc8bc096750878#/fault_report/executions",
+              "audit:deab1ef5eaad482892dc8bc096750878#/judgement/actual_behavior/user_requested_date"
+            ]
+          },
+          {
+            "assertion": "no_extra_execution_per_model_call",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:deab1ef5eaad482892dc8bc096750878#/fault_report/model_requests",
+              "audit:deab1ef5eaad482892dc8bc096750878#/fault_report/executions"
+            ]
+          },
+          {
+            "assertion": "query_result_train_authority",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:deab1ef5eaad482892dc8bc096750878#/authority",
+              "audit:deab1ef5eaad482892dc8bc096750878#/fault_report/executions"
+            ]
+          },
+          {
+            "assertion": "one_order_per_lock",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:deab1ef5eaad482892dc8bc096750878#/authority/orders"
+            ]
+          }
+        ],
+        "contract_returned": true
+      },
+      "mutant": {
+        "trace_id": "faeddf6d5af74f509560e06d32c56837",
+        "trace_dir": "artifacts/runtime/test-lab-audit-20261027/matrix-committed/langchain/infinite_loop/mutant/traces",
+        "input": "抢明天北京到上海的高铁票",
+        "tool_sequence": [
+          "query_tickets",
+          "monitor_seat",
+          "monitor_seat",
+          "monitor_seat",
+          "monitor_seat",
+          "monitor_seat",
+          "monitor_seat",
+          "monitor_seat",
+          "monitor_seat"
+        ],
+        "finish_reason": "max_steps_exceeded",
+        "error": null,
+        "injections": [
+          {
+            "mutation_id": "M4",
+            "event_id": "e60fcf5183e544bd962e26da112f804e",
+            "mutation_name": "infinite_loop",
+            "enabled": true,
+            "applicable": true,
+            "status": "applied",
+            "injection_stage": "execution_strategy",
+            "target": "monitor_seat loop",
+            "before": 1,
+            "after": 8,
+            "reason": "有限模拟到达Agent max_steps",
+            "related_step": 2,
+            "related_tool_call_id": "call_4b754ba8",
+            "timestamp": "2026-10-27T14:32:11.819794+00:00",
+            "evidence_ref": "audit:faeddf6d5af74f509560e06d32c56837#/fault_report/injection_events/0"
+          }
+        ],
+        "dimensions": {
+          "injection_applied": true,
+          "platform_defect_detected": true,
+          "agent_anomaly_recognized": null,
+          "agent_recovered": null,
+          "safe_stop": true,
+          "business_correct": false
+        },
+        "quality_verdict": "fail",
+        "failure_reasons": [
+          "one model request caused repeated backend execution",
+          "injected monitor repetitions observed; inspect finite stop reason"
+        ],
+        "indeterminate_reasons": [],
+        "assertions": [
+          {
+            "assertion": "reply_train_authority",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:faeddf6d5af74f509560e06d32c56837#/authority",
+              "audit:faeddf6d5af74f509560e06d32c56837#/judgement/hallucination"
+            ]
+          },
+          {
+            "assertion": "model_original_date_matches_user",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:faeddf6d5af74f509560e06d32c56837#/fault_report/model_requests",
+              "audit:faeddf6d5af74f509560e06d32c56837#/judgement/actual_behavior/user_requested_date"
+            ]
+          },
+          {
+            "assertion": "executed_query_date_matches_user",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:faeddf6d5af74f509560e06d32c56837#/fault_report/executions",
+              "audit:faeddf6d5af74f509560e06d32c56837#/judgement/actual_behavior/user_requested_date"
+            ]
+          },
+          {
+            "assertion": "no_extra_execution_per_model_call",
+            "result": "fail",
+            "passed": false,
+            "failure_reason": "one model request caused repeated backend execution",
+            "evidence_refs": [
+              "audit:faeddf6d5af74f509560e06d32c56837#/fault_report/model_requests",
+              "audit:faeddf6d5af74f509560e06d32c56837#/fault_report/executions"
+            ]
+          },
+          {
+            "assertion": "no_forced_monitor_loop",
+            "result": "fail",
+            "passed": false,
+            "failure_reason": "injected monitor repetitions observed; inspect finite stop reason",
+            "evidence_refs": [
+              "audit:faeddf6d5af74f509560e06d32c56837#/fault_report/executions"
+            ]
+          },
+          {
+            "assertion": "query_result_train_authority",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:faeddf6d5af74f509560e06d32c56837#/authority",
+              "audit:faeddf6d5af74f509560e06d32c56837#/fault_report/executions"
+            ]
+          },
+          {
+            "assertion": "one_order_per_lock",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:faeddf6d5af74f509560e06d32c56837#/authority/orders"
+            ]
+          }
+        ],
+        "contract_returned": true
+      }
+    },
+    {
+      "engine": "langchain",
+      "mutation": "route_error",
+      "checks": {
+        "baseline_trace_saved": true,
+        "mutant_trace_saved": true,
+        "baseline_has_no_injection": true,
+        "actual_injection_applied": true,
+        "baseline_no_false_alarm": true,
+        "platform_detected": true
+      },
+      "baseline": {
+        "trace_id": "5f3b667e5d2244d4b27797c6bbbab6bd",
+        "trace_dir": "artifacts/runtime/test-lab-audit-20261027/matrix-committed/langchain/route_error/baseline/traces",
+        "input": "退票手续费政策是什么？",
+        "tool_sequence": [
+          "search_policy"
+        ],
+        "finish_reason": "stop",
+        "error": null,
+        "injections": [],
+        "dimensions": {
+          "injection_applied": null,
+          "platform_defect_detected": false,
+          "agent_anomaly_recognized": null,
+          "agent_recovered": null,
+          "safe_stop": false,
+          "business_correct": true
+        },
+        "quality_verdict": "pass",
+        "failure_reasons": [],
+        "indeterminate_reasons": [],
+        "assertions": [
+          {
+            "assertion": "reply_train_authority",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:5f3b667e5d2244d4b27797c6bbbab6bd#/authority",
+              "audit:5f3b667e5d2244d4b27797c6bbbab6bd#/judgement/hallucination"
+            ]
+          },
+          {
+            "assertion": "policy_intent_preserves_tool_route",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:5f3b667e5d2244d4b27797c6bbbab6bd#/fault_report/model_requests",
+              "audit:5f3b667e5d2244d4b27797c6bbbab6bd#/fault_report/executions"
+            ]
+          },
+          {
+            "assertion": "no_extra_execution_per_model_call",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:5f3b667e5d2244d4b27797c6bbbab6bd#/fault_report/model_requests",
+              "audit:5f3b667e5d2244d4b27797c6bbbab6bd#/fault_report/executions"
+            ]
+          },
+          {
+            "assertion": "one_order_per_lock",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:5f3b667e5d2244d4b27797c6bbbab6bd#/authority/orders"
+            ]
+          }
+        ],
+        "contract_returned": true
+      },
+      "mutant": {
+        "trace_id": "5491bef4281949fca57e4ce5f63345e8",
+        "trace_dir": "artifacts/runtime/test-lab-audit-20261027/matrix-committed/langchain/route_error/mutant/traces",
+        "input": "退票手续费政策是什么？",
+        "tool_sequence": [
+          "query_tickets"
+        ],
+        "finish_reason": "stop",
+        "error": null,
+        "injections": [
+          {
+            "mutation_id": "M5",
+            "event_id": "dc848e32b0ea4c108368e6ae4fd376f6",
+            "mutation_name": "route_error",
+            "enabled": true,
+            "applicable": true,
+            "status": "applied",
+            "injection_stage": "tool_routing",
+            "target": "tool.name",
+            "before": {
+              "name": "search_policy",
+              "args": {
+                "question": "退票手续费政策是什么？"
+              },
+              "id": "call_7c433c96",
+              "type": "tool_call"
+            },
+            "after": {
+              "name": "query_tickets",
+              "args": {
+                "from_city": "北京",
+                "to_city": "上海",
+                "date": "2026-10-28"
+              },
+              "id": "call_7c433c96",
+              "type": "tool_call"
+            },
+            "reason": null,
+            "related_step": 1,
+            "related_tool_call_id": "call_7c433c96",
+            "timestamp": "2026-10-27T14:32:11.870577+00:00",
+            "evidence_ref": "audit:5491bef4281949fca57e4ce5f63345e8#/fault_report/injection_events/0"
+          }
+        ],
+        "dimensions": {
+          "injection_applied": true,
+          "platform_defect_detected": true,
+          "agent_anomaly_recognized": null,
+          "agent_recovered": null,
+          "safe_stop": false,
+          "business_correct": false
+        },
+        "quality_verdict": "fail",
+        "failure_reasons": [
+          "policy request executed a different tool",
+          "policy-only question executed ticket search without policy search"
+        ],
+        "indeterminate_reasons": [],
+        "assertions": [
+          {
+            "assertion": "reply_train_authority",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:5491bef4281949fca57e4ce5f63345e8#/authority",
+              "audit:5491bef4281949fca57e4ce5f63345e8#/judgement/hallucination"
+            ]
+          },
+          {
+            "assertion": "policy_intent_preserves_tool_route",
+            "result": "fail",
+            "passed": false,
+            "failure_reason": "policy request executed a different tool",
+            "evidence_refs": [
+              "audit:5491bef4281949fca57e4ce5f63345e8#/fault_report/model_requests",
+              "audit:5491bef4281949fca57e4ce5f63345e8#/fault_report/executions"
+            ]
+          },
+          {
+            "assertion": "policy_question_not_routed_to_ticket_query",
+            "result": "fail",
+            "passed": false,
+            "failure_reason": "policy-only question executed ticket search without policy search",
+            "evidence_refs": [
+              "audit:5491bef4281949fca57e4ce5f63345e8#/judgement/actual_behavior/user_requested_date",
+              "audit:5491bef4281949fca57e4ce5f63345e8#/fault_report/executions"
+            ]
+          },
+          {
+            "assertion": "no_extra_execution_per_model_call",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:5491bef4281949fca57e4ce5f63345e8#/fault_report/model_requests",
+              "audit:5491bef4281949fca57e4ce5f63345e8#/fault_report/executions"
+            ]
+          },
+          {
+            "assertion": "query_result_train_authority",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:5491bef4281949fca57e4ce5f63345e8#/authority",
+              "audit:5491bef4281949fca57e4ce5f63345e8#/fault_report/executions"
+            ]
+          },
+          {
+            "assertion": "one_order_per_lock",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:5491bef4281949fca57e4ce5f63345e8#/authority/orders"
+            ]
+          }
+        ],
+        "contract_returned": true
+      }
+    },
+    {
+      "engine": "langchain",
+      "mutation": "no_citation",
+      "checks": {
+        "baseline_trace_saved": true,
+        "mutant_trace_saved": true,
+        "baseline_has_no_injection": true,
+        "actual_injection_applied": true,
+        "baseline_no_false_alarm": true,
+        "platform_detected": true
+      },
+      "baseline": {
+        "trace_id": "ba22453e5e87400ba7de40d0446949e1",
+        "trace_dir": "artifacts/runtime/test-lab-audit-20261027/matrix-committed/langchain/no_citation/baseline/traces",
+        "input": "退票手续费政策是什么？",
+        "tool_sequence": [
+          "search_policy"
+        ],
+        "finish_reason": "stop",
+        "error": null,
+        "injections": [],
+        "dimensions": {
+          "injection_applied": null,
+          "platform_defect_detected": false,
+          "agent_anomaly_recognized": null,
+          "agent_recovered": null,
+          "safe_stop": false,
+          "business_correct": true
+        },
+        "quality_verdict": "pass",
+        "failure_reasons": [],
+        "indeterminate_reasons": [],
+        "assertions": [
+          {
+            "assertion": "reply_train_authority",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:ba22453e5e87400ba7de40d0446949e1#/authority",
+              "audit:ba22453e5e87400ba7de40d0446949e1#/judgement/hallucination"
+            ]
+          },
+          {
+            "assertion": "policy_intent_preserves_tool_route",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:ba22453e5e87400ba7de40d0446949e1#/fault_report/model_requests",
+              "audit:ba22453e5e87400ba7de40d0446949e1#/fault_report/executions"
+            ]
+          },
+          {
+            "assertion": "no_extra_execution_per_model_call",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:ba22453e5e87400ba7de40d0446949e1#/fault_report/model_requests",
+              "audit:ba22453e5e87400ba7de40d0446949e1#/fault_report/executions"
+            ]
+          },
+          {
+            "assertion": "one_order_per_lock",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:ba22453e5e87400ba7de40d0446949e1#/authority/orders"
+            ]
+          }
+        ],
+        "contract_returned": true
+      },
+      "mutant": {
+        "trace_id": "03310fecc57f4d2180df1a054bafd558",
+        "trace_dir": "artifacts/runtime/test-lab-audit-20261027/matrix-committed/langchain/no_citation/mutant/traces",
+        "input": "退票手续费政策是什么？",
+        "tool_sequence": [
+          "search_policy"
+        ],
+        "finish_reason": "stop",
+        "error": null,
+        "injections": [
+          {
+            "mutation_id": "M6",
+            "event_id": "3eb3527b26fe46559ab3a5f0d44e8cbc",
+            "mutation_name": "no_citation",
+            "enabled": true,
+            "applicable": true,
+            "status": "applied",
+            "injection_stage": "tool_result",
+            "target": "search_policy.hits.doc_id",
+            "before": {
+              "question": "退票手续费政策是什么？",
+              "hits": [
+                {
+                  "doc_id": "P01",
+                  "source": "data/policies.md#P01",
+                  "title": "退票手续费阶梯",
+                  "content": "开车前 48 小时以上退票，收取票价 5% 手续费；开车前 24 至 48 小时退票，收取 10%；开车前不足 24 小时退票，收取 20%。已取报销凭证或已改签的车票不退。",
+                  "score": 2.0926
+                },
+                {
+                  "doc_id": "P09",
+                  "source": "data/policies.md#P09",
+                  "title": "机票退改规则",
+                  "content": "机票经济舱起飞前 24 小时以上退票收取票面价 10%，24 小时内收取 30%；特价舱位（折扣低于 4 折）不支持退票，仅退机场建设费与燃油附加费。",
+                  "score": 1.397
+                },
+                {
+                  "doc_id": "P04",
+                  "source": "data/policies.md#P04",
+                  "title": "儿童票",
+                  "content": "身高 1.2 米以下且不满 6 周岁儿童可免票（不占座）；6 至 14 周岁需购买儿童票，二等座按公布票价 50% 计算，一等座与商务座不售儿童票。",
+                  "score": 0.6565
+                }
+              ],
+              "count": 3
+            },
+            "after": {
+              "question": "退票手续费政策是什么？",
+              "hits": [
+                {
+                  "title": "退票手续费阶梯",
+                  "content": "开车前 48 小时以上退票，收取票价 5% 手续费；开车前 24 至 48 小时退票，收取 10%；开车前不足 24 小时退票，收取 20%。已取报销凭证或已改签的车票不退。",
+                  "score": 2.0926
+                },
+                {
+                  "title": "机票退改规则",
+                  "content": "机票经济舱起飞前 24 小时以上退票收取票面价 10%，24 小时内收取 30%；特价舱位（折扣低于 4 折）不支持退票，仅退机场建设费与燃油附加费。",
+                  "score": 1.397
+                },
+                {
+                  "title": "儿童票",
+                  "content": "身高 1.2 米以下且不满 6 周岁儿童可免票（不占座）；6 至 14 周岁需购买儿童票，二等座按公布票价 50% 计算，一等座与商务座不售儿童票。",
+                  "score": 0.6565
+                }
+              ],
+              "count": 3,
+              "citation_status": "unavailable"
+            },
+            "reason": null,
+            "related_step": 1,
+            "related_tool_call_id": "call_e4740614",
+            "timestamp": "2026-10-27T14:32:11.958233+00:00",
+            "evidence_ref": "audit:03310fecc57f4d2180df1a054bafd558#/fault_report/injection_events/0"
+          }
+        ],
+        "dimensions": {
+          "injection_applied": true,
+          "platform_defect_detected": true,
+          "agent_anomaly_recognized": null,
+          "agent_recovered": null,
+          "safe_stop": false,
+          "business_correct": false
+        },
+        "quality_verdict": "fail",
+        "failure_reasons": [
+          "model-visible policy result has missing citation"
+        ],
+        "indeterminate_reasons": [],
+        "assertions": [
+          {
+            "assertion": "reply_train_authority",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:03310fecc57f4d2180df1a054bafd558#/authority",
+              "audit:03310fecc57f4d2180df1a054bafd558#/judgement/hallucination"
+            ]
+          },
+          {
+            "assertion": "policy_intent_preserves_tool_route",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:03310fecc57f4d2180df1a054bafd558#/fault_report/model_requests",
+              "audit:03310fecc57f4d2180df1a054bafd558#/fault_report/executions"
+            ]
+          },
+          {
+            "assertion": "no_extra_execution_per_model_call",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:03310fecc57f4d2180df1a054bafd558#/fault_report/model_requests",
+              "audit:03310fecc57f4d2180df1a054bafd558#/fault_report/executions"
+            ]
+          },
+          {
+            "assertion": "retrieved_policy_has_citations",
+            "result": "fail",
+            "passed": false,
+            "failure_reason": "model-visible policy result has missing citation",
+            "evidence_refs": [
+              "audit:03310fecc57f4d2180df1a054bafd558#/fault_report/executions"
+            ]
+          },
+          {
+            "assertion": "one_order_per_lock",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:03310fecc57f4d2180df1a054bafd558#/authority/orders"
+            ]
+          }
+        ],
+        "contract_returned": true
+      }
+    },
+    {
+      "engine": "langchain",
+      "mutation": "hallucinated_train",
+      "checks": {
+        "baseline_trace_saved": true,
+        "mutant_trace_saved": true,
+        "baseline_has_no_injection": true,
+        "actual_injection_applied": true,
+        "baseline_no_false_alarm": true,
+        "platform_detected": true
+      },
+      "baseline": {
+        "trace_id": "36c7926a0afc4468aa7769616ab441cc",
+        "trace_dir": "artifacts/runtime/test-lab-audit-20261027/matrix-committed/langchain/hallucinated_train/baseline/traces",
+        "input": "查明天上海到杭州的高铁二等座",
+        "tool_sequence": [
+          "query_tickets"
+        ],
+        "finish_reason": "stop",
+        "error": null,
+        "injections": [],
+        "dimensions": {
+          "injection_applied": null,
+          "platform_defect_detected": false,
+          "agent_anomaly_recognized": null,
+          "agent_recovered": null,
+          "safe_stop": false,
+          "business_correct": true
+        },
+        "quality_verdict": "pass",
+        "failure_reasons": [],
+        "indeterminate_reasons": [],
+        "assertions": [
+          {
+            "assertion": "reply_train_authority",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:36c7926a0afc4468aa7769616ab441cc#/authority",
+              "audit:36c7926a0afc4468aa7769616ab441cc#/judgement/hallucination"
+            ]
+          },
+          {
+            "assertion": "model_original_date_matches_user",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:36c7926a0afc4468aa7769616ab441cc#/fault_report/model_requests",
+              "audit:36c7926a0afc4468aa7769616ab441cc#/judgement/actual_behavior/user_requested_date"
+            ]
+          },
+          {
+            "assertion": "executed_query_date_matches_user",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:36c7926a0afc4468aa7769616ab441cc#/fault_report/executions",
+              "audit:36c7926a0afc4468aa7769616ab441cc#/judgement/actual_behavior/user_requested_date"
+            ]
+          },
+          {
+            "assertion": "no_extra_execution_per_model_call",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:36c7926a0afc4468aa7769616ab441cc#/fault_report/model_requests",
+              "audit:36c7926a0afc4468aa7769616ab441cc#/fault_report/executions"
+            ]
+          },
+          {
+            "assertion": "query_result_train_authority",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:36c7926a0afc4468aa7769616ab441cc#/authority",
+              "audit:36c7926a0afc4468aa7769616ab441cc#/fault_report/executions"
+            ]
+          },
+          {
+            "assertion": "one_order_per_lock",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:36c7926a0afc4468aa7769616ab441cc#/authority/orders"
+            ]
+          }
+        ],
+        "contract_returned": true
+      },
+      "mutant": {
+        "trace_id": "0889134b2178419aa5685055c809a19a",
+        "trace_dir": "artifacts/runtime/test-lab-audit-20261027/matrix-committed/langchain/hallucinated_train/mutant/traces",
+        "input": "查明天上海到杭州的高铁二等座",
+        "tool_sequence": [
+          "query_tickets"
+        ],
+        "finish_reason": "stop",
+        "error": null,
+        "injections": [
+          {
+            "mutation_id": "M7",
+            "event_id": "911c34bf47d2433ea38edb3829e0006c",
+            "mutation_name": "hallucinated_train",
+            "enabled": true,
+            "applicable": true,
+            "status": "applied",
+            "injection_stage": "tool_result",
+            "target": "query_tickets.trains",
+            "before": {
+              "trains": [
+                {
+                  "kind": "高铁",
+                  "train_no": "G7303",
+                  "from_city": "上海",
+                  "to_city": "杭州",
+                  "date": "2026-10-28",
+                  "depart": "12:34",
+                  "arrive": "13:34",
+                  "seat_type": "二等座",
+                  "price": 73.0,
+                  "seats_left": 51
+                },
+                {
+                  "kind": "高铁",
+                  "train_no": "G7302",
+                  "from_city": "上海",
+                  "to_city": "杭州",
+                  "date": "2026-10-28",
+                  "depart": "09:17",
+                  "arrive": "10:17",
+                  "seat_type": "二等座",
+                  "price": 73.0,
+                  "seats_left": 47
+                },
+                {
+                  "kind": "高铁",
+                  "train_no": "G7301",
+                  "from_city": "上海",
+                  "to_city": "杭州",
+                  "date": "2026-10-28",
+                  "depart": "06:00",
+                  "arrive": "07:00",
+                  "seat_type": "二等座",
+                  "price": 73.0,
+                  "seats_left": 35
+                }
+              ],
+              "count": 3
+            },
+            "after": {
+              "trains": [
+                {
+                  "kind": "高铁",
+                  "train_no": "G9999",
+                  "from_city": "上海",
+                  "to_city": "杭州",
+                  "date": "2026-10-28",
+                  "depart": "12:34",
+                  "arrive": "13:34",
+                  "seat_type": "二等座",
+                  "price": 73.0,
+                  "seats_left": 51
+                },
+                {
+                  "kind": "高铁",
+                  "train_no": "G7303",
+                  "from_city": "上海",
+                  "to_city": "杭州",
+                  "date": "2026-10-28",
+                  "depart": "12:34",
+                  "arrive": "13:34",
+                  "seat_type": "二等座",
+                  "price": 73.0,
+                  "seats_left": 51
+                },
+                {
+                  "kind": "高铁",
+                  "train_no": "G7302",
+                  "from_city": "上海",
+                  "to_city": "杭州",
+                  "date": "2026-10-28",
+                  "depart": "09:17",
+                  "arrive": "10:17",
+                  "seat_type": "二等座",
+                  "price": 73.0,
+                  "seats_left": 47
+                },
+                {
+                  "kind": "高铁",
+                  "train_no": "G7301",
+                  "from_city": "上海",
+                  "to_city": "杭州",
+                  "date": "2026-10-28",
+                  "depart": "06:00",
+                  "arrive": "07:00",
+                  "seat_type": "二等座",
+                  "price": 73.0,
+                  "seats_left": 35
+                }
+              ],
+              "count": 4
+            },
+            "reason": null,
+            "related_step": 1,
+            "related_tool_call_id": "call_0caa4dcb",
+            "timestamp": "2026-10-27T14:32:12.014073+00:00",
+            "evidence_ref": "audit:0889134b2178419aa5685055c809a19a#/fault_report/injection_events/0"
+          }
+        ],
+        "dimensions": {
+          "injection_applied": true,
+          "platform_defect_detected": true,
+          "agent_anomaly_recognized": null,
+          "agent_recovered": null,
+          "safe_stop": false,
+          "business_correct": false
+        },
+        "quality_verdict": "fail",
+        "failure_reasons": [
+          "reply asserts unsupported or ambiguous trains",
+          "tool-visible trains not in authoritative database"
+        ],
+        "indeterminate_reasons": [],
+        "assertions": [
+          {
+            "assertion": "reply_train_authority",
+            "result": "fail",
+            "passed": false,
+            "failure_reason": "reply asserts unsupported or ambiguous trains",
+            "evidence_refs": [
+              "audit:0889134b2178419aa5685055c809a19a#/authority",
+              "audit:0889134b2178419aa5685055c809a19a#/judgement/hallucination"
+            ]
+          },
+          {
+            "assertion": "model_original_date_matches_user",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:0889134b2178419aa5685055c809a19a#/fault_report/model_requests",
+              "audit:0889134b2178419aa5685055c809a19a#/judgement/actual_behavior/user_requested_date"
+            ]
+          },
+          {
+            "assertion": "executed_query_date_matches_user",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:0889134b2178419aa5685055c809a19a#/fault_report/executions",
+              "audit:0889134b2178419aa5685055c809a19a#/judgement/actual_behavior/user_requested_date"
+            ]
+          },
+          {
+            "assertion": "no_extra_execution_per_model_call",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:0889134b2178419aa5685055c809a19a#/fault_report/model_requests",
+              "audit:0889134b2178419aa5685055c809a19a#/fault_report/executions"
+            ]
+          },
+          {
+            "assertion": "query_result_train_authority",
+            "result": "fail",
+            "passed": false,
+            "failure_reason": "tool-visible trains not in authoritative database",
+            "evidence_refs": [
+              "audit:0889134b2178419aa5685055c809a19a#/authority",
+              "audit:0889134b2178419aa5685055c809a19a#/fault_report/executions"
+            ]
+          },
+          {
+            "assertion": "one_order_per_lock",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:0889134b2178419aa5685055c809a19a#/authority/orders"
+            ]
+          }
+        ],
+        "contract_returned": true
+      }
+    },
+    {
+      "engine": "backend_concurrency",
+      "mutation": "concurrent_duplicate_order",
+      "checks": {
+        "baseline_trace_saved": true,
+        "mutant_trace_saved": true,
+        "baseline_has_no_injection": true,
+        "actual_injection_applied": true,
+        "baseline_no_false_alarm": true,
+        "platform_detected": true
+      },
+      "baseline": {
+        "trace_id": "8dc46a7c08ea41c296f687966d338d38",
+        "trace_dir": "artifacts/runtime/test-lab-audit-20261027/matrix-committed/concurrency/traces",
+        "dimensions": {
+          "injection_applied": null,
+          "platform_defect_detected": false,
+          "agent_anomaly_recognized": null,
+          "agent_recovered": null,
+          "safe_stop": null,
+          "business_correct": true
+        },
+        "quality_verdict": "pass",
+        "assertions": [
+          {
+            "assertion": "one_order_per_lock",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:8dc46a7c08ea41c296f687966d338d38#/authority/orders"
+            ]
+          },
+          {
+            "assertion": "expected_order_count",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:8dc46a7c08ea41c296f687966d338d38#/authority/orders"
+            ]
+          },
+          {
+            "assertion": "returned_orders_match_database",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:8dc46a7c08ea41c296f687966d338d38#/requests",
+              "audit:8dc46a7c08ea41c296f687966d338d38#/authority/orders"
+            ]
+          },
+          {
+            "assertion": "order_ids_unique",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:8dc46a7c08ea41c296f687966d338d38#/authority/orders"
+            ]
+          },
+          {
+            "assertion": "lock_order_status_consistent",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:8dc46a7c08ea41c296f687966d338d38#/authority"
+            ]
+          },
+          {
+            "assertion": "no_unexpected_worker_errors",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:8dc46a7c08ea41c296f687966d338d38#/requests"
+            ]
+          },
+          {
+            "assertion": "independent_locks_do_not_collide",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:8dc46a7c08ea41c296f687966d338d38#/authority/orders"
+            ]
+          },
+          {
+            "assertion": "followup_query_matches_persisted_orders",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:8dc46a7c08ea41c296f687966d338d38#/followup_query"
+            ]
+          },
+          {
+            "assertion": "all_requests_reached_barrier",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:8dc46a7c08ea41c296f687966d338d38#/requests"
+            ]
+          }
+        ],
+        "resources_cleaned": true
+      },
+      "mutant": {
+        "trace_id": "06c2a27c4a01432ca891af6a2b81917e",
+        "trace_dir": "artifacts/runtime/test-lab-audit-20261027/matrix-committed/concurrency/traces",
+        "dimensions": {
+          "injection_applied": true,
+          "platform_defect_detected": true,
+          "agent_anomaly_recognized": null,
+          "agent_recovered": null,
+          "safe_stop": null,
+          "business_correct": false
+        },
+        "quality_verdict": "fail",
+        "assertions": [
+          {
+            "assertion": "one_order_per_lock",
+            "result": "fail",
+            "passed": false,
+            "failure_reason": "same lock has independent duplicate orders",
+            "evidence_refs": [
+              "audit:06c2a27c4a01432ca891af6a2b81917e#/authority/orders"
+            ]
+          },
+          {
+            "assertion": "expected_order_count",
+            "result": "fail",
+            "passed": false,
+            "failure_reason": "order count violates scenario expectation",
+            "evidence_refs": [
+              "audit:06c2a27c4a01432ca891af6a2b81917e#/authority/orders"
+            ]
+          },
+          {
+            "assertion": "returned_orders_match_database",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:06c2a27c4a01432ca891af6a2b81917e#/requests",
+              "audit:06c2a27c4a01432ca891af6a2b81917e#/authority/orders"
+            ]
+          },
+          {
+            "assertion": "order_ids_unique",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:06c2a27c4a01432ca891af6a2b81917e#/authority/orders"
+            ]
+          },
+          {
+            "assertion": "lock_order_status_consistent",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:06c2a27c4a01432ca891af6a2b81917e#/authority"
+            ]
+          },
+          {
+            "assertion": "no_unexpected_worker_errors",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:06c2a27c4a01432ca891af6a2b81917e#/requests"
+            ]
+          },
+          {
+            "assertion": "independent_locks_do_not_collide",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:06c2a27c4a01432ca891af6a2b81917e#/authority/orders"
+            ]
+          },
+          {
+            "assertion": "followup_query_matches_persisted_orders",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:06c2a27c4a01432ca891af6a2b81917e#/followup_query"
+            ]
+          },
+          {
+            "assertion": "all_requests_reached_barrier",
+            "result": "pass",
+            "passed": true,
+            "failure_reason": null,
+            "evidence_refs": [
+              "audit:06c2a27c4a01432ca891af6a2b81917e#/requests"
+            ]
+          }
+        ],
+        "resources_cleaned": true,
+        "injections": [
+          {
+            "mutation_id": "M8",
+            "event_id": "e1cef6c35a1e45be952ec0b005361879",
+            "mutation_name": "concurrent_duplicate_order",
+            "enabled": true,
+            "applicable": true,
+            "status": "applied",
+            "injection_stage": "sandbox_concurrent_backend",
+            "target": "temporary shadow orders schema and check-before-barrier scheduling",
+            "before": {
+              "orders_per_lock": 1,
+              "original_schema_unique_lock_id": true
+            },
+            "after": {
+              "orders_per_lock": {
+                "LK85dff84d": 4
+              },
+              "source_database_unchanged": true
+            },
+            "reason": null,
+            "related_step": null,
+            "related_tool_call_id": null,
+            "timestamp": "2026-10-27T14:32:12.171484+00:00",
+            "evidence_ref": "audit:06c2a27c4a01432ca891af6a2b81917e#/fault_report/injection_events/0"
+          },
+          {
+            "mutation_id": "M1",
+            "event_id": "439d76b2e4bf4116b6f7f21db6580d19",
+            "mutation_name": "date_offset",
+            "enabled": false,
+            "applicable": null,
+            "status": "disabled",
+            "injection_stage": null,
+            "target": null,
+            "before": null,
+            "after": null,
+            "reason": "explicitly disabled",
+            "related_step": null,
+            "related_tool_call_id": null,
+            "timestamp": "2026-10-27T14:32:12.171484+00:00",
+            "evidence_ref": "audit:06c2a27c4a01432ca891af6a2b81917e"
+          },
+          {
+            "mutation_id": "M2",
+            "event_id": "d61553ca68314d968b28a8e99db764a6",
+            "mutation_name": "skip_lock",
+            "enabled": false,
+            "applicable": null,
+            "status": "disabled",
+            "injection_stage": null,
+            "target": null,
+            "before": null,
+            "after": null,
+            "reason": "explicitly disabled",
+            "related_step": null,
+            "related_tool_call_id": null,
+            "timestamp": "2026-10-27T14:32:12.171484+00:00",
+            "evidence_ref": "audit:06c2a27c4a01432ca891af6a2b81917e"
+          },
+          {
+            "mutation_id": "M3",
+            "event_id": "f30cc2a941894444a8f925c4fe0fe245",
+            "mutation_name": "repeat_call",
+            "enabled": false,
+            "applicable": null,
+            "status": "disabled",
+            "injection_stage": null,
+            "target": null,
+            "before": null,
+            "after": null,
+            "reason": "explicitly disabled",
+            "related_step": null,
+            "related_tool_call_id": null,
+            "timestamp": "2026-10-27T14:32:12.171484+00:00",
+            "evidence_ref": "audit:06c2a27c4a01432ca891af6a2b81917e"
+          },
+          {
+            "mutation_id": "M4",
+            "event_id": "96f3bf596704420cb3e93777635bb4ab",
+            "mutation_name": "infinite_loop",
+            "enabled": false,
+            "applicable": null,
+            "status": "disabled",
+            "injection_stage": null,
+            "target": null,
+            "before": null,
+            "after": null,
+            "reason": "explicitly disabled",
+            "related_step": null,
+            "related_tool_call_id": null,
+            "timestamp": "2026-10-27T14:32:12.171484+00:00",
+            "evidence_ref": "audit:06c2a27c4a01432ca891af6a2b81917e"
+          },
+          {
+            "mutation_id": "M5",
+            "event_id": "618cbff51df245d5893b42ad6394dcb2",
+            "mutation_name": "route_error",
+            "enabled": false,
+            "applicable": null,
+            "status": "disabled",
+            "injection_stage": null,
+            "target": null,
+            "before": null,
+            "after": null,
+            "reason": "explicitly disabled",
+            "related_step": null,
+            "related_tool_call_id": null,
+            "timestamp": "2026-10-27T14:32:12.171484+00:00",
+            "evidence_ref": "audit:06c2a27c4a01432ca891af6a2b81917e"
+          },
+          {
+            "mutation_id": "M6",
+            "event_id": "764985fa68ae40648a7952f1b9643824",
+            "mutation_name": "no_citation",
+            "enabled": false,
+            "applicable": null,
+            "status": "disabled",
+            "injection_stage": null,
+            "target": null,
+            "before": null,
+            "after": null,
+            "reason": "explicitly disabled",
+            "related_step": null,
+            "related_tool_call_id": null,
+            "timestamp": "2026-10-27T14:32:12.171484+00:00",
+            "evidence_ref": "audit:06c2a27c4a01432ca891af6a2b81917e"
+          },
+          {
+            "mutation_id": "M7",
+            "event_id": "c1e88da374014037a7ba3af65b8d1097",
+            "mutation_name": "hallucinated_train",
+            "enabled": false,
+            "applicable": null,
+            "status": "disabled",
+            "injection_stage": null,
+            "target": null,
+            "before": null,
+            "after": null,
+            "reason": "explicitly disabled",
+            "related_step": null,
+            "related_tool_call_id": null,
+            "timestamp": "2026-10-27T14:32:12.171484+00:00",
+            "evidence_ref": "audit:06c2a27c4a01432ca891af6a2b81917e"
+          }
+        ],
+        "database_isolation": {
+          "temporary_only": true,
+          "source_schema_not_altered": true,
+          "shadow_only_mutation": true,
+          "source_data_unchanged_in_mutant": true
+        }
+      }
+    }
+  ],
+  "failures": []
+}

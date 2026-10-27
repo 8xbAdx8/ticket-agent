@@ -1,0 +1,29 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+_ LabAuditRegression.test_submit_widget_rotates_after_execution_and_allows_next_deliberate_run _
+
+self = <test_lab_audit_regression.LabAuditRegression testMethod=test_submit_widget_rotates_after_execution_and_allows_next_deliberate_run>
+
+    def test_submit_widget_rotates_after_execution_and_allows_next_deliberate_run(self):
+        from streamlit.testing.v1 import AppTest
+        root=config.BASE_DIR/'artifacts/runtime';root.mkdir(parents=True,exist_ok=True)
+        with tempfile.TemporaryDirectory(prefix='lab-submit-',dir=root) as directory:
+            base=Path(directory).resolve();self.assertTrue(base.is_relative_to(root.resolve()))
+            def new_session(*args,**kwargs):
+                return Conversation(*args,root=base/uuid.uuid4().hex,**kwargs)
+            with patch('web.laboratory.Conversation',side_effect=new_session):
+                app=AppTest.from_string('from web.laboratory import lab_page\nlab_page()').run()
+                button=next(b for b in app.button if b.label=='执行测试')
+                first=button.key
+                self.assertIsNotNone(first)
+                button.click().run()
+                second=next(b for b in app.button if b.label=='执行测试')
+>               self.assertNotEqual(first,second.key)
+E               AssertionError: 'FormSubmitter:lab_submit-执行测试' == 'FormSubmitter:lab_submit-执行测试'
+
+tests\test_lab_audit_regression.py:72: AssertionError
+---------------------------- Captured stderr call -----------------------------
+2026-10-27 22:14:41.332 WARNING streamlit.runtime.scriptrunner_utils.script_run_context: Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+=========================== short test summary info ===========================
+FAILED tests/test_lab_audit_regression.py::LabAuditRegression::test_submit_widget_rotates_after_execution_and_allows_next_deliberate_run
+1 failed in 0.87s

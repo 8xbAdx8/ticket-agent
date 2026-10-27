@@ -1,0 +1,57 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+_ LabAuditRegression.test_saved_lab_trace_can_be_recovered_by_id_after_new_browser_session _
+
+self = <test_lab_audit_regression.LabAuditRegression testMethod=test_saved_lab_trace_can_be_recovered_by_id_after_new_browser_session>
+
+    def test_saved_lab_trace_can_be_recovered_by_id_after_new_browser_session(self):
+        from streamlit.testing.v1 import AppTest
+        with tempfile.TemporaryDirectory(prefix='lab-replay-') as directory:
+            root=Path(directory);sid='web-0123456789ab';trace_id='d'*32
+            folder=root/'artifacts/runtime/v33/lab'/sid/'traces';folder.mkdir(parents=True)
+            row={'trace_id':trace_id,'provider':'mock','timestamp':'2026-10-27T00:00:00Z',
+                 'public_trace':{'session_id':sid,'user_msg':'查票','reply':'示例','steps':[]},
+                 'judgement':{'quality_verdict':'indeterminate','dimensions':{}}}
+            (folder/'audit_runs.jsonl').write_text(json.dumps(row,ensure_ascii=False)+'\n',encoding='utf-8')
+            before=(folder/'audit_runs.jsonl').read_bytes()
+            with patch.object(config,'BASE_DIR',root):
+                app=AppTest.from_string('from web.trace_view import trace_page\ntrace_page([])').run()
+>               next(r for r in app.radio if r.label=='证据范围').set_value('本地实验按会话ID回放').run()
+
+tests\test_lab_audit_regression.py:51:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+.venv-v35\Lib\site-packages\streamlit\testing\v1\element_tree.py:263: in run
+    return self.root.run(timeout=timeout)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv-v35\Lib\site-packages\streamlit\testing\v1\element_tree.py:2910: in run
+    widget_states = self.get_widget_states()
+                    ^^^^^^^^^^^^^^^^^^^^^^^^
+.venv-v35\Lib\site-packages\streamlit\testing\v1\element_tree.py:2888: in get_widget_states
+    w = get_widget_state(node)
+        ^^^^^^^^^^^^^^^^^^^^^^
+.venv-v35\Lib\site-packages\streamlit\testing\v1\element_tree.py:2798: in get_widget_state
+    return node._widget_state
+           ^^^^^^^^^^^^^^^^^^
+.venv-v35\Lib\site-packages\streamlit\testing\v1\element_tree.py:1640: in _widget_state
+    if self.index is not None and len(self.options) > 0:
+       ^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = Radio(key='trace_scope', _value='本地实验按会话ID回放', label='证据范围', options=['当前工作空间', '历史离线自测', '公共历史 Trace'], horizontal=True)
+
+    @property
+    def index(self) -> int | None:
+        """The index of the current selection. (int)"""  # noqa: D400
+        if self.value is None:
+            return None
+        formatted_value = _format_value_for_widget(self.format_func, self.value)
+>       return self.options.index(formatted_value)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       ValueError: '本地实验按会话ID回放' is not in list
+
+.venv-v35\Lib\site-packages\streamlit\testing\v1\element_tree.py:1611: ValueError
+---------------------------- Captured stderr call -----------------------------
+2026-10-27 22:10:14.634 WARNING streamlit.runtime.scriptrunner_utils.script_run_context: Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+=========================== short test summary info ===========================
+FAILED tests/test_lab_audit_regression.py::LabAuditRegression::test_saved_lab_trace_can_be_recovered_by_id_after_new_browser_session
+1 failed in 0.87s

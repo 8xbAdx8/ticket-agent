@@ -1,0 +1,83 @@
+.F                                                                     [100%]
+================================== FAILURES ===================================
+_ LabAuditRegression.test_inapplicable_concurrency_mutant_keeps_baseline_without_crash (scenario='expired_lock') _
+
+self = <test_lab_audit_regression.LabAuditRegression testMethod=test_inapplicable_concurrency_mutant_keeps_baseline_without_crash>
+
+    def test_inapplicable_concurrency_mutant_keeps_baseline_without_crash(self):
+        root=config.BASE_DIR/'artifacts/runtime';root.mkdir(parents=True,exist_ok=True)
+        with tempfile.TemporaryDirectory(prefix='lab-audit-',dir=root) as directory:
+            base=Path(directory).resolve();self.assertTrue(base.is_relative_to(root.resolve()))
+            for scenario in ('expired_lock','worker_failure'):
+                with self.subTest(scenario=scenario):
+                    session=Conversation('lab',root=base/scenario)
+>                   records=session.concurrency(scenario)
+                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\test_lab_audit_regression.py:30:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+web\runtime.py:222: in concurrency
+    records=[probe(scenario, save=True, trace_dir=self.trace_dir), probe(scenario, mutant=True, save=True, trace_dir=self.trace_dir)]
+                                                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+scenario = 'expired_lock', mutant = True, workers = None, save = True
+trace_dir = WindowsPath('D:/codexproject/ticket-agent/artifacts/runtime/lab-audit-xy3x_7k9/expired_lock/traces')
+
+    def probe(scenario="same_lock_two", *, mutant=False, workers=None, save=False, trace_dir=None):
+        if scenario not in SCENARIOS:raise ValueError("unknown concurrency scenario")
+        if mutant and scenario in ("expired_lock","worker_failure"):
+>           raise ValueError("M8缺陷演示使用正常有效锁座；过期/失败场景验证原实现")
+E           ValueError: M8缺陷演示使用正常有效锁座；过期/失败场景验证原实现
+
+target\concurrency_probe.py:66: ValueError
+_ LabAuditRegression.test_inapplicable_concurrency_mutant_keeps_baseline_without_crash (scenario='worker_failure') _
+
+self = <test_lab_audit_regression.LabAuditRegression testMethod=test_inapplicable_concurrency_mutant_keeps_baseline_without_crash>
+
+    def test_inapplicable_concurrency_mutant_keeps_baseline_without_crash(self):
+        root=config.BASE_DIR/'artifacts/runtime';root.mkdir(parents=True,exist_ok=True)
+        with tempfile.TemporaryDirectory(prefix='lab-audit-',dir=root) as directory:
+            base=Path(directory).resolve();self.assertTrue(base.is_relative_to(root.resolve()))
+            for scenario in ('expired_lock','worker_failure'):
+                with self.subTest(scenario=scenario):
+                    session=Conversation('lab',root=base/scenario)
+>                   records=session.concurrency(scenario)
+                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\test_lab_audit_regression.py:30:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+web\runtime.py:222: in concurrency
+    records=[probe(scenario, save=True, trace_dir=self.trace_dir), probe(scenario, mutant=True, save=True, trace_dir=self.trace_dir)]
+                                                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+scenario = 'worker_failure', mutant = True, workers = None, save = True
+trace_dir = WindowsPath('D:/codexproject/ticket-agent/artifacts/runtime/lab-audit-xy3x_7k9/worker_failure/traces')
+
+    def probe(scenario="same_lock_two", *, mutant=False, workers=None, save=False, trace_dir=None):
+        if scenario not in SCENARIOS:raise ValueError("unknown concurrency scenario")
+        if mutant and scenario in ("expired_lock","worker_failure"):
+>           raise ValueError("M8缺陷演示使用正常有效锁座；过期/失败场景验证原实现")
+E           ValueError: M8缺陷演示使用正常有效锁座；过期/失败场景验证原实现
+
+target\concurrency_probe.py:66: ValueError
+_ LabAuditRegression.test_unavailable_ticket_authority_is_indeterminate_not_pass _
+
+self = <test_lab_audit_regression.LabAuditRegression testMethod=test_unavailable_ticket_authority_is_indeterminate_not_pass>
+
+    def test_unavailable_ticket_authority_is_indeterminate_not_pass(self):
+        public={'session_id':'authority-missing','user_msg':'查票','reply':'没有班次。','finish_reason':'stop'}
+        report={'executions':[{'tool':'query_tickets','executed':True,'ok':True,'result':{'trains':[]}}],
+                'model_requests':[],'injection_events':[],'mutations':{}}
+        judgement=evaluate(public,report,{'available':False,'trains':[],'orders':[]})
+        check=next(c for c in judgement['assertions'] if c['assertion']=='query_result_train_authority')
+>       self.assertIsNone(check['passed'])
+E       AssertionError: True is not None
+
+tests\test_lab_audit_regression.py:18: AssertionError
+=========================== short test summary info ===========================
+SUBFAILED(scenario='expired_lock') tests/test_lab_audit_regression.py::LabAuditRegression::test_inapplicable_concurrency_mutant_keeps_baseline_without_crash
+SUBFAILED(scenario='worker_failure') tests/test_lab_audit_regression.py::LabAuditRegression::test_inapplicable_concurrency_mutant_keeps_baseline_without_crash
+FAILED tests/test_lab_audit_regression.py::LabAuditRegression::test_unavailable_ticket_authority_is_indeterminate_not_pass
+3 failed, 1 passed in 0.30s

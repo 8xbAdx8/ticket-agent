@@ -1,0 +1,19 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+_____ LabAuditRegression.test_lab_case_id_is_recorded_in_saved_mock_audit _____
+
+self = <test_lab_audit_regression.LabAuditRegression testMethod=test_lab_case_id_is_recorded_in_saved_mock_audit>
+
+    def test_lab_case_id_is_recorded_in_saved_mock_audit(self):
+        root=config.BASE_DIR/'artifacts/runtime';root.mkdir(parents=True,exist_ok=True)
+        with tempfile.TemporaryDirectory(prefix='lab-case-',dir=root) as directory:
+            base=Path(directory).resolve();self.assertTrue(base.is_relative_to(root.resolve()))
+            session=Conversation('lab',case_id='B-DEMO-001',root=base/'session')
+            session.send('查明天上海到杭州的高铁','case-request')
+>           self.assertEqual(session.audits[-1].get('test_case_label'),'B-DEMO-001')
+E           AssertionError: None != 'B-DEMO-001'
+
+tests\test_lab_audit_regression.py:22: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_lab_audit_regression.py::LabAuditRegression::test_lab_case_id_is_recorded_in_saved_mock_audit
+1 failed in 0.23s

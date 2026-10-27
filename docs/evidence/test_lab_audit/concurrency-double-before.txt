@@ -1,0 +1,26 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+_ LabAuditRegression.test_concurrency_button_rotates_and_allows_deliberate_new_probe _
+
+self = <test_lab_audit_regression.LabAuditRegression testMethod=test_concurrency_button_rotates_and_allows_deliberate_new_probe>
+
+    def test_concurrency_button_rotates_and_allows_deliberate_new_probe(self):
+        from streamlit.testing.v1 import AppTest
+        root=config.BASE_DIR/'artifacts/runtime';root.mkdir(parents=True,exist_ok=True)
+        with tempfile.TemporaryDirectory(prefix='lab-double-probe-',dir=root) as directory:
+            base=Path(directory).resolve();self.assertTrue(base.is_relative_to(root.resolve()))
+            def new_session(*args,**kwargs):return Conversation(*args,root=base/uuid.uuid4().hex,**kwargs)
+            with patch('web.laboratory.Conversation',side_effect=new_session):
+                app=AppTest.from_string('from web.laboratory import lab_page\nlab_page()').run()
+                first=next(b for b in app.button if b.label.startswith('运行并发订单对照'))
+                first_key=first.key;first.click().run()
+                second=next(b for b in app.button if b.label.startswith('运行并发订单对照'))
+>               self.assertNotEqual(first_key,second.key)
+E               AssertionError: None == None
+
+tests\test_lab_audit_regression.py:210: AssertionError
+---------------------------- Captured stderr call -----------------------------
+2026-10-27 22:28:59.979 WARNING streamlit.runtime.scriptrunner_utils.script_run_context: Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+=========================== short test summary info ===========================
+FAILED tests/test_lab_audit_regression.py::LabAuditRegression::test_concurrency_button_rotates_and_allows_deliberate_new_probe
+1 failed in 0.93s

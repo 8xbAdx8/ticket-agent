@@ -1,0 +1,79 @@
+F.FFF...                                                               [100%]
+================================== FAILURES ===================================
+_ LabAuditRegression.test_duplicate_identical_calls_in_one_step_are_detected_without_injection_metadata _
+
+self = <test_lab_audit_regression.LabAuditRegression testMethod=test_duplicate_identical_calls_in_one_step_are_detected_without_injection_metadata>
+
+    def test_duplicate_identical_calls_in_one_step_are_detected_without_injection_metadata(self):
+        public={'session_id':'duplicate','user_msg':'查车次','reply':'查到车次。','finish_reason':'stop'}
+        calls=[{'id':'c1','name':'query_tickets','args':{'date':'2026-10-28'}},
+               {'id':'c2','name':'query_tickets','args':{'date':'2026-10-28'}}]
+        executions=[{'tool':'query_tickets','args':c['args'],'call_id':c['id'],'step':1,
+                     'executed':True,'ok':True,'result':{'trains':[]}} for c in calls]
+        report={'executions':executions,'model_requests':[{'source':'legacy_provider','tool_calls':calls}],
+                'injection_events':[],'mutations':{}}
+        result=evaluate(public,report,{'available':True,'trains':[],'orders':[]})
+>       self.assertEqual(result['quality_verdict'],'fail')
+E       AssertionError: 'pass' != 'fail'
+E       - pass
+E       + fail
+
+tests\test_lab_audit_regression.py:24: AssertionError
+_ LabAuditRegression.test_legacy_provider_exception_is_not_returned_as_normal_stop _
+
+self = <test_lab_audit_regression.LabAuditRegression testMethod=test_legacy_provider_exception_is_not_returned_as_normal_stop>
+
+    def test_legacy_provider_exception_is_not_returned_as_normal_stop(self):
+        from target.agent import Agent
+        from target.providers import MockProvider
+        class Broken(MockProvider):
+            def chat(self,*args,**kwargs):raise RuntimeError('offline synthetic failure')
+        with tempfile.TemporaryDirectory(prefix='lab-provider-') as folder:
+            with patch.multiple(config,PROVIDER='mock',ENGINE='legacy',DB_PATH=Path(folder)/'missing.db',
+                                TRACE_DIR=Path(folder)/'traces'):
+                agent=Agent(provider=Broken())
+>               with self.assertRaisesRegex(RuntimeError,'legacy_provider_error'):
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E               AssertionError: RuntimeError not raised
+
+tests\test_lab_audit_regression.py:57: AssertionError
+_ LabAuditRegression.test_policy_only_input_routed_to_ticket_query_is_detected_independently _
+
+self = <test_lab_audit_regression.LabAuditRegression testMethod=test_policy_only_input_routed_to_ticket_query_is_detected_independently>
+
+    def test_policy_only_input_routed_to_ticket_query_is_detected_independently(self):
+        public={'session_id':'route','user_msg':'退票手续费政策是什么？','reply':'查到了车次。','finish_reason':'stop'}
+        report={'executions':[{'tool':'query_tickets','args':{},'call_id':'c1','step':1,'executed':True,'ok':True,
+                               'result':{'trains':[]}}],
+                'model_requests':[{'source':'legacy_provider','tool_calls':[{'id':'c1','name':'query_tickets','args':{}}]}],
+                'injection_events':[],'mutations':{}}
+        result=evaluate(public,report,{'available':True,'trains':[],'orders':[]})
+>       self.assertEqual(result['quality_verdict'],'fail')
+E       AssertionError: 'pass' != 'fail'
+E       - pass
+E       + fail
+
+tests\test_lab_audit_regression.py:35: AssertionError
+_ LabAuditRegression.test_policy_reply_repeating_source_without_citation_fails_independently _
+
+self = <test_lab_audit_regression.LabAuditRegression testMethod=test_policy_reply_repeating_source_without_citation_fails_independently>
+
+    def test_policy_reply_repeating_source_without_citation_fails_independently(self):
+        public={'session_id':'citation','user_msg':'退票政策是什么？','reply':'退票需按规定支付手续费。','finish_reason':'stop'}
+        report={'executions':[{'tool':'search_policy','args':{},'call_id':'c1','step':1,'executed':True,'ok':True,
+                               'result':{'hits':[{'doc_id':'P01','content':'退票需按规定支付手续费。'}]}}],
+                'model_requests':[{'source':'legacy_provider','tool_calls':[{'id':'c1','name':'search_policy','args':{}}]}],
+                'injection_events':[],'mutations':{}}
+        result=evaluate(public,report,{'available':True,'trains':[],'orders':[]})
+>       self.assertEqual(result['quality_verdict'],'fail')
+E       AssertionError: 'pass' != 'fail'
+E       - pass
+E       + fail
+
+tests\test_lab_audit_regression.py:45: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_lab_audit_regression.py::LabAuditRegression::test_duplicate_identical_calls_in_one_step_are_detected_without_injection_metadata
+FAILED tests/test_lab_audit_regression.py::LabAuditRegression::test_legacy_provider_exception_is_not_returned_as_normal_stop
+FAILED tests/test_lab_audit_regression.py::LabAuditRegression::test_policy_only_input_routed_to_ticket_query_is_detected_independently
+FAILED tests/test_lab_audit_regression.py::LabAuditRegression::test_policy_reply_repeating_source_without_citation_fails_independently
+4 failed, 4 passed, 2 subtests passed in 1.25s
