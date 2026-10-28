@@ -104,6 +104,17 @@ class Agent:
             finally:
                 ACTIVE_LEGACY_RUN.reset(token)
 
+    def resume_operation(self, session_id, proposal, approved, *, save_trace=True):
+        if not self.langchain_engine:
+            raise ValueError("当前引擎不支持确认操作")
+        with self._mutex:
+            try:
+                return self.langchain_engine.chat(session_id, "确认模拟操作" if approved else "取消模拟操作",
+                    save_trace=save_trace, resume_decision={"approved": bool(approved), "proposal": proposal})
+            finally:
+                self.last_fault_report = self.langchain_engine.last_fault_report
+                self.last_audit_report = self.langchain_engine.last_audit_report
+
     def _chat(self, session_id, message, save_trace):
         messages = self._messages(session_id)
         trace = Trace(session_id, message)

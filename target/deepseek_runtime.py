@@ -105,7 +105,7 @@ class Settings:
     max_requests: int = 0  # Deprecated compatibility field; never an admission limit.
     max_output_tokens: int = 512
     max_model_calls: int = 3
-    max_tool_calls: int = 4
+    max_tool_calls: int = 8
     turn_token_budget: int = 12000
     max_payload_bytes: int = 32000
     ledger_path: Path = config.BASE_DIR / "artifacts/runtime/deepseek-budget/requests.db"
@@ -118,7 +118,7 @@ class Settings:
             max_requests=0,  # Ignore obsolete DEEPSEEK_MAX_REQUESTS, including stale/invalid values.
             max_output_tokens=int(os.getenv("DEEPSEEK_MAX_OUTPUT_TOKENS", "512")),
             max_model_calls=int(os.getenv("DEEPSEEK_MAX_MODEL_CALLS", "3")),
-            max_tool_calls=int(os.getenv("DEEPSEEK_MAX_TOOL_CALLS", "4")),
+            max_tool_calls=int(os.getenv("DEEPSEEK_MAX_TOOL_CALLS", "8")),
             turn_token_budget=int(os.getenv("DEEPSEEK_TURN_TOKEN_BUDGET", "12000")),
             max_payload_bytes=int(os.getenv("DEEPSEEK_MAX_PAYLOAD_BYTES", "32000")),
             ledger_path=Path(os.getenv("DEEPSEEK_BUDGET_PATH",str(cls.ledger_path))))

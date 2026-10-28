@@ -122,7 +122,7 @@ class Conversation:
             if self.error is None:self.error={'type':type(exc).__name__,**safe_error(exc)}
             raise
 
-    def _send(self, message, request_id):
+    def _send(self, message, request_id, decision=None):
         if request_id in self.receipts:
             return self.receipts[request_id]
         if self.live and not live_ready(self.live_provider):
@@ -146,6 +146,8 @@ class Conversation:
             # Existing sandbox guard, only for the offline Mock test environment.
             env.update(DEEPSEEK_LIVE_TEST_PROFILE="full_sandbox", DEEPSEEK_SANDBOX_DIR=str(self.root),
                        DEEPSEEK_BUDGET_PATH=str(self.root/"requests.db"), DEEPSEEK_MAX_REQUESTS="5")
+        if self.mode == "user" and self.interactive and self.live and self.full_tools:
+            env["TICKET_CONFIRM_MODEL_ACTIONS"]="1"
         self.error=None
         with scoped(self._values(),env):
             try:
@@ -168,7 +170,8 @@ class Conversation:
                         kwargs["provider"]=MockProvider(mutations=dict(self.mutations))
                     self.agent=Agent(**kwargs)
                 cursor=turn_cursor(self.agent,self.sid)
-                record=self.agent.chat(self.sid,message)
+                record=(self.agent.resume_operation(self.sid,decision["proposal"],decision["approved"])
+                        if decision is not None else self.agent.chat(self.sid,message))
                 audit_error=(self.agent.last_audit_report or {}).get('error')
                 if audit_error:
                     self.error={'type':'AgentError',**audit_error}
@@ -185,6 +188,23 @@ class Conversation:
                 if self.agent and self.agent.last_audit_report:
                     self.audits.append(self.agent.last_audit_report)
                 raise
+
+
+    def pending_action(self):
+        engine = self.agent.langchain_engine if self.agent else None
+        return engine.pending_actions.get(self.sid) if engine else None
+
+    def confirm_action(self, approved, request_id):
+        proposal = self.pending_action()
+        if not proposal:
+            raise ValueError("没有待确认的模拟操作")
+        try:
+            return self._send("确认模拟操作" if approved else "取消模拟操作", request_id,
+                              decision={"proposal":proposal, "approved":approved})
+        except Exception as exc:
+            if self.error is None:
+                self.error = {'type':type(exc).__name__, **safe_error(exc)}
+            raise
 
 
     def export_last(self, *, consent=False, transport=None):
@@ -278,15 +298,18 @@ def tool_failure_hint(session):
     return None
 
 
-def operation_kind(message):
+def operation_kind(message, history=None):
     """UI confirmation aid only. Existing backend authorization remains authoritative."""
     import re
     if re.search(r"[?？]|多久|政策|规则|怎么|如何|是否|会不会", message):
         return None
     if re.search(r"不要|别|不想|不能|不需要", message):
         return None
-    from target.write_authorization import selection_details
-    if selection_details(message):
+    from target.write_authorization import selection_details, multiturn_selection, pending_confirmation
+    if history and pending_confirmation(message, history[-1].get("reply", "")):
+        return "模拟业务操作"
+    human = [item.get("user_msg", "") for item in (history or [])]
+    if selection_details(message) or multiturn_selection(message, human):
         return '模拟锁座'
     if re.search(r"支付|付款|退票|退掉|取消订单|候补|抢票|监控|锁座|下单|订票|我要买|我想买|买票|帮我订|^(?:请)?订|购买",message):
         return "模拟业务操作"

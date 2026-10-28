@@ -77,13 +77,50 @@ def selection_details(message: str):
     return {'train_no': trains[0], 'seat_type': seats[0], 'passengers': [passenger.group(1)]}
 
 
+def multiturn_selection(message, human_history):
+    """Recover explicit user selections since the latest purchase intent.
+
+    Assistant output never supplies authorization or passenger details.
+    Ambiguous, quoted, negative and hypothetical messages cannot select values.
+    """
+    if not isinstance(message, str) or re.search(QUESTION + r'|不要|别|不想|取消|假设|如果|举例|[“”"「」]', message):
+        return None
+    history = list(human_history)[-12:]
+    if history and history[-1] == message:
+        history.pop()
+    turns = history + [message]
+    selection = {}
+    saw_current_selection = False
+    for index, text in enumerate(reversed(turns)):
+        if not isinstance(text, str):
+            return None
+        if re.search(r'不要|别|不想|不需要|不再|暂不|先不|不买|不订|取消|放弃|停止|算了', text):
+            return None
+        safe = not re.search(QUESTION + r'|假设|如果|举例|[“”"「」]', text)
+        if safe:
+            trains = re.findall(r'(?<![A-Za-z0-9])(?:[GDCZTKYS]\d{1,6}|[A-Z]{2}\d{3,6})(?![A-Za-z0-9])', text)
+            seats = re.findall(r'二等座|一等座|商务座|经济舱|公务舱', text)
+            passengers = re.findall(r'乘客(?:姓名)?[：:\s]*([\u4e00-\u9fff]{2,8})(?=[，,。！!\s]|$)', text)
+            for key, values in (('train_no', trains), ('seat_type', seats), ('passengers', passengers)):
+                if len(values) > 1 and key not in selection:
+                    return None
+                if values and key not in selection:
+                    selection[key] = [values[0]] if key == 'passengers' else values[0]
+                if index == 0 and values:
+                    saw_current_selection = True
+        # "自动下单" is a command, not a question about automatic behavior.
+        auto_order = bool(re.fullmatch(r'(?:请|帮我)?自动(?:下单|订票|买票)[。！!\s]*', text.strip()))
+        if 'create_order' in permissions(text) or auto_order:
+            return selection if saw_current_selection and len(selection) == 3 else None
+    return None
+
+
 def selection_lock_authorized(message, messages, args):
-    selection = selection_details(message)
+    human = [getattr(m, 'content', '') for m in messages if getattr(m, 'type', None) == 'human']
+    selection = multiturn_selection(message, human)
     if not selection or any(args.get(k) != v for k, v in selection.items()):
         return False
-    # The model must use an actual prior query result rather than inventing a
-    # train or date; backend inventory remains the final authority for stock.
-    matching_query = False
+    # Require actual matching tool evidence; the backend checks inventory again.
     for item in reversed(messages):
         if getattr(item, 'type', None) != 'tool' or getattr(item, 'name', None) != 'query_tickets':
             continue
@@ -96,21 +133,6 @@ def selection_lock_authorized(message, messages, args):
         if any(isinstance(row, dict) and row.get('train_no') == selection['train_no']
                and row.get('seat_type') == selection['seat_type'] and row.get('date') == args.get('date')
                for row in result['trains']):
-            matching_query = True
-            break
-    if not matching_query:
-        return False
-    human = [getattr(m, 'content', '') for m in messages if getattr(m, 'type', None) == 'human']
-    if human and human[-1] == message:
-        human.pop()
-    # A recent explicit user intention is required, and any subsequent user
-    # cancellation or refusal invalidates it. Assistant text grants no authority.
-    for text in reversed(human[-8:]):
-        if not isinstance(text, str):
-            return False
-        if re.search(r'不要|别|不想|不需要|不再|暂不|先不|不买|不订|取消|放弃|停止|算了', text):
-            return False
-        if 'create_order' in permissions(text):
             return True
     return False
 
@@ -130,13 +152,61 @@ def recent_lock_reference(messages, args):
     return False
 
 
+
+def pending_confirmation(message, prompt):
+    """Interpret a short confirmation only for a single explicit preceding question."""
+    if not isinstance(message, str) or not re.fullmatch(r'(?:确认|确定|同意|好的|可以)[。！!\s]*', message.strip()):
+        return None
+    if not isinstance(prompt, str) or not re.search(r'(?:是否|请确认|确认(?:一下)?|可以吗|[？?])', prompt):
+        return None
+    if re.search(r'不要|不可|无法|不可以|不能|未(?:能|成功)|失败|假设|如果', prompt):
+        return None
+    actions = set()
+    if re.search(r'(?:是否|确认|同意|要不要|现在|进行|请)(?:为您|帮您|模拟)?(?:锁座|锁定座位)', prompt): actions.add('lock_seat')
+    if re.search(r'创建(?:模拟)?订单|(?:确认|是否|要不要|现在|进行)(?:模拟)?下单', prompt): actions.add('create_order')
+    if re.search(r'支付|付款|付钱', prompt): actions.add('pay_order')
+    if re.search(r'取消订单|退票', prompt): actions.add('cancel_order')
+    return next(iter(actions)) if len(actions) == 1 else None
+
+
+def confirmed_action(name, args, message, messages):
+    """Bind confirmation to the latest assistant question and known tool evidence."""
+    prior = list(messages)
+    if prior and getattr(prior[-1], 'type', None) == 'human' and getattr(prior[-1], 'content', None) == message:
+        prior.pop()
+    if not prior or getattr(prior[-1], 'type', None) != 'ai':
+        return False
+    prompt = getattr(prior[-1], 'content', '')
+    if pending_confirmation(message, prompt) != name:
+        return False
+    if name == 'lock_seat':
+        # Never trust the assistant to invent a user's selection or passenger.
+        human = [getattr(item, 'content', '') for item in prior if getattr(item, 'type', None) == 'human']
+        if not human or not selection_lock_authorized(human[-1], prior, args):
+            return False
+        trains = re.findall(r'(?<![A-Za-z0-9])(?:[GDCZTKYS]\d{1,6}|[A-Z]{2}\d{3,6})(?![A-Za-z0-9])', prompt)
+        seats = re.findall(r'二等座|一等座|商务座|经济舱|公务舱', prompt)
+        passengers = re.findall(r'乘客(?:姓名)?[：:\s]*([\u4e00-\u9fff]{2,8})(?=[，,。！!？?\s]|$)', prompt)
+        dates = re.findall(r'\d{4}-\d{2}-\d{2}', prompt)
+        return (trains == [args.get('train_no')] and seats == [args.get('seat_type')]
+                and passengers == args.get('passengers') and dates == [args.get('date')])
+    if name == 'create_order':
+        return (isinstance(args.get('lock_id'), str) and args['lock_id'] in prompt
+                and recent_lock_reference(prior, args))
+    if name in {'pay_order', 'cancel_order'}:
+        order_id = args.get('order_id')
+        return (isinstance(order_id, str) and order_id in prompt
+                and order_id in order_reference('', prior))
+    return False
+
 def denial(name, args, context, messages) -> str | None:
     if name not in WRITE_TOOLS:
         return None
     selection_lock = name == 'lock_seat' and selection_lock_authorized(context.user_message, messages, args)
-    confirm_order = (name == 'create_order' and
+    contextual = confirmed_action(name, args, context.user_message, messages)
+    confirm_order = contextual and name == 'create_order' or (name == 'create_order' and
                      bool(re.fullmatch(r'(?:请)?确认(?:创建)?(?:模拟)?订单|(?:请)?确认下单', context.user_message.strip().rstrip('。！! '))))
-    if name not in permissions(context.user_message) and not selection_lock and not confirm_order:
+    if name not in permissions(context.user_message) and not selection_lock and not confirm_order and not contextual:
         return "当前消息未明确授权该操作，请明确说明订票、支付、退票或候补请求。"
     if name == "lock_seat" and context.lock_ids:
         return "本轮已成功锁座，不重复占用库存；请先检查已返回的锁座结果。"

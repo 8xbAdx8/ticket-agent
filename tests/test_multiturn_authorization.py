@@ -32,6 +32,43 @@ class MultiturnAuthorizationTests(unittest.TestCase):
    self.assertIsNotNone(denial('lock_seat',args,ctx(self.text),self.history))
   for text in ('如果要G702二等座，乘客张三','G702 二等座，乘客张三吗？','不要订G702 二等座，乘客张三'):
    self.assertIsNone(selection_details(text))
+ def test_selection_across_user_turns_and_auto_order(self):
+  history=[Msg('human','自动下单'), Msg('human','北京到广州，后天，高铁，二等座，乘客张三'), query(), Msg('human','G702')]
+  self.assertIsNone(denial('lock_seat', self.args, ctx('G702'), history))
+  self.assertIsNotNone(denial('lock_seat',dict(self.args,passengers=['李四']),ctx('G702'),history))
+  from web.runtime import operation_kind
+  self.assertEqual(operation_kind('G702',[{'user_msg':'自动下单'},{'user_msg':'二等座，乘客张三'}]),'模拟锁座')
+ def test_multiturn_rejects_cancel_ambiguous_or_assistant_data(self):
+  cases=[
+   [Msg('human','我要买票'),Msg('human','二等座，乘客张三'),query(),Msg('human','算了'),Msg('human','G702')],
+   [Msg('human','我要买票'),Msg('ai','二等座，乘客张三'),query(),Msg('human','G702')],
+   [Msg('human','我要买票'),Msg('human','二等座，一等座，乘客张三'),query(),Msg('human','G702')],
+  ]
+  for history in cases:
+   self.assertIsNotNone(denial('lock_seat',self.args,ctx('G702'),history))
+  self.assertIsNotNone(denial('pay_order',{'order_id':'ODfake'},ctx('G702'),cases[0]))
+ def test_context_confirmation_binds_exact_lock_and_query(self):
+  history=[Msg('human','我要买票'),query(),Msg('human',self.text),Msg('ai','是否锁座 G702 二等座，乘客张三，日期 2026-10-30？'),Msg('human','确认')]
+  self.assertIsNone(denial('lock_seat',self.args,ctx('确认'),history))
+  self.assertIsNotNone(denial('lock_seat',dict(self.args,train_no='G703'),ctx('确认'),history))
+  self.assertIsNotNone(denial('pay_order',{'order_id':'ODfake'},ctx('确认'),history))
+  from web.runtime import operation_kind
+  self.assertEqual(operation_kind('确认',[{'reply':history[-2].content}]),'模拟业务操作')
+ def test_confirmation_cannot_invent_or_accept_ambiguous_or_stale_prompt(self):
+  base=[Msg('human','我要买票'),query(),Msg('human',self.text)]
+  for prompt in ('是否锁座 G702 二等座？','是否锁座 G702 二等座，乘客李四，日期 2026-10-30？','是否锁座 G702 二等座，乘客张三，日期 2026-10-30，并支付？','是否查询 G702？'):
+   self.assertIsNotNone(denial('lock_seat',self.args,ctx('确认'),base+[Msg('ai',prompt),Msg('human','确认')]))
+  self.assertIsNotNone(denial('lock_seat',self.args,ctx('确认'),base+[Msg('ai','是否锁座 G702 二等座，乘客张三，日期 2026-10-30？'),Msg('human','不买了'),Msg('human','确认')]))
+ def test_confirm_order_and_payment_are_separate(self):
+  lock=Msg('tool',json.dumps({'lock_id':'LK123','passengers':['张三']}),'lock_seat')
+  order=Msg('tool',json.dumps({'order_id':'OD123'}),'create_order')
+  lock_args={'lock_id':'LK123','passenger_ids':['张三']}
+  order_question=[lock,Msg('ai','是否创建模拟订单，锁座 LK123？'),Msg('human','确认')]
+  self.assertIsNone(denial('create_order',lock_args,ctx('确认'),order_question))
+  self.assertIsNotNone(denial('pay_order',{'order_id':'OD123'},ctx('确认'),order_question))
+  pay_question=[order,Msg('ai','是否支付订单 OD123？'),Msg('human','确认')]
+  self.assertIsNone(denial('pay_order',{'order_id':'OD123'},ctx('确认'),pay_question))
+  self.assertIsNotNone(denial('pay_order',{'order_id':'OD456'},ctx('确认'),pay_question))
  def test_explicit_confirm_order_reuses_only_latest_matching_real_lock(self):
   lock=Msg('tool',json.dumps({'lock_id':'LK123','passengers':['张三']}),'lock_seat')
   args={'lock_id':'LK123','passenger_ids':['张三']}

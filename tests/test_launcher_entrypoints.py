@@ -148,7 +148,7 @@ class WindowsEntrypointTests(unittest.TestCase):
                     finally:
                         # Stop the listener we just started. taskkill /T needs
                         # WMI access on some Windows installations and may fail.
-                        ports=subprocess.run(['netstat','-ano','-p','tcp'],capture_output=True,text=True,
+                        ports=subprocess.run(['netstat','-ano','-p','tcp'],capture_output=True,text=True,errors='replace',
                             timeout=10,creationflags=subprocess.CREATE_NO_WINDOW).stdout.splitlines()
                         for line in ports:
                             columns=line.split()

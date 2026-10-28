@@ -95,7 +95,116 @@ def specialist_topics():
     st.caption("这是相关原始用例入口，不是上述六类专项全部完成的证明。")
 
 
-def quality_page():
-    header("质量分析","分别检查既有断言、注入检出、事实一致性与并发边界。","Mock / 离线证据")
+
+def session_assertion_counts(records):
+    """Count saved assertion outcomes across this session; unknown stays unknown."""
+    counts={'通过':0,'失败':0,'待判定':0}
+    for record in records:
+        judgement=record.get('judgement') if isinstance(record.get('judgement'),dict) else {}
+        assertions=judgement.get('assertions') if isinstance(judgement.get('assertions'),list) else []
+        for assertion in assertions:
+            if not isinstance(assertion,dict):
+                counts['待判定']+=1
+                continue
+            value=assertion.get('passed')
+            key='通过' if value is True else '失败' if value is False else '待判定'
+            counts[key]+=1
+    return counts
+
+
+def show_session_audit_summary(records, formal=None):
+    import altair as alt
+    import pandas as pd
+    from web.charts import finish
+    from web.evidence import DIMENSIONS
+    counts=session_assertion_counts(records)
+    st.subheader('当前会话的实际审计结果')
+    st.caption(f'汇总当前会话 {len(records)} 条审计记录中保存的规则断言；同一规则多次执行会分别计数，不是 B 正式用例通过率。')
+    if sum(counts.values()):
+        frame=pd.DataFrame([{'结果':k,'数量':v} for k,v in counts.items()])
+        chart=alt.Chart(frame).mark_bar(cornerRadiusEnd=4,size=20).encode(
+            y=alt.Y('结果:N',sort=['通过','失败','待判定'],title=None),
+            x=alt.X('数量:Q',title='实际断言数量',axis=alt.Axis(tickMinStep=1)),
+            color=alt.Color('结果:N',scale=alt.Scale(domain=['通过','失败','待判定'],range=['#54bca4','#f17b86','#d9b76c']),legend=None),
+            tooltip=['结果:N','数量:Q'])
+        st.altair_chart(finish(chart,160),width='stretch')
+    else:
+        st.info('当前会话未保存可统计的审计断言，暂无结果图。')
+    st.subheader('七维度正式测试状态')
+    if not formal or not formal['rows']:
+        st.caption('当前会话尚无可关联的 B 用例结果，不能计算维度通过率。')
+        table([{'维度':name,'状态':'未提供可关联的正式用例结果'} for name in DIMENSIONS], 'quality_session_untested',search=False)
+    else:
+        from web.formal_results import formal_dimensions
+        rows=formal_dimensions(formal['rows'])
+        st.caption('来源为导入文件声称的 B 判定；Trace 已按会话、Provider、模型关联，执行者身份和 Git SHA 尚未独立验证。')
+        st.write('批次信息：',formal['batch'])
+        measured=[r for r in rows if r['rate'] is not None]
+        if measured:
+            frame=pd.DataFrame(measured)
+            chart=alt.Chart(frame).mark_bar(cornerRadiusEnd=4,size=19,color='#54bca4').encode(
+                y=alt.Y('dimension:N',sort=None,title=None),
+                x=alt.X('rate:Q',scale=alt.Scale(domain=[0,1]),axis=alt.Axis(format='%'),title='通过 / 已判定'),
+                tooltip=['dimension:N','passed:Q','failed:Q','indeterminate:Q'])
+            st.altair_chart(finish(chart,245),width='stretch')
+        table([{'维度':r['dimension'],'通过':r['passed'],'失败':r['failed'],'待判定':r['indeterminate'],'跳过':r['skipped'],'不适用':r['not_applicable'],'通过率':f"{r['rate']:.1%}" if r['rate'] is not None else '未提供可判定结果'} for r in rows], 'quality_formal_dimensions',search=False)
+        st.caption('仅统计已关联当前会话的记录；未执行或缺少 Trace 的用例不会计入通过率。')
+
+
+def current_session_quality(session):
+    from web.evidence import read_audit_records
+    records, errors=read_audit_records(session.trace_dir / 'audit_runs.jsonl')
+    st.caption('当前会话的有限自动审计，不是七维度正式通过率；没有证据的项目保持待判定。')
+    if errors.get('invalid') or errors.get('truncated'):
+        st.warning('审计记录存在无法读取或截断情况，请查看原始 Trace。')
+    from web.formal_results import parse_formal_results
+    uploaded=st.file_uploader('导入 B 的正式测试结果（JSON）',type=['json'],key='quality_formal_upload_'+session.sid,
+                              help='仅在当前浏览器会话中使用；不修改 B 原始文件。')
+    formal=None
+    if uploaded is not None:
+        try:
+            formal=parse_formal_results(uploaded.getvalue(),records,session.sid)
+            if formal['excluded']:
+                st.warning(f"{len(formal['excluded'])} 条结果未关联到当前会话，未计入统计。")
+                with st.expander('未关联的结果'): st.json(formal['excluded'])
+            st.caption(f"导入 {formal['total']} 条，其中关联当前会话 {len(formal['rows'])} 条。")
+        except ValueError as exc:
+            st.error('导入失败：'+str(exc))
+    show_session_audit_summary(records,formal)
+    if not records:
+        st.info('当前会话暂无审计记录。先在出行助手或测试实验室执行一次。')
+        return
+    i=st.selectbox('选择当前会话记录',range(len(records)),index=len(records)-1,
+                   format_func=lambda n: str(records[n].get('trace_id','未知'))[:16]+' · '+str(records[n].get('timestamp','时间未知')),
+                   key='quality_session_record')
+    record=records[i]; judgement=record.get('judgement') or {}
+    dimensions=judgement.get('dimensions') or {}
+    st.write('模型：',record.get('provider','未知'),' / ',record.get('model') or '未知')
+    st.write('有限规则质量判定：',judgement.get('quality_verdict','待判定'))
+    if record.get('error'): st.warning('执行异常：'+str(record['error'].get('category','未知')))
+    if judgement.get('quality_verdict')=='fail' and not judgement.get('failure_reasons'):
+        st.warning('记录未保存失败原因，请人工核查；不能推断为通过。')
+    labels={'agent_anomaly_recognized':'Agent 识别异常','agent_recovered':'Agent 恢复','business_correct':'业务正确','platform_defect_detected':'平台检出','injection_applied':'变异注入'}
+    table([{'项目':label,'结果':'是' if dimensions.get(key) is True else '否' if dimensions.get(key) is False else '待判定'} for key,label in labels.items()], 'quality_current_dimensions')
+    assertions=judgement.get('assertions') or []
+    if assertions:
+        table([{'规则':a.get('assertion','未知'),'结果':a.get('result','待判定'),'依据':a.get('failure_reason') or '见 Trace'} for a in assertions if isinstance(a,dict)],'quality_current_assertions')
+    else: st.info('本次未保存可用断言，无法计算通过率。')
+    with st.expander('查看当前记录完整证据'):
+        show_record(record,key='quality_current_trace')
+
+
+def quality_page(sessions=()):
+    header("质量分析","分别检查既有断言、注入检出、事实一致性与并发边界。","会话审计 / 历史证据")
+    source=st.radio('数据来源',['B 历史测试','当前会话'],index=0,horizontal=True,key='quality_source')
+    if source=='当前会话':
+        if not sessions:
+            st.info('暂无当前浏览器会话。请先运行出行助手或测试实验室。')
+            return
+        i=st.selectbox('选择会话',range(len(sessions)),index=len(sessions)-1,
+                       format_func=lambda n: ('出行助手' if sessions[n].mode=='user' else '测试实验室')+' · '+sessions[n].sid,
+                       key='quality_session')
+        current_session_quality(sessions[i])
+        return
     section=st.radio("质量专题",["七维度","变异热力图","幻觉检测","并发幂等","AI 专项"],horizontal=True)
     {"七维度":quality_dimensions,"变异热力图":mutation_matrix,"幻觉检测":hallucination_topic,"并发幂等":concurrency_topic,"AI 专项":specialist_topics}[section]()

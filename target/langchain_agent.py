@@ -12,6 +12,7 @@ from langchain_core.messages import AIMessage, HumanMessage, ToolMessage
 from langchain_core.tools import StructuredTool
 from langgraph.checkpoint.memory import InMemorySaver
 from langgraph.errors import GraphRecursionError
+from langgraph.types import interrupt, Command
 from langsmith import tracing_context
 import config
 from target import tools, providers
@@ -49,6 +50,7 @@ class TurnContext:
     purchase_tools_available: bool = False
     fault_run: Any = None
     model_limit_reason: str = "agent_max_steps"
+    confirm_model_actions: bool = False
 
 
 class ContractMiddleware(AgentMiddleware):
@@ -119,6 +121,18 @@ class ContractMiddleware(AgentMiddleware):
                 sandbox_block = "LangChain Mock的写变异同样要求显式full_sandbox隔离库"
                 run.emit(write_fault,status="blocked",reason=sandbox_block,call_id=call["id"])
 
+        approved = False
+        if ctx.confirm_model_actions and original['name'] in {'lock_seat','create_order','pay_order','cancel_order','monitor_seat'}:
+            # The graph pauses before any write. Resume value is checked against
+            # the exact original model call, not against conversational text.
+            proposal = {'tool': original['name'], 'args': copy.deepcopy(original['args']), 'call_id': original['id']}
+            decision = interrupt(proposal)
+            approved = isinstance(decision, dict) and decision.get('approved') is True and decision.get('proposal') == proposal
+            if not approved:
+                ctx.events.append({'event':'user_declined_operation','tool':original['name'],'call_id':original['id']})
+                return ToolMessage(content=json.dumps({'error':'用户未确认本次模拟操作，未执行'},ensure_ascii=False),
+                                   tool_call_id=original['id'],name=original['name'])
+
         def execute(index):
             name, args = call["name"], call["args"]
             started = time.perf_counter()
@@ -130,7 +144,7 @@ class ContractMiddleware(AgentMiddleware):
             blocked = sandbox_block or ("当前Live工具白名单禁止该工具" if ctx.deepseek_settings and (
                 name not in allowed_tools(ctx.deepseek_settings) or original["name"] not in allowed_tools(ctx.deepseek_settings)) else
                 "达到工具调用次数上限" if ctx.deepseek_settings and ctx.tool_calls > ctx.deepseek_settings.max_tool_calls else
-                denial(name,args,ctx,request.state["messages"]))
+                (None if approved and call == original else denial(name,args,ctx,request.state["messages"])))
             # skip_lock仅取消本次调用的编排前置检查，仍检查用户购买授权；
             # 原后端create_order必须实际执行并拒绝不存在的lock_id，不削弱其约束。
             if (blocked and blocked.startswith("本轮没有该 lock_id") and run.config.get("skip_lock") and original["name"] == "lock_seat"
@@ -287,20 +301,23 @@ class LangChainAgent:
                                   "支付/退票使用用户指定或最近工具结果订单；不明确时先澄清。"
                                   "\n这是隔离的虚构票务沙箱，不连接真实售票或支付。当前模拟账户的联系号码为 "
                                   + config.CURRENT_USER_PHONE + "；仅使用用户明确提供的模拟乘客姓名。"
-                                  "用户仅补充车次、席别及乘客时，只能根据已有查询结果锁座；创建订单要等用户明确确认下单。"
+                                  "用户在多轮对话中分别明确选择车次、席别和乘客时，可依据用户的订票意图和已有查询结果尝试锁座；不得猜测缺失信息，创建订单要等用户明确确认下单。"
                                   "候补工具仅返回模拟任务，不会后台持续监控或推送通知，不得声称会自动通知。"),
                                   middleware=[ContractMiddleware()],context_schema=TurnContext,
                                   checkpointer=self.checkpointer)
         self.threads: set[str] = set()
         self.last_events: list[dict[str,Any]] = []
+        self.pending_actions = {}
 
-    def chat(self, session_id: str, message: str, *, save_trace=True) -> dict[str,Any]:
+    def chat(self, session_id: str, message: str, *, save_trace=True, resume_decision=None) -> dict[str,Any]:
         trace = Trace(session_id,message)
         trace.requested_at = datetime.now(timezone.utc).isoformat()
         self.last_live_run = None
         trace.provider = self.provider_name
         limit = min(config.MAX_STEPS,self.deepseek_settings.max_model_calls) if self.deepseek_settings else config.MAX_STEPS
-        context = TurnContext(trace,message,limit,deepseek_settings=self.deepseek_settings,
+        import os
+        action_confirmation = os.getenv("TICKET_CONFIRM_MODEL_ACTIONS") == "1" and bool(self.deepseek_settings) and self.deepseek_settings.profile == "full_sandbox"
+        context = TurnContext(trace,message,limit,confirm_model_actions=action_confirmation,deepseek_settings=self.deepseek_settings,
                               purchase_tools_available={"lock_seat","create_order"} <= set(self.tool_names))
         from target.fault_injection import FaultRun
         context.fault_run = FaultRun(self.mutations,session_id,self.provider_name,trace_id=trace.trace_id)
@@ -317,8 +334,24 @@ class LangChainAgent:
         phase="model_or_tool_execution"
         try:
             with tracing_context(enabled=False):  # 默认不把本地会话上传到外部观测服务。
-                output = self.graph.invoke({"messages":[HumanMessage(content=message)]},config=run_config,context=context)
-            reply = output["messages"][-1].text or "抱歉，我没能完成这次操作。"
+                if resume_decision is None:
+                    if session_id in self.pending_actions:
+                        raise ValueError('请先处理待确认的模拟操作')
+                    graph_input = {"messages":[HumanMessage(content=message)]}
+                else:
+                    pending = self.pending_actions.pop(session_id, None)
+                    if not pending or resume_decision.get('proposal') != pending:
+                        raise ValueError('待确认操作已失效或不匹配')
+                    graph_input = Command(resume=resume_decision)
+                output = self.graph.invoke(graph_input,config=run_config,context=context)
+            interrupted = output.get('__interrupt__') or ()
+            if interrupted:
+                proposal = copy.deepcopy(interrupted[0].value)
+                self.pending_actions[session_id] = proposal
+                context.events.append({'event':'operation_confirmation_requested', **proposal})
+                reply = '模型提出了一项模拟操作，请核对操作详情后确认或取消；目前尚未执行该操作。'
+            else:
+                reply = output["messages"][-1].text or "抱歉，我没能完成这次操作。"
             phase="reply_validation"
             if self.deepseek_settings:
                 from target.deepseek_runtime import DeepSeekError, validate_read_only_reply
@@ -421,5 +454,6 @@ class LangChainAgent:
     def reset(self, session_id=None) -> None:
         targets = [session_id] if session_id else list(self.threads)
         for thread in targets:
+            self.pending_actions.pop(thread, None)
             self.checkpointer.delete_thread(thread)
             self.threads.discard(thread)

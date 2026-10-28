@@ -156,7 +156,7 @@ def _contradicted_restriction(claim,rows):
     return None
 
 
-def _execution_claims(text,events):
+def _execution_claims(text,events,order_statuses=None):
     tools={'锁座':'lock_seat','下单':'create_order','创建订单':'create_order','支付':'pay_order',
            '付款':'pay_order','取消订单':'cancel_order','退票':'cancel_order','退款':'cancel_order',
            '查询订单':'query_order','查询政策':'search_policy','查询余票':'query_tickets','修改订单':'modify_order'}
@@ -168,7 +168,22 @@ def _execution_claims(text,events):
         previous=text[max(0,match.start()-12):match.start()]
         if re.search(r'未|没有|尚未|如果|假设|若|当',previous):continue
         if re.match(r'订单(?:的|不|可|需|会|应|须)',tail):continue
+        # Status adjectives modify an order rather than claiming this turn
+        # executed a refund. Keep explicit first-person completion claims.
+        status_tail=text[match.end():match.end()+40]
+        if (match[1] in ('退款','支付','付款','退票') and
+            re.fullmatch(r'(?:已|已经)\s*(?:退款|支付|付款|退票)',match.group()) and
+            re.match(r'(?:\s*(?:或|及|和|、)\s*(?:已|已经)?(?:退款|取消|支付|付款|退票))*\s*(?:的)?订单',status_tail)):
+            continue
         tool=tools[match[1]]
+        # A saved paid state is not a new payment action: require an explicit
+        # matching order ID and authoritative current-user database state.
+        statement=text[max(text.rfind('。',0,match.start()), text.rfind('\n',0,match.start()))+1:match.end()]
+        ids=re.findall(r'OD[A-Za-z0-9_]+',statement)
+        if (match[1] in ('支付','付款') and len(ids)==1 and
+            (order_statuses or {}).get(ids[0])=='paid' and re.search(r'状态|订单',statement)):
+            checks.append({'claim':match.group(),'required_tool':tool,'status':'supported_order_state','order_id':ids[0]})
+            continue
         confirmed=[e for e in events if e.get('event')=='tool_end' and e.get('tool')==tool and e.get('ok') and e.get('executed') is True]
         check={'claim':match.group(),'required_tool':tool,'status':'supported_execution' if confirmed else 'failed'}
         checks.append(check)
@@ -191,7 +206,7 @@ def _conflicts(hits):
     return [{'field':'lock_expiry_minutes','values':values}] if len(values)>1 else []
 
 
-def check_answer(reply,hits,*,events=(),question='',policy_versions=None):
+def check_answer(reply,hits,*,events=(),question='',policy_versions=None,order_statuses=None):
     """Check only decidable claims against evidence, retaining raw model output.
 
     ``failed`` is an observable contradiction/unsupported asserted action.
@@ -306,7 +321,7 @@ def check_answer(reply,hits,*,events=(),question='',policy_versions=None):
             else:
                 unknown.append({'claim':claim,'reason':'numeric_binding_not_proven'})
                 checks.append({'claim':claim,'status':'indeterminate','reason':'Numbers occur across separate evidence clauses; no single bound support'})
-    execution_checks,execution_findings=_execution_claims(text,events);checks.extend(execution_checks);findings.extend(execution_findings)
+    execution_checks,execution_findings=_execution_claims(text,events,order_statuses);checks.extend(execution_checks);findings.extend(execution_findings)
     conflicts=_conflicts(hits)
     disclosed=bool(re.search(r'冲突|不一致|相互矛盾|两种不同|无法判断.{0,8}(?:哪|采用)',text))
     if conflicts and not disclosed:

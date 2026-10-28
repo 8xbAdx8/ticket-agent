@@ -28,7 +28,7 @@ def manual_environment(provider,root,*,model=None,full_tools=False):
         'AGENT_USE_HTTP':'0','AGENT_VECTOR_RAG':'0','AGENT_RAG_MODE':os.getenv('AGENT_RAG_MODE') or 'keyword',
         'RAG_QUALITY_PROFILE':'v351','RAG_ALLOW_NETWORK':os.getenv('RAG_ALLOW_NETWORK','0'),
         'DEEPSEEK_MAX_REQUESTS':'0','BAILIAN_MAX_REQUESTS':'0',
-        'DEEPSEEK_MAX_MODEL_CALLS':'3','BAILIAN_MAX_MODEL_CALLS':'3','AGENT_MAX_STEPS':'3',
+        'DEEPSEEK_MAX_MODEL_CALLS':'3','BAILIAN_MAX_MODEL_CALLS':'3','DEEPSEEK_MAX_TOOL_CALLS':'8','AGENT_MAX_STEPS':'3',
         'LANGCHAIN_TRACING_V2':'false','LANGSMITH_TRACING':'false',
         'DEEPSEEK_BUDGET_PATH':str(base/'manual-live/deepseek/requests.db'),
         'BAILIAN_BUDGET_PATH':str(base/'manual-live/bailian/requests.db')}

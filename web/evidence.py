@@ -196,3 +196,74 @@ def historical_live():
 def export_rows(rows):
     from target.diagnostics import sanitize
     return json.dumps(sanitize(rows), ensure_ascii=False, indent=2, default=str)
+
+
+def recent_lab_records(runtime_dirs, *, max_bytes=4*1024*1024, max_records=300):
+    """Read recent isolated lab audits only; never rewrite evidence or invoke a model."""
+    records=[]; invalid=0; truncated=False
+    for directory in dict.fromkeys(Path(p) for p in runtime_dirs):
+        path=directory/'audit_runs.jsonl'
+        if not path.is_file() or path.is_symlink():
+            continue
+        try:
+            with path.open('rb') as stream:
+                size=stream.seek(0,2)
+                offset=max(0,size-max_bytes)
+                stream.seek(offset)
+                if offset:
+                    stream.readline()  # discard a partial line
+                    truncated=True
+                lines=stream.read().splitlines()
+            if len(lines)>max_records:
+                truncated=True
+                lines=lines[-max_records:]
+            for line in lines:
+                try:
+                    record=json.loads(line.decode('utf-8-sig'))
+                    if not isinstance(record,dict): raise ValueError('not an object')
+                    ref=record.get('full_evidence') or {}
+                    if ref.get('available'):
+                        blob=(directory/ref['path']).resolve()
+                        if not blob.is_relative_to(directory.resolve()) or blob.stat().st_size>4*1024*1024:
+                            raise ValueError('invalid blob')
+                        data=blob.read_bytes()
+                        if hashlib.sha256(data).hexdigest()!=ref['sha256']:
+                            raise ValueError('digest mismatch')
+                        record=json.loads(data)
+                        if not isinstance(record,dict): raise ValueError('invalid blob object')
+                    records.append(record)
+                except (ValueError,TypeError,UnicodeError,KeyError,OSError):
+                    invalid+=1
+        except OSError:
+            invalid+=1
+    records.sort(key=lambda r: str(r.get('timestamp') or ''),reverse=True)
+    if len(records)>max_records:
+        truncated=True
+        records=records[:max_records]
+    return records, {'invalid':invalid,'truncated':truncated}
+
+
+def lab_record_rows(records):
+    """One audit record is one run, never a B test case or overall pass rate."""
+    rows=[]
+    for r in records:
+        trace=r.get('public_trace') if isinstance(r.get('public_trace'),dict) else {}
+        judgement=r.get('judgement') if isinstance(r.get('judgement'),dict) else {}
+        provider=r.get('provider') or trace.get('provider') or 'unknown'
+        model=r.get('model') or trace.get('model') or 'unknown'
+        quality=judgement.get('quality_verdict')
+        reasons=judgement.get('failure_reasons') or []
+        if r.get('error') or r.get('contract_returned') is False:
+            state='执行异常'
+        elif quality=='fail' and reasons:
+            state='审计发现问题'
+        elif quality=='pass' and judgement.get('assertions'):
+            state='有限规则未发现问题'
+        else:
+            state='待判定'
+        rows.append({'trace_id':r.get('trace_id') or '未知', 'time':r.get('timestamp') or '未知',
+                     'provider':provider,'model':model,'status':state,
+                     'test_verdict':judgement.get('test_verdict') or '未提供',
+                     'latency_ms':trace.get('total_latency_ms'), 'tokens':trace.get('tokens'),
+                     'error':(r.get('error') or {}).get('category') if isinstance(r.get('error'),dict) else None})
+    return rows

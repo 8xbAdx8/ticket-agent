@@ -48,7 +48,7 @@ def main():
     elif page == "测试总览":
         from web.dashboard import dashboard_page
         sessions = st.session_state.get("user_sessions", []) + st.session_state.get("lab_archives", [])
-        dashboard_page([s.trace_dir for s in sessions])
+        dashboard_page([s.trace_dir for s in sessions], [s.trace_dir for s in st.session_state.get("lab_archives", [])])
     elif page == "测试实验室":
         from web.laboratory import lab_page
         lab_page()
@@ -58,7 +58,8 @@ def main():
         trace_page([s.trace_dir for s in sessions])
     elif page == "质量分析":
         from web.quality import quality_page
-        quality_page()
+        sessions=st.session_state.get("user_sessions",[])+st.session_state.get("lab_archives",[])
+        quality_page(sessions)
     elif page == "模型对比":
         from web.comparison import comparison_page
         sessions=st.session_state.get("user_sessions",[])+st.session_state.get("lab_archives",[])
@@ -68,7 +69,8 @@ def main():
         integrations_page()
     elif page == "RAG 知识库":
         from web.rag_page import rag_page
-        rag_page()
+        sessions=st.session_state.get("user_sessions",[])+st.session_state.get("lab_archives",[])
+        rag_page(sessions)
     st.caption("Ticket Agent V3.5 · 票务业务为虚构模拟 · 正式质量评价由 B 提供 · 页面浏览不发起模型请求")
 
 

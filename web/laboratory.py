@@ -8,7 +8,7 @@ import config
 from web.design import header, empty
 from web.runtime import Conversation, live_ready, LIVE_AVAILABLE, scoped, tool_failure_hint
 from web.evidence import MUTATIONS, cases
-from web.conversation import execute, show_business, show_remote_export
+from web.conversation import execute, show_business, show_remote_export, show_guarded_reply, unsafe_ticket_result
 from web.trace_view import show_record
 
 DESCRIPTIONS = dict(zip(MUTATIONS, ("M1 · 日期偏移一天", "M2 · 跳过锁座下单", "M3 · 重复派发工具", "M4 · 有限监控重入", "M5 · 政策误路由", "M6 · 删除政策引用", "M7 · 注入假车次 G9999", "M8 · 影子库并发重复订单")))
@@ -71,8 +71,24 @@ def lab_page():
     session = st.session_state["lab_session"]
     with run_col:
         st.caption("独立 SQLite / Trace · " + session.sid + " · 配置变化时新建实验；用户模式不受影响")
-        preset = st.selectbox("测试场景", ["查票", "政策咨询", "无票监控", "模拟购票", "自定义", "B 原用例输入（A 实验复用）"])
+        examples = {
+            'M1 日期偏移': ('date_offset', '查明天上海到杭州的高铁二等座', '需要实际调用查票，比较用户日期与工具执行日期。'),
+            'M2 跳过锁座': ('skip_lock', '帮我订明天上海到杭州G7301二等座，乘客张三', '需要模型尝试锁座；余票与模型行为会影响是否触发。'),
+            'M3 重复调用': ('repeat_call', '查明天上海到杭州的高铁二等座', '需要实际调用查票，检查同一调用是否重复执行。'),
+            'M4 监控重入': ('infinite_loop', '候补明天北京到上海G101二等座，监控30分钟', '目标班次须存在且无票；受单轮步骤和工具调用上限约束。'),
+            'M5 政策误路由': ('route_error', '锁座后多久必须完成支付？', '需要模型请求政策检索，检查实际执行的工具。'),
+            'M6 缺少引用': ('no_citation', '锁座后多久必须完成支付？请注明政策来源。', '政策检索需要有命中文档。'),
+            'M7 假车次': ('hallucinated_train', '查明天上海到杭州的高铁二等座', '需要查到可用结果；检查工具返回与数据库的差异。'),
+            'M8 并发重复订单（离线）': ('concurrent_duplicate_order', '', '请选择 same_lock_two 并点击下方“运行并发订单对照（离线）”，不使用模型对话。'),
+        }
+        preset = st.selectbox("测试场景", ["查票", "政策咨询", "无票监控", "模拟购票", "自定义", "B 原用例输入（A 实验复用）", *examples])
         messages = {"查票": "查明天上海到杭州的高铁二等座", "政策咨询": "锁座后多久必须完成支付？", "无票监控": "抢明天北京到上海的票", "模拟购票": "订明天上海到杭州的高铁"}
+        if preset in examples:
+            mutation, example, hint=examples[preset]
+            messages[preset]=example
+            st.caption('配套开关：'+mutation+'。'+hint)
+            if not enabled.get(mutation):
+                st.info('请在左侧勾选配套变异开关；选择示例不会自动启用或执行。')
         if preset == "B 原用例输入（A 实验复用）":
             originals = [c for c in cases() if engine in c.get("engines", ["legacy", "langchain"]) and c.get("turns") and all(isinstance(m, str) and m.strip() for m in c["turns"])]
             i = st.selectbox("原始用例", range(len(originals)), format_func=lambda i: originals[i]["id"] + " · " + originals[i]["name"])
@@ -89,7 +105,7 @@ def lab_page():
             if live:
                 session.rag_mode=st.selectbox('政策检索方式',['keyword','hybrid','vector'],key='lab_rag_mode')
                 session.allow_rag_network=st.checkbox('允许本轮RAG调用真实Embedding（可能产生费用）',key='lab_allow_embedding')
-                st.caption('Live累计请求次数不设上限；与出行助手使用相同策略，实验数据继续隔离。')
+                st.caption('Live累计请求次数不设上限；每轮最多执行8次工具调用，模型步骤上限仍独立生效。')
             send = st.form_submit_button("执行测试", key="lab_submit_"+st.session_state['lab_submit_nonce'], type="primary", disabled=bool(enabled.get("concurrent_duplicate_order")) or live and not live_ready(live_provider))
         if send and text.strip():
             if live and not live_confirm:
@@ -139,8 +155,9 @@ def lab_page():
             with st.chat_message("user", avatar=":material/person:"):
                 st.write(record["user_msg"])
             with st.chat_message("assistant", avatar=":material/smart_toy:"):
-                st.write(record["reply"])
-            show_business(session.results[-1])
+                show_guarded_reply(session,record)
+            if not unsafe_ticket_result(session,record):
+                show_business(session.results[-1])
             if any(name in record['tool_sequence'] for name in ('monitor_seat','lock_seat','create_order','pay_order','cancel_order')):
                 st.info('本轮工具操作使用独立模拟数据库，不涉及真实购票或扣款。')
         if session.audits:

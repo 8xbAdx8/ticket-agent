@@ -13,11 +13,43 @@ def choose_batch(key,show_meta=True):
     return data
 
 
-def dashboard_page(runtime_dirs=()):
+def current_lab_page(runtime_dirs):
+    from collections import Counter
+    from web.evidence import recent_lab_records, lab_record_rows
+    st.subheader("当前测试实验室记录")
+    st.caption("本浏览器中测试实验室产生的审计记录；打开本页、切换筛选或点击刷新会重新读取，不调用模型。")
+    st.button("刷新实验记录", key="dashboard_live_refresh")
+    records, read_status=recent_lab_records(runtime_dirs)
+    rows=lab_record_rows(records)
+    if not rows:
+        st.info("暂无本浏览器实验记录。请到测试实验室执行一次，再返回本页。")
+        if read_status['invalid']: st.warning("部分记录无法读取或校验。")
+        return
+    sources=sorted({(r['provider'],r['model']) for r in rows})
+    provider,model=st.selectbox("实验模型与模式", sources,format_func=lambda v: v[0]+" · "+v[1],key="dashboard_live_source")
+    selected=[r for r in rows if (r['provider'],r['model'])==(provider,model)]
+    counts=Counter(r['status'] for r in selected)
+    kpis([("记录数",len(selected),"每条是一次审计记录"),
+          ("有限规则未发现问题",counts['有限规则未发现问题'],"不代表正式测试通过"),
+          ("审计发现问题",counts['审计发现问题'],"仅按已记录规则"),
+          ("待判定 / 执行异常",counts['待判定']+counts['执行异常'],"不计为通过")])
+    st.info("这是 A 的实验审计，不是 B 的正式测试成绩。质量规则通过不代表业务一定正确；变异实验与正常实验不可直接混算通过率。")
+    if read_status['truncated']: st.warning("记录较多，仅展示近期最多 300 条；不是全部历史。")
+    if read_status['invalid']: st.warning(f"有 {read_status['invalid']} 条记录无法读取或校验，未计入统计。")
+    table([{'时间（UTC）':r['time'],'Trace ID':r['trace_id'],'审计状态':r['status'],
+            '测试预期':r['test_verdict'],'耗时 ms':r['latency_ms'] if r['latency_ms'] is not None else '未知',
+            'Token':str(r['tokens']) if r['tokens'] is not None else '未知','错误':r['error'] or '无已记录错误'} for r in selected],"dashboard_live_rows")
+    st.caption("查看原始工具调用、判断原因和证据：进入 Trace 分析并选择对应 Trace ID。")
+
+
+def dashboard_page(runtime_dirs=(), lab_runtime_dirs=()):
     header("测试总览","按批次审阅质量，保留失败、未验证与证据边界。","质量工作台")
     owner_col,kind_col,batch_col=st.columns([1,1.15,1.25])
     with owner_col:
-        source=st.selectbox("证据批次",["B 独立测试","A 历史离线自测","A 当前隔离实验"],key="dashboard_owner")
+        source=st.selectbox("证据批次",["当前测试实验室（实时）","B 独立测试","A 历史离线自测","A 当前隔离实验"],key="dashboard_owner")
+    if source=="当前测试实验室（实时）":
+        current_lab_page(lab_runtime_dirs)
+        return
     if source=="B 独立测试":
         with kind_col:
             kind=st.selectbox("B 结果类型",["正式功能用例","新增代码专项（47 检查）","M8 并发幂等（10 检查）","选定变异矩阵（69 组合）"],key="dashboard_kind")

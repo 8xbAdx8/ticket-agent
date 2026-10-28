@@ -108,7 +108,19 @@ def attach_answer(trace,events,reply):
         import config
         from target.rag_store import documents
         versions={h['doc_id']:h['version'] for h in documents(config.POLICY_PATH)}
-        check=check_answer(reply,hits,events=events,question=trace.user_msg,policy_versions=versions)
+        # Read actual current-user order state, without mutating the database or
+        # treating this snapshot as a newly executed payment tool.
+        from contextlib import closing
+        import sqlite3
+        statuses={}
+        try:
+            uri=config.DB_PATH.resolve().as_uri()+'?mode=ro'
+            with closing(sqlite3.connect(uri,uri=True,timeout=5)) as conn:
+                statuses={row[0]:row[1] for row in conn.execute(
+                    'SELECT order_id,status FROM orders WHERE phone=?',(config.CURRENT_USER_PHONE,))}
+        except (sqlite3.Error,OSError):
+            pass
+        check=check_answer(reply,hits,events=events,question=trace.user_msg,policy_versions=versions,order_statuses=statuses)
         wrong=list(dict.fromkeys([*result['wrong_citations'],*(d for finding in check['findings'] if finding['type']=='nonexistent_citation' for d in finding['doc_ids'])]))
         result.update(status=check['status'],wrong_citations=wrong,faithfulness_check=check,
                       citation_status='failed' if wrong else 'checked_ids_match' if check['cited_doc_ids'] else 'indeterminate')

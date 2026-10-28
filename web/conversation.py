@@ -6,6 +6,28 @@ from web.runtime import Conversation, operation_kind, live_ready, failure_hint, 
 from web.presentation import ticket_cards, order_card, policy_cards
 
 
+
+def unsafe_ticket_result(session, record):
+    """Display guard only: retain original reply and tool events in the audit."""
+    from target.diagnostics import digest
+    record_hash=digest(record)
+    for audit in reversed(session.audits):
+        if audit.get('public_trace_sha256') != record_hash and audit.get('public_trace') != record:
+            continue
+        judgement=audit.get('judgement') or {}
+        if (judgement.get('hallucination') or {}).get('hallucination_detected') is True:
+            return True
+        return any(a.get('assertion')=='query_result_train_authority' and a.get('passed') is False
+                   for a in judgement.get('assertions',[]) if isinstance(a,dict))
+    return False
+
+
+def show_guarded_reply(session, record):
+    if unsafe_ticket_result(session,record):
+        st.warning('本轮查票结果与模拟数据库不一致，已暂停展示车次，请在 Trace 中核查原始证据。')
+    else:
+        st.write(record['reply'])
+
 def show_business(results):
     successful=[r for r in results if r.get("ok") and isinstance(r.get("result"),dict)]
     if not successful:
@@ -83,15 +105,69 @@ def user_page():
             st.session_state["user_message"]="查明天上海到杭州的高铁二等座"
         if b.button("锁座后多久必须完成支付？",width="stretch"):
             st.session_state["user_message"]="锁座后多久必须完成支付？"
+    with st.expander('模拟行李费用计算（高铁政策 P06）'):
+        st.caption('输入一名旅客携带品总重量，以及需要检查的一件物品的尺寸。只计算模拟超重费用。')
+        with st.form('baggage_calculator'):
+            person=st.selectbox('旅客类型',['成人','儿童'],key='baggage_person')
+            weight=st.text_input('携带品总重量（千克）',key='baggage_weight')
+            cols=st.columns(3)
+            length=cols[0].text_input('长（厘米）',key='baggage_length')
+            width=cols[1].text_input('宽（厘米）',key='baggage_width')
+            height=cols[2].text_input('高（厘米）',key='baggage_height')
+            calculate=st.form_submit_button('计算模拟行李费用')
+        if calculate:
+            try:
+                from target.baggage import calculate_baggage
+                result=calculate_baggage(person,weight,length,width,height)
+                st.write('免费额度：'+result['free_kg']+' 千克；超重：'+result['excess_kg']+' 千克。')
+                st.write('模拟超重费用：¥'+result['weight_fee_yuan']+'（来源：P06）')
+                st.write('该物品尺寸总和：'+result['item_sum_cm']+' 厘米；'+result['size_status'])
+                st.caption(result['note'])
+            except ValueError as exc:
+                st.warning(str(exc))
+    with st.expander('模拟高铁改签（P02 / P03）'):
+        st.caption('仅操作当前会话的已支付模拟订单。差价只做记录，不进行支付或退款；改签后不支持退票。')
+        with st.form('reschedule_preview'):
+            order_id=st.text_input('模拟订单号',key='reschedule_order')
+            new_train=st.text_input('目标车次',key='reschedule_train')
+            new_date=st.text_input('目标日期（YYYY-MM-DD）',key='reschedule_date')
+            new_seat=st.selectbox('目标席别',['二等座','一等座','商务座'],key='reschedule_seat')
+            preview_clicked=st.form_submit_button('预览改签')
+        if preview_clicked:
+            st.session_state.pop('reschedule_pending',None)
+            try:
+                from target.reschedule import preview
+                proposal=preview(session.root/'tickets.db',order_id.strip(),new_train.strip(),new_date.strip(),new_seat)
+                st.session_state['reschedule_pending']={'sid':session.sid,'proposal':proposal}
+            except (ValueError,TypeError) as exc:
+                st.warning(str(exc))
+        pending_reschedule=st.session_state.get('reschedule_pending')
+        if pending_reschedule and pending_reschedule['sid']==session.sid:
+            proposal=pending_reschedule['proposal']
+            st.json(proposal)
+            yes,no=st.columns(2)
+            if yes.button('确认执行模拟改签',key='reschedule_confirm'):
+                st.session_state.pop('reschedule_pending',None)
+                try:
+                    from target.reschedule import confirm
+                    result=confirm(session.root/'tickets.db',proposal)
+                    st.success('模拟改签完成；差额仅作记录。')
+                    st.json(result)
+                except (ValueError,TypeError) as exc:
+                    st.warning(str(exc))
+            if no.button('取消改签',key='reschedule_cancel'):
+                st.session_state.pop('reschedule_pending',None)
+                st.info('已取消，本次未改签。')
     if session.error:
         st.error((tool_failure_hint(session) or failure_hint(session.error['category']))+' 错误类别：'+session.error['category'])
     for previous in session.history:
         with st.chat_message("user",avatar=":material/person:"):
             st.write(previous["user_msg"])
         with st.chat_message("assistant",avatar=":material/smart_toy:"):
-            st.write(previous["reply"])
+            show_guarded_reply(session,previous)
     if session.history and not session.error:
-        show_business(session.results[-1])
+        if not unsafe_ticket_result(session,session.history[-1]):
+            show_business(session.results[-1])
         record=session.history[-1]
         if any(name in record['tool_sequence'] for name in ('monitor_seat','lock_seat','create_order','pay_order','cancel_order')):
             st.info('本轮操作发生在模拟票务沙箱；未购买真实车票，也没有真实扣款。')
@@ -118,23 +194,45 @@ def user_page():
         send=st.form_submit_button("发送",key='user_send_'+st.session_state['user_submit_nonce'],type="primary",disabled=session.live and not live_ready(session.live_provider))
     if session.live and not live_ready(session.live_provider):
         st.info(live_name+" 未配置完整或本次为离线验收。可查看历史证据；不会自动切换 Mock。")
-    if send and message.strip():
+    action = session.pending_action()
+    if send and action:
+        st.warning("请先确认或取消待处理的模拟操作。")
+    elif send and message.strip():
         if session.live and not allow_live:
             st.warning("请先确认真实请求费用；尚未调用模型。")
-        elif session.live and not session.full_tools and operation_kind(message):
+        elif session.live and not session.full_tools and operation_kind(message, session.history):
             st.info("当前 Live 仅支持模拟查票和政策咨询，其余六个工具未开放。未发送请求。")
         else:
             request_id=st.session_state['user_submit_nonce']
             st.session_state['user_submit_nonce']=uuid.uuid4().hex
-            if operation_kind(message):
+            if operation_kind(message, session.history) and not (session.interactive and session.live and session.full_tools):
                 st.session_state["pending_operation"]={"sid":session.sid,"message":message,"request_id":request_id}
             else:
                 execute(session,message,request_id)
             st.rerun()
+    if action:
+        from web.presentation import TOOL_LABELS
+        with st.container(border=True):
+            st.markdown("**请确认模型提出的模拟操作**")
+            st.write("操作：" + TOOL_LABELS.get(action['tool'], action['tool']))
+            st.json(action['args'], expanded=True)
+            st.caption("仅操作当前模拟数据库；确认只适用于上面列出的这一次工具调用。")
+            yes, no = st.columns(2)
+            approved = yes.button("确认此模拟操作", type="primary", width="stretch")
+            declined = no.button("取消此模拟操作", width="stretch")
+            if approved or declined:
+                try:
+                    session.confirm_action(approved, uuid.uuid4().hex)
+                except Exception:
+                    st.error("操作未完成，请查看执行记录和订单状态。")
+                st.rerun()
     pending=st.session_state.get("pending_operation")
     if pending and pending["sid"]==session.sid:
         with st.container(border=True):
             st.markdown("**确认模拟操作**")
+            if pending["message"].strip() in {"确认", "确定", "同意", "好的", "可以"} and session.history:
+                st.caption("上一轮待确认内容：")
+                st.write(session.history[-1].get("reply", ""))
             st.write(pending["message"])
             orders=[r["result"] for full in session.results for r in full if r.get("ok") and r["tool"] in ("create_order","query_order","pay_order") and isinstance(r.get("result"),dict) and r["result"].get("order_id")]
             if orders:

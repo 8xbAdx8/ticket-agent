@@ -244,6 +244,9 @@ def cancel_order(order_id, reason=""):
             return {"error": "订单不存在"}
         if o["status"] not in ("paid", "pending"):
             return {"error": "当前订单状态不可取消或退票", "status": o["status"]}
+        has_reschedules = c.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name='reschedules'").fetchone()
+        if has_reschedules and c.execute('SELECT 1 FROM reschedules WHERE order_id=?', (order_id,)).fetchone():
+            return {"error": "模拟政策 P01：已改签车票不支持退票", "policy_ref": "P01"}
         inv = c.execute("SELECT kind,depart FROM inventory WHERE train_no=? AND date=? AND seat_type=?",
                         (o["train_no"], o["date"], o["seat_type"])).fetchone()
         hours = (datetime.fromisoformat(f"{o['date']} {inv['depart']}") - config.now()).total_seconds() / 3600
