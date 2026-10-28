@@ -3,7 +3,7 @@ from web.formal_results import parse_formal_results,formal_dimensions
 
 class ImportTests(unittest.TestCase):
  def setUp(self):
-  self.audit={'trace_id':'a'*32,'provider':'deepseek_live','model':'deepseek-flash','public_trace':{'session_id':'S1'}}
+  self.audit={'test_case_label':'E01','trace_id':'a'*32,'provider':'deepseek_live','model':'deepseek-flash','public_trace':{'session_id':'S1'}}
   self.data={'schema':'ticket-agent-b-formal-results/1','batch':{'batch_id':'run1','git_sha':'b'*40,'provider':'deepseek_live','model':'deepseek-flash','mode':'live'},'results':[{'case_id':'E01','dimension':'边界','verdict':'pass','trace_id':'a'*32}]}
  def parse(self):return parse_formal_results(json.dumps(self.data).encode(),[self.audit],'S1')
  def test_verified_trace_link_and_dimension(self):
@@ -24,3 +24,7 @@ class ImportTests(unittest.TestCase):
  def test_mode_must_match_provider(self):
   self.data['batch']['mode']='mock'
   with self.assertRaises(ValueError):self.parse()
+
+ def test_requires_case_label_and_rejects_offline_fixture(self):
+  self.audit['test_case_label']='E02';self.assertEqual(self.parse()['rows'],[])
+  self.audit['test_case_label']='E01';self.audit['evidence_kind']='offline_sdk_stub';self.assertEqual(self.parse()['rows'],[])

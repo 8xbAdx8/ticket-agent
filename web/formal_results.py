@@ -33,6 +33,10 @@ def parse_formal_results(data, audits, session_id):
         public=audit.get('public_trace') or {}
         if public.get('session_id')!=session_id or audit.get('provider')!=meta['provider'] or audit.get('model')!=meta['model']:
             excluded.append({'case_id':case,'trace_id':trace,'reason':'会话、Provider 或模型不匹配'});continue
+        if audit.get('test_case_label') != case:
+            excluded.append({'case_id':case,'trace_id':trace,'reason':'Trace 的用例标签缺失或不匹配，需 B 补充或人工复核'});continue
+        if audit.get('evidence_kind') in ('offline_sdk_stub','mock_transport'):
+            excluded.append({'case_id':case,'trace_id':trace,'reason':'该 Trace 标记为离线桩，不计入正式 Live 结果'});continue
         accepted.append({'id':case,'dimension':dimension,'status':{'pass':'passed','fail':'failed','indeterminate':'indeterminate','skipped':'skipped','not_applicable':'not_applicable'}[verdict], 'trace_id':trace})
     return {'batch':meta,'rows':accepted,'excluded':excluded,'total':len(records)}
 

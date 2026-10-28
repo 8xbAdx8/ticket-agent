@@ -41,7 +41,9 @@ def timeline_items(audit,public=None):
         diagnostic=e.get("parameter_validation") or e.get("execution_diagnostic") or {}
         if diagnostic:
             result.append({"kind":"参数校验旁证","title":e.get("tool","工具"),"data":diagnostic})
-        result.append({"kind":"实际执行","title":e.get("tool","工具"),"data":e})
+        state=e.get("executed")
+        kind="实际执行" if state is True else "未执行（含拦截）" if state is False else "执行状态未知"
+        result.append({"kind":kind,"title":e.get("tool","工具"),"data":e})
     for e in audit.get("mutation_events",[]):
         if e.get("status")=="disabled":
             continue  # Full JSON retains disabled switches without cluttering the timeline.
@@ -68,10 +70,38 @@ def timeline_items(audit,public=None):
     return result
 
 
+
+def execution_counts(audit):
+    report=audit.get('fault_report')
+    if not isinstance(report,dict) or not isinstance(report.get('executions'),list):
+        return None
+    rows=report['executions']
+    return {'executed':sum(e.get('executed') is True for e in rows if isinstance(e,dict)),
+            'not_executed':sum(e.get('executed') is False for e in rows if isinstance(e,dict)),
+            'unknown':sum(not isinstance(e,dict) or e.get('executed') is not True and e.get('executed') is not False for e in rows)}
+
+
+def partial_mutation_blocked(audit):
+    events=audit.get('mutation_events') or []
+    calls=(audit.get('fault_report') or {}).get('executions') or []
+    for event in events:
+        if not isinstance(event,dict) or event.get('mutation_name')!='infinite_loop' or event.get('status')!='blocked':
+            continue
+        before,after=event.get('before'),event.get('after')
+        call_id=event.get('related_tool_call_id')
+        actual=sum(e.get('executed') is True and e.get('tool')=='monitor_seat' and e.get('call_id')==call_id for e in calls if isinstance(e,dict))
+        if call_id and type(before) is int and type(after) is int and after>before and actual>=2:
+            return True
+    return False
+
 def verdict_cards(audit):
     dims=(audit.get("judgement") or {}).get("dimensions",{})
     labels=[("injection_applied","变异注入"),("platform_defect_detected","平台检出"),("agent_anomaly_recognized","Agent 识别"),("agent_recovered","Agent 恢复"),("business_correct","业务正确")]
-    kpis([(label,"是" if dims.get(key) is True else "否" if dims.get(key) is False else None,"独立判断；未知不当成功") for key,label in labels])
+    partial=partial_mutation_blocked(audit)
+    kpis([(label, "部分触发后拦截" if key=='injection_applied' and partial else "是" if dims.get(key) is True else "否" if dims.get(key) is False else None,
+           "基于重复执行和拦截证据" if key=='injection_applied' and partial else "独立判断；未知不当成功") for key,label in labels])
+    if partial:
+        st.caption('原始判定保留：监控已重复执行，随后被上限拦截；不表示模型自行恢复。')
     judgement=audit.get("judgement",{})
     st.caption("业务质量："+str(judgement.get("quality_verdict","indeterminate"))+" · 测试预期："+str(judgement.get("test_verdict","未提供"))+"。故意注入被检出不等于 Agent 已识别或恢复。")
 
@@ -88,7 +118,9 @@ def show_record(audit,public=None,key="trace"):
     calls=[c for s in public.get("steps",[]) for c in s.get("calls",[])]
     tool_ms=sum(c["latency_ms"] for c in calls) if calls and all(isinstance(c.get("latency_ms"),(int,float)) for c in calls) else None
     token_text=lambda value:str(value) if type(value) is int else "未知"
-    kpis([("工具执行",len(calls) if "steps" in public else None,"缺少历史字段时显示未知"),
+    counts=execution_counts(audit)
+    execution_note=('未执行（含拦截） '+str(counts['not_executed'])+' · 状态未知 '+str(counts['unknown'])) if counts else '未提供执行旁证，无法区分实际执行与拦截'
+    kpis([("实际工具执行",counts['executed'] if counts is not None else None,execution_note),
           ("总耗时",str(public["total_latency_ms"])+" ms" if public.get("total_latency_ms") is not None else None,"不含虚构阶段时间"),
           ("Token 用量","不适用" if is_mock else token_text(tokens.get("prompt"))+" / "+token_text(tokens.get("completion")),"输入 / 输出；桩用量非真实计费"),
           ("结束原因",public.get("finish_reason"),"stop ≠ 业务成功")])
