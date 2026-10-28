@@ -21,6 +21,7 @@ from target.langchain_model import LangChainMockModel
 from target.write_authorization import denial, purchase_clarification
 
 READ_ONLY_TOOLS = ("query_tickets", "search_policy")
+CONFIRMATION_TTL_SECONDS = 600
 
 
 class ModelStepLimit(Exception):
@@ -308,6 +309,7 @@ class LangChainAgent:
         self.threads: set[str] = set()
         self.last_events: list[dict[str,Any]] = []
         self.pending_actions = {}
+        self.pending_deadlines = {}
 
     def chat(self, session_id: str, message: str, *, save_trace=True, resume_decision=None) -> dict[str,Any]:
         trace = Trace(session_id,message)
@@ -332,22 +334,33 @@ class LangChainAgent:
                       "recursion_limit":4*config.MAX_STEPS+10}
         self.threads.add(session_id)
         phase="model_or_tool_execution"
+        # Validate before invoking the graph or entering exception recovery, so
+        # an unrelated/malformed decision cannot consume a valid proposal.
+        pending = self.pending_actions.get(session_id)
+        if resume_decision is None and pending is not None:
+            raise ValueError('请先处理待确认的模拟操作')
+        if resume_decision is not None:
+            if (not isinstance(resume_decision,dict) or type(resume_decision.get('approved')) is not bool
+                    or pending is None or resume_decision.get('proposal') != pending):
+                raise ValueError('待确认操作已失效或不匹配')
+            deadline=self.pending_deadlines.get(session_id)
+            if deadline is None or time.monotonic() >= deadline:
+                self.reset(session_id)
+                raise ValueError('待确认操作已过期，请重新发起')
         try:
             with tracing_context(enabled=False):  # 默认不把本地会话上传到外部观测服务。
                 if resume_decision is None:
-                    if session_id in self.pending_actions:
-                        raise ValueError('请先处理待确认的模拟操作')
                     graph_input = {"messages":[HumanMessage(content=message)]}
                 else:
-                    pending = self.pending_actions.pop(session_id, None)
-                    if not pending or resume_decision.get('proposal') != pending:
-                        raise ValueError('待确认操作已失效或不匹配')
+                    self.pending_actions.pop(session_id, None)
+                    self.pending_deadlines.pop(session_id, None)
                     graph_input = Command(resume=resume_decision)
                 output = self.graph.invoke(graph_input,config=run_config,context=context)
             interrupted = output.get('__interrupt__') or ()
             if interrupted:
                 proposal = copy.deepcopy(interrupted[0].value)
                 self.pending_actions[session_id] = proposal
+                self.pending_deadlines[session_id] = time.monotonic() + CONFIRMATION_TTL_SECONDS
                 context.events.append({'event':'operation_confirmation_requested', **proposal})
                 reply = '模型提出了一项模拟操作，请核对操作详情后确认或取消；目前尚未执行该操作。'
             else:
@@ -455,5 +468,6 @@ class LangChainAgent:
         targets = [session_id] if session_id else list(self.threads)
         for thread in targets:
             self.pending_actions.pop(thread, None)
+            self.pending_deadlines.pop(thread, None)
             self.checkpointer.delete_thread(thread)
             self.threads.discard(thread)

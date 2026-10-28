@@ -107,10 +107,12 @@ class Agent:
     def resume_operation(self, session_id, proposal, approved, *, save_trace=True):
         if not self.langchain_engine:
             raise ValueError("当前引擎不支持确认操作")
+        if type(approved) is not bool:
+            raise ValueError("确认决定必须为布尔值")
         with self._mutex:
             try:
                 return self.langchain_engine.chat(session_id, "确认模拟操作" if approved else "取消模拟操作",
-                    save_trace=save_trace, resume_decision={"approved": bool(approved), "proposal": proposal})
+                    save_trace=save_trace, resume_decision={"approved": approved, "proposal": proposal})
             finally:
                 self.last_fault_report = self.langchain_engine.last_fault_report
                 self.last_audit_report = self.langchain_engine.last_audit_report

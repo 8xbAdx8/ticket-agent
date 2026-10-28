@@ -195,6 +195,8 @@ class Conversation:
         return engine.pending_actions.get(self.sid) if engine else None
 
     def confirm_action(self, approved, request_id):
+        if type(approved) is not bool:
+            raise ValueError("确认决定必须为布尔值")
         proposal = self.pending_action()
         if not proposal:
             raise ValueError("没有待确认的模拟操作")

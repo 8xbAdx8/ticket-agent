@@ -36,6 +36,15 @@ class ConfirmationFlowTests(unittest.TestCase):
    self.assertEqual(first['tool_sequence'],[])
    self.assertEqual(s.pending_action()['tool'],'lock_seat')
    self.assertEqual(len(requests),1)
+   engine=s.agent.langchain_engine
+   original_proposal=s.pending_action().copy()
+   with self.assertRaises(ValueError):
+    engine.chat(s.sid,'确认',resume_decision={'approved':True,'proposal':{'tool':'pay_order'}})
+   self.assertEqual(s.pending_action(),original_proposal)
+   for value in ('false',1,None):
+    with self.assertRaises(ValueError):s.confirm_action(value,'bad-type')
+    with self.assertRaises(ValueError):s.agent.resume_operation(s.sid,original_proposal,value)
+   self.assertEqual(s.pending_action(),original_proposal)
    import sqlite3
    with sqlite3.connect(root/'tickets.db') as db:self.assertEqual(db.execute('select count(*) from locks').fetchone()[0],0)
    second=s.confirm_action(True,'two')
@@ -58,6 +67,12 @@ class ConfirmationFlowTests(unittest.TestCase):
    cancelled=other.confirm_action(False,'cancel-end')
    self.assertEqual(cancelled['tool_sequence'],[])
    with sqlite3.connect(other.root/'tickets.db') as db:self.assertEqual(db.execute('select count(*) from locks').fetchone()[0],0)
+   expired=Conversation('user',engine='langchain',live=True,live_provider='deepseek',root=Path('artifacts/runtime')/('model-expired-'+uuid.uuid4().hex),full_tools=True,interactive=True)
+   expired.send('订票','expire-start')
+   expired.agent.langchain_engine.pending_deadlines[expired.sid]=0
+   with self.assertRaisesRegex(ValueError,'过期'):expired.confirm_action(True,'expired')
+   self.assertIsNone(expired.pending_action())
+   with sqlite3.connect(expired.root/'tickets.db') as db:self.assertEqual(db.execute('select count(*) from locks').fetchone()[0],0)
   for model in clients:model.client._client.close()
 
  def test_confirmation_error_is_kept_for_ui(self):
