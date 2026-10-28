@@ -178,13 +178,22 @@ def _execution_claims(text,events,order_statuses=None):
         tool=tools[match[1]]
         # A saved paid state is not a new payment action: require an explicit
         # matching order ID and authoritative current-user database state.
-        statement=text[max(text.rfind('。',0,match.start()), text.rfind('\n',0,match.start()))+1:match.end()]
-        ids=re.findall(r'OD[A-Za-z0-9_]+',statement)
+        delimiters='。！？；;\n'
+        start=max((text.rfind(c,0,match.start()) for c in delimiters), default=-1)+1
+        end=min((text.find(c,match.end()) for c in delimiters if text.find(c,match.end())>=0),default=len(text))
+        statement=text[start:end]
+        ids=list(dict.fromkeys(re.findall(r'(?<![A-Za-z0-9_])OD[A-Za-z0-9_]+',statement)))
         if (match[1] in ('支付','付款') and len(ids)==1 and
             (order_statuses or {}).get(ids[0])=='paid' and re.search(r'状态|订单',statement)):
             checks.append({'claim':match.group(),'required_tool':tool,'status':'supported_order_state','order_id':ids[0]})
             continue
         confirmed=[e for e in events if e.get('event')=='tool_end' and e.get('tool')==tool and e.get('ok') and e.get('executed') is True]
+        if ids and tool in ('pay_order','cancel_order','query_order','create_order'):
+            # A different order's successful operation cannot prove this claim.
+            # Multiple referenced orders are ambiguous and must not be treated as proof.
+            confirmed=[e for e in confirmed if len(ids)==1 and any(
+                isinstance(e.get(field),dict) and e[field].get('order_id')==ids[0]
+                for field in ('args','result'))]
         check={'claim':match.group(),'required_tool':tool,'status':'supported_execution' if confirmed else 'failed'}
         checks.append(check)
         if not confirmed:findings.append({'type':'unsubstantiated_execution','claim':match.group(),'required_tool':tool,
