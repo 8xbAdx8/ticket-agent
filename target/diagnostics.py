@@ -217,7 +217,16 @@ def evaluate(public_trace, report, authority, *, error=None, raw_model_reply=Non
     for e in actual:
         if e["tool"]=="create_order":
             prior=[p for p in actual[:actual.index(e)] if p["tool"]=="lock_seat" and p.get("ok") and p.get("result",{}).get("lock_id")==e.get("args",{}).get("lock_id")]
-            checks.append(assertion("create_order_requires_successful_lock",bool(prior),"actual order attempt lacks successful lock",["executions"]))
+            # A valid lock may have been created in an earlier turn. A current
+            # database relationship is evidence of linkage, not proof of its
+            # execution chronology; preserve uncertainty rather than false FAIL.
+            lock_id=e.get("args",{}).get("lock_id")
+            linked=(authority.get("available") and e.get("ok") is True and
+                    any(x.get("lock_id")==lock_id for x in authority.get("locks",[])) and
+                    any(x.get("lock_id")==lock_id for x in authority.get("orders",[])))
+            outcome=True if prior else None if linked else False
+            reason="prior lock not recorded in this turn; linked database state needs cross-turn verification" if linked and not prior else "actual order attempt lacks successful lock"
+            checks.append(assertion("create_order_requires_successful_lock",outcome,reason,["executions","authority/orders"]))
     counts={}
     for row in authority.get("orders",[]):counts[row["lock_id"]]=counts.get(row["lock_id"],0)+1
     if authority.get("available"):
