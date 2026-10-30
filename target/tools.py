@@ -220,7 +220,11 @@ def dispatch(name, args):
     t0 = time.perf_counter()
     diagnostic = {"validation":{"status":"unknown"},"backend_executed":False}
     from target.run_events import emit
-    emit('tool_proposed',tool=name,args=args)
+    from target.rag_service import SCOPE
+    from target.run_events import identity
+    context=SCOPE.get()
+    call_id=context.get('call_id') if context.get('trace_id')==identity().get('run_id') else None
+    emit('tool_proposed',tool=name,args=args,call_id=call_id)
     try:
         validate(name, args)
         emit('parameter_validation','passed',tool=name)
@@ -232,14 +236,13 @@ def dispatch(name, args):
     except Exception as e:
         if diagnostic["validation"]["status"] == "unknown":
             diagnostic["validation"]={"status":"invalid","reason":type(e).__name__}
+            emit('parameter_validation','failed',tool=name,error=type(e).__name__,executed=False)
         # 参数错误可以说明；其他异常不回显外部响应、密钥或本机路径。
         result = {"error": str(e) if isinstance(e, ValueError) else f"工具执行失败 ({type(e).__name__})"}
         ok = False
     duration=int((time.perf_counter()-t0)*1000)
     emit('tool_result','succeeded' if ok else 'failed' if diagnostic['backend_executed'] else 'blocked',
          tool=name,executed=diagnostic['backend_executed'],output=result,duration_ms=duration)
-    if name=='search_policy' and ok:
-        emit('rag_result',documents=result.get('hits',[]) if isinstance(result,dict) else [])
     observer=DISPATCH_OBSERVER.get()
     if observer is not None:
         observer(diagnostic)

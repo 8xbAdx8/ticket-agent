@@ -6,6 +6,7 @@
 成员 B 的断言、成员 C 的看板都只依赖这个返回值（接口契约见 docs/contract.md）。
 """
 import json
+import time
 from threading import RLock
 
 import sys
@@ -15,6 +16,7 @@ import config
 from target import tools
 from target.trace import Trace
 from target.providers import get_provider
+from target.run_events import recorded_run
 
 SYSTEM_PROMPT = (
     "你是一个出行服务智能助手，帮助用户查询车次、抢票下单、退改签以及解答票务政策。\n"
@@ -86,6 +88,7 @@ class Agent:
                 f"\n当前北京时间日期 {config.today().isoformat()}；数据仅为虚构模拟，当前身份为本人。"}]
         return self.sessions[session_id]
 
+    @recorded_run
     def chat(self, session_id, message, save_trace=True):
         if not isinstance(session_id, str) or not session_id.strip() or not isinstance(message, str) or not message.strip():
             raise ValueError("session_id 与 message 必须是非空字符串")
@@ -104,6 +107,7 @@ class Agent:
             finally:
                 ACTIVE_LEGACY_RUN.reset(token)
 
+    @recorded_run
     def resume_operation(self, session_id, proposal, approved, *, save_trace=True):
         if not self.langchain_engine:
             raise ValueError("当前引擎不支持确认操作")
@@ -143,8 +147,12 @@ class Agent:
                                 if isinstance(payload,dict) and isinstance(payload.get('hits'),list):evidence['documents']=payload['hits']
                             except (TypeError,ValueError):pass
                         emit('tool_result_in_model_request',call_id=prior.get('tool_call_id'),tool=prior.get('name'),**evidence)
+                model_started=time.perf_counter()
                 msg = self.provider.chat(messages, tools.TOOLS)
-                emit('model_end',tool_calls=msg.get('tool_calls') if isinstance(msg,dict) else None)
+                emit('model_end',tool_calls=msg.get('tool_calls') if isinstance(msg,dict) else None,
+                     reply=msg.get('content') if isinstance(msg,dict) else None,
+                     duration_ms=int((time.perf_counter()-model_started)*1000),
+                     token_usage=getattr(self.provider,'last_usage',None),execution_mode='mock' if trace.provider=='mock' else 'provider_configured')
                 if not isinstance(msg, dict) or msg.get("role") != "assistant":
                     raise ValueError("模型响应格式不正确")
                 calls = msg.get("tool_calls") or []
@@ -152,6 +160,7 @@ class Agent:
                     not all(k in c for k in ("name", "arguments", "id")) for c in calls):
                     raise ValueError("工具调用格式不正确")
             except Exception as exc:
+                emit('model_error','failed',error=type(exc).__name__)
                 reply = f"模型调用未完成 ({type(exc).__name__})，请检查配置或重试。"
                 messages.append({"role": "assistant", "content": reply, "tool_calls": []})
                 # The historic contract permits only stop/max_steps_exceeded.
@@ -182,7 +191,9 @@ class Agent:
                 execution_diagnostic={}
                 token=tools.DISPATCH_OBSERVER.set(execution_diagnostic.update)
                 try:
-                    result, ok, latency = tools.dispatch(name, args)
+                    from target.rag_service import scope
+                    with scope(trace_id=trace.trace_id,session_id=trace.session_id,call_id=call['id'],provider=trace.provider):
+                        result, ok, latency = tools.dispatch(name, args)
                 finally:
                     tools.DISPATCH_OBSERVER.reset(token)
                 import copy
@@ -202,6 +213,7 @@ class Agent:
                     "name": name,                                   # 供 mock 与统计使用
                     "content": json.dumps(result, ensure_ascii=False),
                 })
+                emit('tool_message_created',tool=name,call_id=call['id'])
         else:
             reply = "达到最大执行步数，操作尚未完成；请查看工具轨迹。"
             messages.append({"role": "assistant", "content": reply, "tool_calls": []})

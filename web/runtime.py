@@ -85,6 +85,8 @@ class Conversation:
     error: dict | None = None
     receipts: dict = field(default_factory=dict)
     remote_receipts: list = field(default_factory=list)
+    read_only: bool = False
+    persistence_warning: str | None = None
 
     def __post_init__(self):
         if self.mode not in ("user", "lab"):
@@ -115,12 +117,13 @@ class Conversation:
                     MODEL_NAME=model if self.live else "langchain-mock" if self.engine=="langchain" else "mock-offline",
                     BASE_URL=address if self.live else "https://api.deepseek.com", API_KEY=os.getenv(cfg["key_env"],"") if self.live else "")
 
-    def send(self,message,request_id,event_callback=None,*,followup_authorized=False,followup_origin=None):
+    def send(self,message,request_id,event_callback=None,*,followup_authorized=False,followup_origin=None,confirmation=None):
+        if self.read_only:raise ValueError('历史恢复为只读，请新建会话后执行')
         self.error=None
         origin=followup_origin or {}
         from target.run_events import capture,emit
         try:
-            with capture(self.trace_dir/'run_events.jsonl',event_callback):
+            with capture(self.trace_dir/'run_events.jsonl',event_callback,confirmation=confirmation):
                 try:
                     fresh=request_id not in self.receipts
                     if origin.get('run_id'):
@@ -155,14 +158,28 @@ class Conversation:
                              retrieval_ids=sorted(set(retrieval_ids)),doc_ids=sorted(set(doc_ids)),
                              chunk_ids=sorted(set(chunk_ids)),retrieval_used=bool(retrieval_ids),
                              provider=None,model=None,latency_ms=None,token_usage=None,fallback_reason=None)
+                    from target.run_events import finish
+                    finish(result)
                     emit('agent_returned',reply=result.get('reply'),finish_reason=result.get('finish_reason'))
                     return result
                 except Exception as exc:
+                    from target.run_events import finish
+                    finish(error=self.error or {'type':type(exc).__name__})
                     emit('agent_error','failed',error=type(exc).__name__)
                     raise
         except Exception as exc:
             if self.error is None:self.error={'type':type(exc).__name__,**safe_error(exc)}
             raise
+        finally:
+            self.save_replay()
+
+    def save_replay(self):
+        try:
+            from web.session_store import save_session
+            save_session(self)
+        except Exception as exc:
+            # Persistence failure must not turn an already executed operation into a retry.
+            self.persistence_warning='历史索引保存失败（'+type(exc).__name__+'）；请保留本地 Trace。'
 
     def _audit_for(self, record):
         """Match by value or by digest: the audit copy is not always the same object."""
@@ -306,6 +323,7 @@ class Conversation:
         return actions.get(self.sid) if isinstance(actions, dict) else None
 
     def confirm_action(self, approved, request_id,*,followup_authorized=False):
+        if self.read_only:raise ValueError('历史回放不能恢复旧操作授权')
         if type(approved) is not bool:
             raise ValueError("确认决定必须为布尔值")
         proposal = self.pending_action()
@@ -313,17 +331,23 @@ class Conversation:
             raise ValueError("没有待确认的模拟操作")
         try:
             from target.run_events import capture,emit
-            with capture(self.trace_dir/'run_events.jsonl'):
+            with capture(self.trace_dir/'run_events.jsonl',confirmation={
+                'approved':approved,'proposal':proposal,
+                'source_run_id':self.audits[-1].get('trace_id') if self.audits else None}):
                 result=self._send("确认模拟操作" if approved else "取消模拟操作", request_id,
                                   decision={"proposal":proposal, "approved":approved})
                 emit('operation_resumed','approved' if approved else 'declined',proposal=proposal)
                 self._record_followups(result,followup_authorized)
+                from target.run_events import finish
+                finish(result)
                 emit('agent_returned',reply=result.get('reply'),finish_reason=result.get('finish_reason'))
                 return result
         except Exception as exc:
             if self.error is None:
                 self.error = {'type':type(exc).__name__, **safe_error(exc)}
             raise
+        finally:
+            self.save_replay()
 
 
     def export_last(self, *, consent=False, transport=None):

@@ -21,20 +21,68 @@ STATUS_TEXT = {"done": "已完成", "failed": "失败", "blocked": "已拦截", 
 RESULT_STATUS = {"succeeded": "done", "failed": "failed", "blocked": "blocked"}
 
 
-def load_events(trace_dir, run_id):
+def load_events(trace_dir, run_id, session_id=None):
     """Return the recorded events of one run; never merge a different run_id."""
     if not run_id or trace_dir is None:
         return [], {"missing": True, "invalid": 0, "truncated": False}
     rows, meta = read_jsonl(Path(trace_dir) / "run_events.jsonl", limit=10000)
-    return [row for row in rows if row.get("run_id") == run_id], meta
+    selected=[row for row in rows if row.get("run_id") == run_id
+              and (session_id is None or row.get('session_id')==session_id)]
+    from datetime import datetime
+    try:
+        selected=sorted(selected,key=lambda e:datetime.fromisoformat(e['timestamp']))
+        meta=dict(meta,ordering='recorded_timestamp')
+    except (KeyError,ValueError,TypeError):
+        meta=dict(meta,ordering='saved_order_timestamp_incomplete')
+    return selected, meta
 
 
 def latest_run(session):
     """The last audit, its run_id, and that run's own events."""
     audit = session.audits[-1] if getattr(session, "audits", None) else None
     run_id = (audit or {}).get("trace_id")
-    events, meta = load_events(getattr(session, "trace_dir", None), run_id)
+    events, meta = load_events(getattr(session, "trace_dir", None), run_id,session.sid)
     return audit, events, meta
+
+
+EXECUTION_STAGES=(
+    ('用户输入',{'user_input'}),
+    ('模型 / 规则与工具选择',{'agent_start','agent_decision','model_start','model_end','model_error','model_tool_proposed'}),
+    ('RAG 检索',{'rag_start','rag_result','rag_error'}),
+    ('工具与权限',{'tool_proposed','permission_check','parameter_validation','tool_start','tool_result','tool_message_created','tool_result_in_model_request'}),
+    ('用户确认',{'confirmation_requested','user_confirmation','confirmation_declined','operation_resumed'}),
+    ('最终回答与结束',{'agent_returned','agent_error','run_finished'}),
+)
+
+
+def execution_stages(events):
+    """Absence is known only for a completed, P1-instrumented run, never old gaps."""
+    complete=any(e.get('event_type')=='run_finished' and e.get('coverage_version')=='p1/1' for e in events)
+    result=[]
+    for label,kinds in EXECUTION_STAGES:
+        rows=[e for e in events if e.get('event_type') in kinds]
+        # agent_start proves entry, not a model request or a model decision.
+        activity=[e for e in rows if e.get('event_type')!='agent_start']
+        if not activity:
+            status='未发生' if complete else '未记录'
+            if label=='RAG 检索' and any(e.get('tool')=='search_policy' and
+                e.get('event_type') in ('tool_start','tool_result') and e.get('executed') is not False
+                for e in events):status='未记录'
+        elif any(e.get('status')=='failed' for e in activity):status='失败'
+        elif any(e.get('status')=='blocked' for e in activity):status='已拦截'
+        elif label=='用户确认':
+            status=('已确认' if any(e.get('event_type')=='user_confirmation' and e.get('approved') is True for e in activity)
+                    else '已取消' if any(e.get('status')=='declined' for e in activity) else '等待确认')
+        elif label=='RAG 检索':
+            status=('没有足够证据' if any(e.get('status')=='insufficient_evidence' for e in activity)
+                    else '已返回证据' if any(e.get('event_type')=='rag_result' for e in activity) else '执行中' if not complete else '未记录')
+        elif label=='模型 / 规则与工具选择':
+            status=('已返回' if any(e.get('event_type')=='model_end' for e in activity)
+                    else '已澄清（规则）' if any(e.get('event_type')=='agent_decision' for e in activity)
+                    else '执行中' if not complete else '未记录')
+        else:status='已记录'
+        result.append({'stage':label,'status':status,'event_ids':[e.get('event_id') for e in activity]})
+    return result
 
 
 def _phase_of(tool):

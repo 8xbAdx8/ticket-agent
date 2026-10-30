@@ -17,6 +17,7 @@ MODE_LABELS = {"debug": "独立调试", "current": "当前运行", "history": "�
 
 def _run_mode(session, audit, sessions, debug):
     """One run is 'current', every other saved run is 'history', debug is its own."""
+    if getattr(session,'read_only',False):return 'history'
     if debug is not None and session is debug:
         return "debug"
     newest = next((s for s in reversed(sessions) if getattr(s, "audits", None)), None)
@@ -42,7 +43,8 @@ def developer_page(sessions):
         for index, candidate in enumerate(available):
             if candidate.sid == focus[0]:
                 st.session_state['dev_session_index'] = index
-                st.session_state['dev_run_index'] = max(0, len(candidate.audits) - 1)
+                st.session_state['dev_run_index'] = next((i for i,a in enumerate(candidate.audits)
+                    if a.get('trace_id')==focus[1]), max(0, len(candidate.audits) - 1))
 
     _run_bar(available, debug)
 
@@ -82,7 +84,7 @@ def developer_page(sessions):
             st.caption('还没有选中运行。在右侧执行一次独立调试，或在用户端发送一条消息。')
         else:
             st.markdown(_run_identity(selected, audit, mode), unsafe_allow_html=True)
-            events, meta = load_events(selected.trace_dir, run_id)
+            events, meta = load_events(selected.trace_dir, run_id,selected.sid)
             nodes = events or workflow_rows(audit)
             if events:
                 st.caption(f"{len(events)} 个已记录事件 · 只显示 run_id = {run_id} 的行")

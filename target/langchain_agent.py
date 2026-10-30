@@ -62,6 +62,8 @@ class ContractMiddleware(AgentMiddleware):
             if clarification:
                 # 在模型与工具之前完成澄清；框架仍保存真实用户消息和助手消息。
                 ctx.events.append({"event":"authorization_clarification", "text":clarification})
+                from target.run_events import emit
+                emit('agent_decision',source='purchase_clarification',model_called=False,reply=clarification)
                 return ModelResponse(result=[AIMessage(content=clarification)])
         if ctx.model_calls >= ctx.max_steps:
             ctx.events.append({"event":"termination","reason":ctx.model_limit_reason})
@@ -88,8 +90,21 @@ class ContractMiddleware(AgentMiddleware):
                     except (TypeError,ValueError):pass
                 emit('tool_result_in_model_request',call_id=message.tool_call_id,tool=message.name,**evidence)
         with capture(ctx.events,ctx.trace.trace_id,ctx.model_calls):
-            response = handler(request)
-        emit('model_end',model_step=ctx.model_calls)
+            try:
+                response = handler(request)
+            except Exception as exc:
+                emit('model_error','failed',model_step=ctx.model_calls,error=type(exc).__name__)
+                raise
+        first=response.result[0] if response.result else None
+        metadata=getattr(first,'response_metadata',None) or {}
+        emit('model_end',model_step=ctx.model_calls,
+             duration_ms=int((time.perf_counter()-model_started)*1000),
+             tool_calls=[c for m in response.result for c in m.tool_calls],
+             reply='\n'.join(m.text for m in response.result if not m.tool_calls),
+             token_usage=getattr(first,'usage_metadata',None),
+             actual_model=metadata.get('model_name') or metadata.get('model'),
+             request_id=metadata.get('request_id'),
+             execution_mode='live_configured' if ctx.deepseek_settings else 'mock')
         for m in response.result:
             for call in m.tool_calls:
                 emit('model_tool_proposed',tool=call['name'],args=call['args'],call_id=call['id'])
@@ -142,11 +157,11 @@ class ContractMiddleware(AgentMiddleware):
             # the exact original model call, not against conversational text.
             proposal = {'tool': original['name'], 'args': copy.deepcopy(original['args']), 'call_id': original['id']}
             from target.run_events import emit
-            emit('confirmation_requested',tool=original['name'],args=original['args'])
+            emit('confirmation_requested',tool=original['name'],args=original['args'],call_id=original['id'])
             decision = interrupt(proposal)
             approved = isinstance(decision, dict) and decision.get('approved') is True and decision.get('proposal') == proposal
             if not approved:
-                emit('confirmation_declined','blocked',tool=original['name'],executed=False)
+                emit('confirmation_declined','blocked',tool=original['name'],call_id=original['id'],executed=False)
                 ctx.events.append({'event':'user_declined_operation','tool':original['name'],'call_id':original['id']})
                 return ToolMessage(content=json.dumps({'error':'用户未确认本次模拟操作，未执行'},ensure_ascii=False),
                                    tool_call_id=original['id'],name=original['name'])
@@ -173,7 +188,10 @@ class ContractMiddleware(AgentMiddleware):
                     blocked = None
             executed = False
             from target.run_events import emit
-            emit('permission_check','blocked' if blocked else 'accepted',tool=name,reason=blocked,executed=False)
+            emit('permission_check','blocked' if blocked else 'accepted',tool=name,args=args,
+                 call_id=call['id'],reason=blocked,executed=False,
+                 requires_confirmation=ctx.confirm_model_actions and name in {'lock_seat','create_order','pay_order','cancel_order','monitor_seat'},
+                 user_confirmed=approved)
             execution_diagnostic={}
             try:
                 if blocked:
@@ -207,6 +225,9 @@ class ContractMiddleware(AgentMiddleware):
                 result = run.result(name,result,call["id"])
             latency = int((time.perf_counter()-started)*1000)
             confirmed_execution=execution_diagnostic.get("backend_executed") if executed else False
+            if blocked or not execution_diagnostic:
+                emit('tool_result','blocked' if blocked else 'failed',tool=name,args=args,
+                     call_id=call['id'],executed=confirmed_execution,output=result,duration_ms=latency)
             ctx.trace.record_call(ctx.current_step,name,args,result,ok,latency)
             entry = {"event":"tool_end","tool":name,"args":copy.deepcopy(args),"call_id":call["id"],
                      "ok":ok,"executed":confirmed_execution,"execution_index":index,"latency_ms":latency,
@@ -223,7 +244,7 @@ class ContractMiddleware(AgentMiddleware):
                         if not executed:
                             event["reason"] = blocked or "执行器拒绝调用"
             from target.run_events import emit
-            emit('tool_message_created',tool=name,call_id=call['id'])
+            emit('tool_message_created',tool=name,call_id=call['id'],output=result)
             return ToolMessage(content=json.dumps(result,ensure_ascii=False),tool_call_id=call["id"],name=name,
                                status="success" if ok else "error"),ok,blocked
 

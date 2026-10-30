@@ -46,6 +46,7 @@ def panel_title(title, note=None):
 
 
 EVENT_LABELS = {'user_input':'接收输入','agent_start':'Agent 开始','model_start':'模型请求',
+    'model_error':'模型请求失败','run_finished':'本轮执行结束','user_confirmation':'用户确认决定','agent_decision':'规则澄清',
     'model_end':'模型返回','model_tool_proposed':'模型提出工具','tool_proposed':'工具调用请求',
     'parameter_validation':'参数校验','permission_check':'权限检查','tool_start':'开始执行工具',
     'tool_result':'工具返回','rag_result':'检索政策证据','tool_message_created':'生成工具消息',

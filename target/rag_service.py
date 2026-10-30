@@ -7,6 +7,7 @@ from pathlib import Path
 import re
 import time
 import uuid
+import hashlib
 
 SCOPE=contextvars.ContextVar('ticket_rag_scope',default={})
 
@@ -102,6 +103,10 @@ def retrieve(question,mode=None,*,allow_network=False,k=None,threshold=None):
         raise
     emit('rag_result','succeeded' if record['hits'] else 'insufficient_evidence',
          tool='search_policy',retrieval_id=identity,mode=mode,
+         question=question,corpus_version=hashlib.sha256(config.POLICY_PATH.read_bytes()).hexdigest(),
+         index_version=record.get('index_version'),embedding_origin=record.get('embedding_origin'),
+         embedding_receipts=record.get('embedding_receipts'),
+         retrieval_origin='frozen_evidence_retrieval' if frozen is not None else 'current_execution',
          documents=record['hits'],hit_count=len(record['hits']),
          duration_ms=record.get('total_latency_ms'),sufficiency=record.get('sufficiency'),
          evidence_location='rag_runs.jsonl:retrieval_id='+identity,
@@ -112,6 +117,10 @@ def retrieve(question,mode=None,*,allow_network=False,k=None,threshold=None):
 def save(record):
     import config
     from target.diagnostics import sanitize
+    from target.run_events import identity
+    current=identity()
+    if current:
+        record=dict(record,run_id=current['run_id'],trace_id=current['run_id'],session_id=current['session_id'])
     path=config.TRACE_DIR/'rag_runs.jsonl';path.parent.mkdir(parents=True,exist_ok=True)
     with path.open('a',encoding='utf-8') as f:f.write(json.dumps(sanitize(record),ensure_ascii=False)+'\n')
 

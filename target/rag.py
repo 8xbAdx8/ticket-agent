@@ -87,7 +87,9 @@ def search_policy(question):
     import uuid
     retrieval_id=uuid.uuid4().hex
     mode='vector' if config.USE_VECTOR_RAG else 'keyword'
-    emit('rag_start','running',retrieval_id=retrieval_id,mode=mode,question=question)
+    import time,hashlib,json
+    started=time.perf_counter()
+    emit('rag_start','running',tool='search_policy',retrieval_id=retrieval_id,mode=mode,question=question)
     try:
         try:
             hits = vector_search(question) if config.USE_VECTOR_RAG else keyword_search(question)
@@ -96,9 +98,14 @@ def search_policy(question):
                 raise  # A Live vector failure must never masquerade as successful keyword retrieval.
             hits = keyword_search(question)  # 可选向量依赖不可用时保留离线能力
             mode='keyword'
-        emit('rag_result','succeeded',retrieval_id=retrieval_id,mode=mode,documents=hits,
-             count=len(hits),sufficiency='unverified' if hits else 'insufficient_evidence')
+        corpus_version=hashlib.sha256(json.dumps(load_chunks(),sort_keys=True,ensure_ascii=False).encode('utf8')).hexdigest()
+        emit('rag_result','succeeded' if hits else 'insufficient_evidence',tool='search_policy',
+             retrieval_id=retrieval_id,question=question,mode=mode,documents=hits,
+             count=len(hits),corpus_version=corpus_version,index_version=None,
+             duration_ms=int((time.perf_counter()-started)*1000),retrieval_origin='current_execution',
+             document_store='in_process_document_cache',
+             sufficiency='unverified' if hits else 'insufficient_evidence')
     except Exception as exc:
-        emit('rag_error','failed',retrieval_id=retrieval_id,mode=mode,error=type(exc).__name__)
+        emit('rag_error','failed',tool='search_policy',retrieval_id=retrieval_id,mode=mode,error=type(exc).__name__)
         raise
     return {"question": question, "hits": hits, "count": len(hits)}
