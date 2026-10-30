@@ -71,7 +71,9 @@ user_page()
                     for k,v in dict(fixture_provider=provider,fixture_model=session.live_model,user_sessions=[session],
                             user_provider_signature=('langchain',True,provider,session.live_model,'manual-live-v1')).items():
                         app.session_state[k]=v
-                    app.run();app.checkbox(key='user_allow_live').check().run()
+                    app.run()
+                    if provider!='deepseek':app.checkbox(key='user_allow_live').check().run()
+                    else:self.assertNotIn('user_allow_live',[b.key for b in app.checkbox])
                     self.assertEqual([],calls)
                     app.text_input(key='user_message').set_value('查明天上海到杭州的高铁二等座')
                     next(b for b in app.button if b.label=='发送').click().run()

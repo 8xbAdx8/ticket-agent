@@ -206,5 +206,5 @@ def quality_page(sessions=()):
                        key='quality_session')
         current_session_quality(sessions[i])
         return
-    section=st.radio("质量专题",["七维度","变异热力图","幻觉检测","并发幂等","AI 专项"],horizontal=True)
+    section=st.radio("质量专题",["七维度","变异热力图","幻觉检测","并发幂等","AI 专项"],horizontal=True,key="quality_section")
     {"七维度":quality_dimensions,"变异热力图":mutation_matrix,"幻觉检测":hallucination_topic,"并发幂等":concurrency_topic,"AI 专项":specialist_topics}[section]()

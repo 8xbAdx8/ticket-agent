@@ -187,7 +187,7 @@ class V33AppTests(unittest.TestCase):
             try:
                 with patch("web.runtime.Agent",side_effect=lambda **kw:RealAgent(model=model,**kw)):
                     self.app.run()
-                    next(c for c in self.app.checkbox if c.label.startswith("确认发送真实")).check()
+                    self.assertFalse(any(c.label.startswith("确认发送真实 DeepSeek") for c in self.app.checkbox))
                     self.send("查今天上海到杭州的高铁")
                 # A UI regression: the original Agent loop still uses two
                 # requests; the newly requested automatic follow-up uses one.

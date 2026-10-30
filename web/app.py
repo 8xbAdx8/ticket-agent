@@ -59,9 +59,9 @@ def main():
         from web.v37_console import page as acceptance_page
         acceptance_page()
     elif page == "测试总览":
-        from web.dashboard import dashboard_page
+        from web.competition_view import competition_page
         sessions = st.session_state.get("user_sessions", []) + st.session_state.get("lab_archives", [])
-        dashboard_page([s.trace_dir for s in sessions], [s.trace_dir for s in st.session_state.get("lab_archives", [])])
+        competition_page(sessions)
     elif page == "测试实验室":
         from web.laboratory import lab_page
         lab_page()

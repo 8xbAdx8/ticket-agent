@@ -61,7 +61,8 @@ class QwenNavigationTests(unittest.TestCase):
         self.assertTrue(any('正在查看历史会话' in i.value and 'DeepSeek' in i.value for i in self.app.info))
 
     def test_live_fee_consent_does_not_follow_a_different_provider(self):
-        next(c for c in self.app.checkbox if c.label.startswith('确认发送真实')).check().run()
+        self.assertFalse(any(c.label.startswith('确认发送真实') for c in self.app.checkbox))
+        self.app.session_state['user_allow_live']=True  # A stale pre-change checkbox value must not cross providers.
         self.select('Qwen3.8-Flash Live')
         self.assertFalse(next(c for c in self.app.checkbox if c.label.startswith('确认发送真实')).value)
 

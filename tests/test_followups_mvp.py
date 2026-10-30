@@ -255,12 +255,16 @@ user_page()
                             app.session_state[key]=value
                         app.run();self.assertEqual([],list(app.exception));self.assertEqual([],calls)
                         self.assertNotIn('user_followup_model',[b.key for b in app.checkbox])
-                        self.assertFalse(app.checkbox(key='user_allow_live').value)
-                        app.text_input(key='user_message').set_value('查明天上海到杭州的高铁二等座')
-                        next(b for b in app.button if b.label=='发送').click().run()
-                        self.assertEqual([],calls)  # No Live consent, no Agent or auxiliary call.
-                        app.checkbox(key='user_allow_live').check().run()
-                        self.assertEqual([],calls)  # A checkbox/rerun alone never sends a request.
+                        if provider=='deepseek':
+                            self.assertNotIn('user_allow_live',[b.key for b in app.checkbox])
+                            app.run();self.assertEqual([],calls)  # Rendering never dispatches.
+                        else:
+                            self.assertFalse(app.checkbox(key='user_allow_live').value)
+                            app.text_input(key='user_message').set_value('查明天上海到杭州的高铁二等座')
+                            next(b for b in app.button if b.label=='发送').click().run()
+                            self.assertEqual([],calls)  # Qwen still requires Live consent.
+                            app.checkbox(key='user_allow_live').check().run()
+                            self.assertEqual([],calls)
                         app.text_input(key='user_message').set_value('查明天上海到杭州的高铁二等座')
                         next(b for b in app.button if b.label=='发送').click().run()
                         self.assertEqual([],list(app.exception))

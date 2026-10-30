@@ -48,16 +48,23 @@ class LivePageTests(unittest.TestCase):
                 if page=='user':app.text_input(key='user_message').set_value('您好')
                 button=next(b for b in app.button if b.label==label)
                 self.assertFalse(button.disabled)
-                button.click().run(timeout=20)
-                self.assertFalse(app.exception);self.assertEqual(len(fixture.payloads),0)
-                app.checkbox(key=key).check().run(timeout=20)
+                if not (provider=='deepseek' and page=='user'):
+                    button.click().run(timeout=20)
+                    self.assertFalse(app.exception);self.assertEqual(len(fixture.payloads),0)
+                    app.checkbox(key=key).check().run(timeout=20)
+                else:
+                    self.assertNotIn(key,[c.key for c in app.checkbox])
+                    app.run(timeout=20)
                 self.assertEqual(len(fixture.payloads),0)  # Permission alone never dispatches.
                 for _ in range(7):
-                    app.checkbox(key=key).check()
+                    if not (provider=='deepseek' and page=='user'):app.checkbox(key=key).check()
                     if page=='user':app.text_input(key='user_message').set_value('您好')
                     next(b for b in app.button if b.label==label).click().run(timeout=20)
                     self.assertFalse(app.exception);self.assertIsNone(session.error)
-                self.assertEqual(len(fixture.payloads),7)
+                main=[p for p in fixture.payloads if 'response_format' not in p]
+                auxiliary=[p for p in fixture.payloads if p.get('response_format')=={'type':'json_object'}]
+                self.assertEqual(len(main),7)  # Original seven-request/no-old-quota assertion remains.
+                self.assertLessEqual(len(auxiliary),7)  # Automatic follow-ups are counted separately.
                 self.assertEqual(len(session.history),7)
                 self.assertTrue(all(r['tool_sequence']==[] for r in session.history))
         finally:

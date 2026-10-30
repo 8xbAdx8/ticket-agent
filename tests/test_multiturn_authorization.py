@@ -103,7 +103,7 @@ class MultiturnAuthorizationTests(unittest.TestCase):
    app.session_state[key]=value
   with patch('web.conversation.live_ready',return_value=True),patch.object(s,'send') as send:
    app.run(timeout=15)
-   app.checkbox(key='user_allow_live').check()
+   self.assertNotIn('user_allow_live',[c.key for c in app.checkbox])
    app.text_input(key='user_message').set_value(self.text)
    next(b for b in app.button if b.label=='发送').click().run(timeout=15)
    self.assertFalse(app.exception)

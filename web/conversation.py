@@ -87,6 +87,13 @@ def _followup_lifecycle(session, run_id, kind, **fields):
         pass
 
 
+def _live_request_allowed(session):
+    """DeepSeek's explicit send is consent; other providers keep the checkbox."""
+    return bool(session.live and st.session_state.get('user_compose_session')==session.sid
+                and ((session.live_provider=='deepseek' and session.mode=='user')
+                     or st.session_state.get('user_allow_live')))
+
+
 def execute(session, message, request_id, origin=None):
     placeholder=st.empty()
     rag_placeholder=st.empty()
@@ -102,8 +109,7 @@ def execute(session, message, request_id, origin=None):
             rag_placeholder.markdown(_policy_status_markup(view),unsafe_allow_html=True)
     placeholder.markdown(PROCESSING,unsafe_allow_html=True)
     try:
-        consent=bool(session.live and st.session_state.get('user_compose_session')==session.sid
-                     and st.session_state.get('user_allow_live'))
+        consent=_live_request_allowed(session)
         origin=origin or {}
         session.send(message,request_id,event_callback=update,followup_authorized=consent,
                      followup_origin=origin if origin.get('run_id') else None)
@@ -198,8 +204,7 @@ def _followup_suggestions(session, record, view, offered=None):
     if offered is not None:offered.update(suggestions)
     pending=st.session_state.get('pending_operation') or {}
     ready=(not session.pending_action() and pending.get('sid')!=session.sid and
-           (not session.live or (st.session_state.get('user_compose_session')==session.sid and
-                                st.session_state.get('user_allow_live') and live_ready(session.live_provider))))
+           (not session.live or (_live_request_allowed(session) and live_ready(session.live_provider))))
     shown_key='followup_displayed_'+str(view.get('run_id'))
     if not st.session_state.get(shown_key):
         st.session_state[shown_key]=True
@@ -219,7 +224,9 @@ def _followup_suggestions(session, record, view, offered=None):
             st.button(question,key='policy_followup_'+session.sid+'_'+str(view.get('run_id'))+'_'+str(n),
                       on_click=_queue_followup,args=(session.sid,view.get('run_id'),question),
                       disabled=not ready,width='stretch')
-        if session.live and not ready:st.caption('先在输入区确认真实请求费用，并完成待确认操作。点击追问将按普通消息计费。')
+        if session.live and not ready:
+            st.caption('请检查 DeepSeek 配置并完成待确认操作。' if session.live_provider=='deepseek' else
+                       '先在输入区确认真实请求费用，并完成待确认操作。点击追问将按普通消息计费。')
         with st.expander('追问生成记录',expanded=False):
             st.caption('生成来源：'+saved['generation_source']+' · 回退原因：'+str(saved.get('fallback_reason') or '无'))
             st.caption('run_id：'+saved['run_id']+' · 规则版本：'+saved['prompt_version'])
@@ -232,9 +239,9 @@ def _consume_followup(session, busy):
     if not request:return None
     if request.get('sid')!=session.sid or busy:
         st.info('会话已切换或存在待确认操作，尚未发送这条追问。');return None
-    if session.live and (st.session_state.get('user_compose_session')!=session.sid or
-                         not st.session_state.get('user_allow_live') or not live_ready(session.live_provider)):
-        st.warning('请先确认真实请求费用；这条追问尚未发送。');return None
+    if session.live and (not _live_request_allowed(session) or not live_ready(session.live_provider)):
+        st.warning('会话已切换或 DeepSeek 配置不完整；这条追问尚未发送。' if session.live_provider=='deepseek' else
+                   '请先确认真实请求费用；这条追问尚未发送。');return None
     from target.followups import normal
     for record in session.history:
         saved=session.followups_for(record)
@@ -419,8 +426,7 @@ def _confirm_cards(session, action, pending, pending_here):
             if approved or declined:
                 try:
                     session.confirm_action(approved, uuid.uuid4().hex,
-                        followup_authorized=bool(session.live and st.session_state.get('user_compose_session')==session.sid
-                            and st.session_state.get('user_allow_live')))
+                        followup_authorized=_live_request_allowed(session))
                 except Exception:
                     st.error("操作未完成，请查看执行记录和订单状态。")
                 st.rerun()
@@ -451,7 +457,10 @@ def _composer(session, live_name):
     """The composer lives in the conversation column so narrow stacking keeps it
     between the transcript and the run-detail panel."""
     with st.container(key='user_compose'):
-        if session.live:
+        if session.live and session.live_provider=='deepseek':
+            st.caption('当前为 DeepSeek 在线模式，发送请求会产生 API 费用。')
+            allow_live=True
+        elif session.live:
             allow_live=st.checkbox("确认发送真实 "+live_name+" 请求（会产生 API 费用）",key="user_allow_live")
         else:
             allow_live=False

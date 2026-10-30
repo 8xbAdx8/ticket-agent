@@ -42,11 +42,12 @@ def current_lab_page(runtime_dirs):
     st.caption("查看原始工具调用、判断原因和证据：进入 Trace 分析并选择对应 Trace ID。")
 
 
-def dashboard_page(runtime_dirs=(), lab_runtime_dirs=()):
+def dashboard_page(runtime_dirs=(), lab_runtime_dirs=(), source=None):
     header("测试总览","按批次审阅质量，保留失败、未验证与证据边界。","质量工作台")
     owner_col,kind_col,batch_col=st.columns([1,1.15,1.25])
-    with owner_col:
-        source=st.selectbox("证据批次",["当前测试实验室（实时）","B 独立测试","A 历史离线自测","A 当前隔离实验"],key="dashboard_owner")
+    if source is None:
+        with owner_col:
+            source=st.selectbox("证据批次",["当前测试实验室（实时）","B 独立测试","A 历史离线自测","A 当前隔离实验"],key="dashboard_owner")
     if source=="当前测试实验室（实时）":
         current_lab_page(lab_runtime_dirs)
         return
@@ -104,7 +105,37 @@ def dashboard_page(runtime_dirs=(), lab_runtime_dirs=()):
 
 def quality_dimensions():
     data=choose_batch("quality_batch")
+    from web.evidence import DIMENSIONS, cases
+    from target.diagnostics import sanitize
+    dimension=st.selectbox("证据维度", ["全部", *DIMENSIONS], key="quality_dimension")
     rows=dimension_rows(data["rows"])
+    if dimension != "全部":
+        rows=[r for r in rows if r["dimension"]==dimension]
     st.altair_chart(charts.dimensions(rows),width="stretch")
     table([{ "维度":r["dimension"],"定义用例":r["defined"],"执行":r["executed"],"通过":r["passed"],"失败":r["failed"],"跳过":r["skipped"],"不适用":r["not_applicable"],"未验证":r["not_verified"],"无法判定":r["indeterminate"]} for r in rows],"quality_dimensions")
     st.caption("来源为 B 原始用例及执行记录；没有以代码覆盖率代替测试维度。RAG 15 条是现有政策断言，不代表已完成 RAGAS/DeepEval 忠实度评测。")
+    if dimension == "全部":
+        st.caption("选择一个证据维度，可查看该引擎对应的用例、原始断言和实际执行记录。")
+        return
+    selected=[r for r in data["rows"] if r["dimension"]==dimension]
+    table([{"用例":r["id"],"维度":r["dimension"],"状态":r["status"],
+            "断言数量":len(r.get("checks",[])),"执行轮数":len(r.get("executed",[])),
+            "说明":r.get("note") or "未记录"} for r in selected], "quality_case_records")
+    ids=[r["id"] for r in selected]
+    if not ids:
+        st.info("此维度没有可读取的用例记录。")
+        return
+    if st.session_state.get("quality_case") not in ids:
+        st.session_state.pop("quality_case",None)
+    case_id=st.selectbox("查看用例原始证据",ids,key="quality_case")
+    record=next(r for r in selected if r["id"]==case_id)
+    definition=next((r for r in cases() if r["id"]==case_id),None)
+    st.caption(f"{dimension} · {data['engine']} · {case_id} · {data['source']}")
+    with st.expander("用例定义与期望",expanded=True):
+        st.json(sanitize(definition) if definition is not None else {"状态":"未记录"})
+    with st.expander("原始断言与实际执行记录",expanded=True):
+        st.json(sanitize(record))
+        if not record.get("executed"):
+            st.caption("无工具 Trace；入口异常用例可由原始断言验证。不适用或未验证记录不代表执行成功。")
+        for index,trace in enumerate(record.get("executed",[]),1):
+            st.caption(f"执行轮次 {index} · Trace ID：{trace.get('trace_id') or '未记录'}")

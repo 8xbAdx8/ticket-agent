@@ -133,6 +133,7 @@ class PolicyChatIntegrationTests(unittest.TestCase):
             with patch('web.conversation.st.session_state', {'user_followup_request': {**request, **overrides}}):
                 self.assertIsNone(_consume_followup(session, busy))
         session.live = True
+        session.live_provider = 'bailian'  # Qwen retains its explicit API consent.
         for consent, compose, ready in ((False, session.sid, True), (True, 'old-session', True), (True, session.sid, False)):
             state = {'user_followup_request': request.copy(), 'user_allow_live': consent, 'user_compose_session': compose}
             with patch('web.conversation.st.session_state', state), patch('web.conversation.live_ready', return_value=ready):
