@@ -17,7 +17,7 @@ def permissions(message: str) -> set[str]:
     granted = set()
     for name, positive, negative in (
         ("create_order", PURCHASE, r"(?:不要|别|不|暂不|先不)\s*(?:买|订|抢|下单|购|创建订单)"),
-        ("lock_seat", r"锁座|锁定座位", r"(?:不要|别|不|暂不|先不)\s*(?:锁座|锁定)"),
+        ("lock_seat", r"锁座|锁定(?:座位|二等座|一等座|商务座|经济舱|公务舱)", r"(?:不要|别|不|暂不|先不)\s*(?:锁座|锁定)"),
         ("monitor_seat", r"候补|监控余票|订阅余票", r"(?:不要|别|不|暂不|先不)\s*(?:候补|监控|订阅)"),
         ("pay_order", r"^(?:支付|付款|付钱)(?:[^\n]*?(?:订单|OD[A-Za-z0-9_]+))?$|(?:并且|并|然后|再|顺便)(?:请|帮我)?(?:支付|付款|付钱)", r"(?:不要|别|不|暂不|先不)\s*(?:支付|付款|付钱)"),
         ("cancel_order", r"^(?:取消(?:订单)?|退掉|退了|退票|退)(?:[^\n]*?(?:订单|OD[A-Za-z0-9_]+))?$", r"(?:不要|别|不|暂不|先不)\s*(?:取消|退票|退掉|退)"),
@@ -152,6 +152,46 @@ def recent_lock_reference(messages, args):
     return False
 
 
+def reuse_lock_command(message):
+    """A concrete command to use the prior lock; not an implicit purchase/payment."""
+    if re.search(QUESTION + r'|不要|别|暂不|先不|假设|如果|举例|[“”"「」]', message):
+        return False
+    return bool(re.fullmatch(r'(?:请|帮我)?(?:确认(?:订票|下单)[：:,，]\s*)?'
+        r'(?:用|使用)(?:刚才|刚|之前)?锁(?:定|好)?的座(?:位)?(?:创建订单|下单)[^。；;\n]*[。！!\s]*', message.strip()))
+
+
+def privacy_denial(name, args, message=''):
+    """Read-only ownership preflight, before Python business tools or confirmation.
+
+    An exact proposal approval does not grant access to another account. Unknown
+    IDs still go through the existing backend ownership/state checks.
+    """
+    if name not in {'query_order', 'pay_order', 'cancel_order', 'create_order'}:
+        return None
+    import config
+    if name == 'query_order':
+        if args.get('phone') and args['phone'] != config.CURRENT_USER_PHONE:
+            return '不可查询其他用户订单'
+        phones = re.findall(r'(?<!\d)1\d{10}(?!\d)', message)
+        if (any(p != config.CURRENT_USER_PHONE for p in phones) or
+            re.search(r'他人|别人的|别人(?:订单|的订单)|其他用户|上一个用户', message)):
+            return '不可查询其他用户订单'
+    if name == 'create_order' and args.get('contact') and args['contact'] != config.CURRENT_USER_PHONE:
+        return '不可使用其他用户身份创建订单'
+    order_id = args.get('order_id')
+    if order_id and name in {'query_order', 'pay_order', 'cancel_order'}:
+        import sqlite3
+        from contextlib import closing
+        try:
+            with closing(sqlite3.connect(config.DB_PATH.resolve().as_uri()+'?mode=ro',uri=True,timeout=5)) as conn:
+                row = conn.execute('SELECT phone FROM orders WHERE order_id=?',(order_id,)).fetchone()
+            if row and row[0] != config.CURRENT_USER_PHONE:
+                return '不可查询其他用户订单' if name == 'query_order' else '不可修改其他用户订单'
+        except (sqlite3.Error, OSError):
+            pass  # No ownership inference; the backend remains authoritative.
+    return None
+
+
 
 def pending_confirmation(message, prompt):
     """Interpret a short confirmation only for a single explicit preceding question."""
@@ -205,7 +245,8 @@ def denial(name, args, context, messages) -> str | None:
     selection_lock = name == 'lock_seat' and selection_lock_authorized(context.user_message, messages, args)
     contextual = confirmed_action(name, args, context.user_message, messages)
     confirm_order = contextual and name == 'create_order' or (name == 'create_order' and
-                     bool(re.fullmatch(r'(?:请)?确认(?:创建)?(?:模拟)?订单|(?:请)?确认下单', context.user_message.strip().rstrip('。！! '))))
+                     (reuse_lock_command(context.user_message) or
+                      bool(re.fullmatch(r'(?:请)?确认(?:创建)?(?:模拟)?订单|(?:请)?确认下单', context.user_message.strip().rstrip('。！! ')))))
     if name not in permissions(context.user_message) and not selection_lock and not confirm_order and not contextual:
         return "当前消息未明确授权该操作，请明确说明订票、支付、退票或候补请求。"
     if name == "lock_seat" and context.lock_ids:

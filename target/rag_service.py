@@ -137,10 +137,18 @@ def citation_check(reply,hits):
 
 
 def attach_answer(trace,events,reply):
-    calls=[e for e in events if e.get('event')=='tool_end' and e.get('tool')=='search_policy' and e.get('ok')]
+    calls=[e for e in events if e.get('event')=='tool_end' and e.get('tool')=='search_policy'
+           and e.get('ok') and e.get('executed') is not False]
     if not calls:return None
     hits=[h for e in calls for h in e.get('result',{}).get('hits',[])]
     result=citation_check(reply,hits)
+    result['evidence_refs'] = [dict(run_id=trace.trace_id, call_id=e.get('call_id'),
+        doc_id=h.get('doc_id'), chunk_id=h.get('chunk_id'), version=h.get('version'), source=h.get('source'),
+        score=h.get('score'),execution_status='executed' if e.get('executed') is True else 'unknown',
+        context_delivery='submitted_to_model_adapter' if any(
+            m.get('event')=='tool_result_in_model_request' and m.get('call_id')==e.get('call_id')
+            for m in events) else 'not_recorded',
+        answer_support='not_verified') for e in calls for h in e.get('result',{}).get('hits',[])]
     if os.getenv('RAG_QUALITY_PROFILE','v351')=='v351':
         from target.rag_faithfulness import check_answer
         import config

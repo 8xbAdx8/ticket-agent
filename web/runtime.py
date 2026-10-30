@@ -334,8 +334,16 @@ class Conversation:
             with capture(self.trace_dir/'run_events.jsonl',confirmation={
                 'approved':approved,'proposal':proposal,
                 'source_run_id':self.audits[-1].get('trace_id') if self.audits else None}):
-                result=self._send("确认模拟操作" if approved else "取消模拟操作", request_id,
-                                  decision={"proposal":proposal, "approved":approved})
+                try:
+                    result=self._send("确认模拟操作" if approved else "取消模拟操作", request_id,
+                                      decision={"proposal":proposal, "approved":approved})
+                except Exception as exc:
+                    # Keep failure termination inside this run's capture, just
+                    # like send(); never retry a possibly executed write.
+                    from target.run_events import finish
+                    finish(error=self.error or {'type':type(exc).__name__})
+                    emit('agent_error','failed',error=self.error or {'type':type(exc).__name__})
+                    raise
                 emit('operation_resumed','approved' if approved else 'declined',proposal=proposal)
                 self._record_followups(result,followup_authorized)
                 from target.run_events import finish

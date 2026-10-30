@@ -53,7 +53,11 @@ def validate_read_only_reply(reply):
             continue
         if not re.search(action, clause):
             continue
-        if (re.search(done, clause) or re.search(own_invitation, clause)
+        # A policy about an already modified ticket is not a claim that this
+        # assistant performed an action. Still reject any explicit offer/done.
+        policy_denial = bool(re.search(r'(?:订单|车票|凭证).{0,8}(?:不接受|不予|不退)',clause)
+                             and not re.search(r'(?:我(?:们)?|本助手|系统)(?:已经|已|成功)',clause))
+        if ((re.search(done, clause) and not policy_denial) or re.search(own_invitation, clause)
                 or re.search(own_offer + execution + r"(?:" + action + r")", clause)):
             raise DeepSeekError("read_only_capability_violation")
         if re.search(invitation, clause) and not re.search(external, clause):

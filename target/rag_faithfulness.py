@@ -117,6 +117,63 @@ def _conditions(text):
     return result
 
 
+def _question_time_echoes(claim, question):
+    """Only explicit scenario time points supplied by the user, not policy limits.
+
+    Matching a number in the question is insufficient: fees, validity periods and
+    normative deadlines still require evidence, even if the user suggested them.
+    """
+    supplied = _conditions(question)
+    echoes = []
+    for q in _quantities(claim):
+        prefix = claim[:q['start']]
+        phase = re.search(r'(开车前|开车后|起飞前|起飞后)\s*$', prefix)
+        if (q['dimension'] != 'duration' or not phase or q['negated'] or
+            re.search(r'必须|至少|最多|仅限|要求|规定|规则|有效期|截止|应当|需要', prefix[:phase.start()])):
+            continue
+        if any(c[0] == phase[1] and c[1] == q['value'] and c[2] is None and c[3] == 'unspecified'
+               for c in supplied):
+            echoes.append(dict(q, phase=phase[1], origin='user_question_condition'))
+    return echoes
+
+
+def _applied_time_rate(claim, echoes, rows, quantities):
+    """Check a uniquely applicable explicit interval/rate; no policy IDs/values."""
+    findings, checks = [], []
+    rates = [q for q in quantities if q['dimension'] == 'percentage']
+    for echo in echoes:
+        applicable = []
+        for row in rows:
+            conditions = _conditions(row['text'])
+            if len(conditions) != 1 or not _subjects_compatible(claim, row['text']):
+                continue
+            if not any(t in claim and t in row['text']+row['title'] for t in POLICY_TOPICS):
+                continue
+            phase, a, b, qualifier = conditions[0]
+            if phase != echo['phase']:
+                continue
+            value, low = Decimal(echo['value']), Decimal(a)
+            matches = (low <= value <= Decimal(b) if b is not None else
+                       value >= low if qualifier == '以上' else
+                       value > low if qualifier == '超过' else
+                       value < low if qualifier in ('不足', '不满') else
+                       value <= low if qualifier in ('以内', '内', '以下') else False)
+            if matches:
+                applicable.append(row)
+        values = {q['value'] for row in applicable for q in _quantities(row['text'])
+                  if q['dimension'] == 'percentage'}
+        if rates and len(values) == 1:
+            bad = [q for q in rates if q['value'] not in values]
+            record = {'claim':claim, 'question_condition':echo, 'expected_rates':sorted(values),
+                      'evidence':[{'doc_id':r['doc_id'], 'text':r['text']} for r in applicable]}
+            if bad:
+                findings.append(dict(record, type='question_condition_rate_mismatch', asserted_rates=bad,
+                    basis='The user time point selects a unique explicit evidence interval with a different rate'))
+            else:
+                checks.append(dict(record, status='supported_applied_rate', checked_scope='explicit_interval_rate_only'))
+    return checks, findings
+
+
 def _subjects_compatible(claim,source):
     for group in SUBJECT_GROUPS:
         claim_terms={s for s in group if s in claim};source_terms={s for s in group if s in source}
@@ -225,7 +282,7 @@ def check_answer(reply,hits,*,events=(),question='',policy_versions=None,order_s
     hits=list(hits or []);events=list(events or []);text,excluded=_strip_user_quotes(str(reply))
     allowed=sorted({h.get('doc_id') for h in hits if h.get('doc_id')})
     cited=list(dict.fromkeys(IDS.findall(text)))
-    findings=[];checks=[];unknown=[];refusal=bool(REFUSAL.search(text))
+    findings=[];checks=[];unknown=[];question_echoes=[];refusal=bool(REFUSAL.search(text))
     rows=_sentences(hits)
     for clause in _clauses(text):
         claim=clause['text'];ids=list(dict.fromkeys(IDS.findall(claim)))
@@ -263,6 +320,14 @@ def check_answer(reply,hits,*,events=(),question='',policy_versions=None,order_s
         if not hits:
             findings.append({'type':'no_evidence_positive_claim','claim':claim,'basis':'Policy assertion with empty actual retrieval evidence'})
             continue
+        echoes = _question_time_echoes(IDS.sub('',claim), question)
+        if echoes:
+            question_echoes.extend({'claim':claim, 'quantity':q} for q in echoes)
+            quantities = [q for q in quantities if not any(q['start']==e['start'] and q['end']==e['end'] for e in echoes)]
+            unknown.append({'claim':claim, 'reason':'user_question_condition_echo_requires_scope_review',
+                            'question':question, 'quantities':echoes})
+            bound_checks, bound_findings = _applied_time_rate(claim, echoes, evidence if ids else rows, quantities)
+            checks.extend(bound_checks);findings.extend(bound_findings)
         if not ids:
             supported_values={(q['dimension'],q['value']) for row in rows for q in _quantities(row['text'])}
             missing=[q for q in quantities if (q['dimension'],q['value']) not in supported_values]
@@ -353,6 +418,7 @@ def check_answer(reply,hits,*,events=(),question='',policy_versions=None,order_s
     return {'schema':'ticket-rag-faithfulness/1','status':status,'original_model_reply':reply,'question':question,
             'allowed_doc_ids':allowed,'cited_doc_ids':cited,'claim_checks':checks,'findings':findings,
             'manual_review':unknown,'refusal_observed':refusal,'no_evidence_refusal':refusal and not findings if not hits else None,
+            'question_condition_echoes':question_echoes,
             'conflicts':conflicts,'conflict_disclosed':disclosed if conflicts else None,'excluded_user_quotes':excluded,
             'full_semantic_faithfulness':'indeterminate',
             'claim_audit':atomic,

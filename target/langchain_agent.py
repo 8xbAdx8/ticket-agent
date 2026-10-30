@@ -18,7 +18,7 @@ import config
 from target import tools, providers
 from target.trace import Trace
 from target.langchain_model import LangChainMockModel
-from target.write_authorization import denial, purchase_clarification
+from target.write_authorization import denial, purchase_clarification, privacy_denial
 
 READ_ONLY_TOOLS = ("query_tickets", "search_policy")
 CONFIRMATION_TTL_SECONDS = 600
@@ -52,6 +52,7 @@ class TurnContext:
     fault_run: Any = None
     model_limit_reason: str = "agent_max_steps"
     confirm_model_actions: bool = False
+    recoverable_blocks: set[str] = field(default_factory=set)
 
 
 class ContractMiddleware(AgentMiddleware):
@@ -89,6 +90,10 @@ class ContractMiddleware(AgentMiddleware):
                         if isinstance(payload,dict) and isinstance(payload.get('hits'),list):evidence['documents']=payload['hits']
                     except (TypeError,ValueError):pass
                 emit('tool_result_in_model_request',call_id=message.tool_call_id,tool=message.name,**evidence)
+                ctx.events.append({'event':'tool_result_in_model_request','call_id':message.tool_call_id,
+                    'tool':message.name,'model_step':ctx.model_calls,
+                    'doc_ids':[h.get('doc_id') for h in evidence.get('documents',[]) if isinstance(h,dict)],
+                    'delivery_status':'submitted_to_model_adapter'})
         with capture(ctx.events,ctx.trace.trace_id,ctx.model_calls):
             try:
                 response = handler(request)
@@ -103,7 +108,8 @@ class ContractMiddleware(AgentMiddleware):
              reply='\n'.join(m.text for m in response.result if not m.tool_calls),
              token_usage=getattr(first,'usage_metadata',None),
              actual_model=metadata.get('model_name') or metadata.get('model'),
-             request_id=metadata.get('request_id'),
+             request_id=metadata.get('request_id') or next((e.get('request_id') for e in reversed(ctx.events)
+                 if e.get('event')=='http_response' and e.get('model_step')==ctx.model_calls),None),
              execution_mode='live_configured' if ctx.deepseek_settings else 'mock')
         for m in response.result:
             for call in m.tool_calls:
@@ -151,8 +157,23 @@ class ContractMiddleware(AgentMiddleware):
                 sandbox_block = "LangChain Mock的写变异同样要求显式full_sandbox隔离库"
                 run.emit(write_fault,status="blocked",reason=sandbox_block,call_id=call["id"])
 
+        # Ownership is independent of a model decision or an exact-proposal approval.
+        pre_block = privacy_denial(original['name'], original['args'], ctx.user_message)
+        missing_fields = []
+        if (not pre_block and ctx.deepseek_settings and ctx.deepseek_settings.profile == 'full_sandbox'
+                and original['name'] in tools.TOOL_NAMES):
+            try:
+                tools.validate(original['name'], original['args'])
+            except ValueError:
+                definition = next((t['function']['parameters'] for t in tools.TOOLS
+                                   if t['function']['name']==original['name']), {})
+                missing_fields = [k for k in definition.get('required', []) if k not in original['args']]
+                pre_block = '工具参数不完整或不合法，请补充必要信息；未执行该工具。'
+                from target.run_events import emit
+                emit('parameter_validation','failed',tool=original['name'],call_id=original['id'],
+                     executed=False,missing_fields=missing_fields,reason=pre_block)
         approved = False
-        if ctx.confirm_model_actions and original['name'] in {'lock_seat','create_order','pay_order','cancel_order','monitor_seat'}:
+        if not pre_block and ctx.confirm_model_actions and original['name'] in {'lock_seat','create_order','pay_order','cancel_order','monitor_seat'}:
             # The graph pauses before any write. Resume value is checked against
             # the exact original model call, not against conversational text.
             proposal = {'tool': original['name'], 'args': copy.deepcopy(original['args']), 'call_id': original['id']}
@@ -169,12 +190,12 @@ class ContractMiddleware(AgentMiddleware):
         def execute(index):
             name, args = call["name"], call["args"]
             started = time.perf_counter()
-            ctx.events.append({"event":"tool_start", "model_step":ctx.current_step+1,
+            ctx.events.append({"event":"tool_attempt", "model_step":ctx.current_step+1,
                 "tool":name,"args":copy.deepcopy(args),"call_id":call["id"],"execution_index":index,
                 "model_requested_tool":original["name"],"model_requested_args":original["args"]})
             ctx.tool_calls += 1
             from target.deepseek_runtime import allowed_tools
-            blocked = sandbox_block or ("当前Live工具白名单禁止该工具" if ctx.deepseek_settings and (
+            blocked = sandbox_block or pre_block or privacy_denial(name,args,ctx.user_message) or ("当前Live工具白名单禁止该工具" if ctx.deepseek_settings and (
                 name not in allowed_tools(ctx.deepseek_settings) or original["name"] not in allowed_tools(ctx.deepseek_settings)) else
                 "达到工具调用次数上限" if ctx.deepseek_settings and ctx.tool_calls > ctx.deepseek_settings.max_tool_calls else
                 (None if approved and call == original else denial(name,args,ctx,request.state["messages"])))
@@ -196,6 +217,8 @@ class ContractMiddleware(AgentMiddleware):
             try:
                 if blocked:
                     result,ok = {"error":blocked},False
+                    if missing_fields:
+                        result['missing_fields'] = missing_fields
                 else:
                     executed = True
                     actual_request = request if call == original else request.override(tool_call=call,tool=adapt_tool(name))
@@ -235,6 +258,15 @@ class ContractMiddleware(AgentMiddleware):
                      "timestamp":datetime.now(timezone.utc).isoformat(),"step":ctx.current_step+1}
             ctx.events.append(entry)
             run.executions.append({**entry,"original_result":original_result})
+            if (blocked and confirmed_execution is False and not run.config and ctx.deepseek_settings
+                    and ctx.deepseek_settings.profile == 'full_sandbox' and (pre_block or blocked in {
+                        '当前消息未明确授权该操作，请明确说明订票、支付、退票或候补请求。',
+                        '本轮没有该 lock_id 的成功锁座记录，请先锁座再创建订单。'})):
+                # Return the actual failure to the model for clarification/refusal.
+                # The failed call remains failed in the Trace and quality assertions.
+                ctx.recoverable_blocks.add(call['id'])
+                ctx.events.append({'event':'guarded_tool_not_executed','tool':name,'call_id':call['id'],
+                                   'reason':blocked,'executed':False})
             if run.config:
                 for event in run.events:
                     if event.get("call_id") == call["id"] and event["mutation"] in ("date_offset","route_error","skip_lock"):
@@ -352,6 +384,7 @@ class LangChainAgent:
         self.last_events: list[dict[str,Any]] = []
         self.pending_actions = {}
         self.pending_deadlines = {}
+        self.pending_sources = {}
 
     def chat(self, session_id: str, message: str, *, save_trace=True, resume_decision=None) -> dict[str,Any]:
         trace = Trace(session_id,message)
@@ -396,6 +429,11 @@ class LangChainAgent:
                 if resume_decision is None:
                     graph_input = {"messages":[HumanMessage(content=message)]}
                 else:
+                    source = self.pending_sources.pop(session_id, {})
+                    from target.run_events import emit
+                    emit('confirmation_validated','approved' if resume_decision['approved'] else 'declined',
+                         source_run_id=source.get('run_id'),source_call_id=source.get('call_id'),
+                         proposal=resume_decision['proposal'],approved=resume_decision['approved'])
                     self.pending_actions.pop(session_id, None)
                     self.pending_deadlines.pop(session_id, None)
                     graph_input = Command(resume=resume_decision)
@@ -405,6 +443,7 @@ class LangChainAgent:
                 proposal = copy.deepcopy(interrupted[0].value)
                 self.pending_actions[session_id] = proposal
                 self.pending_deadlines[session_id] = time.monotonic() + CONFIRMATION_TTL_SECONDS
+                self.pending_sources[session_id] = {'run_id':trace.trace_id,'call_id':proposal.get('call_id')}
                 context.events.append({'event':'operation_confirmation_requested', **proposal})
                 reply = '模型提出了一项模拟操作，请核对操作详情后确认或取消；目前尚未执行该操作。'
             else:
@@ -412,8 +451,14 @@ class LangChainAgent:
             phase="reply_validation"
             if self.deepseek_settings:
                 from target.deepseek_runtime import DeepSeekError, validate_read_only_reply
-                if any(not c["ok"] for s in trace.steps for c in s["calls"]):
+                if any(not e['ok'] and e['call_id'] not in context.recoverable_blocks for e in context.fault_run.executions):
                     raise DeepSeekError("tool_execution_failed")
+                if context.recoverable_blocks:
+                    from target.rag_faithfulness import _execution_claims
+                    _, unsupported = _execution_claims(reply, context.events)
+                    if unsupported:
+                        context.events.append({'event':'blocked_execution_claim','findings':unsupported})
+                        raise DeepSeekError('reply_tool_mismatch')
                 if self.deepseek_settings.profile == "read_only":
                     validate_read_only_reply(reply)
                 from target.reply_consistency import check
@@ -438,6 +483,12 @@ class LangChainAgent:
                 from target.rag_service import attach_answer
                 assessment=attach_answer(trace,context.events,reply)
                 if assessment:
+                    from target.run_events import emit
+                    emit('rag_answer_check',assessment.get('status','indeterminate'),
+                         cited_doc_ids=assessment.get('cited_doc_ids'),wrong_citations=assessment.get('wrong_citations'),
+                         evidence_refs=assessment.get('evidence_refs'),
+                         findings=(assessment.get('faithfulness_check') or {}).get('findings',[]),
+                         answer_support='not_verified' if assessment.get('status')!='failed' else 'failed')
                     final_event=next((e for e in reversed(context.events) if e.get("event")=="model_final"),None)
                     if final_event is not None:final_event["rag_answer_check"]=assessment
                     if self.deepseek_settings and assessment["wrong_citations"]:
@@ -513,5 +564,6 @@ class LangChainAgent:
         for thread in targets:
             self.pending_actions.pop(thread, None)
             self.pending_deadlines.pop(thread, None)
+            self.pending_sources.pop(thread, None)
             self.checkpointer.delete_thread(thread)
             self.threads.discard(thread)
