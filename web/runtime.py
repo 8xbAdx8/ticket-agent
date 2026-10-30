@@ -115,15 +115,46 @@ class Conversation:
                     MODEL_NAME=model if self.live else "langchain-mock" if self.engine=="langchain" else "mock-offline",
                     BASE_URL=address if self.live else "https://api.deepseek.com", API_KEY=os.getenv(cfg["key_env"],"") if self.live else "")
 
-    def send(self,message,request_id,event_callback=None,*,followup_authorized=False):
+    def send(self,message,request_id,event_callback=None,*,followup_authorized=False,followup_origin=None):
         self.error=None
+        origin=followup_origin or {}
         from target.run_events import capture,emit
         try:
             with capture(self.trace_dir/'run_events.jsonl',event_callback):
                 try:
                     fresh=request_id not in self.receipts
+                    if origin.get('run_id'):
+                        emit('followup_selected',followup_id=origin.get('followup_id'),
+                             generation_method=origin.get('generation_method'),selected=True,
+                             question=origin.get('question'),next_run_id=None,intent=origin.get('intent'),
+                             provider=None,model=None,latency_ms=None,token_usage=None,fallback_reason=None)
                     result=self._send(message,request_id)
                     if fresh:self._record_followups(result,followup_authorized)
+                    if origin.get('run_id'):
+                        next_run_id=(self.audits[-1].get('trace_id') if self.audits else None)
+                        emit('followup_submitted',followup_id=origin.get('followup_id'),
+                             generation_method=origin.get('generation_method'),selected=True,
+                             question=origin.get('question'),next_run_id=next_run_id,intent=origin.get('intent'),
+                             provider=None,model=None,latency_ms=None,token_usage=None,fallback_reason=None)
+                        # Join the click to the retrieval actually produced by the
+                        # next run: this is what makes a follow-up traceable.
+                        retrieval_ids,doc_ids,chunk_ids=[],[],[]
+                        path=self.trace_dir/'run_events.jsonl'
+                        if path.is_file():
+                            for line in path.read_text(encoding='utf8').splitlines():
+                                try:row=json.loads(line)
+                                except ValueError:continue
+                                if row.get('run_id')!=next_run_id or row.get('event_type')!='rag_result':continue
+                                if row.get('retrieval_id'):retrieval_ids.append(str(row['retrieval_id']))
+                                for hit in (row.get('documents') or []):
+                                    if not isinstance(hit,dict):continue
+                                    if hit.get('doc_id'):doc_ids.append(str(hit['doc_id']))
+                                    if hit.get('chunk_id'):chunk_ids.append(str(hit['chunk_id']))
+                        emit('followup_outcome',followup_id=origin.get('followup_id'),selected=True,
+                             question=origin.get('question'),next_run_id=next_run_id,intent=origin.get('intent'),
+                             retrieval_ids=sorted(set(retrieval_ids)),doc_ids=sorted(set(doc_ids)),
+                             chunk_ids=sorted(set(chunk_ids)),retrieval_used=bool(retrieval_ids),
+                             provider=None,model=None,latency_ms=None,token_usage=None,fallback_reason=None)
                     emit('agent_returned',reply=result.get('reply'),finish_reason=result.get('finish_reason'))
                     return result
                 except Exception as exc:
@@ -133,10 +164,17 @@ class Conversation:
             if self.error is None:self.error={'type':type(exc).__name__,**safe_error(exc)}
             raise
 
+    def _audit_for(self, record):
+        """Match by value or by digest: the audit copy is not always the same object."""
+        from target.diagnostics import digest
+        identity = digest(record)
+        return next((a for a in reversed(self.audits)
+                     if a.get('public_trace') == record or a.get('public_trace_sha256') == identity), None)
+
     def followups_for(self,record):
         """Rendering/history only reads a run-bound saved snapshot."""
         from target.followups import read_record
-        audit=next((a for a in reversed(self.audits) if a.get('public_trace')==record),None)
+        audit=self._audit_for(record)
         return read_record(self.trace_dir,self.sid,(audit or {}).get('trace_id'),record)
 
     def shown_followups(self):
@@ -144,12 +182,31 @@ class Conversation:
         from target.followups import read_all
         return read_all(self.trace_dir, self.sid)
 
+    def business_state_of(self, run_id):
+        """Business state produced by this run's real tool results (no model, no DB)."""
+        from target.business_state import detect
+        path = self.trace_dir/'run_events.jsonl'
+        rows = []
+        if path.is_file():
+            for line in path.read_text(encoding='utf8').splitlines():
+                try:
+                    row = json.loads(line)
+                except ValueError:
+                    continue
+                if isinstance(row, dict) and row.get('run_id') == run_id:
+                    rows.append(row)
+        return detect(rows)
+
     def _record_followups(self,record,authorized=False):
-        if self.mode!='user' or self.pending_action():return
+        if self.mode!='user':return
         from target.run_events import emit
         from target.followups import generate_and_save
-        audit=next((a for a in reversed(self.audits) if a.get('public_trace')==record),None)
+        audit=self._audit_for(record)
         if not audit:return
+        # A waiting confirmation must not hide action follow-ups ("确认创建订单"
+        # is exactly what the user needs then); it still suppresses suggestions
+        # when the run produced no real business state.
+        if self.pending_action() and not self.business_state_of(audit.get('trace_id')):return
         try:
             engine=getattr(self.agent,'langchain_engine',None)
             environment={'LANGSMITH_TRACING':'false','LANGCHAIN_TRACING_V2':'false'}

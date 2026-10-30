@@ -117,6 +117,14 @@ def candidates(trace, events, audit, asked=(), prior_run_ids=()):
     sid, run_id = trace['session_id'], audit['trace_id']
     history = [e for e in events if e.get('run_id') in prior_run_ids and e.get('session_id') == sid]
     events = [e for e in events if e.get('run_id') == run_id and e.get('session_id') == sid]
+    # Intent decides which evidence may ground suggestions. A policy turn must
+    # never inherit ticket rows from an earlier query: that is exactly what made
+    # "检索政策" recommend G7303/G7302/G7301 questions.
+    from target.intent import detect_intent, CLARIFY
+    intent = detect_intent(trace['user_msg'], trace.get('reply', ''), events)
+    policy_like = intent['intent'] in ('policy_consult', 'refund_change', 'lock_pay')
+    ticket_allowed = intent['intent'] == 'ticket_query' or (
+        intent['intent'] == 'clarify' and intent['has_ticket_evidence'])
     ticket_events = events
     # A conversational comparison need not execute the same query again. Reuse
     # only an explicitly bound successful turn; never override a new empty or
@@ -129,13 +137,31 @@ def candidates(trace, events, audit, asked=(), prior_run_ids=()):
     prior = [trace['user_msg'], *asked]
     seen = {normal(q) for q in prior}
 
-    def add(identity, question, source, facet=None, docs=()):
+    def add(identity, question, source, facet=None, docs=(), kind='evidence'):
         if normal(question) in seen or facet and any(re.search(facet, s) for s in prior):
             return
         result.append({'id': identity, 'question': question,
-                       'source_event_ids': list(source), 'doc_ids': list(docs)})
+                       'source_event_ids': list(source), 'doc_ids': list(docs), 'kind': kind})
 
-    for event in ticket_events:
+    # Action follow-ups win: a real lock/order/payment result is the strongest
+    # context this turn has. They are deterministic and never call a model.
+    from target.business_state import actions as state_actions, detect as detect_state
+    state = detect_state(events)
+    action_rows = state_actions(state)
+    if action_rows:
+        for item in action_rows:
+            add('action_'+digest([state['state'], item['question']])[:10], item['question'],
+                [state['event_id']] if state.get('event_id') else [], kind='action')
+        unique = {row['id']: row for row in result}
+        facts = {'question': trace['user_msg'], 'reply': trace['reply'], 'asked': list(asked),
+                 'ticket_results': [], 'policy_evidence': [], 'intent': intent['intent'],
+                 'intent_basis': intent['basis'], 'needs_clarification': intent['needs_clarification'],
+                 'evidence_run_id': None, 'chunk_ids': [], 'followup_type': 'action',
+                 'business_state': state.get('state'),
+                 'state_event_ids': [state['event_id']] if state.get('event_id') else []}
+        return list(unique.values()), facts
+
+    for event in (ticket_events if ticket_allowed else []):
         if not (event.get('event_type') == 'tool_result' and event.get('status') == 'succeeded'
                 and event.get('executed') is True and isinstance(event.get('output'), dict)):
             continue
@@ -215,26 +241,66 @@ def candidates(trace, events, audit, asked=(), prior_run_ids=()):
                         add('pair_'+identity+'_'+field,prefix+question,source)
                         if gap:add('pair_'+identity+'_'+field+'_gap',prefix+gap,source)
 
-    # Reuse the existing conservative policy rules; only the actual RAG events
-    # are projected. Merely quoting a doc_id in the answer is not evidence.
+    # Only THIS turn's retrieval may ground a policy suggestion. Borrowing an
+    # earlier run's policy evidence would answer a different question.
     from web.policy_interaction import policy_view, followup_questions
     view = policy_view(sid, run_id, events=events, audit=audit)
-    if view['status'] == 'not_searched':
-        previous = next((e['run_id'] for e in reversed(history) if e.get('event_type')=='rag_result'
-                         or e.get('tool')=='search_policy' and e.get('event_type')=='tool_result'), None)
-        if previous:
-            view = policy_view(sid, previous, events=history)
+    chunk_ids = set()
+    for event in events:
+        if event.get('event_type') == 'rag_result':
+            rows = event.get('documents')
+        elif event.get('event_type') == 'tool_result' and event.get('tool') == 'search_policy':
+            rows = (event.get('output') or {}).get('hits')
+        else:
+            rows = None
+        for hit in (rows or []):
+            if isinstance(hit, dict) and hit.get('chunk_id'):
+                chunk_ids.add(hit['chunk_id'])
     if view['status'] == 'retrieved':
-        questions = followup_questions(trace['user_msg'], trace['reply'], view['evidence'], asked=asked)
-        docs = sorted({h['doc_id'] for h in view['evidence'] if h.get('doc_id')})
-        sources = sorted({eid for h in view['evidence'] for eid in h.get('event_ids', [])})
+        hits = view['evidence']
+        questions = followup_questions(trace['user_msg'], trace['reply'], hits, asked=asked)
+        docs = sorted({h['doc_id'] for h in hits if h.get('doc_id')})
+        sources = sorted({eid for h in hits for eid in h.get('event_ids', [])})
+        # Document-scoped questions come first: they cannot be answered from the
+        # current reply alone, so clicking one forces the next turn to retrieve.
+        for hit in hits[:3]:
+            title = str(hit.get('title') or '').strip()
+            doc_id = hit.get('doc_id')
+            if not title or not doc_id:
+                continue
+            base = 'doc_'+digest([doc_id, title])[:10]
+            add(base+'_scope', '《'+title+'》的适用条件有哪些？', sources, docs=[doc_id])
+            add(base+'_edge', '《'+title+'》有哪些例外情况？', sources, docs=[doc_id])
         for question in questions:
             add('policy_'+hashlib.sha256(question.encode()).hexdigest()[:12], question, sources, docs=docs)
+    elif policy_like or intent['needs_clarification'] or intent['intent'] == 'clarify':
+        # No evidence for this turn: clarification only, never a policy claim.
+        for question in CLARIFY.get(intent['intent'], CLARIFY['clarify']):
+            add('clarify_'+digest([intent['intent'], question])[:10], question, [], kind='clarify')
     unique = {r['id']: r for r in result}
     result = list(unique.values())
     facts = {'question': trace['user_msg'], 'reply': trace['reply'], 'asked': list(asked),
-             'ticket_results': tools, 'policy_evidence': view['evidence']}
+             'ticket_results': tools, 'policy_evidence': view['evidence'],
+             'intent': intent['intent'], 'intent_basis': intent['basis'],
+             'needs_clarification': intent['needs_clarification'],
+             'evidence_run_id': run_id if view['status'] == 'retrieved' else None,
+             'chunk_ids': sorted(chunk_ids),
+             'followup_type': 'knowledge' if view['status'] == 'retrieved' else 'clarification',
+             'business_state': None, 'state_event_ids': []}
     return result, facts
+
+
+def _prioritise_doc_questions(rows):
+    """Put an evidence-scoped question first when one exists.
+
+    A question scoped to a retrieved document cannot be answered from the current
+    reply alone, so clicking it makes the next turn retrieve again instead of
+    relying on what the model already happened to remember.
+    """
+    doc = [row for row in rows if str(row.get('id', '')).startswith('doc_')]
+    if not doc or (rows and rows[0].get('id') == doc[0].get('id')):
+        return list(rows)
+    return [doc[0]] + [row for row in rows if row is not doc[0]]
 
 
 def _select(raw, available):
@@ -309,26 +375,37 @@ def generate_and_save(trace, audit, directory, *, asked=(), live=False, authoriz
             except ValueError: continue
             if isinstance(event,dict):events.append(event)
         options, facts = candidates(trace, events, audit, asked, prior_run_ids)
+        intent, evidence_run_id = facts['intent'], facts['evidence_run_id']
+        followup_type, business_state = facts['followup_type'], facts['business_state']
+        state_event_ids = list(facts['state_event_ids'])
+        doc_ids = sorted({h.get('doc_id') for h in facts['policy_evidence'] if h.get('doc_id')})
+        chunk_ids = list(facts['chunk_ids'])
         if trace.get('finish_reason')!='stop' or audit.get('error'):
             options=[]
         # Do not let run/event IDs make a semantic input hash nondeterministic.
-        hash_input = {'prompt_version': PROMPT_VERSION, 'question': facts['question'], 'reply': facts['reply'],
+        hash_input = {'prompt_version': PROMPT_VERSION, 'intent': intent,
+                      'followup_type': followup_type, 'business_state': business_state,
+                      'question': facts['question'], 'reply': facts['reply'],
                       'asked': facts['asked'], 'ticket_results': [{k:v for k,v in row.items() if k!='run_id'}
                                                                for row in facts['ticket_results']],
                       'policies': [{k: h.get(k) for k in ('doc_id','version','content','score')} for h in facts['policy_evidence']]}
         input_hash = digest(sanitize(hash_input))
-        selected = options[:2] if len(options) >= 2 else []
-        reason = ('insufficient_evidence' if len(options) < 2 else 'mock_mode' if not live else
+        selected = options[:4] if followup_type == 'action' else (
+            _prioritise_doc_questions(options[:2]) if len(options) >= 2 else [])
+        reason = ('insufficient_evidence' if len(options) < 2 else
+                  'action_rule' if followup_type == 'action' else
+                  'mock_mode' if not live else
                   'not_authorized' if not authorized else 'network_not_ready' if not network_ready else None)
         # Resuming the same run cannot reissue an already attempted generation.
         if reason is None and any(e.get('run_id') == run_id and e.get('event_type') == 'followup_start'
                                   and e.get('model_attempt') is True for e in events):
             reason = 'already_attempted_for_run'
-        source, usage = 'rule_fallback', {'prompt': None, 'completion': None}
+        source, usage = ('action_rule' if followup_type == 'action' else 'rule_fallback'), {'prompt': None, 'completion': None}
         meter = {'model_invocations': 0, 'http_requests': 0}
         started = time.perf_counter()
         followup_id = digest([run_id, input_hash])[:12]
-        generation_method = 'model' if reason is None else 'rule_fallback'
+        generation_method = ('action_rule' if reason == 'action_rule' else
+                             'model' if reason is None else 'rule_fallback')
         emit('followup_start', 'running', prompt_version=PROMPT_VERSION, input_hash=input_hash,
              model_attempt=reason is None, candidate_count=len(options))
         emit('followup_generation_started', 'running', followup_id=followup_id,
@@ -336,24 +413,30 @@ def generate_and_save(trace, audit, directory, *, asked=(), live=False, authoriz
              provider=trace.get('provider') if reason is None else None,
              model=trace.get('model') if reason is None else None,
              model_called=False, token_usage=None, latency_ms=0, fallback_reason=reason,
-             selected=False, next_run_id=None, candidate_count=len(options), input_hash=input_hash)
+             selected=False, next_run_id=None, candidate_count=len(options), input_hash=input_hash,
+             intent=intent, doc_ids=doc_ids, chunk_ids=chunk_ids, evidence_run_id=evidence_run_id,
+             followup_type=followup_type, business_state=business_state, state_event_ids=state_event_ids)
         if reason is None:
             try:
                 payload = {'context': sanitize({'question': facts['question'], 'reply': facts['reply']}),
+                           'intent': intent, 'needs_clarification': facts['needs_clarification'],
                            'already_asked': sanitize(list(asked)),
                            'candidates': options[:6], 'simulated_business_only': True,
                            'evidence': sanitize({'ticket_results': facts['ticket_results'],
                                'policies': [{k:h.get(k) for k in ('doc_id','title','version','content')}
-                                            for h in facts['policy_evidence']]})}
+                                            for h in facts['policy_evidence']],
+                               'policy_chunk_ids': chunk_ids})}
                 raw, usage = _invoke(model, settings, trace, run_id, payload, meter)
-                selected = _select(raw, options)
+                selected = _prioritise_doc_questions(_select(raw, options))
                 source = 'model'
                 emit('followup_success', 'succeeded', suggestions=[r['question'] for r in selected])
                 emit('followup_generation_completed', 'succeeded', followup_id=followup_id,
                      generation_method='model', provider=trace.get('provider'), model=trace.get('model'),
                      model_called=True, token_usage=usage, latency_ms=round((time.perf_counter() - started) * 1000),
                      fallback_reason=None, selected=[r['question'] for r in selected], next_run_id=None,
-                     http_requests=meter['http_requests'], suggestions=[r['question'] for r in selected])
+                     http_requests=meter['http_requests'], suggestions=[r['question'] for r in selected],
+                     intent=intent, doc_ids=doc_ids, chunk_ids=chunk_ids, evidence_run_id=evidence_run_id,
+             followup_type=followup_type, business_state=business_state, state_event_ids=state_event_ids)
             except Exception as exc:
                 from target.deepseek_runtime import safe_error
                 reason = str(exc) if isinstance(exc, ValueError) and str(exc) in {
@@ -366,16 +449,24 @@ def generate_and_save(trace, audit, directory, *, asked=(), live=False, authoriz
                      generation_method=generation_method, provider=trace.get('provider'), model=trace.get('model'),
                      model_called=meter['model_invocations'] > 0, token_usage=None,
                      latency_ms=round((time.perf_counter() - started) * 1000), fallback_reason=reason,
-                     selected=False, next_run_id=None, error_category=reason)
+                     selected=False, next_run_id=None, error_category=reason,
+                     intent=intent, doc_ids=doc_ids, chunk_ids=chunk_ids, evidence_run_id=evidence_run_id,
+             followup_type=followup_type, business_state=business_state, state_event_ids=state_event_ids)
         if source == 'rule_fallback':
             emit('followup_fallback', reason=reason, suggestions=[r['question'] for r in selected])
             emit('followup_fallback_used', 'recorded', followup_id=followup_id,
                  generation_method='rule_fallback', provider=None, model=None, model_called=False,
                  token_usage=None, latency_ms=round((time.perf_counter() - started) * 1000),
                  fallback_reason=reason, selected=[r['question'] for r in selected], next_run_id=None,
-                 suggestions=[r['question'] for r in selected])
+                 suggestions=[r['question'] for r in selected],
+                 intent=intent, doc_ids=doc_ids, chunk_ids=chunk_ids, evidence_run_id=evidence_run_id,
+             followup_type=followup_type, business_state=business_state, state_event_ids=state_event_ids)
         row = sanitize({'schema': 'ticket-followups/1', 'session_id': trace['session_id'], 'run_id': run_id,
-            'followup_id': followup_id,
+            'followup_id': followup_id, 'intent': intent, 'intent_basis': facts['intent_basis'],
+            'followup_type': followup_type, 'business_state': business_state,
+            'state_event_ids': state_event_ids,
+            'needs_clarification': facts['needs_clarification'],
+            'evidence_run_id': evidence_run_id, 'chunk_ids': chunk_ids,
             'provider': trace['provider'], 'model': trace['model'], 'prompt_version': PROMPT_VERSION,
             'input_hash': input_hash, 'public_trace_sha256': digest(trace), 'suggestions': [r['question'] for r in selected],
             'generation_source': source, 'fallback_reason': reason, 'grounding': selected,

@@ -105,18 +105,8 @@ def execute(session, message, request_id, origin=None):
         consent=bool(session.live and st.session_state.get('user_compose_session')==session.sid
                      and st.session_state.get('user_allow_live'))
         origin=origin or {}
-        if origin.get('run_id'):
-            _followup_lifecycle(session,origin['run_id'],'followup_selected',
-                followup_id=origin.get('followup_id'),generation_method=origin.get('generation_method'),
-                selected=True,question=origin.get('question'),next_run_id=None,
-                provider=None,model=None,latency_ms=None,token_usage=None,fallback_reason=None)
-        session.send(message,request_id,event_callback=update,followup_authorized=consent)
-        if origin.get('run_id'):
-            next_run_id=(session.audits[-1].get('trace_id') if session.audits else None)
-            _followup_lifecycle(session,origin['run_id'],'followup_submitted',
-                followup_id=origin.get('followup_id'),generation_method=origin.get('generation_method'),
-                selected=True,question=origin.get('question'),next_run_id=next_run_id,
-                provider=None,model=None,latency_ms=None,token_usage=None,fallback_reason=None)
+        session.send(message,request_id,event_callback=update,followup_authorized=consent,
+                     followup_origin=origin if origin.get('run_id') else None)
     except Exception:
         from target.reply_consistency import failure_notice
         notice=failure_notice(session.error["category"]) if session.error else None
@@ -142,6 +132,13 @@ def _turn_policy(session, record):
     view=policy_view(session.sid,run_id,events=events,rag_records=rag_records,audit=audit)
     view['read_incomplete']=bool(meta.get('invalid') or meta.get('truncated') or
                                  event_meta.get('invalid') or event_meta.get('truncated'))
+    if view['status']=='not_searched' and record.get('tool_sequence'):
+        from target.business_state import detect as detect_state
+        state=detect_state(events)
+        if state:
+            view['status_label']='本轮无需政策检索'
+            view['reason']='本轮执行的是模拟业务操作（'+str(state.get('state'))+'），没有调用政策检索；追问按业务状态生成。'
+            view['business_state']=state.get('state')
     if view['status']=='not_searched' and 'search_policy' in record.get('tool_sequence',[]):
         view['status_label']='检索状态未记录'
         view['reason']='本轮 Trace 有检索调用记录，但缺少可关联的执行旁证，无法确认检索结果。'
@@ -216,6 +213,7 @@ def _followup_suggestions(session, record, view, offered=None):
     with st.container(key='policy_followups_'+str(view.get('run_id'))):
         st.markdown('**你可能还想了解**')
         st.caption('模型推荐 · 已保存，本页回放不调用模型' if saved['generation_source']=='model' else
+                   '操作型推荐 · 依据本轮真实工具结果；点击仍走原有确认流程' if saved['generation_source']=='action_rule' else
                    '规则推荐 · 基于本轮执行证据，不增加模型请求')
         for n,question in enumerate(suggestions):
             st.button(question,key='policy_followup_'+session.sid+'_'+str(view.get('run_id'))+'_'+str(n),
@@ -246,6 +244,7 @@ def _consume_followup(session, busy):
         if request.get('question') in allowed:
             request['followup_id']=saved.get('followup_id')
             request['generation_method']=saved.get('generation_source')
+            request['intent']=saved.get('intent')
             return request
     st.info('这条追问已发送过或没有可关联的本轮政策证据，未重复提交。')
     return None
@@ -274,6 +273,8 @@ def _followup_lifecycle_panel(session, events):
             if event.get('next_run_id'):extra.append('下一轮 run_id：'+str(event['next_run_id']))
             st.markdown(f"**{kind}** · 方式 `{method}` · 模型 {model} · Token {token_text} · "
                         f"耗时 {str(latency)+' ms' if isinstance(latency,(int,float)) else '—'}"
+                        + (f" · 类型 `{event.get('followup_type')}`" if event.get('followup_type') else '')
+                        + (f" · 业务状态 `{event.get('business_state')}`" if event.get('business_state') else '')
                         + (f" · 回退原因 `{reason}`" if reason else ''))
             if extra:st.caption(' · '.join(extra))
             st.caption('event_id '+str(event.get('event_id'))+' · previous '+str(event.get('previous_event_id')))
