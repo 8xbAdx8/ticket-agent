@@ -175,7 +175,12 @@ class V33AppTests(unittest.TestCase):
         payloads=[]
         def respond(request):
             payloads.append(json.loads(request.content))
-            msg={"role":"assistant","content":None,"tool_calls":[{"id":"offline-ui-call","type":"function","function":{"name":"query_tickets","arguments":json.dumps({"from_city":"上海","to_city":"杭州","date":config.today().isoformat(),"kind":"高铁","seat_type":"二等座"},ensure_ascii=False)}}]} if len(payloads)==1 else {"role":"assistant","content":"离线 SDK 桩：查询工具已执行，班次以模拟结果为准。"}
+            if payloads[-1].get('response_format')=={'type':'json_object'}:
+                candidates=json.loads(payloads[-1]['messages'][-1]['content'])['candidates']
+                msg={'role':'assistant','content':json.dumps({'suggestions':[
+                    {'id':row['id'],'question':row['question']} for row in candidates[:2]]},ensure_ascii=False)}
+            else:
+                msg={"role":"assistant","content":None,"tool_calls":[{"id":"offline-ui-call","type":"function","function":{"name":"query_tickets","arguments":json.dumps({"from_city":"上海","to_city":"杭州","date":config.today().isoformat(),"kind":"高铁","seat_type":"二等座"},ensure_ascii=False)}}]} if len(payloads)==1 else {"role":"assistant","content":"离线 SDK 桩：查询工具已执行，班次以模拟结果为准。"}
             return httpx.Response(200,json={"id":"offline-ui-only","object":"chat.completion","created":1,"model":"deepseek-flash","choices":[{"index":0,"message":msg,"finish_reason":"tool_calls" if len(payloads)==1 else "stop"}],"usage":{"prompt_tokens":11,"completion_tokens":7,"total_tokens":18}})
         with patch.dict(os.environ,{"DEEPSEEK_API_KEY":"offline-v33-placeholder","DEEPSEEK_BUDGET_PATH":str(session.root/"requests.db"),"DEEPSEEK_MAX_REQUESTS":"5","DEEPSEEK_LIVE_TEST_PROFILE":"read_only","DEEPSEEK_THINKING":"disabled"}),patch.multiple(config,PROVIDER="deepseek",API_KEY="offline-v33-placeholder",MODEL_NAME="deepseek-flash",BASE_URL="https://api.deepseek.com"),patch.multiple("web.runtime",LIVE_AVAILABLE=True,LIVE_MODEL="deepseek-flash",LIVE_URL="https://api.deepseek.com",LIVE_KEY="offline-v33-placeholder"),patch("web.runtime.live_ready",return_value=True),patch("web.conversation.live_ready",return_value=True):
             model=make_model(Settings.from_env(),transport=httpx.MockTransport(respond))
@@ -184,9 +189,16 @@ class V33AppTests(unittest.TestCase):
                     self.app.run()
                     next(c for c in self.app.checkbox if c.label.startswith("确认发送真实")).check()
                     self.send("查今天上海到杭州的高铁")
-                self.assertEqual(len(payloads),2)
+                # A UI regression: the original Agent loop still uses two
+                # requests; the newly requested automatic follow-up uses one.
+                main=[p for p in payloads if 'response_format' not in p]
+                auxiliary=[p for p in payloads if p.get('response_format')=={'type':'json_object'}]
+                self.assertEqual(len(main),2)
+                self.assertEqual(len(auxiliary),1)
+                self.assertNotIn('tools',auxiliary[0])
+                self.assertEqual(session.followups_for(session.history[-1])['generation_source'],'model')
                 self.app.run()
-                self.assertEqual(len(payloads),2)
+                self.assertEqual(len(payloads),3)
                 self.assertEqual({t["function"]["name"] for t in payloads[0]["tools"]},{"query_tickets","search_policy"})
                 self.assertEqual(session.history[-1]["tool_sequence"],["query_tickets"])
                 self.assertTrue(any(m["role"]=="tool" and m["tool_call_id"]=="offline-ui-call" for m in payloads[1]["messages"]))

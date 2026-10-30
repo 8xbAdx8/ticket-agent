@@ -17,6 +17,22 @@ SCENARIOS={"text":"请用一句话说明你是模拟出行咨询助手，不要�
            "policy":"锁座后多久必须完成支付？请检索政策并引用实际来源。"}
 
 
+def emit(payload):
+    """Machine-readable stdout stays ASCII-safe.
+
+    The caller's console encoding must not decide whether a UTF-8 reader can
+    parse this line: ``ensure_ascii=False`` wrote GBK bytes on a zh-CN console,
+    which made every ``encoding="utf-8"`` subprocess reader fail to decode and
+    return ``stdout=None``.
+    """
+    print(json.dumps(payload,ensure_ascii=True),flush=True)
+
+
+def warn(message):
+    """Human diagnostics belong on stderr; stdout is the JSON channel."""
+    print(message,file=sys.stderr,flush=True)
+
+
 def main(argv=None):
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--provider",choices=("deepseek","bailian"),required=True)
@@ -63,12 +79,12 @@ def main(argv=None):
             model_requests_this_command=0)
         from target.observability import configuration_status,UPLOAD_SCOPE
         state["langsmith"]=configuration_status()
-        print(json.dumps(state,ensure_ascii=False),flush=True)
+        emit(state)
         if not args.run and not args.serve: return 0
         if args.upload_langsmith and (not args.confirm_upload or state["langsmith"]["state"]!="configured_unverified"):
-            print("LangSmith 导出需要环境显式启用、有效配置及 --confirm-upload。没有发送模型请求。")
+            warn("LangSmith 导出需要环境显式启用、有效配置及 --confirm-upload。没有发送模型请求。")
             return 2
-        if args.upload_langsmith: print("已确认上传范围："+UPLOAD_SCOPE,flush=True)
+        if args.upload_langsmith: warn("已确认上传范围："+UPLOAD_SCOPE)
         if args.serve:
             from scripts.launch_app import prepare_database,serve
             prepare_database(dict(os.environ))
@@ -108,11 +124,11 @@ def main(argv=None):
             "error":error,"public_trace":result,"live_evidence":evidence,"langsmith_receipt":receipt,
             "formal_deepseek_ledger_unchanged":formal_hash==(hashlib.sha256(formal.read_bytes()).hexdigest() if formal.exists() else None)}
         (out/"report.json").write_text(json.dumps(sanitize(report),ensure_ascii=False,indent=2),encoding="utf-8")
-        print(json.dumps(sanitize({k:v for k,v in report.items() if k not in ("public_trace","live_evidence")}),ensure_ascii=False))
+        emit(sanitize({k:v for k,v in report.items() if k not in ("public_trace","live_evidence")}))
         return 0 if report["status"]=="passed" else 1
     except Exception as exc:
-        print(json.dumps({"status":"incomplete" if execution_started else "not_run","error":safe_error(exc),
-                          "new_generation_requests":None if execution_started else 0},ensure_ascii=False))
+        emit({"status":"incomplete" if execution_started else "not_run","error":safe_error(exc),
+              "new_generation_requests":None if execution_started else 0})
         return 2
 
 

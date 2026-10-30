@@ -43,7 +43,7 @@ def render_acceptance():
                 st.json({'protocol_closure':row.get('protocol_closure'),'agent_completed':row.get('agent_completed'),
                          'expected_evidence_sha256':row.get('expected_evidence_sha256'),
                          'tokens':row.get('tokens'),'latency_ms':row.get('generation_latency_ms'),
-                         'faithfulness':row.get('faithfulness'),'error':row.get('error')})
+                         'faithfulness':row.get('faithfulness'),'error':row.get('error')},expanded=False)
                 with st.expander(name+' 实际ToolMessage与最终展示结果'):
                     st.json({'received_evidence':row.get('delivered_evidence'),'final_display_result':row.get('final_display_result')})
     frozen=load_evidence(AUTH/'prepared/frozen.json',ROOT/'docs/evidence/v352/prepared/frozen.json')

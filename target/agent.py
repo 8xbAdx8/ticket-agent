@@ -124,6 +124,8 @@ class Agent:
         run=ACTIVE_LEGACY_RUN.get()
         trace.trace_id=run.run_id
         trace.provider = getattr(self.provider, "name", config.PROVIDER)
+        from target.run_events import bind, emit
+        bind(trace)
         messages.append({"role": "user", "content": message})
 
         reply = "抱歉，我没能完成这次操作。"
@@ -131,7 +133,18 @@ class Agent:
         for step in range(config.MAX_STEPS):
             event_start=len(run.events)
             try:
+                emit('model_start',system_prompt=messages[0].get('content'))
+                for prior in messages:
+                    if prior.get('role')=='tool':
+                        evidence={}
+                        if prior.get('name')=='search_policy':
+                            try:
+                                payload=json.loads(prior.get('content',''))
+                                if isinstance(payload,dict) and isinstance(payload.get('hits'),list):evidence['documents']=payload['hits']
+                            except (TypeError,ValueError):pass
+                        emit('tool_result_in_model_request',call_id=prior.get('tool_call_id'),tool=prior.get('name'),**evidence)
                 msg = self.provider.chat(messages, tools.TOOLS)
+                emit('model_end',tool_calls=msg.get('tool_calls') if isinstance(msg,dict) else None)
                 if not isinstance(msg, dict) or msg.get("role") != "assistant":
                     raise ValueError("模型响应格式不正确")
                 calls = msg.get("tool_calls") or []
@@ -147,6 +160,7 @@ class Agent:
                 legacy_error={"category":"legacy_provider_error","type":type(exc).__name__,"phase":"model"}
                 break
             usage = getattr(self.provider, "last_usage", {})
+            for call in calls:emit('model_tool_proposed',tool=call['name'],args=call['arguments'],call_id=call['id'])
             for key in trace.tokens:
                 trace.tokens[key] += usage.get(key, 0)
             messages.append(msg)

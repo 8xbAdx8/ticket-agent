@@ -9,7 +9,7 @@ from target.api_config import bootstrap
 bootstrap(BASE_DIR)
 PROVIDER = os.getenv("AGENT_PROVIDER", "mock")      # mock | openai | deepseek | bailian
 DB_PATH = Path(os.getenv("AGENT_DB_PATH", str(BASE_DIR / "data" / "tickets.db")))
-POLICY_PATH = BASE_DIR / "data" / "policies.md"
+POLICY_PATH = Path(os.getenv('AGENT_POLICY_PATH',str(BASE_DIR / 'data' / 'policies.md')))
 TRACE_DIR = Path(os.getenv("AGENT_TRACE_DIR", str(BASE_DIR / "traces" / (PROVIDER+"_live") if PROVIDER in ("deepseek","bailian") else BASE_DIR / "traces")))
 TRACE_DIR.mkdir(parents=True, exist_ok=True)
 

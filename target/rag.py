@@ -83,10 +83,22 @@ def search_policy(question):
     if os.getenv("AGENT_RAG_MODE"):
         from target.rag_service import retrieve
         return retrieve(question,allow_network=os.getenv("RAG_ALLOW_NETWORK")=="1")
+    from target.run_events import emit
+    import uuid
+    retrieval_id=uuid.uuid4().hex
+    mode='vector' if config.USE_VECTOR_RAG else 'keyword'
+    emit('rag_start','running',retrieval_id=retrieval_id,mode=mode,question=question)
     try:
-        hits = vector_search(question) if config.USE_VECTOR_RAG else keyword_search(question)
-    except Exception:
-        if config.PROVIDER in ("deepseek","bailian"):
-            raise  # A Live vector failure must never masquerade as successful keyword retrieval.
-        hits = keyword_search(question)  # 可选向量依赖不可用时保留离线能力
+        try:
+            hits = vector_search(question) if config.USE_VECTOR_RAG else keyword_search(question)
+        except Exception:
+            if config.PROVIDER in ("deepseek","bailian"):
+                raise  # A Live vector failure must never masquerade as successful keyword retrieval.
+            hits = keyword_search(question)  # 可选向量依赖不可用时保留离线能力
+            mode='keyword'
+        emit('rag_result','succeeded',retrieval_id=retrieval_id,mode=mode,documents=hits,
+             count=len(hits),sufficiency='unverified' if hits else 'insufficient_evidence')
+    except Exception as exc:
+        emit('rag_error','failed',retrieval_id=retrieval_id,mode=mode,error=type(exc).__name__)
+        raise
     return {"question": question, "hits": hits, "count": len(hits)}

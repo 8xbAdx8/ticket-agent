@@ -124,7 +124,8 @@ class PreflightTests(unittest.TestCase):
                  TICKET_TOTAL_REQUEST_LIMIT='invalid-old-limit',TICKET_API_USAGE_DIR=str(directory/'usage'))
         for provider in ('deepseek','bailian'):
             command=[sys.executable,'scripts/live_providers.py','--provider',provider,'--profile','v35','--out',str(directory/provider)]
-            result=subprocess.run(command,cwd=ROOT,env=env,capture_output=True,text=True,encoding='utf-8',timeout=20)
+            result=subprocess.run(command,cwd=ROOT,env=env,capture_output=True,text=True,encoding='utf-8',errors='replace',timeout=20)
+            self.assertIsNotNone(result.stdout,'子进程输出无法按 UTF-8 解码；stderr='+repr(result.stderr))
             self.assertEqual(result.returncode,0,result.stdout+result.stderr)
             state=json.loads(result.stdout.splitlines()[0])
             self.assertEqual(state['usage_policy'],'unlimited_usage_only')

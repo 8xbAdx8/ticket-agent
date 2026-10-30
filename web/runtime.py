@@ -115,12 +115,61 @@ class Conversation:
                     MODEL_NAME=model if self.live else "langchain-mock" if self.engine=="langchain" else "mock-offline",
                     BASE_URL=address if self.live else "https://api.deepseek.com", API_KEY=os.getenv(cfg["key_env"],"") if self.live else "")
 
-    def send(self,message,request_id):
+    def send(self,message,request_id,event_callback=None,*,followup_authorized=False):
         self.error=None
-        try:return self._send(message,request_id)
+        from target.run_events import capture,emit
+        try:
+            with capture(self.trace_dir/'run_events.jsonl',event_callback):
+                try:
+                    fresh=request_id not in self.receipts
+                    result=self._send(message,request_id)
+                    if fresh:self._record_followups(result,followup_authorized)
+                    emit('agent_returned',reply=result.get('reply'),finish_reason=result.get('finish_reason'))
+                    return result
+                except Exception as exc:
+                    emit('agent_error','failed',error=type(exc).__name__)
+                    raise
         except Exception as exc:
             if self.error is None:self.error={'type':type(exc).__name__,**safe_error(exc)}
             raise
+
+    def followups_for(self,record):
+        """Rendering/history only reads a run-bound saved snapshot."""
+        from target.followups import read_record
+        audit=next((a for a in reversed(self.audits) if a.get('public_trace')==record),None)
+        return read_record(self.trace_dir,self.sid,(audit or {}).get('trace_id'),record)
+
+    def shown_followups(self):
+        """Suggestions already displayed in this session, so every turn offers new ones."""
+        from target.followups import read_all
+        return read_all(self.trace_dir, self.sid)
+
+    def _record_followups(self,record,authorized=False):
+        if self.mode!='user' or self.pending_action():return
+        from target.run_events import emit
+        from target.followups import generate_and_save
+        audit=next((a for a in reversed(self.audits) if a.get('public_trace')==record),None)
+        if not audit:return
+        try:
+            engine=getattr(self.agent,'langchain_engine',None)
+            environment={'LANGSMITH_TRACING':'false','LANGCHAIN_TRACING_V2':'false'}
+            if self.live:
+                from target.live_providers import manual_environment
+                environment.update(manual_environment(self.live_provider,self.root,model=self.live_model,full_tools=self.full_tools))
+            with scoped(self._values(),environment):
+                generate_and_save(record,audit,self.trace_dir,
+                    asked=[r['user_msg'] for r in self.history]+self.shown_followups(),
+                    live=self.live,authorized=authorized is True,network_ready=self.live and live_ready(self.live_provider),
+                    prior_run_ids=[a['trace_id'] for a in self.audits if a.get('trace_id')!=audit['trace_id']
+                        and not a.get('error') and a.get('public_trace') in self.history
+                        and not any(c.get('assertion')=='query_result_train_authority' and c.get('passed') is False
+                                    for c in (a.get('judgement') or {}).get('assertions',[]) if isinstance(c,dict))
+                        and (a.get('public_trace') or {}).get('session_id')==self.sid],
+                    model=getattr(engine,'model',None),settings=getattr(engine,'deepseek_settings',None))
+        except Exception as exc:
+            # Auxiliary persistence/format failures must never replace a valid
+            # Agent answer or change its public success/error/Token fields.
+            emit('followup_error','failed',stage='auxiliary_persistence',category=type(exc).__name__)
 
     def _send(self, message, request_id, decision=None):
         if request_id in self.receipts:
@@ -135,6 +184,10 @@ class Conversation:
             raise ValueError("M8 不适用于普通对话，请运行并发对照")
         env={"LANGSMITH_TRACING":"false", "LANGCHAIN_TRACING_V2":"false", "AGENT_MUTATIONS":"{}",
              "TICKET_CASE_ID":self.case_id or "interactive"}
+        if not self.live:
+            # A user's global Live RAG settings must not turn an offline chat
+            # or its suggested follow-up into an Embedding request.
+            env.update(AGENT_RAG_MODE='', RAG_ALLOW_NETWORK='0')
         if self.live:
             env["DEEPSEEK_LIVE_TEST_PROFILE"]="read_only"
             from target.live_providers import manual_environment
@@ -192,17 +245,24 @@ class Conversation:
 
     def pending_action(self):
         engine = self.agent.langchain_engine if self.agent else None
-        return engine.pending_actions.get(self.sid) if engine else None
+        actions = getattr(engine, "pending_actions", None) if engine else None
+        return actions.get(self.sid) if isinstance(actions, dict) else None
 
-    def confirm_action(self, approved, request_id):
+    def confirm_action(self, approved, request_id,*,followup_authorized=False):
         if type(approved) is not bool:
             raise ValueError("确认决定必须为布尔值")
         proposal = self.pending_action()
         if not proposal:
             raise ValueError("没有待确认的模拟操作")
         try:
-            return self._send("确认模拟操作" if approved else "取消模拟操作", request_id,
-                              decision={"proposal":proposal, "approved":approved})
+            from target.run_events import capture,emit
+            with capture(self.trace_dir/'run_events.jsonl'):
+                result=self._send("确认模拟操作" if approved else "取消模拟操作", request_id,
+                                  decision={"proposal":proposal, "approved":approved})
+                emit('operation_resumed','approved' if approved else 'declined',proposal=proposal)
+                self._record_followups(result,followup_authorized)
+                emit('agent_returned',reply=result.get('reply'),finish_reason=result.get('finish_reason'))
+                return result
         except Exception as exc:
             if self.error is None:
                 self.error = {'type':type(exc).__name__, **safe_error(exc)}

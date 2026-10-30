@@ -1,10 +1,8 @@
 """Explicit 30-question retrieval evaluation on a copy, with no cumulative cap."""
 import argparse
-from dataclasses import replace
 import hashlib
 import json
 from pathlib import Path
-import shutil
 import sys
 import uuid
 

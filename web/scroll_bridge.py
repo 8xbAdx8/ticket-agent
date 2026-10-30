@@ -1,0 +1,238 @@
+"""Small same-origin bridge that steers only the chat scroll container.
+
+Streamlit strips ``<script>`` from markdown, so the only supported way to run a
+few lines of DOM code is a component iframe. Streamlit renders those iframes
+with ``allow-same-origin``, so the script can reach ``window.parent.document``.
+
+Rules the script implements (all inside the chat container, never the page):
+
+* a new explicit request (token change) scrolls to bottom or to the run anchor;
+* otherwise a reader who was at the bottom follows new content;
+* a reader who scrolled up keeps their position and gets a "new message" pill;
+* the last position lives in ``sessionStorage`` so a Streamlit rerun does not
+  reset the reader to the top or the bottom;
+* the conversation height is measured so the composer stays on screen.
+
+Known limits, also documented in the report: the bridge runs after the DOM is
+committed and retries briefly, so a very fast run may finish before the scroll
+is visible; ``sessionStorage`` is per browser tab, so a new tab starts at the
+bottom.
+"""
+import json
+
+import streamlit as st
+import streamlit.components.v1 as components
+
+ACTIONS = ("none", "bottom", "run")
+CHAT_KEY = "user_chat_scroll"
+NONCE_KEY = "scroll_nonce"
+ACTION_KEY = "scroll_action"
+ANCHOR_KEY = "scroll_anchor"
+
+
+def request(action, anchor=""):
+    """Queue one explicit scroll request; only this bumps the bridge token."""
+    if action not in ACTIONS:
+        raise ValueError("unknown scroll action")
+    st.session_state[NONCE_KEY] = int(st.session_state.get(NONCE_KEY, 0)) + 1
+    st.session_state[ACTION_KEY] = action
+    st.session_state[ANCHOR_KEY] = anchor if action == "run" else ""
+
+
+def current_request():
+    """The request the bridge should execute on this render."""
+    return {
+        "nonce": int(st.session_state.get(NONCE_KEY, 0)),
+        "action": st.session_state.get(ACTION_KEY, "none"),
+        "anchor": st.session_state.get(ANCHOR_KEY, ""),
+    }
+
+
+def scroll_token(nonce, action, anchor=""):
+    """Token changes only when an explicit request was made."""
+    action = action if action in ACTIONS else "none"
+    return f"{int(nonce)}:{action}:{anchor}"
+
+
+BRIDGE_JS = r"""
+(function () {
+  var CFG = __CFG__;
+  var doc = null;
+  try { doc = window.parent.document; } catch (err) { return; }
+  if (!doc) return;
+  var SELECTOR = '.st-key-' + CFG.chatKey;
+
+  function pickScroller(root) {
+    var nodes = [root].concat([].slice.call(root.querySelectorAll('*')));
+    var fallback = null;
+    for (var i = 0; i < nodes.length; i += 1) {
+      var style = window.parent.getComputedStyle(nodes[i]);
+      var over = style.overflowY;
+      if (over !== 'auto' && over !== 'scroll') continue;
+      if (!fallback) fallback = nodes[i];
+      if (nodes[i].scrollHeight > nodes[i].clientHeight + 4) return nodes[i];
+    }
+    return fallback || root;
+  }
+
+  function fit() {
+    try {
+      var root = doc.querySelector(SELECTOR);
+      if (!root) return null;
+      var box = pickScroller(root);
+      var composer = doc.querySelector('.st-key-user_compose');
+      var chrome = composer ? composer.getBoundingClientRect().height + 24 : 180;
+      var top = root.getBoundingClientRect().top;
+      var available = window.parent.innerHeight - top - chrome - 16;
+      var height = Math.max(240, Math.min(available, CFG.maxHeight || 560));
+      // Streamlit sizes the wrapper as a flex item (flex: 0 0 <height>px), so
+      // height alone is ignored; flex-basis has to move with it.
+      var carrier = root.parentElement || root;
+      [carrier, root, box].forEach(function (node) {
+        node.style.setProperty('height', height + 'px', 'important');
+        node.style.setProperty('min-height', height + 'px', 'important');
+      });
+      carrier.style.setProperty('flex', '0 0 ' + height + 'px', 'important');
+      carrier.style.setProperty('flex-basis', height + 'px', 'important');
+      return box;
+    } catch (err) { return null; }
+  }
+
+  window.parent.__taFit = fit;
+  if (!window.parent.__taResizeBound) {
+    window.parent.__taResizeBound = true;
+    window.parent.addEventListener('resize', function () {
+      if (window.parent.__taFit) { window.parent.__taFit(); }
+    }, { passive: true });
+  }
+
+  function run(root) {
+    var box = fit() || pickScroller(root);
+    var store = window.parent.sessionStorage;
+    var KEY = 'ta-scroll:' + CFG.chatKey;
+    var saved = {};
+    try { saved = JSON.parse(store.getItem(KEY) || '{}') || {}; } catch (err) { saved = {}; }
+    var lastToken = null;
+    try { lastToken = store.getItem(KEY + ':token'); } catch (err) { lastToken = null; }
+
+    function setState(value) {
+      try { store.setItem(KEY, JSON.stringify(value)); } catch (err) {}
+    }
+    function nearBottom(el) {
+      return (el.scrollHeight - el.scrollTop - el.clientHeight) < 48;
+    }
+    function toBottom() { box.scrollTop = box.scrollHeight; }
+    function markBottom() {
+      setState({ top: box.scrollTop, atBottom: true, height: box.scrollHeight, turns: CFG.turns });
+    }
+
+    var badge = null;
+    function hideBadge() {
+      if (badge && badge.parentNode) { badge.parentNode.removeChild(badge); }
+      badge = null;
+    }
+    function showBadge() {
+      if (badge) return;
+      badge = doc.createElement('button');
+      badge.type = 'button';
+      badge.className = 'ta-newmsg';
+      badge.textContent = '有新消息 · 回到最新';
+      badge.addEventListener('click', function () { toBottom(); hideBadge(); markBottom(); });
+      box.appendChild(badge);
+    }
+
+    if (!box.dataset.taScrollBound) {
+      box.dataset.taScrollBound = '1';
+    }
+    // Delegated on the parent document: React replaces the container element on
+    // rerun, so a listener bound to one node stops reporting the reader position.
+    window.parent.__taScroll = function (target) {
+      if (!target || target.clientHeight < 40) return;
+      if (target.scrollHeight <= target.clientHeight + 4) return;
+      setState({ top: target.scrollTop, atBottom: nearBottom(target),
+                 height: target.scrollHeight, turns: CFG.turns });
+      if (nearBottom(target)) { hideBadge(); }
+    };
+    if (!doc.__taScrollDelegated) {
+      doc.__taScrollDelegated = true;
+      doc.addEventListener('scroll', function (event) {
+        var target = event.target;
+        if (target && target.classList && target.classList.contains('st-key-' + CFG.chatKey)) {
+          if (window.parent.__taScroll) { window.parent.__taScroll(target); }
+        }
+      }, true);
+    }
+    // Reruns replace the element while this iframe is torn down; a light poll
+    // keeps the last reader position accurate between mounts. It dies with the
+    // iframe, so at most one poller exists at a time.
+    var lastTop = null;
+    window.setInterval(function () {
+      var target = doc.querySelector(SELECTOR);
+      if (!target || target.clientHeight < 40) return;
+      if (lastTop !== null && Math.abs(target.scrollTop - lastTop) < 1) return;
+      lastTop = target.scrollTop;
+      if (window.parent.__taScroll) { window.parent.__taScroll(target); }
+    }, 400);
+
+    var explicit = CFG.token !== lastToken;
+    if (explicit) { try { store.setItem(KEY + ':token', CFG.token); } catch (err) {} }
+
+    if (explicit && CFG.action === 'bottom') {
+      toBottom(); hideBadge(); markBottom(); return;
+    }
+    if (explicit && CFG.action === 'run' && CFG.anchor) {
+      var anchor = doc.querySelector('.st-key-' + CFG.anchor);
+      if (anchor) {
+        var delta = anchor.getBoundingClientRect().top - box.getBoundingClientRect().top;
+        box.scrollTop = box.scrollTop + delta - 8;
+        anchor.classList.add('ta-flash');
+        window.parent.setTimeout(function () { anchor.classList.remove('ta-flash'); }, 1600);
+        setState({ top: box.scrollTop, atBottom: nearBottom(box), height: box.scrollHeight });
+        return;
+      }
+      toBottom(); markBottom(); return;
+    }
+
+    if (saved.atBottom || saved.top === undefined) {
+      toBottom(); hideBadge(); markBottom();
+    } else {
+      box.scrollTop = saved.top;
+      // New turns while the reader is up the history: never yank, just offer a jump.
+      var grew = (CFG.turns || 0) > (saved.turns || 0);
+      if (grew || box.scrollHeight > (saved.height || 0) + 8) { showBadge(); }
+    }
+  }
+
+  var tries = 0;
+  function boot() {
+    var root = doc.querySelector(SELECTOR);
+    var composer = doc.querySelector('.st-key-user_compose');
+    if (!root || !composer) {
+      tries += 1;
+      if (tries < 50) { window.setTimeout(boot, 80); }
+      return;
+    }
+    run(root);
+  }
+  boot();
+})();
+"""
+
+
+def bridge_html(chat_key, token, action, anchor, nonce, max_height=560, turns=0):
+    config = json.dumps({"chatKey": chat_key, "token": token, "action": action,
+                         "anchor": anchor, "nonce": nonce, "maxHeight": max_height,
+                         "turns": int(turns)})
+    script = BRIDGE_JS.replace("__CFG__", config)
+    return ("<!doctype html><html><head><meta charset='utf-8'></head><body>"
+            "<script>" + script + "</script></body></html>")
+
+
+def mount(chat_key=CHAT_KEY, height=0, max_height=560, turns=0):
+    """Render the bridge; safe to call on every rerun."""
+    pending = current_request()
+    token = scroll_token(pending["nonce"], pending["action"], pending["anchor"])
+    components.html(
+        bridge_html(chat_key, token, pending["action"], pending["anchor"], pending["nonce"],
+                    max_height, turns),
+        height=height, scrolling=False)

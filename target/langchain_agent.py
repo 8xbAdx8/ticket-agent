@@ -76,9 +76,23 @@ class ContractMiddleware(AgentMiddleware):
                 raise DeepSeekError("observed_token_budget_exhausted")
         model_started = time.perf_counter()
         from target.request_accounting import capture
+        from target.run_events import emit
+        emit('model_start',model_step=ctx.model_calls,system_prompt=getattr(request.system_message,'content',None))
+        for message in request.messages:
+            if isinstance(message,ToolMessage):
+                evidence={}
+                if message.name=='search_policy':
+                    try:
+                        payload=json.loads(message.content) if isinstance(message.content,str) else None
+                        if isinstance(payload,dict) and isinstance(payload.get('hits'),list):evidence['documents']=payload['hits']
+                    except (TypeError,ValueError):pass
+                emit('tool_result_in_model_request',call_id=message.tool_call_id,tool=message.name,**evidence)
         with capture(ctx.events,ctx.trace.trace_id,ctx.model_calls):
             response = handler(request)
+        emit('model_end',model_step=ctx.model_calls)
         for m in response.result:
+            for call in m.tool_calls:
+                emit('model_tool_proposed',tool=call['name'],args=call['args'],call_id=call['id'])
             ctx.fault_run.model_requests.append({"model_step":ctx.model_calls,
                 "tool_calls":copy.deepcopy(m.tool_calls),"final_text":m.text if not m.tool_calls else None})
             usage = getattr(m,"usage_metadata",None) or {}
@@ -127,9 +141,12 @@ class ContractMiddleware(AgentMiddleware):
             # The graph pauses before any write. Resume value is checked against
             # the exact original model call, not against conversational text.
             proposal = {'tool': original['name'], 'args': copy.deepcopy(original['args']), 'call_id': original['id']}
+            from target.run_events import emit
+            emit('confirmation_requested',tool=original['name'],args=original['args'])
             decision = interrupt(proposal)
             approved = isinstance(decision, dict) and decision.get('approved') is True and decision.get('proposal') == proposal
             if not approved:
+                emit('confirmation_declined','blocked',tool=original['name'],executed=False)
                 ctx.events.append({'event':'user_declined_operation','tool':original['name'],'call_id':original['id']})
                 return ToolMessage(content=json.dumps({'error':'用户未确认本次模拟操作，未执行'},ensure_ascii=False),
                                    tool_call_id=original['id'],name=original['name'])
@@ -155,6 +172,8 @@ class ContractMiddleware(AgentMiddleware):
                 if "create_order" in permissions(ctx.user_message):
                     blocked = None
             executed = False
+            from target.run_events import emit
+            emit('permission_check','blocked' if blocked else 'accepted',tool=name,reason=blocked,executed=False)
             execution_diagnostic={}
             try:
                 if blocked:
@@ -203,6 +222,8 @@ class ContractMiddleware(AgentMiddleware):
                         event["status"] = "applied" if executed else "blocked"
                         if not executed:
                             event["reason"] = blocked or "执行器拒绝调用"
+            from target.run_events import emit
+            emit('tool_message_created',tool=name,call_id=call['id'])
             return ToolMessage(content=json.dumps(result,ensure_ascii=False),tool_call_id=call["id"],name=name,
                                status="success" if ok else "error"),ok,blocked
 
@@ -313,9 +334,11 @@ class LangChainAgent:
 
     def chat(self, session_id: str, message: str, *, save_trace=True, resume_decision=None) -> dict[str,Any]:
         trace = Trace(session_id,message)
+        from target.run_events import bind
         trace.requested_at = datetime.now(timezone.utc).isoformat()
         self.last_live_run = None
         trace.provider = self.provider_name
+        bind(trace)
         limit = min(config.MAX_STEPS,self.deepseek_settings.max_model_calls) if self.deepseek_settings else config.MAX_STEPS
         import os
         action_confirmation = os.getenv("TICKET_CONFIRM_MODEL_ACTIONS") == "1" and bool(self.deepseek_settings) and self.deepseek_settings.profile == "full_sandbox"

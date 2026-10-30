@@ -107,9 +107,13 @@ def render_mutation_result(record):
 
 def rag_page(sessions=()):
     header('RAG 知识库','真实向量、政策来源和有限验收。票价/余票仍由query_tickets查询。','V3.5.2 · 模拟政策')
+    with st.expander('千题 RAG 评测 · 独立题库、离线执行与逐题证据'):
+        from web.rag_benchmark_view import render
+        render()
     current_session_rag(sessions)
     from web.rag_acceptance import render_acceptance
-    render_acceptance()
+    with st.expander('V3.5.2 历史双模型验收与质量指标（只读回放）'):
+        render_acceptance()
     model=st.selectbox('RAG 生成模型',['Qwen3.8-Flash Live','DeepSeek Live'],key='rag_generation_model')
     st.caption('模型ID：'+('qwen3.8-flash' if model.startswith('Qwen') else 'deepseek-flash')+' · Embedding：text-embedding-v4')
     try:
@@ -175,9 +179,9 @@ def rag_page(sessions=()):
         if evidence:
             a,b=st.columns(2);a.metric('查询向量阶段 ms',evidence['embedding_latency_ms'])
             b.metric('检索/组装阶段 ms',max(0,evidence['total_latency_ms']-evidence['embedding_latency_ms']))
-            st.json({'index_version':evidence['index_version'],'hits':evidence['hits']})
+            st.json({'index_version':evidence['index_version'],'hits':evidence['hits']},expanded=False)
         if review:
-            st.json(review['summary'])
+            st.json(review['summary'],expanded=False)
             st.caption('首次机械判定误将拒答中的“这些文档未涉及问题”归为正向引用，原结果保留；离线复核区分否定范围。全文忠实度仍无法自动证明。')
         with st.expander('原始执行记录 / 引用证据 / 回放JSON'):st.json(record)
     else:empty('尚无本轮真实生成证据','不使用Mock文本填充真实结果。')

@@ -97,7 +97,8 @@ class ProviderCommandTests(unittest.TestCase):
                     DASHSCOPE_BASE_URL="https://dashscope.aliyuncs.com/compatible-mode/v1",
                     LANGCHAIN_TRACING_V2="false",LANGSMITH_TRACING="false",LANGCHAIN_API_KEY="",LANGSMITH_API_KEY="")
                 result=subprocess.run([sys.executable,"scripts/live_providers.py","--provider","bailian","--out",tmp],cwd=config.BASE_DIR,
-                    env=env,capture_output=True,text=True,encoding="utf-8",timeout=20)
+                    env=env,capture_output=True,text=True,encoding="utf-8",errors="replace",timeout=20)
+                self.assertIsNotNone(result.stdout,'子进程输出无法按 UTF-8 解码；stderr='+repr(result.stderr))
                 self.assertEqual(result.returncode,expected,result.stdout)
                 self.assertNotIn("offline-preflight-fixture",result.stdout+result.stderr)
                 self.assertFalse((Path(tmp)/"tickets.db").exists())

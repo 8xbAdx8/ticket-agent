@@ -37,26 +37,39 @@ def collect_results(agent, sid, cursor, trace):
     return copy.deepcopy([dict(r, ok=c["ok"]) for r, c in zip(raw, calls)])
 
 
+def _duration(train):
+    try:
+        from datetime import datetime
+        depart = datetime.strptime(train["depart"], "%H:%M")
+        arrive = datetime.strptime(train["arrive"], "%H:%M")
+        minutes = int((arrive - depart).total_seconds() / 60) % 1440
+        return f"{minutes // 60}小时{minutes % 60:02}分"
+    except (ValueError, TypeError, KeyError):
+        return "车程未提供"
+
+
 def ticket_cards(result):
+    """Structured train rows: one ``ticket-card`` per train, aligned columns."""
+    trains = result.get("trains", [])[:20]
+    if not trains:
+        return ""
     cards = []
-    for t in result.get("trains", [])[:20]:
+    for t in trains:
         stock = t.get("seats_left")
-        label = (f"余票 {stock} 张" if stock > 0 else "已售罄") if type(stock) in (int, float) else "余票未提供"
-        duration = "车程未提供"
-        try:
-            from datetime import datetime
-            depart=datetime.strptime(t["depart"],"%H:%M")
-            arrive=datetime.strptime(t["arrive"],"%H:%M")
-            minutes=int((arrive-depart).total_seconds()/60)%1440
-            duration=f"{minutes//60}小时{minutes%60:02}分 · 按工具时间计算"
-        except (ValueError,TypeError,KeyError):
-            pass
-        price="票价未提供" if t.get("price") is None else "¥"+str(t["price"])
+        if type(stock) in (int, float):
+            label, sold = f"余票 {stock} 张", stock <= 0
+        else:
+            label, sold = "余票未提供", False
+        price = "票价未提供" if t.get("price") is None else "¥" + str(t["price"])
         cards.append(f'''<div class="ticket-card">
-          <div><strong>{escape(t.get('train_no') or '车次未提供')}</strong><div class="muted">{escape(t.get('seat_type') or '席别未提供')} · {escape(t.get('date') or '日期未提供')}</div><small class="muted">来源：query_tickets · 虚构票务</small></div>
-          <div class="route"><b>{escape(t.get('depart') or '—')} <span>→</span> {escape(t.get('arrive') or '—')}</b><div class="muted">{escape(t.get('from_city') or '—')} → {escape(t.get('to_city') or '—')}</div><div class="muted">{escape(duration)}</div></div>
-          <div class="fare"><b>{escape(price)}</b><div class="stock">{escape(label)}</div></div></div>''')
-    return "".join(cards)
+          <div class="tc-train"><strong>{escape(t.get('train_no') or '车次未提供')}</strong><div class="muted">虚构票务</div></div>
+          <div class="tc-route"><b>{escape(t.get('depart') or '—')} <span class="tc-arrow">→</span> {escape(t.get('arrive') or '—')}</b>
+            <div class="muted">{escape(t.get('from_city') or '—')} → {escape(t.get('to_city') or '—')} · {escape(_duration(t))}</div></div>
+          <div class="tc-seat"><b>{escape(t.get('seat_type') or '席别未提供')}</b><div class="muted">{escape(t.get('date') or '日期未提供')}</div></div>
+          <div class="tc-fare"><b>{escape(price)}</b><div class="{'sold' if sold else 'stock'}">{escape(label)}</div></div></div>''')
+    head = ('<div class="ta-train-head"><span>车次</span><span>行程</span>'
+            '<span>席别 / 日期</span><span>票价 / 余票</span></div>')
+    return '<div class="ta-trains">' + head + "".join(cards) + "</div>"
 
 
 def order_card(result):

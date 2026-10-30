@@ -219,10 +219,14 @@ def dispatch(name, args):
     """真正执行工具的地方。返回 (result, ok, latency_ms)。"""
     t0 = time.perf_counter()
     diagnostic = {"validation":{"status":"unknown"},"backend_executed":False}
+    from target.run_events import emit
+    emit('tool_proposed',tool=name,args=args)
     try:
         validate(name, args)
+        emit('parameter_validation','passed',tool=name)
         diagnostic["validation"]={"status":"valid","validated_args":copy.deepcopy(args)}
         diagnostic["backend_executed"]=True
+        emit('tool_start',tool=name,args=args)
         result = _call_http(name, args) if config.USE_HTTP_MOCK else _call_local(name, args)
         ok = not (isinstance(result, dict) and "error" in result)
     except Exception as e:
@@ -231,6 +235,11 @@ def dispatch(name, args):
         # 参数错误可以说明；其他异常不回显外部响应、密钥或本机路径。
         result = {"error": str(e) if isinstance(e, ValueError) else f"工具执行失败 ({type(e).__name__})"}
         ok = False
+    duration=int((time.perf_counter()-t0)*1000)
+    emit('tool_result','succeeded' if ok else 'failed' if diagnostic['backend_executed'] else 'blocked',
+         tool=name,executed=diagnostic['backend_executed'],output=result,duration_ms=duration)
+    if name=='search_policy' and ok:
+        emit('rag_result',documents=result.get('hits',[]) if isinstance(result,dict) else [])
     observer=DISPATCH_OBSERVER.get()
     if observer is not None:
         observer(diagnostic)

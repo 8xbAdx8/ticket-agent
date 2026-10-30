@@ -3,23 +3,26 @@ html,body,[data-testid="stAppViewContainer"],.stApp{background:var(--ta-bg);colo
 [data-testid="stHeader"]{background:transparent}
 [data-testid="stSidebar"]{background:var(--ta-panel);border-right:1px solid var(--ta-border)}
 [data-testid="stSidebar"]>div:first-child{padding-top:1.7rem}
-.block-container{max-width:1560px;padding:2.2rem 2.7rem 3rem}
+.block-container{max-width:1640px;padding:2.1rem 2.6rem 3rem}
 h1,h2,h3,h4,p,label,[data-testid="stMarkdownContainer"]{color:var(--ta-text)}
 h3{font-size:1.05rem!important;font-weight:650!important;letter-spacing:.01em}
-[data-testid="stCaptionContainer"],[data-testid="stCaptionContainer"] p{color:var(--ta-muted)}
+[data-testid="stCaptionContainer"],[data-testid="stCaptionContainer"] p{color:var(--ta-muted);opacity:1}
+[data-testid="stCaptionContainer"] p{font-size:12px;line-height:1.75}
+.st-key-console_conclusion{border:1px solid var(--ta-border);border-radius:14px;background:var(--ta-panel);padding:16px 18px 6px;margin:2px 0 16px}
+.st-key-console_conclusion .ta-kpi{min-height:96px;margin-bottom:12px}
 .ta-brand{display:flex;gap:12px;align-items:center;padding:0 0 26px}
 .ta-logo{display:grid;place-items:center;background:var(--ta-accent);color:var(--ta-bg);width:36px;height:36px;border-radius:10px;font-size:22px;font-weight:800}
 .ta-brand b{display:block;font-size:16px}.ta-brand small{font-size:11px;color:var(--ta-muted)}
 .ta-heading{display:flex;align-items:center;justify-content:space-between;gap:20px;margin-bottom:24px}
-.ta-heading h1{font-size:27px;font-weight:680;letter-spacing:-.6px;margin:0;padding:0}
+.ta-heading h1{font-size:30px;font-weight:700;letter-spacing:-.8px;margin:0;padding:0}
 .ta-heading p{color:var(--ta-muted);font-size:13px;margin:9px 0 0;line-height:1.7}
 .ta-badge,.ta-tag{display:inline-block;white-space:nowrap;border:1px solid var(--ta-border);padding:5px 10px;border-radius:6px;font-size:11px;background:var(--ta-panel)}
 .ta-badge{color:var(--ta-accent)}
-.ta-kpi{background:var(--ta-panel);border:1px solid var(--ta-border);border-radius:11px;padding:18px 19px;min-height:126px;margin:2px 0 15px}
+.ta-kpi{background:var(--ta-panel);border:1px solid var(--ta-border);border-radius:12px;padding:18px 20px;min-height:120px;margin:2px 0 15px;font-variant-numeric:tabular-nums}
 .ta-kpi span{display:block;color:var(--ta-muted);font-size:12px}.ta-kpi strong{display:block;font-size:29px;font-weight:650;line-height:1.7;letter-spacing:-.6px}.ta-kpi small{color:var(--ta-muted);font-size:11px;line-height:1.5}
 .ta-empty{border:1px dashed var(--ta-border);border-radius:12px;padding:30px;background:var(--ta-panel);margin:10px 0 22px}
 .ta-empty p{color:var(--ta-muted);font-size:13px;line-height:1.8;margin:9px 0 0}
-.ta-welcome{padding:45px 0 32px;max-width:780px}.ta-welcome h2{font-size:35px;line-height:1.55;letter-spacing:-1px;margin:0}.ta-welcome p{color:var(--ta-muted);font-size:15px;line-height:1.9}
+.ta-welcome{padding:24px 0 12px;max-width:860px}.ta-welcome h2{font-size:34px;line-height:1.32;letter-spacing:-1px;margin:0;font-weight:700}.ta-welcome p{color:var(--ta-muted);font-size:14px;line-height:1.85;max-width:620px;margin:12px 0 0}
 .ta-note{background:var(--ta-panel);border:1px solid var(--ta-border);border-left:3px solid var(--ta-accent);padding:13px 17px;border-radius:8px;font-size:13px;line-height:1.9;margin:12px 0}
 .ta-event{padding:14px 16px;border-left:2px solid var(--ta-accent);background:var(--ta-panel);margin:7px 0;border-radius:0 8px 8px 0}.ta-event small{display:block;color:var(--ta-muted);margin-top:5px;font-size:12px}
 .ticket-card{display:flex;align-items:center;justify-content:space-between;gap:18px;background:var(--ta-panel);border:1px solid var(--ta-border);border-radius:11px;padding:19px 21px;margin:10px 0}
@@ -33,6 +36,11 @@ h3{font-size:1.05rem!important;font-weight:650!important;letter-spacing:.01em}
 [data-testid="stForm"] button[data-testid="stBaseButton-secondaryFormSubmit"]{background:var(--ta-panel)!important;color:var(--ta-text)!important;border:1px solid var(--ta-border)!important;border-radius:8px}
 [data-testid="stForm"] button[data-testid="stBaseButton-secondaryFormSubmit"]:hover{border-color:var(--ta-accent)!important;color:var(--ta-accent)!important}
 button[kind="primary"],button[data-testid="stBaseButton-primary"],button[data-testid="stBaseButton-primaryFormSubmit"]{background:var(--ta-accent)!important;border-color:var(--ta-accent)!important;color:var(--ta-bg)!important}
+button[kind="primary"] *,button[data-testid="stBaseButton-primary"] *,button[data-testid="stBaseButton-primaryFormSubmit"] *{color:inherit!important}
+[role="tab"][aria-selected="true"]{color:var(--ta-accent)!important}
+[role="tab"][aria-selected="true"] p{color:inherit!important}
+[data-testid="stTab"] .react-aria-SelectionIndicator{background:var(--ta-accent)!important}
+[data-baseweb="tab-highlight"]{background-color:var(--ta-accent)!important}
 input::placeholder,textarea::placeholder{color:var(--ta-muted)!important;opacity:.8}
 [data-baseweb="radio"]:has(input:checked)>div:first-child{background-color:var(--ta-accent)!important}
 [data-baseweb="select"] svg{color:var(--ta-muted)}
@@ -47,6 +55,14 @@ button[aria-label="Open"]{background:var(--ta-panel)!important;color:var(--ta-mu
 [data-testid="stMultiSelect"] [data-tag] button{color:var(--ta-muted)!important}
 [data-testid="stRadioOption"][data-selected="true"]>div>div:first-child{background:var(--ta-accent)!important}
 input,textarea,[data-baseweb="select"]>div,[data-baseweb="input"],[data-baseweb="textarea"]{background:var(--ta-panel)!important;color:var(--ta-text)!important;border-color:var(--ta-border)!important}
+/* Streamlit's JS theme primary is its default #FF4B4B; the CSS variable never
+   reaches BaseWeb's focus state, so focus rendered a red ring on a teal product.
+   Keep the real invalid state red and use the app accent everywhere else. */
+[data-testid="stTextInputRootElement"]:focus-within:not(:has(input[aria-invalid="true"])),
+[data-testid="stTextAreaRootElement"]:focus-within:not(:has(textarea[aria-invalid="true"])),
+[data-testid="stNumberInputContainer"]:focus-within,
+[data-testid="stDateInput"] [data-baseweb="input"]:focus-within{border-color:var(--ta-accent)!important;box-shadow:0 0 0 1px var(--ta-accent)!important}
+[data-testid="stSelectbox"] [role="group"]:focus-within{border-color:var(--ta-accent)!important;box-shadow:0 0 0 1px var(--ta-accent)!important}
 /* Native widget hover/focus and Chromium text fill must follow the app theme. */
 [data-testid="stTextInput"] input,textarea{-webkit-text-fill-color:var(--ta-text)!important;caret-color:var(--ta-accent)}
 [data-testid="stTextInput"] input::placeholder,textarea::placeholder{-webkit-text-fill-color:var(--ta-muted)!important}
@@ -62,17 +78,175 @@ input,textarea,[data-baseweb="select"]>div,[data-baseweb="input"],[data-baseweb=
 [data-testid="stJson"] .react-json-view *{background-color:transparent!important;color:var(--ta-text)!important;border-color:var(--ta-border)!important}
 [data-testid="stJson"] .react-json-view .string-value{color:var(--ta-accent)!important}
 .ta-table-wrap{width:100%;overflow-x:auto;border:1px solid var(--ta-border);border-radius:9px;background:var(--ta-panel)}
-.ta-table-wrap table{width:100%;border-collapse:collapse;font-size:12px;line-height:1.7;color:var(--ta-text);margin:0}
-.ta-table-wrap th{background:var(--ta-raised);color:var(--ta-muted);font-weight:600;text-align:left;white-space:nowrap;padding:11px 14px;border-bottom:1px solid var(--ta-border)}
+.ta-table-wrap table{width:100%;border-collapse:collapse;font-size:12.5px;line-height:1.75;color:var(--ta-text);margin:0}
+.ta-table-wrap th{background:var(--ta-raised);color:var(--ta-muted);font-weight:600;text-align:left;white-space:nowrap;padding:11px 14px;border-bottom:1px solid var(--ta-border);font-size:11.5px;letter-spacing:.03em}
 .ta-table-wrap td{padding:10px 14px;border-bottom:1px solid var(--ta-border);min-width:55px;max-width:420px;overflow-wrap:anywhere;vertical-align:top}
 .ta-table-wrap tr:last-child td{border-bottom:0}.ta-table-wrap tbody tr:hover{background:var(--ta-raised)}
+.ta-table-wrap td,.ta-table-wrap th{font-variant-numeric:tabular-nums}
+.ta-eyebrow{text-transform:uppercase;letter-spacing:.14em;color:var(--ta-accent);font-size:11px;font-weight:700;margin:8px 0 14px}
+/* Wide desktop canvas: the conversation is the visual centre, not a narrow column. */
+.st-key-user_workspace{max-width:1400px;margin-left:auto;margin-right:auto}
+.st-key-user_compose{border:1px solid var(--ta-border);border-radius:16px;padding:14px 18px 8px;background:var(--ta-panel);box-shadow:0 10px 30px -24px rgba(0,0,0,.55)}
+.st-key-user_compose [data-testid="stForm"]{border:0;padding:0}
+.st-key-user_compose [data-testid="stTextInput"] input{font-size:15px;padding:12px 14px;border-radius:10px}
+.st-key-user_compose [data-testid="stFormSubmitButton"] button{min-height:44px;font-weight:600}
+.st-key-user_chat [data-testid="stChatMessage"]{margin:6px 0}
+/* Conversation scroll surface: the only area that scrolls on the user page. */
+.st-key-user_chat_scroll.st-key-user_chat_scroll{overflow-y:auto!important;overflow-x:hidden!important;padding-right:6px;scroll-behavior:auto}
+/* Streamlit puts the fixed height on the wrapper, not on the keyed block.
+   CSS is only the fallback; the bridge measures the real chrome height. */
+[data-testid="stLayoutWrapper"]:has(> .st-key-user_chat_scroll){height:clamp(260px,calc(100vh - 420px),560px)!important}
+.st-key-user_chat_scroll:has(.st-key-turn_0){border:1px solid var(--ta-border);border-radius:14px;background:var(--ta-panel);padding:10px 14px}
+.st-key-turn_0,.st-key-turn_1,.st-key-turn_2,.st-key-turn_3{scroll-margin-top:8px}
+[class*="st-key-turn_"]{border-radius:10px;transition:background .35s ease}
+[class*="st-key-turn_"].ta-flash{background:var(--ta-raised);box-shadow:inset 3px 0 var(--ta-accent)}
+
+/* Sticky run summary: reachable from any scroll position, never inside the chat scroller. */
+.st-key-run_summary{position:sticky;top:0;z-index:6;background:var(--ta-bg);padding:6px 0 8px;border-bottom:1px solid var(--ta-border);margin-bottom:10px}
+.ta-summary{display:flex;flex-direction:column;gap:3px;min-width:0}
+.ta-summary-top{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.ta-summary-top code{font-size:11.5px;color:var(--ta-accent);overflow-wrap:anywhere}
+.ta-summary-line{color:var(--ta-muted);font-size:12px;line-height:1.6;overflow-wrap:anywhere}
+.ta-status{font-size:10px;letter-spacing:.06em;padding:2px 9px;border-radius:999px;border:1px solid var(--ta-border);white-space:nowrap}
+.ta-status-ok{border-color:var(--ta-accent);color:var(--ta-accent)}
+.ta-status-bad{border-color:#f17b86;color:#f17b86}
+.ta-status-wait{border-color:#d9b76c;color:#d9b76c}
+.ta-status-live{border-color:#4f9df0;color:#4f9df0}
+.ta-status-idle{border-color:var(--ta-border);color:var(--ta-muted)}
+.ta-newmsg{position:sticky;bottom:8px;margin-left:auto;display:block;font:inherit;font-size:12px;
+  padding:7px 14px;border-radius:999px;border:1px solid var(--ta-accent);background:var(--ta-panel);
+  color:var(--ta-accent);cursor:pointer;box-shadow:0 8px 24px -16px rgba(0,0,0,.6)}
+.ta-newmsg:hover{background:var(--ta-raised)}
+.st-key-run_summary [data-testid="stButton"] button{min-height:36px;font-size:12px}
+.ta-chat-empty{color:var(--ta-muted);font-size:13px;line-height:1.9;border:1px dashed var(--ta-border);border-radius:12px;padding:22px;margin:12px 0;text-align:center}
+
+/* Hero and quick prompts */
+.ta-hero-actions{margin:-6px 0 18px}
+.st-key-quick_prompts{margin:4px 0 14px}
+.st-key-quick_prompts button{border-radius:999px!important;min-height:38px;font-size:12.5px;font-weight:500;background:var(--ta-raised)!important;border:1px solid var(--ta-border)!important}
+.st-key-quick_prompts button:hover{border-color:var(--ta-accent)!important;color:var(--ta-accent)!important}
+.ta-welcome{max-width:860px}
+.ta-welcome p{max-width:640px}
+
+/* 60-second demo entry and panel */
+.st-key-demo_entry{border:1px solid var(--ta-border);border-left:3px solid var(--ta-accent);border-radius:12px;padding:18px 20px;background:var(--ta-panel);margin:6px 0 18px}
+.ta-demo-copy .ta-eyebrow{margin:0 0 8px}
+.ta-demo-copy b{display:block;font-size:17px;margin-bottom:6px}
+.ta-demo-copy p{color:var(--ta-muted);font-size:13px;line-height:1.9;margin:0}
+.st-key-demo_panel{border:1px solid var(--ta-border);border-radius:12px;padding:16px 18px;background:var(--ta-panel);margin:6px 0 18px}
+.ta-demo-badge{font-size:10px;letter-spacing:.06em;text-transform:uppercase;border:1px solid var(--ta-border);border-radius:999px;padding:3px 9px;color:var(--ta-accent)}
+
+/* Run status rail: phases, calls, evidence */
+.st-key-user_rail{border:1px solid var(--ta-border);border-radius:14px;background:var(--ta-panel);padding:16px 16px 12px}
+.ta-rail-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
+.ta-rail-head b{font-size:14px}.ta-rail-head span{font-size:10px;color:var(--ta-muted);letter-spacing:.04em}
+.ta-rail-sub{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ta-muted);margin:16px 0 8px}
+.ta-rail-empty{color:var(--ta-muted);font-size:12px;line-height:1.9;margin:8px 0}
+.ta-phases{display:flex;flex-direction:column;gap:2px;margin:2px 0 4px}
+.ta-phase{display:flex;gap:10px;align-items:flex-start;padding:8px 10px;border-radius:9px;background:var(--ta-raised);margin:2px 0}
+.ta-phase-dot{width:8px;height:8px;border-radius:50%;margin-top:6px;flex:0 0 8px;background:var(--ta-muted)}
+.ta-phase-body{display:flex;flex-direction:column;min-width:0}
+.ta-phase-body b{font-size:12.5px;font-weight:600;line-height:1.5}
+.ta-phase-body small{font-size:11px;color:var(--ta-muted);line-height:1.6;overflow-wrap:anywhere}
+.ta-phase.is-done .ta-phase-dot{background:var(--ta-accent)}
+.ta-phase.is-active .ta-phase-dot{background:#4f9df0;animation:ta-pulse 1.2s ease-in-out infinite}
+.ta-phase.is-failed .ta-phase-dot{background:#f17b86}
+.ta-phase.is-blocked .ta-phase-dot{background:#d9b76c}
+.ta-phase.is-waiting .ta-phase-dot{background:#d9b76c;animation:ta-pulse 1.4s ease-in-out infinite}
+.ta-phase.is-declined .ta-phase-dot{background:var(--ta-muted)}
+.ta-phase.is-failed{background:rgba(241,123,134,.08)}
+.ta-phase.is-blocked{background:rgba(217,183,108,.09)}
+@keyframes ta-pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.45;transform:scale(.8)}}
+.ta-calls{list-style:none;margin:0;padding:0}
+.ta-call{display:flex;justify-content:space-between;gap:10px;font-size:12px;padding:7px 9px;border-bottom:1px solid var(--ta-border)}
+.ta-call:last-child{border-bottom:0}
+.ta-call-name{font-weight:600}
+.ta-call-meta{color:var(--ta-muted);white-space:nowrap;font-variant-numeric:tabular-nums}
+.ta-call.is-failed .ta-call-meta{color:#f17b86}.ta-call.is-blocked .ta-call-meta{color:#d9b76c}.ta-call.is-done .ta-call-meta{color:var(--ta-accent)}
+
+/* Structured train results */
+.ta-trains{margin:12px 0 4px;border:1px solid var(--ta-border);border-radius:12px;overflow:hidden;background:var(--ta-panel)}
+.ta-train-head{display:grid;grid-template-columns:1.1fr 1.7fr 1fr 1fr;gap:12px;padding:9px 16px;background:var(--ta-raised);color:var(--ta-muted);font-size:11px;letter-spacing:.06em;text-transform:uppercase}
+.ta-trains .ticket-card{display:grid;grid-template-columns:1.1fr 1.7fr 1fr 1fr;gap:12px;align-items:center;border:0;border-top:1px solid var(--ta-border);border-radius:0;margin:0;padding:13px 16px;background:transparent}
+.ta-trains .ticket-card:hover{background:var(--ta-raised)}
+.tc-train strong{font-size:15px}.tc-route b{font-size:14px;font-variant-numeric:tabular-nums}.tc-arrow{color:var(--ta-accent)}
+.tc-seat b{font-size:13px;font-weight:600}.tc-fare{text-align:right}.tc-fare b{font-size:15px;font-variant-numeric:tabular-nums}
+
+/* Live phase strip while a request is running */
+.ta-live{border:1px solid var(--ta-border);border-radius:12px;padding:10px 12px;background:var(--ta-panel);margin:8px 0}
+.ta-live .ta-phases{flex-direction:row;flex-wrap:wrap;gap:6px}
+.ta-live .ta-phase{flex:1 1 150px;padding:6px 8px}
+.ta-live .ta-phase-body b{font-size:11.5px}.ta-live .ta-phase-body small{font-size:10.5px}
+[data-testid="stChatMessage"]{padding:16px 20px;border-radius:12px;margin:3px 0;border:0;line-height:1.8;background:transparent}
+[data-testid="stChatMessage"]:has([aria-label="Chat message from user"]){background:var(--ta-raised)}
+[data-testid="stChatMessageAvatarCustom"]{background:var(--ta-raised);color:var(--ta-muted)}
+[data-testid="stChatMessageAvatarCustom"] span{color:inherit}
+[data-testid="stChatMessage"]:has([aria-label="Chat message from assistant"]) [data-testid="stChatMessageAvatarCustom"]{background:var(--ta-accent);color:var(--ta-bg)}
+[data-testid="stChatMessageContent"]{min-width:0;overflow-wrap:anywhere}
+[data-testid="stChatMessageContent"] pre{overflow-x:auto;max-width:100%}
+.st-key-design_panel,.st-key-workflow_panel,.st-key-evidence_panel{border:1px solid var(--ta-border);border-radius:12px;background:var(--ta-panel);padding:16px}
+.st-key-workflow_nodes button{justify-content:flex-start;text-align:left;font-size:12px;min-height:42px;width:100%}
+.st-key-selected_evidence pre{max-height:420px;overflow:auto}
+.st-key-design_panel [role="tablist"]{gap:8px;flex-wrap:wrap}
+.st-key-design_panel [role="tab"]{font-size:11px;padding:5px 0;white-space:nowrap}
+@media(max-width:900px){[data-testid="stHorizontalBlock"]:has(.st-key-design_panel){flex-direction:column!important}.st-key-design_panel,.st-key-workflow_panel,.st-key-evidence_panel{width:100%}.ta-heading{flex-wrap:wrap}.ta-welcome h2{font-size:30px}}
 [data-testid="stDataFrame"],[data-testid="stVegaLiteChart"]{border-radius:9px;overflow:hidden}
 [role="radiogroup"] label p{font-size:13px}
 hr{border-color:var(--ta-border)}a{color:var(--ta-accent)}
 @media(max-width:1100px){.block-container{padding:1.8rem 1.5rem}.ta-kpi{padding:13px;min-height:115px}.ta-kpi strong{font-size:24px}.ta-heading h1{font-size:24px}}
 @media(max-width:700px){.block-container{padding:1.4rem 1rem}.ta-welcome{padding:20px 0}.ta-welcome h2{font-size:26px}.ticket-card{flex-wrap:wrap;padding:14px;gap:14px}.ta-heading{align-items:flex-start}.ta-kpi{min-height:105px}}
+/* Narrow screens: the rail drops below the conversation instead of squeezing it. */
+/* Developer workspace: one run identity shared by three panes */
+.ta-runbar{display:flex;align-items:center;justify-content:space-between;gap:16px;border:1px solid var(--ta-border);border-left:3px solid var(--ta-accent);border-radius:12px;background:var(--ta-panel);padding:12px 16px;margin:2px 0 12px}
+.ta-runbar b{display:block;font-size:13px}
+.ta-runbar span{display:block;color:var(--ta-muted);font-size:11.5px;line-height:1.7;margin-top:2px}
+.ta-runbar-meta{color:var(--ta-muted);font-size:11px;white-space:nowrap}
+.ta-run-id{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:var(--ta-raised);border:1px solid var(--ta-border);border-radius:9px;padding:8px 11px;margin:6px 0 10px}
+.ta-run-id code{color:var(--ta-accent);font-size:11.5px;overflow-wrap:anywhere}
+.ta-run-id span{color:var(--ta-muted);font-size:11px}
+.ta-mode{display:inline-block;font-size:10px;letter-spacing:.06em;padding:2px 9px;border-radius:999px;border:1px solid var(--ta-border);white-space:nowrap}
+.ta-mode-debug{border-color:#d9b76c;color:#d9b76c}
+.ta-mode-current{border-color:var(--ta-accent);color:var(--ta-accent)}
+.ta-mode-history{border-color:var(--ta-border);color:var(--ta-muted)}
+/* Event card: name / status / duration / tool / arg & result summary before raw JSON */
+.ta-event-card{border:1px solid var(--ta-border);border-radius:10px;background:var(--ta-panel);padding:10px 12px;margin:4px 0 10px}
+.ta-kv{display:grid;grid-template-columns:74px 1fr;gap:8px;padding:4px 0;border-bottom:1px dashed var(--ta-border);font-size:12px;line-height:1.65}
+.ta-kv:last-child{border-bottom:0}
+.ta-kv span{color:var(--ta-muted);white-space:nowrap}
+.ta-kv b{font-weight:500;overflow-wrap:anywhere;font-variant-numeric:tabular-nums}
+.st-key-workflow_nodes button{font-size:11.5px}
+
+@media(max-width:1180px){
+  [data-testid="stHorizontalBlock"]:has(.st-key-user_rail){flex-direction:column;gap:14px}
+  [data-testid="stHorizontalBlock"]:has(.st-key-user_rail)>div{width:100%}
+  .st-key-user_rail{width:100%}
+  .ta-live .ta-phase{flex:1 1 130px}
+  .st-key-demo_entry [data-testid="stHorizontalBlock"]{flex-direction:column;gap:10px}
+  .st-key-demo_entry [data-testid="stHorizontalBlock"]>div{width:100%}
+  .st-key-demo_entry button{width:100%;min-height:40px}
+  .st-key-user_compose [data-testid="stHorizontalBlock"]{gap:8px}
+  .st-key-run_summary button{min-height:32px;font-size:11px;padding:2px 4px;white-space:nowrap}
+}
+@media(max-width:760px){
+  .ta-train-head{display:none}
+  .ta-trains .ticket-card{grid-template-columns:1fr 1fr;row-gap:8px}
+  .st-key-demo_panel .ticket-card{grid-template-columns:1fr 1fr;row-gap:8px}
+  .tc-fare{text-align:left}
+  .ta-welcome h2{font-size:26px}
+}
+.st-key-demo_panel .ticket-card{display:grid;grid-template-columns:1.1fr 1.7fr 1fr 1fr;gap:12px;align-items:center}
 @media(prefers-reduced-motion:reduce){.ta-processing span{animation:none}.stButton button{transition:none}}
 
 /* Match Streamlit's help tooltip to the selected app theme. */
 [data-testid="stTooltipContent"]{background:var(--ta-raised)!important;color:var(--ta-text)!important;border:1px solid var(--ta-border)!important;border-radius:8px}
 [data-testid="stTooltipContent"] p,[data-testid="stTooltipContent"] span{color:var(--ta-text)!important}
+
+/* Per-answer policy state: facts from run events, not animated stage guesses. */
+.ta-policy-state{display:flex;align-items:center;gap:7px;color:var(--ta-muted);font-size:13px;line-height:1.6;margin:6px 0}
+.ta-policy-dot{width:6px;height:6px;border-radius:50%;background:var(--ta-muted);flex:0 0 auto}
+.ta-policy-state[data-state="searching"] .ta-policy-dot{background:var(--ta-accent)}
+.ta-policy-state[data-state="failed"]{color:#d76b76}
+[class*="st-key-policy_followups_"]{margin:4px 0 10px}
+[class*="st-key-policy_followups_"] button{justify-content:flex-start;text-align:left;min-height:38px;height:auto;font-size:13px;background:var(--ta-panel);border-color:var(--ta-border)}
+[class*="st-key-policy_followups_"] button:hover{border-color:var(--ta-accent);background:var(--ta-raised)}
+@media(max-width:760px){[class*="st-key-policy_followups_"] button{width:100%;min-height:42px}.ta-policy-state{font-size:13px}}

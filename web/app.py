@@ -22,9 +22,9 @@ def main():
     st.set_option("client.toolbarMode","minimal")
     st.session_state.setdefault("default_live", config.PROVIDER in ("deepseek","bailian"))
     st.session_state.setdefault("default_engine", config.ENGINE)
-    st.session_state.setdefault("theme", "深色")
+    st.session_state.setdefault("theme", "浅色")
     with st.sidebar:
-        st.markdown('<div class="ta-brand"><div class="ta-logo">T</div><div><b>Ticket Agent</b><small>智能体质量工作空间 · V3.5</small></div></div>', unsafe_allow_html=True)
+        st.markdown('<div class="ta-brand"><div class="ta-logo">T</div><div><b>Ticket Agent</b><small>智能体可靠性工作空间 · 3.7</small></div></div>', unsafe_allow_html=True)
         choices=["Legacy Mock","LangChain Mock","DeepSeek Live","Qwen3.8-Flash Live"]
         initial=3 if config.PROVIDER=="bailian" else 2 if config.PROVIDER=="deepseek" else 1 if config.ENGINE=="langchain" else 0
         selection=st.selectbox("新会话模型",choices,index=initial,key="provider_selection")
@@ -32,9 +32,12 @@ def main():
         st.session_state["default_engine"]="legacy" if selection=="Legacy Mock" else "langchain"
         st.session_state["default_provider"]="bailian" if selection=="Qwen3.8-Flash Live" else "deepseek"
         st.session_state["default_live_model"]="qwen3.8-flash" if selection=="Qwen3.8-Flash Live" else None
-        mode = st.radio("工作空间", ["出行助手", "测试工作台"], key="workspace_mode")
+        mode = st.radio("工作空间", ["出行助手", "开发者工作台", "测试工作台"], key="workspace_mode",
+                        format_func=lambda x: {"出行助手":"Agent 用户端", "开发者工作台":"Agent 开发者端", "测试工作台":"测试控制台"}[x])
         if mode == "测试工作台":
-            page = st.radio("工作台导航", ["测试总览", "测试实验室", "Trace 分析", "质量分析", "模型对比", "RAG 知识库", "集成中心"], key="workspace_page")
+            page = st.radio("工作台导航", ["测试总览", "测试实验室", "Trace 分析", "质量分析", "模型对比", "RAG 知识库", "集成中心", "V3.7 离线验收"], key="workspace_page",format_func=lambda value:'离线回归中心' if value=='V3.7 离线验收' else value)
+        elif mode == "开发者工作台":
+            page = "开发者工作台"
         else:
             page = "出行助手"
         st.divider()
@@ -44,7 +47,17 @@ def main():
     theme(selected_theme)
     if page == "出行助手":
         from web.conversation import user_page
-        user_page()
+        with st.container(key='user_workspace'):
+            user_page()
+    elif page == "开发者工作台":
+        from web.developer_workspace import developer_page
+        sessions=st.session_state.get("user_sessions",[])+st.session_state.get("lab_archives",[])
+        if st.session_state.get("lab_session") is not None:
+            sessions=sessions+[st.session_state["lab_session"]]
+        developer_page(sessions)
+    elif page == "V3.7 离线验收":
+        from web.v37_console import page as acceptance_page
+        acceptance_page()
     elif page == "测试总览":
         from web.dashboard import dashboard_page
         sessions = st.session_state.get("user_sessions", []) + st.session_state.get("lab_archives", [])
@@ -71,7 +84,7 @@ def main():
         from web.rag_page import rag_page
         sessions=st.session_state.get("user_sessions",[])+st.session_state.get("lab_archives",[])
         rag_page(sessions)
-    st.caption("Ticket Agent V3.5 · 票务业务为虚构模拟 · 正式质量评价由 B 提供 · 页面浏览不发起模型请求")
+    st.caption("Ticket Agent 3.7 · 自建模拟票务 · 正式质量评价由 B 独立提供")
 
 
 # Serialize rendering with calls because legacy configuration is module-scoped.

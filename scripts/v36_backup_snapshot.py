@@ -1,6 +1,5 @@
 import subprocess,hashlib,json,shutil,sys
 from pathlib import Path
-from datetime import datetime
 root=Path.cwd().resolve();out=Path(sys.argv[1]);out.mkdir(parents=True,exist_ok=False)
 def git(*args):return subprocess.check_output(['git','-c','core.quotepath=false',*args],cwd=root)
 paths=set()

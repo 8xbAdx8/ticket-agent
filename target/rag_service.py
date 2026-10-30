@@ -19,22 +19,31 @@ def scope(**values):
 
 
 def configured_index():
+    import config
     from target.rag_store import PolicyIndex,ROOT
     from target.rag_protection import is_baseline,ProtectedPolicyIndex
     path=Path(os.getenv('RAG_INDEX_DIR',str(ROOT/'artifacts/runtime/v35-rag/index')))
-    return ProtectedPolicyIndex(path) if is_baseline(path) else PolicyIndex(path)
+    if is_baseline(path) and config.POLICY_PATH.resolve() != (ROOT/'data/policies.md').resolve():
+        raise ValueError('new_policy_requires_independent_index')
+    return ProtectedPolicyIndex(path) if is_baseline(path) else PolicyIndex(path,policy=config.POLICY_PATH)
 
 
 def retrieve(question,mode=None,*,allow_network=False,k=None,threshold=None):
     import config
     from target.rag_store import documents,keyword
+    from target.run_events import emit
     mode=mode or os.getenv('AGENT_RAG_MODE','keyword')
-    if mode not in ('keyword','vector','hybrid'):raise ValueError('invalid_rag_mode')
-    k=k or int(os.getenv('RAG_TOP_K','3'))
-    if not 1<=k<=20:raise ValueError('invalid_top_k')
     started=time.perf_counter();identity=uuid.uuid4().hex
+    # capture owns run_id/session_id. Do not overwrite them with optional RAG
+    # scope values; the latter may be absent in direct/local invocations.
+    event_scope={key:SCOPE.get()[key] for key in ('call_id',) if SCOPE.get().get(key) is not None}
     evidence=None
     try:
+        if mode not in ('keyword','vector','hybrid'):raise ValueError('invalid_rag_mode')
+        k=k or int(os.getenv('RAG_TOP_K','3'))
+        if not 1<=k<=20:raise ValueError('invalid_top_k')
+        emit('rag_start','running',tool='search_policy',retrieval_id=identity,
+             mode=mode,top_k=k,question=question,**event_scope)
         frozen=None
         if os.getenv('TICKET_FROZEN_RAG_EVIDENCE'):
             from target.v352_validation import AUTH,read,canonical_hash
@@ -75,8 +84,28 @@ def retrieve(question,mode=None,*,allow_network=False,k=None,threshold=None):
                 'status':'failed','error_category':getattr(exc,'category',str(exc) if type(exc).__name__=='RagError' else type(exc).__name__),
                 'retrieval_evidence':evidence,
                 'total_latency_ms':round((time.perf_counter()-started)*1000),'business_success':False}
-        save(record);raise
-    save(record)
+        try:
+            save(record)
+        finally:
+            # A failed retrieval may have partial/risky candidates. Never
+            # promote those candidates to successful result documents.
+            emit('rag_error','failed',tool='search_policy',retrieval_id=identity,
+                 mode=mode,error_category=record['error_category'],
+                 duration_ms=record['total_latency_ms'],**event_scope)
+        raise
+    try:
+        save(record)
+    except Exception as exc:
+        emit('rag_error','failed',tool='search_policy',retrieval_id=identity,
+             mode=mode,error_category=type(exc).__name__,stage='evidence_persistence',
+             duration_ms=round((time.perf_counter()-started)*1000),**event_scope)
+        raise
+    emit('rag_result','succeeded' if record['hits'] else 'insufficient_evidence',
+         tool='search_policy',retrieval_id=identity,mode=mode,
+         documents=record['hits'],hit_count=len(record['hits']),
+         duration_ms=record.get('total_latency_ms'),sufficiency=record.get('sufficiency'),
+         evidence_location='rag_runs.jsonl:retrieval_id='+identity,
+         context_delivery='not_proven_by_retrieval_event',answer_support='not_verified',**event_scope)
     return {'question':question,'hits':record['hits'],'count':len(record['hits'])}
 
 
