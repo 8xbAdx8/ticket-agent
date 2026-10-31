@@ -49,7 +49,9 @@ def endpoint():
     except ValueError:raise BailianError("invalid_api_address") from None
     # Accept official regional/workspace HTTPS endpoints, not arbitrary hosts or coding-plan endpoints.
     host = url.hostname or ""
-    valid = host in {"dashscope.aliyuncs.com","dashscope-intl.aliyuncs.com","dashscope-us.aliyuncs.com","cn-hongkong.dashscope.aliyuncs.com"} or bool(
+    qwencloud = host == "maas.qwencloudapi.com" or bool(
+        re.fullmatch(r"[a-z0-9-]+\.maas\.qwencloudapi\.com", host))
+    valid = qwencloud or host in {"dashscope.aliyuncs.com","dashscope-intl.aliyuncs.com","dashscope-us.aliyuncs.com","cn-hongkong.dashscope.aliyuncs.com"} or bool(
         re.fullmatch(r"[a-z0-9-]+\.[a-z]{2}-[a-z0-9-]+\.maas\.aliyuncs\.com",host))
     if (url.scheme != "https" or not valid or url.username or url.password or url.port not in (None, 443)
             or url.query or url.fragment or url.path.rstrip("/") != "/compatible-mode/v1"
@@ -59,10 +61,14 @@ def endpoint():
 
 
 def validate_configuration():
-    if not os.getenv("DASHSCOPE_API_KEY", "").strip():
+    key = os.getenv("DASHSCOPE_API_KEY", "").strip()
+    if not key:
         raise BailianError("missing_DASHSCOPE_API_KEY")
     if not config.BASE_URL.strip():
         raise BailianError("missing_DASHSCOPE_BASE_URL")
+    host = urlsplit(config.BASE_URL).hostname or ""
+    if key.startswith("sk-ws-") and not (host == "maas.qwencloudapi.com" or host.endswith(".maas.qwencloudapi.com")):
+        raise BailianError("qwencloud_key_requires_qwencloud_endpoint")
     endpoint()
     if not config.MODEL_NAME.strip():
         raise BailianError("missing_DASHSCOPE_MODEL")

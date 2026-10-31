@@ -416,6 +416,7 @@ def failure_hint(category):
         'missing_DEEPSEEK_API_KEY':'未读取到DeepSeek Key，请重新启动在线入口。',
         'missing_DASHSCOPE_API_KEY':'未读取到千问Key，请核对DASHSCOPE_API_KEY后重新启动。',
         'authentication_failed':'模型服务拒绝了Key，请检查有效性。',
+        'qwencloud_key_requires_qwencloud_endpoint':'这个 Key 是 QwenCloud（sk-ws-）的，必须把 DASHSCOPE_BASE_URL 改成对应地域的 https://<region>.maas.qwencloudapi.com/compatible-mode/v1（如新加坡 ap-southeast-1）；不能使用 dashscope.aliyuncs.com。',
         'permission_denied':'服务商拒绝访问，请检查模型、地域和账号权限。',
         'rate_limited':'服务商限流（HTTP 429），本次未自动重试，请稍后手动发送。',
         'server_error':'模型服务端错误（HTTP 500），本次未自动重试。',
