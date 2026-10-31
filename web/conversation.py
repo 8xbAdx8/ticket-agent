@@ -89,10 +89,8 @@ def _followup_lifecycle(session, run_id, kind, **fields):
 
 
 def _live_request_allowed(session):
-    """DeepSeek's explicit send is consent; other providers keep the checkbox."""
-    return bool(session.live and st.session_state.get('user_compose_session')==session.sid
-                and ((session.live_provider=='deepseek' and session.mode=='user')
-                     or st.session_state.get('user_allow_live')))
+    """A live session may send after the user submits the composer; no extra checkbox."""
+    return bool(session.live and st.session_state.get('user_compose_session')==session.sid)
 
 
 def execute(session, message, request_id, origin=None,confirmation=None):
@@ -298,7 +296,7 @@ def _open_user_run(sid, run_id):
 
 
 def _run_rail(session, events):
-    """Right rail: what the current run actually did."""
+    """Right rail: compact five-stage summary; full evidence stays folded."""
     with st.container(key='user_rail'):
         if not session.audits:
             st.markdown('<div class="ta-rail-head"><b>本次运行</b><span>尚未开始</span></div>',unsafe_allow_html=True)
@@ -307,19 +305,41 @@ def _run_rail(session, events):
             st.markdown('<p class="ta-rail-empty">缺少执行记录时显示“未记录”，不据此推断“未发生”。</p>',
                         unsafe_allow_html=True)
             return
-        index=st.selectbox('本会话运行',range(len(session.audits)),index=len(session.audits)-1,
-            format_func=lambda n:str(n+1)+' · '+str(session.audits[n].get('trace_id') or '未记录'),key='user_run_'+session.sid)
+        st.markdown('<div class="ta-rail-head"><b>本次运行</b><span>来自本轮记录</span></div>',unsafe_allow_html=True)
+        index=len(session.audits)-1
+        if len(session.audits)>1:
+            index=st.selectbox('历史运行',range(len(session.audits)),index=index,
+                format_func=lambda n:str(n+1)+' · '+str(session.audits[n].get('trace_id') or '未记录'),
+                key='user_run_'+session.sid)
         selected=session.audits[index];run_id=selected.get('trace_id')
         events,meta=run_view.load_events(session.trace_dir,run_id,session.sid)
         historical=session.read_only or index!=len(session.audits)-1
-        st.caption(('历史回放 · 只读' if historical else '当前运行')+' · session_id '+session.sid)
-        st.caption('run_id / Trace ID：'+str(run_id or '未记录')+' · '+str(selected.get('timestamp') or '时间未记录'))
-        if meta.get('invalid') or meta.get('truncated'):st.warning('事件文件不完整；未读取的部分不能视为未发生。')
-        for phase in run_view.execution_stages(events):
-            st.caption(phase['stage']+'：'+phase['status'])
-        st.caption('以下按已保存的事件时间回放；未记录时间时保留文件顺序。模型信息仅含可核验的输入、工具选择及回复。')
-        from target.diagnostics import sanitize
-        with st.container(height=420):
+        st.markdown(run_view.phase_strip(run_view.phase_states(events)),unsafe_allow_html=True)
+        if meta.get('invalid') or meta.get('truncated'):
+            st.warning('事件文件不完整；未读取的部分不能视为未发生。')
+        if historical:
+            st.caption('历史回放 · 只读；以下为已保存事件，不会调用模型或执行工具。')
+        if not events:
+            st.caption('本次运行没有可读的事件文件；阶段显示为未记录，不能据此推断执行结果。')
+        st.markdown('<div class="ta-rail-sub">工具调用</div>'+run_view.call_list(run_view.call_rows(events)),
+                    unsafe_allow_html=True)
+        if not historical:
+            _followup_lifecycle_panel(session, events)
+        if selected.get('error') or selected.get('contract_returned') is False:
+            st.caption('本次运行未返回成功契约；上方保留本次异常事件，不复用上一条成功 Trace。')
+            return
+        record=selected.get('public_trace')
+        if not isinstance(record,dict):
+            st.caption('本次返回值未记录。')
+            return
+        if not all(key in record for key in ('tool_sequence','finish_reason','total_latency_ms')):
+            st.caption('本次公共 Trace 字段未记录；仅展示上方已保存的事件和审计旁证。')
+            return
+        with st.expander('执行记录与 Trace 证据',expanded=False):
+            st.caption(('历史回放 · 只读' if historical else '当前运行')+' · session_id '+session.sid)
+            st.caption('run_id / Trace ID：'+str(run_id or '未记录')+' · '+str(selected.get('timestamp') or '时间未记录'))
+            st.caption('以下按已保存的事件时间回放；未记录时间时保留文件顺序。模型信息仅含可核验的输入、工具选择及回复。')
+            from target.diagnostics import sanitize
             for number,event in enumerate(events,1):
                 with st.expander(f"{number:02} · "+run_view.event_headline(event)):
                     st.caption('event_id '+str(event.get('event_id') or '未记录')+' · parent_event_id '+str(event.get('parent_event_id') or '未记录 / 根事件'))
@@ -331,25 +351,8 @@ def _run_rail(session, events):
                             st.caption('模式 '+str(event.get('mode') or '未记录')+' · 文档版本 '+str(hit.get('version') or '未记录')+' · 分数 '+str(hit.get('score') if hit.get('score') is not None else '未记录'))
                             st.write(hit.get('content') or '原文未记录')
                     st.json(sanitize(event),expanded=False)
-        st.button('在开发者端查看此运行',key='user_to_trace_'+session.sid,
-                  on_click=_open_user_run,args=(session.sid,run_id))
-        if historical:return
-        if not events:
-            st.caption('本次运行没有可读的事件文件；阶段显示为未记录，不能据此推断执行结果。')
-        st.markdown('<div class="ta-rail-sub">工具调用</div>'+run_view.call_list(run_view.call_rows(events)),
-                    unsafe_allow_html=True)
-        _followup_lifecycle_panel(session, events)
-        if selected.get('error') or selected.get('contract_returned') is False:
-            st.caption('本次运行未返回成功契约；上方保留本次异常事件，不复用上一条成功 Trace。')
-            return
-        record=selected.get('public_trace')
-        if not isinstance(record,dict):
-            st.caption('本次返回值未记录。')
-            return
-        if not all(key in record for key in ('tool_sequence','finish_reason','total_latency_ms')):
-            st.caption('本次公共 Trace 字段未记录；仅展示上方已保存的事件和审计旁证。')
-            return
-        with st.expander('执行记录与 Trace 证据'):
+            st.button('在开发者端查看此运行',key='user_to_trace_'+session.sid,
+                      on_click=_open_user_run,args=(session.sid,run_id))
             st.write(" → ".join(record["tool_sequence"]) or "本轮未调用工具")
             st.caption(f"结束原因 {record['finish_reason']} · {record['total_latency_ms']} ms；stop 仅表示循环结束。")
             for step in record.get('steps',[]):
@@ -366,7 +369,6 @@ def _run_rail(session, events):
                 from web.trace_view import timeline_items
                 for event in timeline_items(matching,record):
                     if event['kind'] in ('模型/规则输出','参数校验旁证','实际执行','未执行（含拦截）','执行状态未知','公共 Trace 工具调用'):
-                        from target.diagnostics import sanitize
                         st.write(event['kind']+' · '+event['title'])
                         st.json(sanitize(event['data']), expanded=False)
             else:
@@ -506,11 +508,9 @@ def _composer(session, live_name):
     """The composer lives in the conversation column so narrow stacking keeps it
     between the transcript and the run-detail panel."""
     with st.container(key='user_compose'):
-        if session.live and session.live_provider=='deepseek':
-            st.caption('当前为 DeepSeek 在线模式，发送请求会产生 API 费用。')
+        if session.live:
+            st.caption('当前为 '+live_name+' 在线模式，发送请求会产生 API 费用。')
             allow_live=True
-        elif session.live:
-            allow_live=st.checkbox("确认发送真实 "+live_name+" 请求（会产生 API 费用）",key="user_allow_live")
         else:
             allow_live=False
         with st.form("user_compose",clear_on_submit=True):
@@ -609,7 +609,6 @@ def user_page():
             _policy_panel(failed_policy)
 
     if st.session_state.get('user_compose_session')!=session.sid:
-        st.session_state['user_allow_live']=False
         st.session_state['user_allow_embedding']=False
         st.session_state['user_rag_mode']=session.rag_mode or 'keyword'
         st.session_state['user_compose_session']=session.sid
@@ -647,17 +646,13 @@ def user_page():
         with main:
             message, send, allow_live = _column_body()
         with rail:
-            # Collapsed by default: the summary bar already carries the live
-            # status, and a stacked narrow layout must stay inside the viewport.
-            with st.expander('运行详情与 Trace', expanded=True):
-                _run_rail(session, events)
+            # Compact right rail: five-stage summary visible; full Trace stays
+            # behind the "执行记录与 Trace 证据" expander.
+            _run_rail(session, events)
     else:
         message, send, allow_live = _column_body()
 
     if session.read_only:return
-
-    if session.live:
-        show_remote_export(session)
 
     if session.live:
         with st.expander('高级设置 · 政策检索与联网',expanded=False):

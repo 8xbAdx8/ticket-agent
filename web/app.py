@@ -26,7 +26,8 @@ def main():
     with st.sidebar:
         st.markdown('<div class="ta-brand"><div class="ta-logo">T</div><div><b>Ticket Agent</b><small>智能体可靠性工作空间 · 3.7</small></div></div>', unsafe_allow_html=True)
         choices=["Legacy Mock","LangChain Mock","DeepSeek Live","Qwen3.8-Flash Live"]
-        initial=3 if config.PROVIDER=="bailian" else 2 if config.PROVIDER=="deepseek" else 1 if config.ENGINE=="langchain" else 0
+        qwen_ready=bool(os.getenv("DASHSCOPE_API_KEY","").strip())
+        initial=3 if (qwen_ready or config.PROVIDER=="bailian") else 2 if config.PROVIDER=="deepseek" else 1 if config.ENGINE=="langchain" else 0
         selection=st.selectbox("新会话模型",choices,index=initial,key="provider_selection")
         st.session_state["default_live"]=selection.endswith("Live")
         st.session_state["default_engine"]="legacy" if selection=="Legacy Mock" else "langchain"

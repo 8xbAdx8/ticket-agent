@@ -167,6 +167,10 @@ def developer_page(sessions):
             except Exception:
                 st.error('执行未完成，请查看异常旁证；没有自动重试。')
 
+    # LangSmith management belongs to the developer workspace, not the user chat.
+    from web.langsmith_panel import render as langsmith_panel
+    langsmith_panel(selected, audit)
+
 
 def _run_bar(available, debug):
     """One explicit place that says which run the three panes belong to."""
