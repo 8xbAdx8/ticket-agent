@@ -550,19 +550,18 @@ RAG历史：V3.5.2指标重算无数学错误，原值不改；DeepSeek完整回
 - 遗留与下一步：缺真实快照/独立采集证明、实时合法接口和授权、B C5执行器；原11失败、JSON组件Console、既有RAG/身份/实体软键盘边界保持。等待验收，不自动进入下一阶段或提交推送。
 
 ### 2026-11-01T23:04:35.523087+08:00：阶段五至七Git归档授权与开工核验
-+
-+- 用户明确要求提交并推送全部未提交代码；当前分支feat/ticket-agent-v36-stabilization，开工HEAD c889b082dd4bd07e3514038a69362b71dd21915c、暂存区空，48个候选文件。
-+- 源码与最终full-r6清单完全一致，沿用1356 passed / 11 failed / 1 skipped / 199 subtests及四规格120/120，不重复运行完整测试；Fixture COMPLETE、Snapshot PARTIAL、Live BLOCKED、正式103 BLOCKED结论不变。
-+- 密钥/敏感路径检查无命中；1892当前保护文件保持。两份用量账本在阶段七验收后分别追加5977/6036字节，原259169/463888字节前缀哈希完整；保留当前原件、不提交、不改写，本任务未发模型/Embedding/LangSmith/12306请求。
-+- GitHub代理127.0.0.1不可达，仅本次Git进程直连成功，目标远端分支仍c889b082…；未修改全局代理或TLS设置，不强推、不切分支、不清理工作区。
-+- 提交及推送尚待本次实际命令完成，后续追加准确回执。证据：artifacts/runtime/v37-phase5-7-git-archive-20261101/before.json；原阶段五/六/七及恢复报告、运行证据均保留。
-+
+
+- 用户明确要求提交并推送全部未提交代码；当前分支feat/ticket-agent-v36-stabilization，开工HEAD c889b082dd4bd07e3514038a69362b71dd21915c、暂存区空，48个候选文件。
+- 源码与最终full-r6清单完全一致，沿用1356 passed / 11 failed / 1 skipped / 199 subtests及四规格120/120，不重复运行完整测试；Fixture COMPLETE、Snapshot PARTIAL、Live BLOCKED、正式103 BLOCKED结论不变。
+- 密钥/敏感路径检查无命中；1892当前保护文件保持。两份用量账本在阶段七验收后分别追加5977/6036字节，原259169/463888字节前缀哈希完整；保留当前原件、不提交、不改写，本任务未发模型/Embedding/LangSmith/12306请求。
+- GitHub代理127.0.0.1不可达，仅本次Git进程直连成功，目标远端分支仍c889b082…；未修改全局代理或TLS设置，不强推、不切分支、不清理工作区。
+- 提交及推送尚待本次实际命令完成，后续追加准确回执。证据：artifacts/runtime/v37-phase5-7-git-archive-20261101/before.json；原阶段五/六/七及恢复报告、运行证据均保留。
+
 ### 2026-11-01T23:09:18.892258+08:00：阶段五至七源码提交推送及归档收尾
-+
-+- 源码提交：d70fda9d7e04e8ba4595e6712ed3047dce2f1d8a，feat(v3.7): archive phases 5-7 offline implementation；48文件，包含用户界面、Developer隔离、Fixture/快照源、45新测试及阶段5/6/7和103恢复报告。正常Push成功，ls-remote已独立核验与本地一致，原分支不变。
-+- 归档收尾：更新本文和Git归档报告；原未跟踪web/user_layout.py末尾多一空行，暂存区检查发现后仍发出源码提交属于本次操作疏漏，未重写历史；单独收尾提交只删除该空行，Python AST一致，无运行逻辑变化。
-+- 验证：除上述EOF外，源码与阶段七full-r6清单完全相同；沿用1356 passed / 11 failed / 1 skipped / 199 subtests、Edge120/120与32截图，本次未重复运行完整测试、不改变旧失败/Skip或正式成绩。Fixture COMPLETE、Snapshot PARTIAL、Live BLOCKED、正式103 BLOCKED不变。
-+- 保护：1892当前获准保护文件保持、原报告/截图/B/expect/旧测试不改；两份API账本仅确认验收后的追加前缀完整，未归因来源、未提交或改写，不能再将阶段七当时4056零差异表述为当前时点零差异。本任务真实API0，仅GitHub网络操作。
-+- 安全：48文件暂存内容密钥检查无命中，运行产物/SQLite/Chroma/账本/真实回复未入提交；只在本次Git进程绕过不可达本机代理，TLS验证与全局设置保持。
-+- 完整最新HEAD/收尾Push结果见现场Git及artifacts/runtime/v37-phase5-7-git-archive-20261101/verification.json；本文不会把自身提交SHA写成另一个历史HEAD。无强推、reset、clean、stash、分支切换或Merge，未进入下一阶段。
-+
+
+- 源码提交：d70fda9d7e04e8ba4595e6712ed3047dce2f1d8a，feat(v3.7): archive phases 5-7 offline implementation；48文件，包含用户界面、Developer隔离、Fixture/快照源、45新测试及阶段5/6/7和103恢复报告。正常Push成功，ls-remote已独立核验与本地一致，原分支不变。
+- 归档收尾：更新本文和Git归档报告；原未跟踪web/user_layout.py末尾多一空行，暂存区检查发现后仍发出源码提交属于本次操作疏漏，未重写历史；单独收尾提交只删除该空行，Python AST一致，无运行逻辑变化。
+- 验证：除上述EOF外，源码与阶段七full-r6清单完全相同；沿用1356 passed / 11 failed / 1 skipped / 199 subtests、Edge120/120与32截图，本次未重复运行完整测试、不改变旧失败/Skip或正式成绩。Fixture COMPLETE、Snapshot PARTIAL、Live BLOCKED、正式103 BLOCKED不变。
+- 保护：1892当前获准保护文件保持、原报告/截图/B/expect/旧测试不改；两份API账本仅确认验收后的追加前缀完整，未归因来源、未提交或改写，不能再将阶段七当时4056零差异表述为当前时点零差异。本任务真实API0，仅GitHub网络操作。
+- 安全：48文件暂存内容密钥检查无命中，运行产物/SQLite/Chroma/账本/真实回复未入提交；只在本次Git进程绕过不可达本机代理，TLS验证与全局设置保持。
+- 完整最新HEAD/收尾Push结果见现场Git及artifacts/runtime/v37-phase5-7-git-archive-20261101/verification.json；本文不会把自身提交SHA写成另一个历史HEAD。无强推、reset、clean、stash、分支切换或Merge，未进入下一阶段。
