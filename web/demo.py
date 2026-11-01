@@ -18,7 +18,7 @@ def run_step(demo, message):
         demo['error']=None
         return record, session.results[-1]
     except Exception:
-        demo['error']='执行未完成，请检查本次会话的 Trace 和模拟订单状态；没有自动重试。'
+        demo['error']='本次体验未完成，请先核对演示订单状态；没有自动重试。详细记录在开发者工作空间。'
         return None, []
 
 
@@ -26,12 +26,12 @@ def _entry():
     with st.container(key='demo_entry'):
         copy, action = st.columns([3.4, 1], gap='medium')
         copy.markdown(
-            '<div class="ta-demo-copy"><span class="ta-eyebrow">60-SECOND WALKTHROUGH</span>'
-            '<b>60 秒模拟购票演示</b>'
-            '<p>四步离线演示：查票 → 确认车次并下单 → 模拟支付 → 查单。'
-            '使用独立的模拟会话与模拟数据库，不产生模型请求、真实购票或扣款。'
+            '<div class="ta-demo-copy"><span class="ta-eyebrow">快速体验</span>'
+            '<b>四步了解购票流程</b>'
+            '<p>查票 → 确认车次并下单 → 模拟支付 → 查单。'
+            '使用独立的演示会话，不产生模型费用，不会真实出票或扣款。'
             '每一步的按钮只在对应阶段出现，失败时不会自动重试。</p></div>', unsafe_allow_html=True)
-        if action.button('开始 60 秒演示', key='demo_start', width='stretch'):
+        if action.button('开始快速体验', key='demo_start', width='stretch'):
             demo=start_demo()
             st.session_state['guided_demo']=demo
             st.session_state.setdefault('user_sessions',[]).append(demo['session'])
@@ -43,7 +43,7 @@ def _panel(demo):
     with st.container(key='demo_panel'):
         head, reset = st.columns([3, 1], gap='medium')
         head.markdown('<div class="ta-rail-head"><b>模拟购票演示</b>'
-                      '<span class="ta-demo-badge">演示 · 非真实运行</span></div>', unsafe_allow_html=True)
+                      '<span class="ta-demo-badge">演示数据 · 不真实出票或扣款</span></div>', unsafe_allow_html=True)
         if reset.button('结束演示', key='demo_reset', width='stretch'):
             st.session_state.pop('guided_demo', None)
             st.rerun()
@@ -59,7 +59,7 @@ def _panel(demo):
             if demo['trains']: demo['stage']=1; st.rerun()
             else: demo['error']='未取得可用的模拟余票，请查看执行记录或重新开始。'
         if stage==1:
-            st.caption('为保证离线规则模型与所选车次一致，演示选择查询结果中的第一趟有票车次。')
+            st.caption('本次体验使用查询结果中的第一趟有票车次，车票信息为演示数据。')
             train=demo['trains'][0]
             st.markdown(
                 f'<div class="ticket-card"><div class="tc-train"><strong>{train.get("train_no","")}</strong>'
@@ -76,7 +76,7 @@ def _panel(demo):
                 order=next((x.get('result',{}) for x in results if x.get('tool')=='create_order' and x.get('ok')),None)
                 if order and order.get('order_id') and order.get('train_no')==train['train_no']:
                     demo['order_id']=order['order_id']; demo['selected']=train['train_no']; demo['stage']=2; st.rerun()
-                else: demo['error']='未确认创建了所选车次订单；请核查 Trace 和模拟订单状态，勿重复提交。'
+                else: demo['error']='未确认创建了所选车次的演示订单，请先核对订单状态，勿重复提交。'
         if stage==2:
             st.write('待支付模拟订单：',demo['order_id'])
             if st.button('确认模拟支付',key='demo_pay'):
@@ -89,13 +89,13 @@ def _panel(demo):
             record,results=run_step(demo,'查询我的订单')
             found=next((o for x in results if x.get('tool')=='query_order' and x.get('ok') for o in x.get('result',{}).get('orders',[]) if o.get('order_id')==demo['order_id']),None)
             if found and found.get('status')=='paid':demo['stage']=4;st.rerun()
-            else:demo['error']='查询结果未确认目标订单已支付，请查看 Trace。'
+            else:demo['error']='查询结果未确认演示订单已支付，请先核对订单状态。'
         if stage==4:
             st.success('模拟订单已查询，状态为已支付；没有真实购票或扣款。')
         if session.history:
-            st.caption('以下为本演示会话的实际 Agent 记录；完整审计可在 Trace 分析中查看。')
+            st.caption('以下为本次体验的对话；技术诊断请在开发者工作空间查看。')
             for record in session.history:
-                st.write(record['user_msg'], ' → ', ' → '.join(record.get('tool_sequence',[])) or '无工具调用')
+                st.write(record['user_msg'], ' → ', record.get('reply', '回复未记录'))
 
 
 def demo_page():

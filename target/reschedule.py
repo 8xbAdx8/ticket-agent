@@ -32,7 +32,7 @@ def _calculate(db, order_id, train_no, date, seat_type):
     old_price=Decimal(str(order['amount'])); new_price=Decimal(str(new['price']))*count
     return {'order_id':order_id,'old_train':order['train_no'],'old_date':order['date'],'old_seat':order['seat_type'],
             'new_train':train_no,'new_date':date,'new_seat':seat_type,'passengers':passengers,
-            'original_amount':str(old_price),'new_amount':str(new_price),'difference':str(new_price-old_price),
+            'order_snapshot':dict(order),'target_snapshot':dict(new),'original_amount':str(old_price),'new_amount':str(new_price),'difference':str(new_price-old_price),
             'policy':['P01','P02','P03'],'note':'差额仅记录模拟应补或应退，不进行支付或退款'}
 
 
@@ -43,7 +43,7 @@ def preview(path, order_id, train_no, date, seat_type):
         return _calculate(db,order_id,train_no,date,seat_type)
 
 
-def confirm(path, proposal):
+def confirm(path, proposal, *, source=None):
     with closing(sqlite3.connect(path)) as db, db:
         db.row_factory=sqlite3.Row;db.execute('BEGIN IMMEDIATE')
         actual=_calculate(db,proposal['order_id'],proposal['new_train'],proposal['new_date'],proposal['new_seat'])
@@ -55,5 +55,10 @@ def confirm(path, proposal):
         _release(db,actual['old_train'],actual['old_date'],actual['old_seat'],json.dumps(actual['passengers'],ensure_ascii=False))
         db.execute('UPDATE orders SET train_no=?,date=?,seat_type=? WHERE order_id=?',(actual['new_train'],actual['new_date'],actual['new_seat'],actual['order_id']))
         record_id='RS'+uuid.uuid4().hex[:10]
+        actual['rescheduled_at']=config.now().isoformat()
         db.execute('INSERT INTO reschedules VALUES (?,?,?)',(actual['order_id'],record_id,json.dumps(actual,ensure_ascii=False)))
-        return {'record_id':record_id,**actual}
+        result={'record_id':record_id,**actual}
+        if source=='page':
+            from target.order_refund import page_event
+            page_event(db,'reschedule',actual['order_id'],result)
+        return result

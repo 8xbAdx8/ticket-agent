@@ -8,6 +8,8 @@ uvicorn>=0.29
 # Web 前端（选装，Streamlit 控制台）
 streamlit>=1.35
 pandas>=2.0
+# V3.7 演示订单二维码（不接真实支付）
+qrcode==8.2
 # 后续测试层（成员 B，暂不需要）
 pytest>=8.0
 # 可选：本地向量检索（RAG 进阶，需下载 bge-small-zh 模型）

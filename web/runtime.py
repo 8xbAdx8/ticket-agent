@@ -322,6 +322,34 @@ class Conversation:
         actions = getattr(engine, "pending_actions", None) if engine else None
         return actions.get(self.sid) if isinstance(actions, dict) else None
 
+    def payment_order(self, order_id):
+        """Current owned business record, independent of historical model prose."""
+        if self.read_only or not (self.root/'tickets.db').is_file():
+            return {'error': '当前会话没有可操作的演示订单'}
+        from target import mock_core
+        with CALL_LOCK, mock_core.database_scope(self.root/'tickets.db'):
+            return mock_core.query_order(order_id)
+
+    def confirm_demo_payment(self, order_id, amount, pay_type, *, confirmed=False):
+        if self.read_only or self.mode != 'user' or self.pending_action():
+            raise ValueError('当前会话不能执行演示支付')
+        if self.live and not self.full_tools:
+            raise ValueError('当前在线会话仅支持查询，不能执行演示支付')
+        if not (self.root/'tickets.db').is_file():
+            raise ValueError('当前会话没有可操作的演示订单')
+        from target.demo_payment import confirm
+        with CALL_LOCK:
+            result = confirm(self.root/'tickets.db', order_id, amount, pay_type, confirmed=confirmed)
+            if not result.get('error'):
+                current = self.payment_order(order_id)
+                # Separate display receipt, never rewrite public Trace/results.
+                from web.payment import save_receipt
+                try:
+                    save_receipt(self, current)
+                except (OSError, ValueError):
+                    self.persistence_warning = '演示支付已记录，但刷新展示快照未保存；请保留当前会话并核对订单。'
+            return result
+
     def confirm_action(self, approved, request_id,*,followup_authorized=False):
         if self.read_only:raise ValueError('历史回放不能恢复旧操作授权')
         if type(approved) is not bool:

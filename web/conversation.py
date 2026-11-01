@@ -10,6 +10,7 @@ from web.design import header, empty, escape, PROCESSING, processing_event
 from web.runtime import Conversation, operation_kind, live_ready, failure_hint, tool_failure_hint
 from web.presentation import ticket_cards, order_card, policy_cards, TOOL_LABELS
 from web import run_view, scroll_bridge
+from web import user_copy
 
 QUICK_PROMPTS = (
     ("查余票", "查明天上海到杭州的高铁二等座"),
@@ -36,27 +37,24 @@ def unsafe_ticket_result(session, record):
 
 def show_guarded_reply(session, record):
     if unsafe_ticket_result(session,record):
-        st.warning('本轮查票结果与模拟数据库不一致，已暂停展示车次，请在 Trace 中核查原始证据。')
+        st.warning('本次回答与查票记录不一致，已暂停展示车次。请在开发者工作空间核查；不要据此订票。')
     else:
         st.write(record['reply'])
 
 
 def _policy_evidence(hits):
-    """Real document id / version / location / text, or an explicit gap."""
-    with st.expander('政策证据 · 文档编号 / 版本 / 位置 / 原文', expanded=False):
+    """保留可供用户核对的条款；检索分数和技术位置在开发者端查看。"""
+    with st.expander('参考政策原文', expanded=False):
+        st.caption('政策来源：项目内示例政策，仅供演示。')
         if not hits:
-            st.caption('未记录：本轮 search_policy 没有返回可引用的政策片段，证据不足。')
-            return
+            st.caption('本轮没有可引用的政策内容，证据不足。')
         for hit in hits:
-            st.markdown('**' + escape(hit.get('doc_id') or '未记录') + '** · 版本 '
-                        + escape(hit.get('version') or '未记录'))
-            score = hit.get('score')
-            st.caption('来源位置：' + str(hit.get('source') or '未记录')
-                       + ' · 检索分数：' + (str(score) if score is not None else '未记录'))
+            st.write(str(hit.get('doc_id') or '编号未记录') + ' · '
+                     + str(hit.get('title') or '标题未记录'))
             st.write(hit.get('content') or '原文未记录')
 
 
-def show_business(results):
+def show_business(results, session=None):
     successful=[r for r in results if r.get("ok") and isinstance(r.get("result"),dict)]
     if not successful:
         return
@@ -65,17 +63,24 @@ def show_business(results):
         hits=last['result'].get('hits') or []
         if hits:
             st.markdown(policy_cards(last["result"]),unsafe_allow_html=True)
-        st.caption("来源：本地模拟政策文档；引用编号与位置来自 search_policy 的实际返回。")
+        st.caption("政策来源：项目内示例政策，仅供演示；请核对引用原文。")
         _policy_evidence(hits)
     elif last["tool"] in ("create_order","pay_order","cancel_order","query_order"):
         result=last["result"]
         for item in result.get("orders",[result] if result.get("order_id") else []):
+            from web.payment import current_order, controls
+            item, verified = current_order(session, item)
+            from web.order_actions import replay_order,card_actions
+            item=replay_order(session,item)
             st.markdown(order_card(item),unsafe_allow_html=True)
+            controls(session, item, verified=verified)
+            card_actions(session,item,verified)
     elif last["tool"]=="query_tickets":
-        st.markdown(ticket_cards(last["result"]),unsafe_allow_html=True)
+        st.markdown('<div data-source-tool="' + escape(last['tool']) + '">'
+                    + ticket_cards(last["result"]) + '</div>', unsafe_allow_html=True)
         if not last["result"].get("trains"):
-            st.info("没有符合条件的模拟班次。")
-        st.caption("以上为 query_tickets 本轮实际返回，最多展示 20 条；缺失字段保持“未提供”，不补造。")
+            st.info("没有符合条件的班次，请调整路线、日期或席别后再查。")
+        st.caption("车票信息：当前使用演示数据，最多展示20条；未提供的信息不作推断，不提供真实出票服务。")
 
 
 def _followup_lifecycle(session, run_id, kind, **fields):
@@ -100,9 +105,7 @@ def execute(session, message, request_id, origin=None,confirmation=None):
     previous_run=(session.audits[-1].get('trace_id') if session.audits else None)
     def update(event):
         seen.append(event)
-        placeholder.markdown(processing_event(event) if event.get('event_type','').startswith('followup_') else
-                             '<div class="ta-live">'+run_view.phase_at(event,seen[:-1])+'</div>',
-                             unsafe_allow_html=True)
+        placeholder.markdown(user_copy.processing_markup(event), unsafe_allow_html=True)
         from web.policy_interaction import policy_view
         view=policy_view(session.sid,event.get('run_id'),events=seen)
         if view['status']!='not_searched':
@@ -118,7 +121,7 @@ def execute(session, message, request_id, origin=None,confirmation=None):
         from target.reply_consistency import failure_notice
         notice=failure_notice(session.error["category"]) if session.error else None
         detail=tool_failure_hint(session)
-        st.error((detail or notice or "请求未完成；未自动重试。")+(" 错误类别："+session.error["category"] if session.error else "请核对模式与输入。"))
+        st.error(user_copy.error_message(session.error['category'] if session.error else None))
     finally:
         if session.audits and session.audits[-1].get('trace_id')!=previous_run:
             st.session_state['user_focus_run']=(session.sid,session.audits[-1]['trace_id'])
@@ -159,36 +162,37 @@ def _policy_status_markup(view):
             '<span class="ta-policy-dot"></span>'+escape(view.get('status_label','检索状态未记录'))+'</div>')
 
 
-def _policy_panel(view):
-    """Only this turn's recorded retrieval; no document lookup or reply parsing."""
-    hits=view.get('evidence') or []
+def _policy_panel(view, *, technical=True):
+    """保留原诊断组件的默认能力；用户页面显式选择简化展示。"""
+    hits = view.get('evidence') or []
     if not hits:
-        st.markdown(_policy_status_markup(view),unsafe_allow_html=True)
-        if view.get('reason'):st.caption(view['reason'])
+        st.markdown(_policy_status_markup(view), unsafe_allow_html=True)
+        if view.get('status') == 'not_searched':
+            st.caption('本轮没有查询政策。')
+        elif view.get('reason'):
+            st.caption('本轮没有可确认的政策内容。请补充问题或稍后重试。')
+        if technical:
+            st.json(view, expanded=False)
         return
-    label=('已检索知识库' if view.get('status')=='retrieved' else
-           str(view.get('status_label') or '检索状态未记录')+' · 含本轮较早返回的证据')
-    with st.expander(label+' · '+str(len(hits))+' 条证据',expanded=False):
-        if view.get('status')!='retrieved':
-            st.warning('本轮最近一次检索未确认成功；下面保留较早实际返回的文档，不能当作最近检索成功。')
-            if view.get('reason'):st.caption(view['reason'])
-        st.caption('检索命中不等于支持最终回答。引用内容与结论的对应关系尚未验证。')
-        st.caption('本轮 run_id / Trace ID：'+str(view.get('run_id') or '未记录'))
-        if view.get('read_incomplete'):st.warning('部分旁证无法读取或超出范围；缺失信息不作推断。')
+    label = ('政策检索失败 · 本轮较早的参考政策' if view.get('status') == 'failed' else
+             '本轮参考政策' if view.get('status') == 'retrieved' else '本轮政策查询未确认成功 · 参考内容')
+    with st.expander(label + ' · ' + str(len(hits)) + ' 条', expanded=False):
+        st.caption('政策来源：项目内示例政策，仅供演示，不代表现行铁路或航空规定。')
+        if view.get('status') != 'retrieved':
+            st.warning('最近一次政策查询未确认成功；以下为本轮较早返回的内容。')
+        st.caption('找到相关条款不等于回答已被验证，请核对原文和适用条件。')
+        if view.get('read_incomplete'):
+            st.warning('部分记录无法读取，缺失信息不作推断。')
         for hit in hits:
-            st.write('**'+str(hit.get('doc_id') or '未记录')+' · '+str(hit.get('title') or '标题未记录')+'**')
-            st.caption('版本：'+str(hit.get('version') or '未记录')+' · 模式：'+
-                {'keyword':'Keyword','vector':'Vector','hybrid':'Hybrid'}.get(hit.get('mode'),'未记录')+
-                ' · 排名：'+str(hit['rank'] if hit.get('rank') is not None else '未记录')+
-                ' · 分数：'+str(hit['score'] if hit.get('score') is not None else '未记录'))
-            st.write(hit.get('content') or '政策原文未记录')
-            st.caption('原文位置：'+str(hit.get('source') or '未记录'))
-            entered=hit.get('entered_context')
-            st.caption('本轮回答上下文：'+('已记录进入模型请求' if entered is True else '已记录未进入' if entered is False else '未记录')+
-                       ' · 支持最终结论：尚未验证')
-            st.caption('关联事件：'+'、'.join(str(x) for x in hit.get('event_ids',[]) if x) if hit.get('event_ids') else '关联事件：未记录')
-        with st.expander('本轮详细证据记录（本页查看）'):
-            st.json(view,expanded=False)
+            st.write('**' + str(hit.get('doc_id') or '编号未记录') + ' · '
+                     + str(hit.get('title') or '标题未记录') + '**')
+            st.write(hit.get('content') or '原文未记录')
+            if technical:
+                st.caption('版本：' + str(hit.get('version') or '未记录') + ' · 分数：'
+                           + str(hit['score'] if hit.get('score') is not None else '未记录'))
+                st.caption('支持最终结论：尚未验证')
+        if technical:
+            st.json(view, expanded=False)
 
 
 def _queue_followup(sid, run_id, question):
@@ -202,6 +206,9 @@ def _followup_suggestions(session, record, view, offered=None):
     if not saved:return  # Old history has no saved recommendations; no regeneration.
     asked={normal(h['user_msg']) for h in session.history}
     suggestions=[q for q in saved['suggestions'] if normal(q) not in asked]
+    # These two existing actions now live on the authoritative order card, with
+    # a shared explicit consent and the same atomic backend payment service.
+    suggestions=[q for q in suggestions if q not in ('使用支付宝支付','使用微信支付')]
     suggestions=[q for q in suggestions if offered is None or q not in offered]
     if not suggestions:return
     if offered is not None:offered.update(suggestions)
@@ -220,20 +227,15 @@ def _followup_suggestions(session, record, view, offered=None):
             fallback_reason=saved.get('fallback_reason'),next_run_id=None)
     with st.container(key='policy_followups_'+str(view.get('run_id'))):
         st.markdown('**你可能还想了解**')
-        st.caption('模型推荐 · 已保存，本页回放不调用模型' if saved['generation_source']=='model' else
-                   '操作型推荐 · 依据本轮真实工具结果；点击仍走原有确认流程' if saved['generation_source']=='action_rule' else
-                   '规则推荐 · 基于本轮执行证据，不增加模型请求')
+        st.caption('根据本轮已有信息整理；点击后将作为一条新消息发送，仍需完成必要的操作确认。')
         for n,question in enumerate(suggestions):
             st.button(question,key='policy_followup_'+session.sid+'_'+str(view.get('run_id'))+'_'+str(n),
                       on_click=_queue_followup,args=(session.sid,view.get('run_id'),question),
                       disabled=not ready,width='stretch')
+        if session.live:
+            st.caption('点击追问与普通消息一样计费；回答后整理追问可能额外使用一次模型服务。')
         if session.live and not ready:
-            st.caption('请检查 DeepSeek 配置并完成待确认操作。' if session.live_provider=='deepseek' else
-                       '先在输入区确认真实请求费用，并完成待确认操作。点击追问将按普通消息计费。')
-        with st.expander('追问生成记录',expanded=False):
-            st.caption('生成来源：'+saved['generation_source']+' · 回退原因：'+str(saved.get('fallback_reason') or '无'))
-            st.caption('run_id：'+saved['run_id']+' · 规则版本：'+saved['prompt_version'])
-            st.json(saved,expanded=False)
+            st.caption('请检查在线服务是否可用，并先完成待确认操作。')
 
 
 def _consume_followup(session, busy):
@@ -243,8 +245,7 @@ def _consume_followup(session, busy):
     if request.get('sid')!=session.sid or busy:
         st.info('会话已切换或存在待确认操作，尚未发送这条追问。');return None
     if session.live and (not _live_request_allowed(session) or not live_ready(session.live_provider)):
-        st.warning('会话已切换或 DeepSeek 配置不完整；这条追问尚未发送。' if session.live_provider=='deepseek' else
-                   '请先确认真实请求费用；这条追问尚未发送。');return None
+        st.warning('当前会话或在线服务尚未就绪，这条追问没有发送。请核对当前会话和费用提示。');return None
     from target.followups import normal
     for record in session.history:
         saved=session.followups_for(record)
@@ -296,90 +297,41 @@ def _open_user_run(sid, run_id):
 
 
 def _run_rail(session, events):
-    """Right rail: compact five-stage summary; full evidence stays folded."""
+    """保留本轮状态与历史选择；原始事件和审计在开发者端查看。"""
     with st.container(key='user_rail'):
+        st.markdown('<div class="ta-rail-head"><b>本次处理</b><span>来自本轮记录</span></div>', unsafe_allow_html=True)
         if not session.audits:
-            st.markdown('<div class="ta-rail-head"><b>本次运行</b><span>尚未开始</span></div>',unsafe_allow_html=True)
-            st.markdown('<p class="ta-rail-empty">发送一句话后，这里会按真实事件显示查票、检索政策、等待确认和执行的阶段，'
-                        '以及每次工具调用的状态与耗时。</p>',unsafe_allow_html=True)
-            st.markdown('<p class="ta-rail-empty">缺少执行记录时显示“未记录”，不据此推断“未发生”。</p>',
-                        unsafe_allow_html=True)
+            st.caption('发送消息后，这里显示查询与订单处理的进度。')
             return
-        st.markdown('<div class="ta-rail-head"><b>本次运行</b><span>来自本轮记录</span></div>',unsafe_allow_html=True)
-        index=len(session.audits)-1
-        if len(session.audits)>1:
-            index=st.selectbox('历史运行',range(len(session.audits)),index=index,
-                format_func=lambda n:str(n+1)+' · '+str(session.audits[n].get('trace_id') or '未记录'),
-                key='user_run_'+session.sid)
-        selected=session.audits[index];run_id=selected.get('trace_id')
-        events,meta=run_view.load_events(session.trace_dir,run_id,session.sid)
-        historical=session.read_only or index!=len(session.audits)-1
-        st.markdown(run_view.phase_strip(run_view.phase_states(events)),unsafe_allow_html=True)
+        index = len(session.audits) - 1
+        if len(session.audits) > 1:
+            index = st.selectbox('历史运行', range(len(session.audits)), index=index,
+                                 format_func=lambda n: '第' + str(n + 1) + '次处理',
+                                 key='user_run_' + session.sid)
+        selected = session.audits[index]
+        run_id = selected.get('trace_id')
+        events, meta = run_view.load_events(session.trace_dir, run_id, session.sid)
+        historical = session.read_only or index != len(session.audits) - 1
+        st.markdown(user_copy.phase_markup(run_view.phase_states(events)), unsafe_allow_html=True)
         if meta.get('invalid') or meta.get('truncated'):
-            st.warning('事件文件不完整；未读取的部分不能视为未发生。')
+            st.warning('部分处理记录无法读取，请核对订单状态。')
         if historical:
-            st.caption('历史回放 · 只读；以下为已保存事件，不会调用模型或执行工具。')
+            st.caption('正在查看已保存的历史记录；不会重新执行操作或产生模型费用。')
         if not events:
-            st.caption('本次运行没有可读的事件文件；阶段显示为未记录，不能据此推断执行结果。')
-        st.markdown('<div class="ta-rail-sub">工具调用</div>'+run_view.call_list(run_view.call_rows(events)),
-                    unsafe_allow_html=True)
-        if not historical:
-            _followup_lifecycle_panel(session, events)
+            st.caption('暂无可确认的处理进度，不能据此判断操作成功。')
+        st.button('在开发者端查看此运行', key='user_to_trace_' + session.sid,
+                  on_click=_open_user_run, args=(session.sid, run_id))
         if selected.get('error') or selected.get('contract_returned') is False:
-            st.caption('本次运行未返回成功契约；上方保留本次异常事件，不复用上一条成功 Trace。')
-            return
-        record=selected.get('public_trace')
-        if not isinstance(record,dict):
-            st.caption('本次返回值未记录。')
-            return
-        if not all(key in record for key in ('tool_sequence','finish_reason','total_latency_ms')):
-            st.caption('本次公共 Trace 字段未记录；仅展示上方已保存的事件和审计旁证。')
-            return
-        with st.expander('执行记录与 Trace 证据',expanded=False):
-            st.caption(('历史回放 · 只读' if historical else '当前运行')+' · session_id '+session.sid)
-            st.caption('run_id / Trace ID：'+str(run_id or '未记录')+' · '+str(selected.get('timestamp') or '时间未记录'))
-            st.caption('以下按已保存的事件时间回放；未记录时间时保留文件顺序。模型信息仅含可核验的输入、工具选择及回复。')
-            from target.diagnostics import sanitize
-            for number,event in enumerate(events,1):
-                with st.expander(f"{number:02} · "+run_view.event_headline(event)):
-                    st.caption('event_id '+str(event.get('event_id') or '未记录')+' · parent_event_id '+str(event.get('parent_event_id') or '未记录 / 根事件'))
-                    st.caption('时间：'+str(event.get('timestamp') or '未记录'))
-                    if event.get('event_type')=='rag_result':
-                        st.caption('语料版本：'+str(event.get('corpus_version') or '未记录')+' · 索引版本：'+str(event.get('index_version') or '未记录'))
-                        for hit in event.get('documents') or []:
-                            st.markdown('**'+str(hit.get('doc_id') or '未记录')+' · '+str(hit.get('title') or '标题未记录')+'**')
-                            st.caption('模式 '+str(event.get('mode') or '未记录')+' · 文档版本 '+str(hit.get('version') or '未记录')+' · 分数 '+str(hit.get('score') if hit.get('score') is not None else '未记录'))
-                            st.write(hit.get('content') or '原文未记录')
-                    st.json(sanitize(event),expanded=False)
-            st.button('在开发者端查看此运行',key='user_to_trace_'+session.sid,
-                      on_click=_open_user_run,args=(session.sid,run_id))
-            st.write(" → ".join(record["tool_sequence"]) or "本轮未调用工具")
-            st.caption(f"结束原因 {record['finish_reason']} · {record['total_latency_ms']} ms；stop 仅表示循环结束。")
-            for step in record.get('steps',[]):
-                for call in step.get('calls',[]):
-                    latency=call.get('latency_ms')
-                    st.caption(f"{call.get('tool','未知工具')} · Trace 返回 {'成功' if call.get('ok') is True else '失败' if call.get('ok') is False else '未知'} · 耗时 {str(latency)+' ms' if isinstance(latency,(int,float)) else '未记录'}；是否实际执行以旁证为准。")
-            matching=selected
-            if matching:
-                from web.run_evidence import policy_evidence
-                evidence=policy_evidence(matching,session.results[-1])
-                if evidence:
-                    st.write('本轮政策引用与检索关联')
-                    st.json(evidence,expanded=False)
-                from web.trace_view import timeline_items
-                for event in timeline_items(matching,record):
-                    if event['kind'] in ('模型/规则输出','参数校验旁证','实际执行','未执行（含拦截）','执行状态未知','公共 Trace 工具调用'):
-                        st.write(event['kind']+' · '+event['title'])
-                        st.json(sanitize(event['data']), expanded=False)
-            else:
-                st.caption('没有可关联的审计旁证；不能推断工具执行状态。')
+            st.caption('本次处理未完成，请核对订单状态；不会用上次成功的结果代替本次结果。')
+            with st.expander('技术诊断说明（开发者）', expanded=False):
+                st.caption('本次运行未返回成功契约；不复用上一条成功 Trace。完整诊断在开发者工作空间。')
 
 
 def _hero():
-    st.markdown('<div class="ta-welcome"><div class="ta-eyebrow">YOUR JOURNEY, TRACEABLE</div>'
+    st.markdown('<div class="ta-welcome"><div class="ta-eyebrow">出行，从这里开始</div>'
                 '<h2>下一段旅程，<br>从一句话开始。</h2>'
-                '<p>查询模拟余票、完成模拟购票、核对政策原文。每一步工具调用都从本轮真实记录读出，'
-                '可追溯到 Trace，不补造缺失字段。</p></div>',unsafe_allow_html=True)
+                '<p>查车票、问政策、查看订单，用一句话告诉我。'
+                '当前使用演示数据和示例政策，不提供真实出票服务。</p></div>',unsafe_allow_html=True)
 
 
 def _quick_prompts():
@@ -399,10 +351,10 @@ def _summary_markup(summary):
     return ('<div class="ta-summary">'
             '<div class="ta-summary-top">'
             f'<span class="ta-mode ta-mode-current">{escape(summary.get("mode_label") or "未记录")}</span>'
-            f'<code title="{escape(run_id)}">{escape(short)}</code>'
-            f'<span class="ta-status ta-status-{tone}">{escape(status)}</span>'
+            f'<span data-run-id="{escape(run_id)}"></span>'
+            f'<span class="ta-status ta-status-{tone}">{escape('本轮处理结束' if status == '已完成' else status)}</span>'
             '</div>'
-            f'<div class="ta-summary-line">{escape(run_view.run_summary_line(summary))}</div>'
+            '<div class="ta-summary-line">本轮结果仅供演示，不代表已出票或真实支付。</div>'
             '</div>')
 
 
@@ -443,18 +395,18 @@ def _conversation(session):
                 with st.chat_message("assistant",avatar=":material/smart_toy:"):
                     show_guarded_reply(session,previous)
                     view=_turn_policy(session,previous)
-                    _policy_panel(view)
+                    _policy_panel(view, technical=False)
                     if not unsafe_ticket_result(session,previous):
                         _followup_suggestions(session,previous,view,None if index==len(session.history)-1 else offered)
         if session.history and not session.error:
             if not unsafe_ticket_result(session,session.history[-1]):
                 # Policy evidence now lives under its own answer, including history.
-                show_business([r for r in session.results[-1] if r.get('tool')!='search_policy'])
+                show_business([r for r in session.results[-1] if r.get('tool')!='search_policy'], session)
             record=session.history[-1]
             if any(name in record['tool_sequence'] for name in ('monitor_seat','lock_seat','create_order','pay_order','cancel_order')):
-                st.info('本轮操作发生在模拟票务沙箱；未购买真实车票，也没有真实扣款。')
+                st.info('本轮仅处理演示订单，不会真实出票或扣款。')
             if any(not c["ok"] for s in record["steps"] for c in s["calls"]):
-                st.warning("本轮存在失败的工具调用，请在工作台保存执行证据。")
+                st.warning("本轮有操作未成功，请核对订单状态；详细原因可在开发者工作空间查看。")
         if not session.history and not session.pending_action() and not st.session_state.get('guided_demo'):
             st.markdown('<p class="ta-chat-empty">对话会显示在这里；也可以先点上面的快捷问题，或从左侧选择模型新建会话。</p>',
                         unsafe_allow_html=True)
@@ -464,10 +416,11 @@ def _confirm_cards(session, action, pending, pending_here):
     """Confirmation cards belong to the conversation column, above the composer."""
     if action:
         with st.container(border=True,key='action_confirm'):
-            st.markdown("**请确认模型提出的模拟操作**")
+            st.markdown("**请确认本次操作**")
             st.write("操作：" + TOOL_LABELS.get(action['tool'], action['tool']))
-            st.json(action['args'], expanded=True)
-            st.caption("仅操作当前模拟数据库；确认只适用于上面列出的这一次工具调用。")
+            for label, value in user_copy.operation_details(action['args']):
+                st.write(label + '：', value)
+            st.caption("仅处理演示数据，不会真实出票或扣款；本次确认只适用于上面列出的操作。")
             yes, no = st.columns(2)
             approved = yes.button("确认此模拟操作", type="primary", width="stretch")
             declined = no.button("取消此模拟操作", width="stretch")
@@ -490,8 +443,8 @@ def _confirm_cards(session, action, pending, pending_here):
             if orders:
                 st.markdown(order_card(orders[-1]),unsafe_allow_html=True)
             else:
-                st.caption("尚无可核对的订单金额；具体结果以工具返回为准。")
-            st.caption("可能改变当前隔离模拟库的库存或订单状态，不涉及真实购票或扣款。取消/退票费用按后端实际政策计算。后端原有授权、身份及幂等校验继续生效。")
+                st.caption("尚无可核对的订单金额，请在继续前确认订单信息。")
+            st.caption("本次仅改变演示订单状态，不会真实出票或扣款。取消和退票费用按项目示例政策计算。")
             yes,no=st.columns(2)
             if yes.button("确认执行模拟操作",type="primary",width="stretch"):
                 st.session_state.pop("pending_operation",None)
@@ -509,7 +462,7 @@ def _composer(session, live_name):
     between the transcript and the run-detail panel."""
     with st.container(key='user_compose'):
         if session.live:
-            st.caption('当前为 '+live_name+' 在线模式，发送请求会产生 API 费用。')
+            st.caption('当前使用 '+live_name+' 在线服务。发送主问题会产生模型使用费用；回答后整理追问可能额外使用一次模型服务，点击追问按新消息计费。费用仅属于当前会话所用服务。')
             allow_live=True
         else:
             allow_live=False
@@ -519,7 +472,7 @@ def _composer(session, live_name):
                 placeholder="例如：查明天上海到杭州的高铁二等座",label_visibility="collapsed")
             send=row[1].form_submit_button("发送",key='user_send_'+st.session_state['user_submit_nonce'],
                 type="primary",disabled=session.read_only or session.live and not live_ready(session.live_provider))
-            st.caption("查票、问政策可直接发送；锁座、下单、支付、退票会先请你确认。所有票务、订单与支付均为模拟。")
+            st.caption("查票、问政策可直接发送；锁座、下单、支付、退票会先请你确认。车票和订单均为演示数据，支付仅模拟状态，不会真实扣款。")
     return message, send, allow_live
 
 
@@ -574,15 +527,15 @@ def user_page():
             if a.get('trace_id')==focus[1]),max(0,len(session.audits)-1))
     st.query_params['session_id']=session.sid
     if st.session_state.pop('restore_notice',None):st.info('未找到完整的本地会话索引，已新建会话；原文件未修改。')
-    if session.read_only:st.info('已从本地证据恢复历史会话（只读）。不会调用模型、执行工具或恢复旧操作授权；继续操作请新建会话。')
+    if session.read_only:st.info('已打开保存的历史会话，仅供查看，不会重新执行操作或产生模型费用。继续使用请新建会话。')
     if session.persistence_warning:st.warning(session.persistence_warning)
     live_name="Qwen3.8-Flash" if session.live_provider=="bailian" and session.live_model=="qwen3.8-flash" else session.live_model or "Qwen (兼容旧配置)" if session.live_provider=="bailian" else "DeepSeek"
-    mode_badge=(live_name+" Live · 模拟票务" if session.live and session.full_tools
-                else live_name+" Live · 只读" if session.live else "离线 Mock")
-    header("出行助手","用一句话查模拟余票、订票、查政策；每一步工具调用状态都来自本轮真实事件。",mode_badge)
+    mode_badge=(live_name+" 在线 · 演示订单" if session.live and session.full_tools
+                else live_name+" 在线 · 仅查询" if session.live else "离线演示")
+    header("出行助手","查车票、问政策、查看订单，用一句话开始。",mode_badge)
     if (session.engine,session.live,session.live_provider)!=(st.session_state['default_engine'],st.session_state['default_live'],st.session_state.get('default_provider','deepseek')):
-        st.info('正在查看历史会话，当前使用 '+(live_name+' Live' if session.live else '离线 Mock')+'；左侧模型用于新建会话。')
-    st.caption("真实模型负责理解与工具选择；所有票务数据为模拟。Qwen3.8-Flash已有V3.5真实闭环记录，DeepSeek有历史证据；新会话不等于已验证成功。" if session.live else "当前使用离线规则模型，不产生模型 API 费用。支持 8 个模拟工具。")
+        st.info('正在查看历史会话，当前使用 '+(live_name+' 在线服务' if session.live else '离线演示')+'；左侧模型用于新建会话。')
+    st.caption("车票信息使用演示数据，政策使用项目内示例条款；订单不真实出票，支付不会真实扣款。" if session.live else "当前为离线演示，不产生模型费用。车票为演示数据，政策为示例条款，不真实出票或扣款。")
 
     action = session.pending_action()
     pending=st.session_state.get("pending_operation")
@@ -601,12 +554,12 @@ def user_page():
     _run_summary_bar(session, audit, events, mode_badge)
 
     if session.error:
-        st.error((tool_failure_hint(session) or failure_hint(session.error['category']))+' 错误类别：'+session.error['category'])
+        st.error(user_copy.error_message(session.error['category']))
         from web.policy_interaction import policy_view
         failed_policy=policy_view(session.sid,(audit or {}).get('trace_id'),events=events,audit=audit)
         if failed_policy['has_recorded_retrieval']:
             st.caption('最近未完成请求的知识库记录；不是上一条成功回答的证据。')
-            _policy_panel(failed_policy)
+            _policy_panel(failed_policy, technical=False)
 
     if st.session_state.get('user_compose_session')!=session.sid:
         st.session_state['user_allow_embedding']=False
@@ -617,7 +570,8 @@ def user_page():
     def _chat_body():
         if welcome:
             _hero()
-            _quick_prompts()
+            from web.user_features import shortcuts
+            shortcuts(session.sid)
         if (welcome or st.session_state.get('guided_demo')) and not session.read_only:
             from web.demo import demo_page
             demo_page()
@@ -641,85 +595,46 @@ def user_page():
         if not session.read_only:_confirm_cards(session, action, pending, pending_here)
         return _composer(session, live_name)
 
-    if session.history or action or session.audits:
-        main, rail = st.columns([1.95,1],gap='large')
-        with main:
-            message, send, allow_live = _column_body()
-        with rail:
-            # Compact right rail: five-stage summary visible; full Trace stays
-            # behind the "执行记录与 Trace 证据" expander.
-            _run_rail(session, events)
-    else:
+    main, rail = st.columns([1.95,1],gap='large')
+    with main:
         message, send, allow_live = _column_body()
+    with rail:
+        from web.user_features import render
+        render(session)
+        _run_rail(session, events)
 
     if session.read_only:return
 
     if session.live:
-        with st.expander('高级设置 · 政策检索与联网',expanded=False):
+        with st.expander('高级设置 · 政策查询与费用',expanded=False):
             session.rag_mode=st.selectbox('政策检索方式',['keyword','hybrid','vector'],key='user_rag_mode')
-            session.allow_rag_network=st.checkbox('允许本轮RAG调用真实Embedding（可能产生费用；仅发送问题时执行）',key='user_allow_embedding')
-            st.caption('本地累计请求次数不设上限；订单和支付均为模拟，单轮步数与超时保护仍然生效。')
+            session.allow_rag_network=st.checkbox('允许本轮联网查询政策向量（可能产生额外费用；仅发送问题时执行）',key='user_allow_embedding')
+            st.caption('此选项只授权政策查询所需的向量服务费用，不改变订单操作确认；当前政策仍为项目内示例条款。')
 
     if session.live and not live_ready(session.live_provider):
-        st.info(live_name+" 未配置完整或本次为离线验收。可查看历史证据；不会自动切换 Mock。")
-    with st.expander('更多模拟工具 · 行李费用 / 高铁改签'):
-        st.caption('以下两项直接调用既有模拟业务函数，不经过模型；结果只作用于当前隔离模拟库。')
-        with st.expander('模拟行李费用计算（高铁政策 P06）'):
-            st.caption('输入一名旅客携带品总重量，以及需要检查的一件物品的尺寸。只计算模拟超重费用。')
-            with st.form('baggage_calculator'):
-                person=st.selectbox('旅客类型',['成人','儿童'],key='baggage_person')
-                weight=st.text_input('携带品总重量（千克）',key='baggage_weight')
-                cols=st.columns(3)
-                length=cols[0].text_input('长（厘米）',key='baggage_length')
-                width=cols[1].text_input('宽（厘米）',key='baggage_width')
-                height=cols[2].text_input('高（厘米）',key='baggage_height')
-                calculate=st.form_submit_button('计算模拟行李费用')
-            if calculate:
-                try:
-                    from target.baggage import calculate_baggage
-                    result=calculate_baggage(person,weight,length,width,height)
-                    st.write('免费额度：'+result['free_kg']+' 千克；超重：'+result['excess_kg']+' 千克。')
-                    st.write('模拟超重费用：¥'+result['weight_fee_yuan']+'（来源：P06）')
-                    st.write('该物品尺寸总和：'+result['item_sum_cm']+' 厘米；'+result['size_status'])
-                    st.caption(result['note'])
-                except ValueError as exc:
-                    st.warning(str(exc))
-        with st.expander('模拟高铁改签（P02 / P03）'):
-            st.caption('仅操作当前会话的已支付模拟订单。差价只做记录，不进行支付或退款；改签后不支持退票。')
-            with st.form('reschedule_preview'):
-                order_id=st.text_input('模拟订单号',key='reschedule_order')
-                new_train=st.text_input('目标车次',key='reschedule_train')
-                new_date=st.text_input('目标日期（YYYY-MM-DD）',key='reschedule_date')
-                new_seat=st.selectbox('目标席别',['二等座','一等座','商务座'],key='reschedule_seat')
-                preview_clicked=st.form_submit_button('预览改签')
-            if preview_clicked:
-                st.session_state.pop('reschedule_pending',None)
-                try:
-                    from target.reschedule import preview
-                    proposal=preview(session.root/'tickets.db',order_id.strip(),new_train.strip(),new_date.strip(),new_seat)
-                    st.session_state['reschedule_pending']={'sid':session.sid,'proposal':proposal}
-                except (ValueError,TypeError) as exc:
-                    st.warning(str(exc))
-            pending_reschedule=st.session_state.get('reschedule_pending')
-            if pending_reschedule and pending_reschedule['sid']==session.sid:
-                proposal=pending_reschedule['proposal']
-                st.json(proposal)
-                yes,no=st.columns(2)
-                if yes.button('确认执行模拟改签',key='reschedule_confirm'):
-                    st.session_state.pop('reschedule_pending',None)
-                    try:
-                        from target.reschedule import confirm
-                        result=confirm(session.root/'tickets.db',proposal)
-                        st.success('模拟改签完成；差额仅作记录。')
-                        st.json(result)
-                    except (ValueError,TypeError) as exc:
-                        st.warning(str(exc))
-                if no.button('取消改签',key='reschedule_cancel'):
-                    st.session_state.pop('reschedule_pending',None)
-                    st.info('已取消，本次未改签。')
+        st.info(live_name+" 在线服务暂不可用。可以查看已保存的会话；不会自动切换到其他服务。")
+        with st.expander('服务诊断（开发者）', expanded=False):
+            st.info('不会自动切换 Mock；当前服务的配置与诊断请在开发者工作空间核对。')
+    with st.expander('更多模拟工具 · 行李费用 / 高铁改签',expanded=st.session_state.get('p3_refund_open')==session.sid):
+        st.caption('费用计算和改签仅用于演示，不会调用在线模型或产生真实交易。')
+        st.caption('行李费用与改签已移至常用功能。')
+        from web.order_actions import refund_panel,notice
+        refund_panel(session)
+        st.caption('改签请先查询演示订单，再点击订单卡片上的“改签”，无需手填订单号。')
+        notice(session)
     if send and action:
         st.warning("请先确认或取消待处理的模拟操作。")
     elif send and message.strip():
+        from web.user_features import state as feature_state
+        context=feature_state(session)
+        if context.get('selected_train') and any(w in message for w in ('订','买')):
+            t=context['selected_train'];message=f"{message}；车次{t['train_no']}，{t['date']}，{t['seat_type']}"
+        if context.get('policy_context') and not operation_kind(message,session.history) and not any(w in message for w in ('订','买')):
+            d=context['policy_context'];message+=f"；参考政策{d['doc_id']}（{d['source']}）：{d['content']}"
+        from web.order_actions import route_refund_request
+        if route_refund_request(session,message):
+            st.session_state['user_clear_input']=True
+            st.rerun()
         if session.live and not allow_live:
             st.warning("请先确认真实请求费用；尚未调用模型。")
         elif session.live and not session.full_tools and operation_kind(message, session.history):

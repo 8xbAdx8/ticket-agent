@@ -11,12 +11,13 @@ sys.path.insert(0, str(BASE))
 import streamlit as st
 import config
 from web.design import theme
+from web.user_copy import workspace_label
 
 from web.runtime import CALL_LOCK,refresh_conversations
 
 
 def main():
-    st.set_page_config(page_title="Ticket Agent · 质量工作空间", page_icon=":material/travel_explore:", layout="wide", initial_sidebar_state="expanded")
+    st.set_page_config(page_title="Ticket Agent · 出行助手", page_icon=":material/travel_explore:", layout="wide", initial_sidebar_state="auto")
     refresh_conversations(st.session_state.get('user_sessions',[])+st.session_state.get('lab_archives',[])
                           +([st.session_state['lab_session']] if 'lab_session' in st.session_state else []))
     st.set_option("client.toolbarMode","minimal")
@@ -24,17 +25,18 @@ def main():
     st.session_state.setdefault("default_engine", config.ENGINE)
     st.session_state.setdefault("theme", "浅色")
     with st.sidebar:
-        st.markdown('<div class="ta-brand"><div class="ta-logo">T</div><div><b>Ticket Agent</b><small>智能体可靠性工作空间 · 3.7</small></div></div>', unsafe_allow_html=True)
-        choices=["Legacy Mock","LangChain Mock","DeepSeek Live","Qwen3.8-Flash Live"]
-        qwen_ready=bool(os.getenv("DASHSCOPE_API_KEY","").strip())
-        initial=3 if (qwen_ready or config.PROVIDER=="bailian") else 2 if config.PROVIDER=="deepseek" else 1 if config.ENGINE=="langchain" else 0
-        selection=st.selectbox("新会话模型",choices,index=initial,key="provider_selection")
-        st.session_state["default_live"]=selection.endswith("Live")
-        st.session_state["default_engine"]="legacy" if selection=="Legacy Mock" else "langchain"
-        st.session_state["default_provider"]="bailian" if selection=="Qwen3.8-Flash Live" else "deepseek"
-        st.session_state["default_live_model"]="qwen3.8-flash" if selection=="Qwen3.8-Flash Live" else None
+        st.markdown('<div class="ta-brand"><div class="ta-logo">T</div><div><b>Ticket Agent</b><small>出行助手 · 3.7</small></div></div>', unsafe_allow_html=True)
+        with st.expander('模型设置（高级）', expanded=False):
+            choices=["Legacy Mock","LangChain Mock","DeepSeek Live","Qwen3.8-Flash Live"]
+            qwen_ready=bool(os.getenv("DASHSCOPE_API_KEY","").strip())
+            initial=3 if (qwen_ready or config.PROVIDER=="bailian") else 2 if config.PROVIDER=="deepseek" else 1 if config.ENGINE=="langchain" else 0
+            selection=st.selectbox("新会话模型",choices,index=initial,key="provider_selection")
+            st.session_state["default_live"]=selection.endswith("Live")
+            st.session_state["default_engine"]="legacy" if selection=="Legacy Mock" else "langchain"
+            st.session_state["default_provider"]="bailian" if selection=="Qwen3.8-Flash Live" else "deepseek"
+            st.session_state["default_live_model"]="qwen3.8-flash" if selection=="Qwen3.8-Flash Live" else None
         mode = st.radio("工作空间", ["出行助手", "开发者工作台", "测试工作台"], key="workspace_mode",
-                        format_func=lambda x: {"出行助手":"Agent 用户端", "开发者工作台":"Agent 开发者端", "测试工作台":"测试控制台"}[x])
+                        format_func=workspace_label)
         if mode == "测试工作台":
             page = st.radio("工作台导航", ["测试总览", "测试实验室", "Trace 分析", "质量分析", "模型对比", "RAG 知识库", "集成中心", "V3.7 离线验收"], key="workspace_page",format_func=lambda value:'离线回归中心' if value=='V3.7 离线验收' else value)
         elif mode == "开发者工作台":
@@ -43,8 +45,8 @@ def main():
             page = "出行助手"
         st.divider()
         selected_theme = st.radio("外观", ["深色", "浅色"], horizontal=True, key="theme")
-        st.caption("新会话模型："+selection+(" · 八工具模拟沙箱" if selection.endswith("Live") else ""))
-        st.caption("用户与实验会话、模拟库、Trace 分离。B 测试快照只读。")
+        st.caption("模型选项仅用于新建会话；在线服务可能产生模型使用费用。")
+        st.caption("用户空间用于出行咨询；开发者空间查看技术诊断；测试控制台独立保留。")
     theme(selected_theme)
     if page == "出行助手":
         from web.conversation import user_page
@@ -85,7 +87,7 @@ def main():
         from web.rag_page import rag_page
         sessions=st.session_state.get("user_sessions",[])+st.session_state.get("lab_archives",[])
         rag_page(sessions)
-    st.caption("Ticket Agent 3.7 · 自建模拟票务 · 正式质量评价由 B 独立提供")
+    st.caption("Ticket Agent 3.7 · 当前使用演示数据，不提供真实出票服务。")
 
 
 # Serialize rendering with calls because legacy configuration is module-scoped.

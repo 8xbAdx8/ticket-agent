@@ -219,52 +219,65 @@ def create_order(lock_id, passenger_ids, contact):
         return o
 
 
-def pay_order(order_id, pay_type="alipay"):
+def pay_order(order_id, pay_type="alipay", *, expected_amount=None):
     """模拟支付。真实项目不会接任何支付渠道，这里仅改状态。"""
     _check_fault("pay_order")
     with _conn() as c:
         o = _owned_order(c, order_id)
         if not o:
             return {"error": "订单不存在"}
+        if expected_amount is not None:
+            from target.payment_qr import yuan
+            if yuan(o['amount']) != yuan(expected_amount):
+                return {"error": "订单金额已变化，请核对后重新确认"}
         if o["status"] == "paid":
             return {"order_id": order_id, "status": "paid", "duplicate_pay": True}
         if o["status"] != "pending":
             return {"error": "当前订单状态不可支付", "status": o["status"]}
+        # Keep the original 10-column orders table and public tool schema intact.
+        # The unique order key and status update share BEGIN IMMEDIATE/rollback.
+        c.execute('''CREATE TABLE IF NOT EXISTS demo_payments (
+            order_id TEXT PRIMARY KEY, pay_type TEXT NOT NULL,
+            amount REAL NOT NULL, paid_at TEXT NOT NULL)''')
+        c.execute('INSERT INTO demo_payments VALUES (?,?,?,?)',
+                  (order_id, pay_type, o['amount'], config.now().isoformat()))
         c.execute("UPDATE orders SET status='paid' WHERE order_id=?", (order_id,))
     return {"order_id": order_id, "status": "paid", "pay_type": pay_type,
             "amount": o["amount"], "duplicate_pay": False}
 
 
-def cancel_order(order_id, reason=""):
-    """退票。手续费按政策 P01 阶梯计算（距发车时间）。"""
+def cancel_order_by_train(train_no, date, seat_type=None, passenger=None):
+    """Read-only candidate selection; even one match never cancels implicitly."""
+    from contextlib import closing
+    from target.order_refund import match
+    path=_DATABASE_OVERRIDE.get() or config.DB_PATH
+    if not path.is_file():return {"orders":[],"count":0,"message":"你没有该车次的可退订单。"}
+    with closing(sqlite3.connect(path.resolve().as_uri()+'?mode=ro',uri=True)) as c:
+        c.row_factory=sqlite3.Row
+        return match(c,train_no,date,seat_type,passenger)
+
+
+def cancel_order(order_id, reason="", *, expected=None, source=None):
+    """Original business entry; shared quote, atomic refund and inventory record."""
     _check_fault("cancel_order")
+    from target.order_refund import quote,page_event
     with _conn() as c:
-        o = _owned_order(c, order_id)
-        if not o:
-            return {"error": "订单不存在"}
-        if o["status"] not in ("paid", "pending"):
-            return {"error": "当前订单状态不可取消或退票", "status": o["status"]}
-        has_reschedules = c.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name='reschedules'").fetchone()
-        if has_reschedules and c.execute('SELECT 1 FROM reschedules WHERE order_id=?', (order_id,)).fetchone():
-            return {"error": "模拟政策 P01：已改签车票不支持退票", "policy_ref": "P01"}
-        inv = c.execute("SELECT kind,depart FROM inventory WHERE train_no=? AND date=? AND seat_type=?",
-                        (o["train_no"], o["date"], o["seat_type"])).fetchone()
-        hours = (datetime.fromisoformat(f"{o['date']} {inv['depart']}") - config.now()).total_seconds() / 3600
-        if o["status"] == "paid" and hours <= 0:
-            return {"error": "发车后不能退票"}
-        policy = "P09" if inv["kind"] == "机票" else "P01"
-        rate = (0.10 if hours > 24 else 0.30) if policy == "P09" else (0.05 if hours > 48 else (0.10 if hours >= 24 else 0.20))
-        if o["status"] == "pending":
-            rate = 0.0
-            policy = "P12"
-        fee = round(o["amount"] * rate, 2)
-        status = "refunded" if o["status"] == "paid" else "cancelled"
-        c.execute("UPDATE orders SET status=? WHERE order_id=?", (status, order_id))
-        _release(c, o["train_no"], o["date"], o["seat_type"], o["passengers"])
-        c.execute("UPDATE locks SET used=2 WHERE lock_id=?", (o["lock_id"],))
-    return {"order_id": order_id, "status": status, "amount": o["amount"],
-            "fee": fee, "refund": round(o["amount"] - fee, 2) if status == "refunded" else 0,
-            "fee_rate": rate, "policy_ref": policy}
+        o=_owned_order(c,order_id)
+        if not o:return {"error":"订单不存在"}
+        actual=quote(c,o)
+        if actual.get('error'):return actual
+        if expected is not None and actual!=expected:
+            return {"error":"订单或退票费用已变化，请重新预览"}
+        status='refunded' if o['status']=='paid' else 'cancelled'
+        result={k:v for k,v in actual.items() if k!='snapshot_sha256'}
+        result.update(status=status,refunded_at=config.now().isoformat())
+        c.execute('CREATE TABLE IF NOT EXISTS refunds (order_id TEXT PRIMARY KEY,detail TEXT NOT NULL)')
+        c.execute('INSERT INTO refunds VALUES (?,?)',(order_id,json.dumps(result,ensure_ascii=False)))
+        c.execute('UPDATE orders SET status=? WHERE order_id=?',(status,order_id))
+        _release(c,o['train_no'],o['date'],o['seat_type'],o['passengers'])
+        c.execute('UPDATE locks SET used=2 WHERE lock_id=?',(o['lock_id'],))
+        if source=='page':page_event(c,'refund',order_id,result)
+    return result
 
 
 def query_order(order_id=None, phone=None):
@@ -275,11 +288,29 @@ def query_order(order_id=None, phone=None):
     with _conn() as c:
         if order_id:
             r = _owned_order(c, order_id)
-            return dict(r) if r else {"error": "订单不存在"}
+            return _order_with_payment(c, r) if r else {"error": "订单不存在"}
         phone = phone or config.CURRENT_USER_PHONE
-        rows = [dict(r) for r in c.execute(
+        rows = [_order_with_payment(c, r) for r in c.execute(
             "SELECT * FROM orders WHERE phone=? ORDER BY created_at DESC", (phone,))]
     return {"orders": rows, "count": len(rows), "queried_phone": phone}
+
+
+def _order_with_payment(c, row):
+    result = dict(row)
+    from target.order_refund import rescheduled, exists
+    result['has_reschedules']=rescheduled(c,result['order_id'])
+    if result['has_reschedules']:
+        record=c.execute('SELECT detail FROM reschedules WHERE order_id=?',(result['order_id'],)).fetchone()
+        result['reschedule']=json.loads(record['detail'])
+    if exists(c,'refunds'):
+        record=c.execute('SELECT detail FROM refunds WHERE order_id=?',(result['order_id'],)).fetchone()
+        if record:result['refund_record']=json.loads(record['detail'])
+    if c.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name='demo_payments'").fetchone():
+        payment = c.execute('SELECT pay_type,paid_at FROM demo_payments WHERE order_id=?',
+                            (result['order_id'],)).fetchone()
+        if payment:
+            result.update(dict(payment))
+    return result
 
 
 def list_tools():

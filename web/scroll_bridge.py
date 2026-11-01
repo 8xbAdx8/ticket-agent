@@ -98,11 +98,22 @@ BRIDGE_JS = r"""
     } catch (err) { return null; }
   }
 
+  function scheduleFit() {
+    // Streamlit has not finished laying out the header/run summary when the
+    // bridge iframe first mounts. Re-fit after the next frame and after the
+    // short transition so the composer never starts below the mobile viewport.
+    try { window.parent.requestAnimationFrame(function () { fit(); }); } catch (err) {}
+    window.parent.setTimeout(function () { fit(); }, 180);
+    window.parent.setTimeout(function () { fit(); }, 600);
+    window.parent.setTimeout(function () { fit(); }, 1500);
+    window.parent.setTimeout(function () { fit(); }, 2600);
+  }
+
   window.parent.__taFit = fit;
   if (!window.parent.__taResizeBound) {
     window.parent.__taResizeBound = true;
     window.parent.addEventListener('resize', function () {
-      if (window.parent.__taFit) { window.parent.__taFit(); }
+      if (window.parent.__taFit) { scheduleFit(); }
     }, { passive: true });
   }
 
@@ -213,6 +224,7 @@ BRIDGE_JS = r"""
       return;
     }
     run(root);
+    scheduleFit();
   }
   boot();
 })();

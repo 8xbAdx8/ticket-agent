@@ -31,7 +31,7 @@ def _mode_chip(mode):
 
 
 def developer_page(sessions):
-    header('开发者工作台', '三栏围绕同一次运行：左边是这次运行实际使用的配置，中间是它的事件，右边是它的证据。', '设计 / 运行 / 证据')
+    header('开发者工作空间', '查看模型、配置、工具轨迹、费用与错误诊断。三个面板围绕同一次运行；本页配置仍为只读。', '设计 / 运行 / 证据')
     debug = st.session_state.get('developer_debug')
     available = list(sessions) + ([debug] if debug and debug not in sessions else [])
     if not available:
@@ -142,6 +142,17 @@ def developer_page(sessions):
                                    + ' · ' + str(event.get('status')))
             with st.expander('完整审计旁证'):
                 st.json(sanitize(audit), expanded=False)
+            # 用户端仅显示政策原文；完整检索与追问诊断在同一运行下只读展示。
+            from web.conversation import _turn_policy, _policy_panel, _followup_lifecycle_panel
+            public = audit.get('public_trace')
+            if isinstance(public, dict):
+                with st.expander('政策与追问诊断（原始记录）', expanded=False):
+                    _policy_panel(_turn_policy(selected, public), technical=True)
+                    saved = selected.followups_for(public)
+                    if saved:
+                        st.json(sanitize(saved), expanded=False)
+                    st.json(sanitize(audit.get('error')), expanded=False)
+            _followup_lifecycle_panel(selected, events)
         else:
             st.caption('还没有可回放的运行；先在下面执行一次独立调试，或在用户端发送一条消息。')
         st.divider()
