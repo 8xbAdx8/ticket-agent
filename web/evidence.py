@@ -177,6 +177,9 @@ def audit_batch(runtime_dirs=(),historical=False):
     rows=[]
     for e in entries:
         r=e["record"];j=r.get("judgement",{})
+        from target.execution_config import run_identity
+        identity=run_identity(r.get('trace_id'),(r.get('public_trace') or {}).get('session_id'))
+        if identity and identity.get('execution_mode')=='developer_custom':continue
         verdict=j.get("test_verdict") or j.get("quality_verdict")
         state={"pass":"passed","fail":"failed","not_applicable":"not_applicable"}.get(verdict,"indeterminate")
         rows.append({"id":r.get("trace_id","缺少 ID"),"dimension":"独立审计","status":state,"executed":[],"checks":j.get("assertions",[]),"original":r})

@@ -31,7 +31,7 @@ def _mode_chip(mode):
 
 
 def developer_page(sessions):
-    header('开发者工作空间', '查看模型、配置、工具轨迹、费用与错误诊断。三个面板围绕同一次运行；本页配置仍为只读。', '设计 / 运行 / 证据')
+    header('Agent 开发者端 · 展示我们如何设计这个 Agent', '会话实验下一轮生效；正式Baseline只读。运行、配置旁证和历史证据分开核对。', '设计 / 运行 / 证据')
     debug = st.session_state.get('developer_debug')
     available = list(sessions) + ([debug] if debug and debug not in sessions else [])
     if not available:
@@ -67,6 +67,12 @@ def developer_page(sessions):
             audit = selected.audits[run_index]
             mode = _run_mode(selected, audit, sessions, debug)
 
+    from web.developer_config import editor,historical
+    with st.expander('实时配置 · Baseline / Developer Override',expanded=True):
+        editor(selected)
+        historical(selected,audit)
+    from web.train_data import settings as train_data_settings
+    train_data_settings(selected)
     narrow = st.checkbox('纵向布局（窄屏）')
     left, middle, right = [st.container() for _ in range(3)] if narrow else st.columns([1.1, 1.35, 1.15], gap='medium')
     selected_event = None

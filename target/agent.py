@@ -17,6 +17,7 @@ from target import tools
 from target.trace import Trace
 from target.providers import get_provider
 from target.run_events import recorded_run
+from target.execution_config import bound_run
 
 SYSTEM_PROMPT = (
     "你是一个出行服务智能助手，帮助用户查询车次、抢票下单、退改签以及解答票务政策。\n"
@@ -38,7 +39,17 @@ SYSTEM_PROMPT = (
 
 
 class Agent:
-    def __init__(self, provider=None, system_prompt=SYSTEM_PROMPT, *, engine=None, model=None, tool_names=None, mutations=None):
+    def __init__(self, provider=None, system_prompt=SYSTEM_PROMPT, *, engine=None, model=None, tool_names=None, mutations=None, effective_config=None):
+        from target.execution_config import CURRENT
+        effective_config=effective_config or CURRENT.get()
+        if effective_config is not None:
+            if config.PROVIDER!=effective_config.provider:raise ValueError('执行器Provider与冻结配置不一致')
+            if effective_config.provider!='mock' and config.MODEL_NAME!=effective_config.model:raise ValueError('执行器Model与冻结配置不一致')
+            engine=effective_config.engine
+        self.effective_config=effective_config
+        if effective_config is not None:
+            system_prompt=effective_config.prompt
+            tool_names=effective_config.tool_whitelist
         self.engine = engine or config.ENGINE
         if config.PROVIDER in ("deepseek","bailian") and self.engine != "langchain":
             raise ValueError("Live Provider 只通过 langchain 引擎接入；请设置 AGENT_ENGINE=langchain")
@@ -55,7 +66,8 @@ class Agent:
         if self.engine == "langchain":
             # 延迟导入：原 V2 环境不安装 LangChain 也能继续运行。
             from target.langchain_agent import LangChainAgent
-            self.langchain_engine = LangChainAgent(system_prompt, provider=provider, model=model, tool_names=tool_names, mutations=self.mutations)
+            self.langchain_engine = LangChainAgent(system_prompt, provider=provider, model=model, tool_names=tool_names, mutations=self.mutations,
+                                                   **({'effective_config':effective_config} if effective_config is not None else {}))
             self.provider = self.langchain_engine.model
         else:
             self.provider = provider or get_provider()
@@ -84,11 +96,12 @@ class Agent:
 
     def _messages(self, session_id):
         if session_id not in self.sessions:
-            self.sessions[session_id] = [{"role": "system", "content": self.system_prompt +
+            self.sessions[session_id] = [{"role": "system", "content": self.system_prompt if self.effective_config else self.system_prompt +
                 f"\n当前北京时间日期 {config.today().isoformat()}；数据仅为虚构模拟，当前身份为本人。"}]
         return self.sessions[session_id]
 
     @recorded_run
+    @bound_run
     def chat(self, session_id, message, save_trace=True):
         if not isinstance(session_id, str) or not session_id.strip() or not isinstance(message, str) or not message.strip():
             raise ValueError("session_id 与 message 必须是非空字符串")
@@ -108,7 +121,13 @@ class Agent:
                 ACTIVE_LEGACY_RUN.reset(token)
 
     @recorded_run
+    @bound_run
     def resume_operation(self, session_id, proposal, approved, *, save_trace=True):
+        if approved and self.effective_config and self.effective_config.execution_mode=='developer_custom':
+            from target.dev_overrides import Store
+            latest=Store().load(session_id,owner=session_id)
+            if latest and latest['revision']!=self.effective_config.override_revision:
+                raise ValueError('提案配置已变更，必须取消原提案并重新生成')
         if not self.langchain_engine:
             raise ValueError("当前引擎不支持确认操作")
         if type(approved) is not bool:
@@ -128,6 +147,8 @@ class Agent:
         run=ACTIVE_LEGACY_RUN.get()
         trace.trace_id=run.run_id
         trace.provider = getattr(self.provider, "name", config.PROVIDER)
+        trace.runtime_tool_names=tuple(tools.TOOL_NAMES)
+        if self.effective_config:trace.model=self.effective_config.model
         from target.run_events import bind, emit
         bind(trace)
         messages.append({"role": "user", "content": message})
@@ -148,7 +169,8 @@ class Agent:
                             except (TypeError,ValueError):pass
                         emit('tool_result_in_model_request',call_id=prior.get('tool_call_id'),tool=prior.get('name'),**evidence)
                 model_started=time.perf_counter()
-                msg = self.provider.chat(messages, tools.TOOLS)
+                definitions=tools.TOOLS if self.effective_config is None else [t for t in tools.TOOLS if t['function']['name'] in self.effective_config.tool_whitelist]
+                msg = self.provider.chat(messages, definitions)
                 emit('model_end',tool_calls=msg.get('tool_calls') if isinstance(msg,dict) else None,
                      reply=msg.get('content') if isinstance(msg,dict) else None,
                      duration_ms=int((time.perf_counter()-model_started)*1000),

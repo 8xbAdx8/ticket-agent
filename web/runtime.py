@@ -87,8 +87,17 @@ class Conversation:
     remote_receipts: list = field(default_factory=list)
     read_only: bool = False
     persistence_warning: str | None = None
+    execution_mode: str = 'session_default'
+    effective_hash: str | None = None
+    config_cost_consent: tuple | None = None
+    config_notice: str | None = None
+    page_proposal_configs: dict = field(default_factory=dict)
+    baseline_binding: tuple = field(default_factory=tuple)
+    train_source_choice: object = None
+    last_train_query: dict | None = None
 
     def __post_init__(self):
+        if not self.baseline_binding:self.baseline_binding=(self.engine,self.live,self.live_provider,self.live_model)
         if self.mode not in ("user", "lab"):
             raise ValueError("Unknown UI mode")
         if self.mode == "user" and self.mutations:
@@ -120,6 +129,10 @@ class Conversation:
     def send(self,message,request_id,event_callback=None,*,followup_authorized=False,followup_origin=None,confirmation=None):
         if self.read_only:raise ValueError('历史恢复为只读，请新建会话后执行')
         self.error=None
+        if followup_authorized and self.live:
+            candidate=self.resolve_config()
+            if candidate and candidate.provider==self.live_provider:
+                self.config_cost_consent=(self.sid,candidate.provider,candidate.override_revision)
         origin=followup_origin or {}
         from target.run_events import capture,emit
         try:
@@ -248,6 +261,23 @@ class Conversation:
     def _send(self, message, request_id, decision=None):
         if request_id in self.receipts:
             return self.receipts[request_id]
+        effective=self.resolve_config()
+        if effective:
+            previous=getattr(self.agent,'effective_config',None) if self.agent else None
+            if self.pending_action() and previous and previous.config_hash!=effective.config_hash:
+                if decision is not None and decision.get('approved') is False:effective=previous
+                else:raise ValueError('待确认提案绑定旧配置，请先取消原提案再重新生成')
+            selected_live=effective.provider!='mock'
+            old_provider=self.live_provider if self.live else 'mock'
+            if selected_live and old_provider!=effective.provider:
+                self.live=True;self.live_provider=effective.provider;self.live_model=effective.model;self.engine='langchain'
+                self.config_cost_consent=None
+                self.config_notice='服务已切换为 '+effective.provider+'；本次未发送。请返回用户端核对当前会话费用提示，再明确发送。'
+                raise ValueError(self.config_notice)
+            if selected_live and self.config_cost_consent!=(self.sid,effective.provider,effective.override_revision):
+                raise ValueError('当前Provider/会话/配置版本未获得本轮费用授权；未发送')
+            self.live=selected_live;self.engine=effective.engine
+            if selected_live:self.live_provider=effective.provider;self.live_model=effective.model
         if self.live and not live_ready(self.live_provider):
             raise ValueError("Live 未配置或本轮已禁止联网；没有发送请求")
         if not isinstance(message, str) or not message.strip():
@@ -269,14 +299,18 @@ class Conversation:
             if self.rag_mode is not None:env['AGENT_RAG_MODE']=self.rag_mode
             env['RAG_ALLOW_NETWORK']='1' if self.allow_rag_network else '0'
             env["TICKET_CASE_ID"]=self.case_id or "interactive"
-        elif self.engine=="langchain" and any(self.mutations.get(k) for k in ("skip_lock","infinite_loop")):
+        if effective:
+            env['AGENT_RAG_MODE']=effective.rag_mode
+            env['RAG_ALLOW_NETWORK']='1' if effective.allow_embedding else '0'
+        if not self.live and self.engine=="langchain" and any(self.mutations.get(k) for k in ("skip_lock","infinite_loop")):
             # Existing sandbox guard, only for the offline Mock test environment.
             env.update(DEEPSEEK_LIVE_TEST_PROFILE="full_sandbox", DEEPSEEK_SANDBOX_DIR=str(self.root),
                        DEEPSEEK_BUDGET_PATH=str(self.root/"requests.db"), DEEPSEEK_MAX_REQUESTS="5")
         if self.mode == "user" and self.interactive and self.live and self.full_tools:
             env["TICKET_CONFIRM_MODEL_ACTIONS"]="1"
         self.error=None
-        with scoped(self._values(),env):
+        from target.train_source import conversation_scope,selected,load_fixture
+        with scoped(self._values(),env),conversation_scope(self):
             try:
                 self.root.mkdir(parents=True,exist_ok=True)
                 self.trace_dir.mkdir(exist_ok=True)
@@ -286,16 +320,27 @@ class Conversation:
                         raise ValueError('已有数据库不能自动转换为全工具沙箱')
                     if not marker.exists():
                         marker.write_text(json.dumps({"purpose":"ticket-agent-fault-test","version":1,"simulated_only":True}),encoding="utf-8")
-                if not config.DB_PATH.exists():
+                if selected().mode=='fixture':load_fixture()
+                if selected().mode!='fixture' and config.USE_HTTP_MOCK:raise ValueError('快照查询需要当前本地执行器，不通过旧HTTP Mock传递来源配置')
+                if selected().mode=='fixture' and not config.DB_PATH.exists():
                     from data.seed import build_db
                     with contextlib.redirect_stdout(io.StringIO()):
                         build_db(config.DB_PATH)
-                if self.agent is None:
+                if self.agent is None or effective and self.effective_hash!=effective.config_hash:
+                    old_agent=self.agent
                     kwargs={"engine":self.engine,"mutations":dict(self.mutations)}
+                    if effective:kwargs['effective_config']=effective
                     if not self.live and self.engine=="legacy":
                         from target.providers import MockProvider
                         kwargs["provider"]=MockProvider(mutations=dict(self.mutations))
                     self.agent=Agent(**kwargs)
+                    if old_agent and effective:
+                        if not old_agent.langchain_engine and not self.agent.langchain_engine and self.sid in old_agent.sessions:
+                            self.agent.sessions[self.sid]=[{'role':'system','content':effective.prompt},*old_agent.sessions[self.sid][1:]]
+                        elif old_agent.langchain_engine and self.agent.langchain_engine:
+                            previous=old_agent.langchain_engine.graph.get_state({'configurable':{'thread_id':self.sid}}).values
+                            if previous.get('messages'):self.agent.langchain_engine.graph.update_state({'configurable':{'thread_id':self.sid}},{'messages':previous['messages']},as_node='model')
+                    self.effective_hash=effective.config_hash if effective else None
                 cursor=turn_cursor(self.agent,self.sid)
                 record=(self.agent.resume_operation(self.sid,decision["proposal"],decision["approved"])
                         if decision is not None else self.agent.chat(self.sid,message))
@@ -316,6 +361,70 @@ class Conversation:
                     self.audits.append(self.agent.last_audit_report)
                 raise
 
+    def resolve_config(self):
+        from target.dev_overrides import Store
+        from target.execution_config import resolve_effective_config
+        if self.execution_mode=='session_default' and Store().load(self.sid,owner=self.sid) is None:return None
+        engine,live,provider,model=self.baseline_binding
+        return resolve_effective_config(self.sid,'baseline' if self.execution_mode=='baseline' else 'developer_custom',engine=engine,
+            provider=provider if live else 'mock',model=model if live else None,full_tools=self.full_tools,allow_embedding=self.allow_rag_network)
+
+    def baseline_settings(self):
+        from target.dev_overrides import defaults
+        engine,live,provider,model=self.baseline_binding
+        return defaults(engine,provider if live else 'mock',model if live else None)
+
+    def set_train_source(self,choice):
+        with CALL_LOCK:return self._set_train_source(choice)
+
+    def _set_train_source(self,choice):
+        from dataclasses import asdict
+        from target.train_source import validate_choice
+        if self.read_only or self.execution_mode=='baseline':raise ValueError('只读历史或正式Baseline不能修改数据来源')
+        if self.pending_action():raise ValueError('请先取消待确认提案，再切换数据来源')
+        validate_choice(choice)
+        self.root.mkdir(parents=True,exist_ok=True)
+        with (self.root/'data-source-selections.jsonl').open('a',encoding='utf-8') as f:
+            from datetime import datetime,timezone
+            f.write(json.dumps({'session_id':self.sid,'choice':asdict(choice),'event':'user_selected_data_source','request_sent':False,'created_at':datetime.now(timezone.utc).isoformat()},ensure_ascii=False)+'\n')
+        self.train_source_choice=choice
+        self.agent=None;self.effective_hash=None;self.last_train_query=None
+        self.page_proposal_configs.clear()
+        self.config_notice='车次数据来源已切换；下一轮生效，请重新查询。原历史保留，旧工具结果不作为新来源的交易依据。'
+
+    def train_source_hash(self):
+        from dataclasses import asdict
+        from target.dev_overrides import digest
+        return digest(asdict(self.train_source_choice)) if self.train_source_choice is not None else None
+
+    def assert_page_allowed(self,tools,*,confirmed=False):
+        from target.train_source import source_scope,assert_demo_acquisition,SourceChoice
+        choice=SourceChoice() if self.execution_mode=='baseline' else self.train_source_choice
+        if any(t in ('monitor_seat','lock_seat','create_order') for t in tools):
+            with source_scope(choice):assert_demo_acquisition()
+        from target.execution_config import scope,tool_denial
+        effective=self.resolve_config()
+        if effective is None:return
+        with scope(effective,confirmed=confirmed):
+            for name in tools:
+                reason=tool_denial(name)
+                if reason:raise ValueError(reason)
+
+    def bind_page_proposal(self,proposal):
+        from target.dev_overrides import digest
+        effective=self.resolve_config()
+        identity=effective.config_hash if effective else None
+        if self.train_source_choice is not None:identity=digest({'config':identity,'data_source':self.train_source_hash()})
+        self.page_proposal_configs[digest(proposal)]=identity
+
+    def assert_page_proposal(self,proposal):
+        from target.dev_overrides import digest
+        effective=self.resolve_config()
+        identity=effective.config_hash if effective else None
+        if self.train_source_choice is not None:identity=digest({'config':identity,'data_source':self.train_source_hash()})
+        if (effective or self.train_source_choice is not None) and self.page_proposal_configs.get(digest(proposal))!=identity:
+            raise ValueError('页面预览对应配置已变更，请取消原预览并重新生成')
+
 
     def pending_action(self):
         engine = self.agent.langchain_engine if self.agent else None
@@ -331,6 +440,7 @@ class Conversation:
             return mock_core.query_order(order_id)
 
     def confirm_demo_payment(self, order_id, amount, pay_type, *, confirmed=False):
+        self.assert_page_allowed(['pay_order'],confirmed=confirmed)
         if self.read_only or self.mode != 'user' or self.pending_action():
             raise ValueError('当前会话不能执行演示支付')
         if self.live and not self.full_tools:

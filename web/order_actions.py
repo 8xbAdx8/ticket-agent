@@ -62,6 +62,9 @@ def replay_order(session, order):
 
 def execute(session, kind, proposal, *, confirmed=False):
     if confirmed is not True:raise ValueError('请先明确确认本次操作')
+    if hasattr(session,'assert_page_allowed'):
+        session.assert_page_allowed(['cancel_order'] if kind=='refund' else ['lock_seat','create_order'],confirmed=confirmed)
+        session.assert_page_proposal(proposal)
     with CALL_LOCK:
         path=database(session,write=True)
         with mock_core.database_scope(path):
@@ -139,6 +142,7 @@ def change_panel(session, order):
             try:
                 with CALL_LOCK:p=reschedule.preview(database(session),order['order_id'],train,day,seat)
                 st.session_state['p3_proposal']={'signature':signature,'value':p}
+                if hasattr(session,'bind_page_proposal'):session.bind_page_proposal(p)
             except ValueError as e:st.warning(str(e))
         saved=st.session_state.get('p3_proposal') or {}
         if saved.get('signature')==signature:
@@ -183,6 +187,7 @@ def refund_panel(session):
         signature=(session.sid,selected,request['args'])
         if st.button('预览退票费用',key='p3_refund_preview_'+session.sid):
             st.session_state['p3_refund_quote']={'signature':signature,'value':q}
+            if hasattr(session,'bind_page_proposal'):session.bind_page_proposal(q)
         saved=st.session_state.get('p3_refund_quote') or {}
         if saved.get('signature')!=signature:return
         q=saved['value']

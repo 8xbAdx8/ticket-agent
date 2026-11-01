@@ -10,6 +10,8 @@ def parse_formal_results(data, audits, session_id):
     except (UnicodeError,ValueError): raise ValueError('文件必须是 UTF-8 JSON') from None
     if not isinstance(payload,dict) or payload.get('schema')!='ticket-agent-b-formal-results/1': raise ValueError('缺少受支持的 schema')
     meta=payload.get('batch')
+    if isinstance(meta,dict) and (meta.get('execution_mode') not in (None,'baseline') or meta.get('config_source') not in (None,'baseline')):
+        raise ValueError('Developer Experiment不能导入正式成绩')
     if not isinstance(meta,dict) or any(not isinstance(meta.get(k),str) or not meta[k].strip() for k in ('batch_id','git_sha','provider','model','mode')): raise ValueError('批次信息不完整')
     if not re.fullmatch(r'[0-9a-fA-F]{40}',meta['git_sha']):raise ValueError('git_sha 必须是完整 40 位 SHA')
     expected_mode={'deepseek_live':'live','bailian_live':'live','mock':'mock','langchain_mock':'mock'}.get(meta['provider'])
@@ -30,6 +32,14 @@ def parse_formal_results(data, audits, session_id):
         seen.add(case)
         audit=trace_index.get(trace)
         if not audit:excluded.append({'case_id':case,'trace_id':trace,'reason':'当前会话未找到对应 Trace'});continue
+        from target.execution_config import run_identity
+        identity=run_identity(trace,session_id)
+        if identity and identity.get('execution_mode')=='developer_custom':
+            excluded.append({'case_id':case,'trace_id':trace,'reason':'Developer Experiment · Non-Baseline，禁止计入正式成绩'});continue
+        if identity and identity.get('execution_mode')!='baseline':
+            excluded.append({'case_id':case,'trace_id':trace,'reason':'该新运行未经过正式Baseline入口，不能计入正式成绩'});continue
+        if identity and identity.get('execution_mode')=='baseline' and (not identity.get('batch_id') or any(meta.get(k)!=identity.get(k) for k in ('batch_id','baseline_id','fixture_id','config_source')) or identity.get('override_revision')!=0):
+            excluded.append({'case_id':case,'trace_id':trace,'reason':'Baseline批次、Fixture或配置身份不完整/不匹配'});continue
         public=audit.get('public_trace') or {}
         if public.get('session_id')!=session_id or audit.get('provider')!=meta['provider'] or audit.get('model')!=meta['model']:
             excluded.append({'case_id':case,'trace_id':trace,'reason':'会话、Provider 或模型不匹配'});continue

@@ -104,6 +104,15 @@ def _owned_order(c, order_id):
 # ---------------- 工具实现 ----------------
 
 def query_tickets(from_city, to_city, date, seat_type=None, kind=None):
+    from target.train_source import query_tickets as query
+    result=query(from_city,to_city,date,seat_type,kind,fixture_backend=_query_fixture_inventory)
+    # Existing fixture callers retain their exact tool-result shape.
+    if result['data_source']['mode']=='fixture' and 'error' not in result:
+        return {'trains':result['trains'],'count':result['count']}
+    return result
+
+
+def _query_fixture_inventory(from_city, to_city, date, seat_type=None, kind=None):
     """查询指定日期的车次与余票。date 必须是 YYYY-MM-DD。"""
     _check_fault("query_tickets")
     sql = "SELECT kind,train_no,from_city,to_city,date,depart,arrive,seat_type,price,seats_left FROM inventory WHERE 1=1"
@@ -129,6 +138,8 @@ def query_tickets(from_city, to_city, date, seat_type=None, kind=None):
 def monitor_seat(train_no, date, seat_type, duration_min=30):
     """订阅指定车次余票监控（模拟候补）。"""
     _check_fault("monitor_seat")
+    from target.train_source import assert_demo_acquisition
+    assert_demo_acquisition()
     task_id = "MON" + uuid.uuid4().hex[:8]
     with _conn() as c:
         r = c.execute(
@@ -152,6 +163,8 @@ def monitor_seat(train_no, date, seat_type, duration_min=30):
 def lock_seat(train_no, date, seat_type, passengers):
     """锁座：占住座位并返回有时效的 lock_id。"""
     _check_fault("lock_seat")
+    from target.train_source import assert_demo_acquisition
+    assert_demo_acquisition()
     if not isinstance(passengers, list) or not passengers:
         return {"error": "passengers 必须是非空数组"}
     with _conn() as c:
@@ -188,6 +201,8 @@ def lock_seat(train_no, date, seat_type, passengers):
 def create_order(lock_id, passenger_ids, contact):
     """凭 lock_id 创建订单。幂等：同一 lock_id 重复调用只生成一个订单。"""
     _check_fault("create_order")
+    from target.train_source import assert_demo_acquisition
+    assert_demo_acquisition()
     if contact != config.CURRENT_USER_PHONE:
         return {"error": "仅可为当前模拟用户创建订单"}
     with _conn() as c:

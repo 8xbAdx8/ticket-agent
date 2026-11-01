@@ -99,7 +99,6 @@ input,textarea,[data-baseweb="select"]>div,[data-baseweb="input"],[data-baseweb=
 .st-key-user_chat_scroll.st-key-user_chat_scroll{overflow-y:auto!important;overflow-x:hidden!important;padding-right:6px;scroll-behavior:auto}
 /* Streamlit puts the fixed height on the wrapper, not on the keyed block.
    CSS is only the fallback; the bridge measures the real chrome height. */
-[data-testid="stLayoutWrapper"]:has(> .st-key-user_chat_scroll){height:clamp(260px,calc(100vh - 420px),560px)!important}
 .st-key-user_chat_scroll:has(.st-key-turn_0){border:1px solid var(--ta-border);border-radius:14px;background:var(--ta-panel);padding:10px 14px}
 .st-key-turn_0,.st-key-turn_1,.st-key-turn_2,.st-key-turn_3{scroll-margin-top:8px}
 [class*="st-key-turn_"]{border-radius:10px;transition:background .35s ease}

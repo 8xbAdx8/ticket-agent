@@ -19,6 +19,8 @@ from target import tools, providers
 from target.trace import Trace
 from target.langchain_model import LangChainMockModel
 from target.write_authorization import denial, purchase_clarification, privacy_denial
+from target.execution_config import bound_run,CURRENT
+from target.run_events import recorded_run
 
 READ_ONLY_TOOLS = ("query_tickets", "search_policy")
 CONFIRMATION_TTL_SECONDS = 600
@@ -114,6 +116,9 @@ class ContractMiddleware(AgentMiddleware):
         for m in response.result:
             for call in m.tool_calls:
                 emit('model_tool_proposed',tool=call['name'],args=call['args'],call_id=call['id'])
+                from target.execution_config import tool_denial
+                reason=tool_denial(call['name'],check_confirmation=False)
+                if reason:emit('config_permission_denied','blocked',tool=call['name'],call_id=call['id'],executed=False,reason=reason)
             ctx.fault_run.model_requests.append({"model_step":ctx.model_calls,
                 "tool_calls":copy.deepcopy(m.tool_calls),"final_text":m.text if not m.tool_calls else None})
             usage = getattr(m,"usage_metadata",None) or {}
@@ -158,7 +163,8 @@ class ContractMiddleware(AgentMiddleware):
                 run.emit(write_fault,status="blocked",reason=sandbox_block,call_id=call["id"])
 
         # Ownership is independent of a model decision or an exact-proposal approval.
-        pre_block = privacy_denial(original['name'], original['args'], ctx.user_message)
+        from target.execution_config import tool_denial
+        pre_block = tool_denial(original['name'],check_confirmation=False) or privacy_denial(original['name'], original['args'], ctx.user_message)
         missing_fields = []
         if (not pre_block and ctx.deepseek_settings and ctx.deepseek_settings.profile == 'full_sandbox'
                 and original['name'] in tools.TOOL_NAMES):
@@ -227,7 +233,8 @@ class ContractMiddleware(AgentMiddleware):
                         from target.rag_service import scope
                         with scope(trace_id=ctx.trace.trace_id,session_id=ctx.trace.session_id,
                                    provider=ctx.trace.provider,call_id=call["id"]):
-                            response = handler(actual_request)
+                            from target.execution_config import approved as config_approval
+                            with config_approval(approved):response = handler(actual_request)
                     finally:
                         tools.DISPATCH_OBSERVER.reset(token)
                     try:
@@ -319,7 +326,13 @@ def adapt_tool(name: str) -> StructuredTool:
 
 
 class LangChainAgent:
-    def __init__(self, system_prompt: str, *, provider=None, model=None, tool_names=None, mutations=None):
+    def __init__(self, system_prompt: str, *, provider=None, model=None, tool_names=None, mutations=None, effective_config=None):
+        effective_config=effective_config or CURRENT.get()
+        if effective_config:
+            system_prompt=effective_config.prompt;tool_names=effective_config.tool_whitelist
+            if config.PROVIDER!=effective_config.provider:raise ValueError('执行器Provider与冻结配置不一致')
+            if effective_config.provider!='mock' and config.MODEL_NAME!=effective_config.model:raise ValueError('执行器Model与冻结配置不一致')
+        self.effective_config=effective_config
         if config.PROVIDER not in ("mock","openai","deepseek","bailian"):
             raise ValueError("AGENT_PROVIDER 只支持 mock/openai/deepseek/bailian")
         if providers.MUTATIONS or getattr(provider,"mutations",{}):
@@ -328,7 +341,7 @@ class LangChainAgent:
             raise ValueError("AGENT_LC_TOOLSET 只支持 read_only/all")
         names = tuple(tool_names) if tool_names is not None else (
             tuple(tools.TOOL_NAMES) if config.LC_TOOLSET == "all" else READ_ONLY_TOOLS)
-        if not names or len(set(names)) != len(names) or set(names)-set(tools.TOOL_NAMES):
+        if (not names and effective_config is None) or len(set(names)) != len(names) or set(names)-set(tools.TOOL_NAMES):
             raise ValueError("LangChain 工具必须是现有八个工具的非空、不重复子集")
         self.tool_names = names
         from target.fault_injection import normalize
@@ -352,7 +365,7 @@ class LangChainAgent:
         elif config.PROVIDER == "mock":
             self.model = LangChainMockModel(decision_provider=provider or providers.MockProvider(mutations={}))
         elif self.live_runtime:
-            self.model = self.live_runtime.make_model(self.deepseek_settings)
+            self.model = self.live_runtime.make_model(self.deepseek_settings,**({'temperature':effective_config.temperature} if effective_config and effective_config.temperature is not None else {}))
         else:
             if not config.API_KEY:
                 raise ValueError("OpenAI 风格 LangChain Live 需要 AGENT_API_KEY；DeepSeek 使用独立 DEEPSEEK_API_KEY")
@@ -361,23 +374,14 @@ class LangChainAgent:
                                     timeout=30,max_retries=0)
         self.provider_name = config.PROVIDER+"_live" if self.live_runtime else (
             "langchain_mock" if config.PROVIDER == "mock" else "langchain_live")
-        if self.deepseek_settings and self.deepseek_settings.profile == "read_only":
-            from target.deepseek_runtime import READ_ONLY_PROMPT
-            # 不继承通用订票/支付指令，避免与只读能力冲突。
-            system_prompt = READ_ONLY_PROMPT
-            import os
-            if os.getenv('TICKET_API_VALIDATION_PROFILE')=='v352':
-                system_prompt+='\n本轮是政策验收。政策问题应交给search_policy，question保留用户原句；证据不足明确无法确认，不添加无来源期限、金额或限制。'
+        from target.prompt_config import compose
+        import os
+        self.effective_prompt=effective_config.prompt if effective_config else compose(system_prompt,'langchain',
+            read_only=bool(self.deepseek_settings and self.deepseek_settings.profile=='read_only'),
+            validation=os.getenv('TICKET_API_VALIDATION_PROFILE')=='v352')
         self.checkpointer = InMemorySaver()
         self.graph = create_agent(model=self.model, tools=[adapt_tool(n) for n in names],
-                                  system_prompt=system_prompt+f"\n当前北京时间日期 {config.today().isoformat()}；业务全部虚构。"
-                                  + ("" if self.deepseek_settings and self.deepseek_settings.profile == "read_only" else
-                                  "\n写操作必须获得本轮明确授权；订票不包含支付。锁座一轮至多一次成功，下单必须用本轮成功 lock_id。"
-                                  "支付/退票使用用户指定或最近工具结果订单；不明确时先澄清。"
-                                  "\n这是隔离的虚构票务沙箱，不连接真实售票或支付。当前模拟账户的联系号码为 "
-                                  + config.CURRENT_USER_PHONE + "；仅使用用户明确提供的模拟乘客姓名。"
-                                  "用户在多轮对话中分别明确选择车次、席别和乘客时，可依据用户的订票意图和已有查询结果尝试锁座；不得猜测缺失信息，创建订单要等用户明确确认下单。"
-                                  "候补工具仅返回模拟任务，不会后台持续监控或推送通知，不得声称会自动通知。"),
+                                  system_prompt=self.effective_prompt,
                                   middleware=[ContractMiddleware()],context_schema=TurnContext,
                                   checkpointer=self.checkpointer)
         self.threads: set[str] = set()
@@ -386,16 +390,22 @@ class LangChainAgent:
         self.pending_deadlines = {}
         self.pending_sources = {}
 
+    @recorded_run
+    @bound_run
     def chat(self, session_id: str, message: str, *, save_trace=True, resume_decision=None) -> dict[str,Any]:
         trace = Trace(session_id,message)
         from target.run_events import bind
         trace.requested_at = datetime.now(timezone.utc).isoformat()
         self.last_live_run = None
         trace.provider = self.provider_name
+        trace.runtime_tool_names=self.tool_names
+        if self.effective_config:trace.model=self.effective_config.model
         bind(trace)
         limit = min(config.MAX_STEPS,self.deepseek_settings.max_model_calls) if self.deepseek_settings else config.MAX_STEPS
         import os
         action_confirmation = os.getenv("TICKET_CONFIRM_MODEL_ACTIONS") == "1" and bool(self.deepseek_settings) and self.deepseek_settings.profile == "full_sandbox"
+        from target.execution_config import CONFIRMED
+        if self.effective_config and self.effective_config.execution_mode=='developer_custom' and not CONFIRMED.get():action_confirmation=True
         context = TurnContext(trace,message,limit,confirm_model_actions=action_confirmation,deepseek_settings=self.deepseek_settings,
                               purchase_tools_available={"lock_seat","create_order"} <= set(self.tool_names))
         from target.fault_injection import FaultRun

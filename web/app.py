@@ -87,7 +87,8 @@ def main():
         from web.rag_page import rag_page
         sessions=st.session_state.get("user_sessions",[])+st.session_state.get("lab_archives",[])
         rag_page(sessions)
-    st.caption("Ticket Agent 3.7 · 当前使用演示数据，不提供真实出票服务。")
+    if page != '出行助手':
+        st.caption("Ticket Agent 3.7 · 当前使用演示数据，不提供真实出票服务。")
 
 
 # Serialize rendering with calls because legacy configuration is module-scoped.

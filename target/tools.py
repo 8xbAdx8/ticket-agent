@@ -229,6 +229,11 @@ def dispatch(name, args):
         validate(name, args)
         emit('parameter_validation','passed',tool=name)
         diagnostic["validation"]={"status":"valid","validated_args":copy.deepcopy(args)}
+        from target.execution_config import tool_denial
+        denied=tool_denial(name)
+        if denied:
+            emit('config_permission_denied','blocked',tool=name,reason=denied,executed=False)
+            raise ValueError(denied)
         diagnostic["backend_executed"]=True
         emit('tool_start',tool=name,args=args)
         result = _call_http(name, args) if config.USE_HTTP_MOCK else _call_local(name, args)

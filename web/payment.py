@@ -83,7 +83,8 @@ def controls(session, order, *, verified=False, namespace=""):
             st.warning('演示二维码暂时无法生成，订单未支付；仍可在下方确认演示支付。')
         st.warning('演示二维码，扫码不会真实扣款。')
         st.caption('扫码只显示订单识别信息，不会通知本应用。请回到这里确认演示支付；无需连接支付宝或微信。')
-        key = session.sid+'_'+order['order_id']+'_'+str(order['amount'])+namespace
+        frozen=session.resolve_config() if hasattr(session,'resolve_config') else None
+        key = session.sid+'_'+order['order_id']+'_'+str(order['amount'])+('_cfg'+frozen.config_hash[:12] if frozen else '')+namespace
         consent = st.checkbox('我确认仅演示支付，不会真实扣款', key='payment_consent_'+key)
         selected = st.selectbox('扫码后的演示支付方式', ['alipay','wechat'],
                                format_func=lambda x: '支付宝' if x=='alipay' else '微信',

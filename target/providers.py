@@ -196,6 +196,8 @@ class MockProvider:
 
         # 3) 查过票且用户要买：有票才锁座，无票只能候补
         if last == "query_tickets" and is_action:
+            if _last_tool_result(messages,'query_tickets').get('data_source',{}).get('mode') in ('snapshot','live'):
+                return _as_msg('该查询来源仅供查看。请先切回固定演示数据并重新查询，演示操作不会真实锁座、出票或扣款。',[])
             trains = [t for t in _last_tool_result(messages, "query_tickets").get("trains", [])
                       if t.get("seats_left", 0) > 0]
             if trains and mut.get("skip_lock"):
@@ -307,6 +309,9 @@ class MockProvider:
                 legacy_event("no_citation",[h["doc_id"] for h in hits[:2]],[],stage="legacy_reply")
             return f"{body}{cite}"
         if kind == "query_tickets":
+            if r.get('data_source'):
+                from target.train_source import summary
+                return summary(r)
             trains = r.get("trains", [])
             if not trains:
                 return "没有符合条件的车次或航班；请确认路线、日期和席别，或换席别查询。空结果不能用于判断库存是否耗尽。"

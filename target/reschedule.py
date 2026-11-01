@@ -44,6 +44,8 @@ def preview(path, order_id, train_no, date, seat_type):
 
 
 def confirm(path, proposal, *, source=None):
+    from target.train_source import assert_demo_acquisition
+    assert_demo_acquisition()
     with closing(sqlite3.connect(path)) as db, db:
         db.row_factory=sqlite3.Row;db.execute('BEGIN IMMEDIATE')
         actual=_calculate(db,proposal['order_id'],proposal['new_train'],proposal['new_date'],proposal['new_seat'])

@@ -12,6 +12,9 @@ NAMES=('查余票','问政策','看订单','退票费率','行李费用','改签
 
 def state(session):
     s=st.session_state.setdefault('features_'+session.sid,{})
+    source_hash=session.train_source_hash() if hasattr(session,'train_source_hash') else None
+    if s.get('data_source_hash')!=source_hash and not session.read_only:
+        s.pop('tickets',None);s.pop('selected_train',None);s['data_source_hash']=source_hash
     if session.read_only and hasattr(session,'results'):
         for batch in session.results:
             for row in batch:
@@ -24,7 +27,8 @@ def open_panel(sid,name):
     st.session_state.pop('p3_reschedule',None)
 
 def shortcuts(sid):
-    for col,name in zip(st.columns(4),NAMES[:4]):col.button(name,key='feature_quick_'+name,on_click=open_panel,args=(sid,name))
+    with st.container(key='user_shortcuts'):
+        for col,name in zip(st.columns(4),NAMES[:4]):col.button(name,key='feature_quick_'+name,on_click=open_panel,args=(sid,name))
 
 def query(session,message,tool):
     if session.read_only:raise ValueError('历史会话只读，请新建会话执行查询')
@@ -32,8 +36,11 @@ def query(session,message,tool):
         from web.conversation import _live_request_allowed
         from web.runtime import live_ready
         if not _live_request_allowed(session) or not live_ready(session.live_provider):raise ValueError('当前会话或在线服务未就绪，未发送请求')
+        candidate=session.resolve_config()
+        if candidate and candidate.provider==session.live_provider:
+            session.config_cost_consent=(session.sid,candidate.provider,candidate.override_revision)
     result=session.send(message,uuid.uuid4().hex)
-    events=[r for r in session.results[-1] if r.get('tool')==tool and r.get('ok')]
+    events=[r for r in session.results[-1] if r.get('tool')==tool and (r.get('ok') or tool=='query_tickets' and r.get('result',{}).get('data_source'))]
     if not events:raise ValueError('本轮未取得所需工具的成功结果，请查看运行记录')
     return events[-1]['result']
 
@@ -52,13 +59,16 @@ def ticket_search_panel(session):
         elif seat not in ({'高铁':['二等座','一等座','商务座'],'机票':['经济舱','公务舱']}[kind]):st.warning('席别与交通方式不兼容，请重新选择')
         else:
             try:s['tickets']=query(session,f'查{day.isoformat()}{origin}到{dest}的{kind}{seat}','query_tickets')
-            except ValueError as e:st.warning(str(e))
+            except Exception:
+                if session.last_train_query:s['tickets']=session.last_train_query
+                else:st.warning('本轮查询未完成，请核对数据来源和运行记录。')
     if 'tickets' in s:
-        st.caption('车票信息：当前使用演示数据，不提供真实出票服务。')
+        from web.train_data import source_status
+        source_status(s['tickets'])
         trains=s['tickets'].get('trains',[])
-        if not trains:st.info('没有符合条件的演示车次。')
+        if not trains and not s['tickets'].get('data_source'):st.info('没有符合条件的演示车次。')
         for i,t in enumerate(trains):
-            st.markdown(ticket_cards({'trains':[t]}),unsafe_allow_html=True)
+            st.markdown(ticket_cards({'trains':[t],'data_source':s['tickets'].get('data_source')}),unsafe_allow_html=True)
             if st.button('选择这个车次',key='ft_pick_'+session.sid+'_'+str(i)):
                 s['selected_train']=t
         if s.get('selected_train'):
@@ -136,7 +146,8 @@ def my_orders_panel(session):
             if s.get('pay_order')==o['order_id']:controls(session,o,verified=not session.read_only,namespace="_center")
         card_actions(session,o,not session.read_only,namespace="_center")
         if o['actions']['refund']['allowed'] and allowed(session):
-            if st.button('预览退票',key='fo_refund_'+o['order_id']):s['refund_quote']=o['refund_quote']
+            if st.button('预览退票',key='fo_refund_'+o['order_id']):
+                s['refund_quote']=o['refund_quote'];session.bind_page_proposal(o['refund_quote'])
             q=s.get('refund_quote')
             if q and q['order_id']==o['order_id']:
                 st.write('手续费：',q['fee'],'退款：',q['refund'])

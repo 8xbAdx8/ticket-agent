@@ -54,6 +54,8 @@ def ticket_cards(result):
     if not trains:
         return ""
     cards = []
+    source=result.get('data_source') or {}
+    source_label=('SYNTHETIC_TEST_FIXTURE · 非真实数据' if source.get('classification')=='SYNTHETIC_TEST_FIXTURE' else '历史快照 · 非实时余票') if source.get('mode')=='snapshot' else '演示数据 · 不真实出票'
     for t in trains:
         stock = t.get("seats_left")
         if type(stock) in (int, float):
@@ -62,7 +64,7 @@ def ticket_cards(result):
             label, sold = "余票未提供", False
         price = "票价未提供" if t.get("price") is None else "¥" + str(t["price"])
         cards.append(f'''<div class="ticket-card">
-          <div class="tc-train"><strong>{escape(t.get('train_no') or '车次未提供')}</strong><div class="muted">演示数据 · 不真实出票</div></div>
+          <div class="tc-train"><strong>{escape(t.get('train_no') or '车次未提供')}</strong><div class="muted">{escape(source_label)}</div></div>
           <div class="tc-route"><b>{escape(t.get('depart') or '—')} <span class="tc-arrow">→</span> {escape(t.get('arrive') or '—')}</b>
             <div class="muted">{escape(t.get('from_city') or '—')} → {escape(t.get('to_city') or '—')} · {escape(_duration(t))}</div></div>
           <div class="tc-seat"><b>{escape(t.get('seat_type') or '席别未提供')}</b><div class="muted">{escape(t.get('date') or '日期未提供')}</div></div>

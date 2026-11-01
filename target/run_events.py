@@ -24,6 +24,9 @@ def bind(trace):
     state.update(run_id=trace.trace_id,session_id=trace.session_id,provider=trace.provider,model=trace.model,
                  last=None,sequence=0,ids=set(),proposals={},tools={},retrievals={},current_tool=None,
                  tool_failed=False)
+    state['_trace']=trace
+    from target.execution_config import snapshot
+    snapshot(trace)
     emit('user_input',input=trace.user_msg);emit('agent_start')
     if state.get('confirmation'):
         emit('user_confirmation','approved' if state['confirmation']['approved'] else 'declined',
@@ -49,7 +52,7 @@ def recorded_run(function):
     @wraps(function)
     def wrapped(self,*args,**kwargs):
         values=sig.bind(self,*args,**kwargs).arguments
-        if ACTIVE.get() is not None or values.get('save_trace',True) is False:
+        if ACTIVE.get() is not None or values.get('save_trace',True) is False and getattr(self,'effective_config',None) is None:
             return function(self,*args,**kwargs)
         import config
         with capture(config.TRACE_DIR/'run_events.jsonl'):
@@ -67,6 +70,9 @@ def recorded_run(function):
 def emit(kind,status='recorded',**fields):
     state=ACTIVE.get()
     if state is None or state['run_id'] is None:return None
+    if kind=='model_start' and isinstance(fields.get('system_prompt'),str):
+        from target.execution_config import snapshot
+        snapshot(state['_trace'],fields['system_prompt'])
     from target.diagnostics import sanitize
     call_id=fields.get('call_id')
     tool=fields.get('tool')

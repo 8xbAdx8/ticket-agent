@@ -64,6 +64,15 @@ def sanitize(value):
 
 
 def authority_snapshot(path):
+    from target.train_source import external_authority
+    external=external_authority()
+    demo=_demo_authority_snapshot(path)
+    if external is not None:
+        return {**demo,**external}
+    return demo
+
+
+def _demo_authority_snapshot(path):
     """只读获取权威车次及业务不变量；不执行过期回收或写事务。"""
     try:
         uri=Path(path).resolve().as_uri()+"?mode=ro"

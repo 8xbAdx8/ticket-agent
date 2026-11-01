@@ -76,25 +76,15 @@ BRIDGE_JS = r"""
   }
 
   function fit() {
+    // Grid/Flex owns all container sizing. Only expose the dynamic visual
+    // viewport (including the mobile keyboard) as a CSS input.
     try {
+      var viewport = window.parent.visualViewport;
+      if (viewport && viewport.height < window.parent.innerHeight - 1) {
+        doc.documentElement.style.setProperty('--ta-viewport-height', viewport.height + 'px');
+      } else { doc.documentElement.style.removeProperty('--ta-viewport-height'); }
       var root = doc.querySelector(SELECTOR);
-      if (!root) return null;
-      var box = pickScroller(root);
-      var composer = doc.querySelector('.st-key-user_compose');
-      var chrome = composer ? composer.getBoundingClientRect().height + 24 : 180;
-      var top = root.getBoundingClientRect().top;
-      var available = window.parent.innerHeight - top - chrome - 16;
-      var height = Math.max(240, Math.min(available, CFG.maxHeight || 560));
-      // Streamlit sizes the wrapper as a flex item (flex: 0 0 <height>px), so
-      // height alone is ignored; flex-basis has to move with it.
-      var carrier = root.parentElement || root;
-      [carrier, root, box].forEach(function (node) {
-        node.style.setProperty('height', height + 'px', 'important');
-        node.style.setProperty('min-height', height + 'px', 'important');
-      });
-      carrier.style.setProperty('flex', '0 0 ' + height + 'px', 'important');
-      carrier.style.setProperty('flex-basis', height + 'px', 'important');
-      return box;
+      return root ? pickScroller(root) : null;
     } catch (err) { return null; }
   }
 
@@ -109,18 +99,26 @@ BRIDGE_JS = r"""
     window.parent.setTimeout(function () { fit(); }, 2600);
   }
 
+  // A callback created in an unmounted component iframe can stop receiving
+  // events. Rebind from this active iframe, removing the previous listener.
   window.parent.__taFit = fit;
-  if (!window.parent.__taResizeBound) {
-    window.parent.__taResizeBound = true;
-    window.parent.addEventListener('resize', function () {
-      if (window.parent.__taFit) { scheduleFit(); }
-    }, { passive: true });
+  var resize = function () { fit(); };
+  if (window.parent.__taResizeHandler) {
+    window.parent.removeEventListener('resize', window.parent.__taResizeHandler);
+    if (window.parent.visualViewport) {
+      window.parent.visualViewport.removeEventListener('resize', window.parent.__taResizeHandler);
+    }
+  }
+  window.parent.__taResizeHandler = resize;
+  window.parent.addEventListener('resize', resize, { passive: true });
+  if (window.parent.visualViewport) {
+    window.parent.visualViewport.addEventListener('resize', resize, { passive: true });
   }
 
   function run(root) {
     var box = fit() || pickScroller(root);
     var store = window.parent.sessionStorage;
-    var KEY = 'ta-scroll:' + CFG.chatKey;
+    var KEY = 'ta-scroll:' + CFG.chatKey + ':' + CFG.scope;
     var saved = {};
     try { saved = JSON.parse(store.getItem(KEY) || '{}') || {}; } catch (err) { saved = {}; }
     var lastToken = null;
@@ -164,15 +162,14 @@ BRIDGE_JS = r"""
                  height: target.scrollHeight, turns: CFG.turns });
       if (nearBottom(target)) { hideBadge(); }
     };
-    if (!doc.__taScrollDelegated) {
-      doc.__taScrollDelegated = true;
-      doc.addEventListener('scroll', function (event) {
-        var target = event.target;
-        if (target && target.classList && target.classList.contains('st-key-' + CFG.chatKey)) {
-          if (window.parent.__taScroll) { window.parent.__taScroll(target); }
-        }
-      }, true);
-    }
+    if (doc.__taScrollDelegated) { doc.removeEventListener('scroll', doc.__taScrollDelegated, true); }
+    doc.__taScrollDelegated = function (event) {
+      var target = event.target;
+      if (target && target.classList && target.classList.contains('st-key-' + CFG.chatKey)) {
+        if (window.parent.__taScroll) { window.parent.__taScroll(target); }
+      }
+    };
+    doc.addEventListener('scroll', doc.__taScrollDelegated, true);
     // Reruns replace the element while this iframe is torn down; a light poll
     // keeps the last reader position accurate between mounts. It dies with the
     // iframe, so at most one poller exists at a time.
@@ -204,7 +201,10 @@ BRIDGE_JS = r"""
       toBottom(); markBottom(); return;
     }
 
-    if (saved.atBottom || saved.top === undefined) {
+    if (CFG.turns === 0 && CFG.action === 'none') {
+      box.scrollTop = 0;
+      setState({ top: 0, atBottom: false, height: box.scrollHeight, turns: 0 });
+    } else if (saved.atBottom || saved.top === undefined) {
       toBottom(); hideBadge(); markBottom();
     } else {
       box.scrollTop = saved.top;
@@ -231,20 +231,20 @@ BRIDGE_JS = r"""
 """
 
 
-def bridge_html(chat_key, token, action, anchor, nonce, max_height=560, turns=0):
+def bridge_html(chat_key, token, action, anchor, nonce, max_height=None, turns=0, scope=""):
     config = json.dumps({"chatKey": chat_key, "token": token, "action": action,
                          "anchor": anchor, "nonce": nonce, "maxHeight": max_height,
-                         "turns": int(turns)})
+                         "turns": int(turns), "scope": str(scope)})
     script = BRIDGE_JS.replace("__CFG__", config)
     return ("<!doctype html><html><head><meta charset='utf-8'></head><body>"
             "<script>" + script + "</script></body></html>")
 
 
-def mount(chat_key=CHAT_KEY, height=0, max_height=560, turns=0):
+def mount(chat_key=CHAT_KEY, height=0, max_height=None, turns=0, scope=""):
     """Render the bridge; safe to call on every rerun."""
     pending = current_request()
     token = scroll_token(pending["nonce"], pending["action"], pending["anchor"])
     components.html(
         bridge_html(chat_key, token, pending["action"], pending["anchor"], pending["nonce"],
-                    max_height, turns),
+                    max_height, turns, scope),
         height=height, scrolling=False)

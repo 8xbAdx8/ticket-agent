@@ -55,6 +55,10 @@ def _policy_evidence(hits):
 
 
 def show_business(results, session=None):
+    from web.train_data import source_status
+    for row in results:
+        if row.get('tool')=='query_tickets' and isinstance(row.get('result'),dict) and row['result'].get('data_source'):
+            source_status(row['result'])
     successful=[r for r in results if r.get("ok") and isinstance(r.get("result"),dict)]
     if not successful:
         return
@@ -80,7 +84,7 @@ def show_business(results, session=None):
                     + ticket_cards(last["result"]) + '</div>', unsafe_allow_html=True)
         if not last["result"].get("trains"):
             st.info("没有符合条件的班次，请调整路线、日期或席别后再查。")
-        st.caption("车票信息：当前使用演示数据，最多展示20条；未提供的信息不作推断，不提供真实出票服务。")
+        if not last['result'].get('data_source'):source_status(last['result'])
 
 
 def _followup_lifecycle(session, run_id, kind, **fields):
@@ -420,6 +424,9 @@ def _confirm_cards(session, action, pending, pending_here):
             st.write("操作：" + TOOL_LABELS.get(action['tool'], action['tool']))
             for label, value in user_copy.operation_details(action['args']):
                 st.write(label + '：', value)
+            with st.expander('查看技术细节',expanded=False):
+                import json
+                st.code(json.dumps({'tool':action['tool'],'args':action['args']},ensure_ascii=False,indent=2),language='json')
             st.caption("仅处理演示数据，不会真实出票或扣款；本次确认只适用于上面列出的操作。")
             yes, no = st.columns(2)
             approved = yes.button("确认此模拟操作", type="primary", width="stretch")
@@ -434,7 +441,7 @@ def _confirm_cards(session, action, pending, pending_here):
                 st.rerun()
     if pending_here:
         with st.container(border=True,key='pending_confirm'):
-            st.markdown("**确认模拟操作**")
+            st.markdown("**请确认本次操作**")
             if pending["message"].strip() in {"确认", "确定", "同意", "好的", "可以"} and session.history:
                 st.caption("上一轮待确认内容：")
                 st.write(session.history[-1].get("reply", ""))
@@ -446,7 +453,11 @@ def _confirm_cards(session, action, pending, pending_here):
                 st.caption("尚无可核对的订单金额，请在继续前确认订单信息。")
             st.caption("本次仅改变演示订单状态，不会真实出票或扣款。取消和退票费用按项目示例政策计算。")
             yes,no=st.columns(2)
-            if yes.button("确认执行模拟操作",type="primary",width="stretch"):
+            current=session.resolve_config() if hasattr(session,'resolve_config') else None
+            compatible=pending.get('config_hash')==(current.config_hash if current else None)
+            compatible=compatible and pending.get('data_source_hash')==(session.train_source_hash() if hasattr(session,'train_source_hash') else None)
+            if not compatible:st.warning('配置已变更，请取消原提案并重新生成；不能用新权限执行旧提案。')
+            if yes.button("确认执行模拟操作",type="primary",width="stretch",disabled=not compatible):
                 st.session_state.pop("pending_operation",None)
                 execute(session,pending["message"],pending["request_id"],confirmation={
                     'approved':True,'proposal':{'message':pending['message']},
@@ -466,17 +477,21 @@ def _composer(session, live_name):
             allow_live=True
         else:
             allow_live=False
+        multiline=st.toggle('多行输入',key='user_multiline')
         with st.form("user_compose",clear_on_submit=True):
             row=st.columns([9,1.4],gap='small')
-            message=row[0].text_input("输入消息",key="user_message",
-                placeholder="例如：查明天上海到杭州的高铁二等座",label_visibility="collapsed")
+            input_widget=row[0].text_area if multiline else row[0].text_input
+            message=input_widget("输入消息",key="user_message",
+                placeholder="例如：查明天上海到杭州的高铁二等座",label_visibility="collapsed",**({'height':72} if multiline else {}))
             send=row[1].form_submit_button("发送",key='user_send_'+st.session_state['user_submit_nonce'],
                 type="primary",disabled=session.read_only or session.live and not live_ready(session.live_provider))
-            st.caption("查票、问政策可直接发送；锁座、下单、支付、退票会先请你确认。车票和订单均为演示数据，支付仅模拟状态，不会真实扣款。")
+            st.caption('车次来源见本轮标注；锁座、下单、支付、退票会先请你确认。订单与支付均为演示，不会向12306提交订单或真实锁座，也不会真实扣款。')
     return message, send, allow_live
 
 
 def user_page():
+    from web import user_layout
+    user_layout.styles()
     # Clear the composer on the run after a send; a widget key cannot be written
     # once this run has instantiated it.
     if st.session_state.pop('user_clear_input',False):
@@ -526,16 +541,11 @@ def user_page():
         st.session_state['user_run_'+session.sid]=next((i for i,a in enumerate(session.audits)
             if a.get('trace_id')==focus[1]),max(0,len(session.audits)-1))
     st.query_params['session_id']=session.sid
-    if st.session_state.pop('restore_notice',None):st.info('未找到完整的本地会话索引，已新建会话；原文件未修改。')
-    if session.read_only:st.info('已打开保存的历史会话，仅供查看，不会重新执行操作或产生模型费用。继续使用请新建会话。')
-    if session.persistence_warning:st.warning(session.persistence_warning)
+    restore_notice=st.session_state.pop('restore_notice',None)
     live_name="Qwen3.8-Flash" if session.live_provider=="bailian" and session.live_model=="qwen3.8-flash" else session.live_model or "Qwen (兼容旧配置)" if session.live_provider=="bailian" else "DeepSeek"
     mode_badge=(live_name+" 在线 · 演示订单" if session.live and session.full_tools
                 else live_name+" 在线 · 仅查询" if session.live else "离线演示")
-    header("出行助手","查车票、问政策、查看订单，用一句话开始。",mode_badge)
-    if (session.engine,session.live,session.live_provider)!=(st.session_state['default_engine'],st.session_state['default_live'],st.session_state.get('default_provider','deepseek')):
-        st.info('正在查看历史会话，当前使用 '+(live_name+' 在线服务' if session.live else '离线演示')+'；左侧模型用于新建会话。')
-    st.caption("车票信息使用演示数据，政策使用项目内示例条款；订单不真实出票，支付不会真实扣款。" if session.live else "当前为离线演示，不产生模型费用。车票为演示数据，政策为示例条款，不真实出票或扣款。")
+    user_layout.topbar(sessions,new_session,activate)
 
     action = session.pending_action()
     pending=st.session_state.get("pending_operation")
@@ -551,15 +561,7 @@ def user_page():
         mode_badge='历史回放 · '+mode_badge
 
     welcome = not session.history and not busy
-    _run_summary_bar(session, audit, events, mode_badge)
 
-    if session.error:
-        st.error(user_copy.error_message(session.error['category']))
-        from web.policy_interaction import policy_view
-        failed_policy=policy_view(session.sid,(audit or {}).get('trace_id'),events=events,audit=audit)
-        if failed_policy['has_recorded_retrieval']:
-            st.caption('最近未完成请求的知识库记录；不是上一条成功回答的证据。')
-            _policy_panel(failed_policy, technical=False)
 
     if st.session_state.get('user_compose_session')!=session.sid:
         st.session_state['user_allow_embedding']=False
@@ -568,6 +570,22 @@ def user_page():
         st.session_state['user_submit_nonce']=uuid.uuid4().hex
 
     def _chat_body():
+        if session.config_notice:st.warning(session.config_notice)
+        if restore_notice:st.info('未找到完整的本地会话索引，已新建会话；原文件未修改。')
+        if session.read_only:st.info('已打开保存的历史会话，仅供查看，不会重新执行操作或产生模型费用。继续使用请新建会话。')
+        if session.persistence_warning:st.warning(session.persistence_warning)
+        if (session.engine,session.live,session.live_provider)!=(st.session_state['default_engine'],st.session_state['default_live'],st.session_state.get('default_provider','deepseek')):
+            st.info('正在查看历史会话，当前使用 '+(live_name+' 在线服务' if session.live else '离线演示')+'；左侧模型用于新建会话。')
+        if session.error:
+            if getattr(session,'last_train_query',None):
+                from web.train_data import source_status
+                source_status(session.last_train_query)
+            st.error(user_copy.error_message(session.error['category']))
+            from web.policy_interaction import policy_view
+            failed_policy=policy_view(session.sid,(audit or {}).get('trace_id'),events=events,audit=audit)
+            if failed_policy['has_recorded_retrieval']:
+                st.caption('最近未完成请求的知识库记录；不是上一条成功回答的证据。')
+                _policy_panel(failed_policy,technical=False)
         if welcome:
             _hero()
             from web.user_features import shortcuts
@@ -585,43 +603,34 @@ def user_page():
             # only readers already at bottom. No explicit bottom jump here.
             st.rerun()
 
-    # One column owns transcript → confirmations → composer so that stacking on
-    # a narrow screen keeps the composer above the run-detail panel.
-    chat_height = 560 if (session.history or busy) else 430
-
     def _column_body():
-        with st.container(height=chat_height,key='user_chat_scroll'):
+        with st.container(height='stretch',key='user_chat_scroll'):
             _chat_body()
-        if not session.read_only:_confirm_cards(session, action, pending, pending_here)
+            if not session.read_only:_confirm_cards(session, action, pending, pending_here)
         return _composer(session, live_name)
 
-    main, rail = st.columns([1.95,1],gap='large')
-    with main:
-        message, send, allow_live = _column_body()
-    with rail:
-        from web.user_features import render
-        render(session)
-        _run_rail(session, events)
+    with st.container(key='user_layout',horizontal=True,height='stretch'):
+        with st.container(key='user_left',height='stretch'):
+            message, send, allow_live = _column_body()
+        with st.container(key='user_right',height='stretch'):
+            with st.container(key='mobile_info'):
+                info_open=st.toggle('相关信息 / 常用功能',key='user_info_open')
+            with st.container(key='user_right_content',height='stretch'):
+                if info_open:st.markdown('<span class="ta-info-open"></span>',unsafe_allow_html=True)
+                user_layout.rail(session)
+                from web.order_actions import refund_panel,notice
+                refund_panel(session)
+                notice(session)
+                with st.expander('本次处理与历史运行',expanded=False):
+                    _run_summary_bar(session,audit,events,mode_badge)
+                    _run_rail(session,events)
+                if session.live:st.caption('政策检索与Embedding设置在开发者端管理；联网须明确授权，不会默认启用。')
+                if session.live and not live_ready(session.live_provider):
+                    st.info(live_name+' 在线服务暂不可用。可以查看已保存的会话；不会自动切换到其他服务。')
+                    st.info('不会自动切换 Mock；当前服务的配置与诊断请在开发者工作空间核对。')
 
     if session.read_only:return
 
-    if session.live:
-        with st.expander('高级设置 · 政策查询与费用',expanded=False):
-            session.rag_mode=st.selectbox('政策检索方式',['keyword','hybrid','vector'],key='user_rag_mode')
-            session.allow_rag_network=st.checkbox('允许本轮联网查询政策向量（可能产生额外费用；仅发送问题时执行）',key='user_allow_embedding')
-            st.caption('此选项只授权政策查询所需的向量服务费用，不改变订单操作确认；当前政策仍为项目内示例条款。')
-
-    if session.live and not live_ready(session.live_provider):
-        st.info(live_name+" 在线服务暂不可用。可以查看已保存的会话；不会自动切换到其他服务。")
-        with st.expander('服务诊断（开发者）', expanded=False):
-            st.info('不会自动切换 Mock；当前服务的配置与诊断请在开发者工作空间核对。')
-    with st.expander('更多模拟工具 · 行李费用 / 高铁改签',expanded=st.session_state.get('p3_refund_open')==session.sid):
-        st.caption('费用计算和改签仅用于演示，不会调用在线模型或产生真实交易。')
-        st.caption('行李费用与改签已移至常用功能。')
-        from web.order_actions import refund_panel,notice
-        refund_panel(session)
-        st.caption('改签请先查询演示订单，再点击订单卡片上的“改签”，无需手填订单号。')
-        notice(session)
     if send and action:
         st.warning("请先确认或取消待处理的模拟操作。")
     elif send and message.strip():
@@ -643,7 +652,8 @@ def user_page():
             request_id=st.session_state['user_submit_nonce']
             st.session_state['user_submit_nonce']=uuid.uuid4().hex
             if operation_kind(message, session.history) and not (session.interactive and session.live and session.full_tools):
-                st.session_state["pending_operation"]={"sid":session.sid,"message":message,"request_id":request_id}
+                frozen=session.resolve_config()
+                st.session_state["pending_operation"]={"sid":session.sid,"message":message,"request_id":request_id,'config_hash':frozen.config_hash if frozen else None,'data_source_hash':session.train_source_hash()}
             else:
                 execute(session,message,request_id)
             st.session_state['user_clear_input']=True
@@ -651,7 +661,7 @@ def user_page():
             st.rerun()
 
     # Mounted last so it observes the final layout of this render.
-    scroll_bridge.mount(turns=len(session.history))
+    scroll_bridge.mount(turns=len(session.history),scope=session.sid)
 
 
 def show_remote_export(session):

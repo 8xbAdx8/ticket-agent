@@ -57,6 +57,7 @@ OTHER_USER_PHONE = "13900000002"
 
 def now():
     """业务时钟：北京时间的无时区 datetime，与 SQLite 既有时间格式兼容。"""
+    if os.getenv('TICKET_TEST_MODE')=='1':return datetime.fromisoformat('2026-10-20T12:00:00')
     return datetime.now(timezone(timedelta(hours=8))).replace(tzinfo=None)
 
 def today():

@@ -9,16 +9,24 @@
 - 项目目标：以模拟票务 Agent 为被测对象，建立工具调用、业务约束、多轮交互、RAG、缺陷注入和质量审计的可复现验证闭环。
 - 项目定位：智能体可靠性与测试工作空间；车次、库存、订单、支付均为自建模拟业务，不连接真实铁路、航司或支付系统。模型 API 可以是真实服务。
 - 当前版本：界面明确显示 **3.7**，README 含 V3.7 增量；当前分支名仍含 V3.6。未确认统一发布版本号，不将分支名、界面版本和正式发布版本视为同一概念。
-- 当前开发阶段：V3.7阶段四四大面板与统一订单中心已实现；最终1242 passed / 11 failed / 1 skipped及199子测试，新增45全通过、四规格业务72/72与导航宽度24/24。原11失败仍在。等待用户验收，未进入阶段五。
+- 当前开发阶段：V3.7阶段七离线工程交付，总体PARTIAL；Fixture COMPLETE、Snapshot PARTIAL（缺真实原件）、Live BLOCKED。最终1356 passed / 11 failed / 1 skipped、199子测试，新增45通过；Edge四规格120/120、32截图。阶段五至七成果按本次用户授权归档，阶段六COMPLETE保留；103正式重评仍BLOCKED，未进入下一阶段。
 - 项目路径：`D:\codexproject\ticket-agent`。
 - Git 仓库：`https://github.com/8xbAdx8/ticket-agent.git`；当前分支：`feat/ticket-agent-v36-stabilization`。
-- 当前 HEAD：`139cdbe2fca8c7249847f245cffef1ed0545dd36`。
+- 当前 HEAD：以现场 `git rev-parse HEAD` 为准；本次阶段五至七归档前为 `c889b082dd4bd07e3514038a69362b71dd21915c`。源码归档SHA及推送结果见第7、12节最新记录与归档回执。
 - 首次建立前（历史）：工作区干净、暂存区为空、非忽略未跟踪文件为0；本文档当时不存在。阶段1开始时仅有既有未跟踪本文及阶段0报告；最终状态见第12节。
 - 环境：推荐 `.venv-v35`；其 `pyvenv.cfg` 记录 Python 3.12.14，历史回归报告也记录此版本；本次未启动解释器或重新验证完整依赖安装。
 
 信息来源：现场 Git、根目录清单、`web/app.py`、`README.md`、`.venv-v35/pyvenv.cfg`、用户交接报告。统一发布版本待核实。
 
 ## 2. 技术架构
+
+> 2026-11-01T21:12:17.300021+08:00 阶段七更新：新增TrainSource、固定Fixture和本地快照校验/导入，独立会话来源选择及侧车事件；实时源没有网络实现，Provider配置不授予源权限。
+
+> 2026-11-01T18:21:44.283615+08:00 阶段六更新：技术架构增量：target/dev_overrides、execution_config、prompt_config及profile_evaluation，冻结Baseline与会话Override；原Legacy/LC、Provider、RAG/费用与公共契约保留，sidecar独立。
+
+
+> 2026-11-01阶段五更新：新增user_layout.py/css，用户端视口Grid/Flex、左聊天/右信息独立滚动、聊天外输入框；桥接仅辅助动态视口和会话滚动，不再写聊天高度。
+
 
 > 2026-11-01阶段四更新：阶段四增量：target/order_read_model.py统一本人订单只读投影；web/user_features.py复用Conversation.send/Agent.chat与既有业务服务，纯计算与页面操作分层；不增加依赖、Provider或数据库。
 
@@ -37,6 +45,14 @@
 公共契约：`Agent.chat(session_id, message)` 返回十字段；工具调用为 `tool/args/ok/latency_ms/result_preview` 五字段。不得擅改。来源：`docs/contract.md`。
 
 ## 3. 已完成功能
+
+> 2026-11-01T21:12:17.300021+08:00 阶段七更新：Fixture固定2100行/日期/SHA；Snapshot离线适配、10类状态/unknown、只读与演示事务隔离已测，但真实原件缺失，不能标记真实接入完成。
+
+> 2026-11-01T18:21:44.283615+08:00 阶段六更新：已完成并离线验证：会话编辑/原子revision/SHA、下一轮实际重建、双引擎dispatch拒绝、deny/confirm、模型/温度参数捕获、RAG迁移、只读历史快照、独立自定义评估。正式103仅身份核验，不标记断言通过。
+
+
+> 2026-11-01阶段五更新：阶段五桌面双栏、移动单栏/展开右栏、深浅主题、顶栏/多行/客户化确认已实测；六入口与支付/退改业务复用不变。
+
 
 > 2026-11-01阶段四更新：阶段四已实现并离线验证：查余票/政策速查/我的订单/退票费率独立面板、右栏行李和改签、首屏4快捷卡；当前订单统一状态/动作投影、不一致禁操作、保留真实Agent工具链及source=page。详见第12节新记录。
 
@@ -62,6 +78,16 @@
 
 ## 4. 当前开发进度
 
+> 2026-11-01T21:12:17.300021+08:00 阶段七更新：阶段七离线交付停止等待验收；Fixture COMPLETE/Snapshot PARTIAL/Live BLOCKED，未进入下一阶段，未提交。
+
+> 2026-11-01T20:08:10.337492+08:00 正式103恢复审查：正式103恢复任务已完成只读搜索，状态BLOCKED；找到11组旧B副本但不能用于当前103完整计分，42条trains_from_tools/C5配套实现缺失。阶段六离线工程COMPLETE结论保留，未开始阶段七。
+
+> 2026-11-01T19:32:16.659908+08:00 阶段六更新：阶段六实施结束等待验收；1892清单中1890文件字节不变；target/tools.py与web/evidence.py两项限定源码差异已获用户明确批准。公开工具Schema与DIMENSIONS的AST哈希不变，原清单和原哈希完整保留；不将其描述为1892文件字节零差异。 阶段五未提交工作完整保留，未开始阶段七。提交推送、原11失败修复、真实数据接入均另行明确任务。
+
+
+> 2026-11-01阶段五更新：阶段五交付待验收；旧版本39文件已提交Push到c889b082dd4bd07e3514038a69362b71dd21915c；阶段五源码/文档保持未提交。
+
+
 > 2026-11-01阶段四更新：当前阶段四交付待验收；开发者实时Override、真实数据源、阶段五整页布局均未实施。新报告：docs/reviews/Ticket-Agent-V3.7-Phase4-User-Features-Report.md。
 
 - 当前工作：阶段三已实现本人车次/日期匹配、单订单费用确认、卡片改签自动带入与事务复核；保持阶段二支付与全部历史证据。
@@ -74,6 +100,16 @@
 信息来源：本次用户维护要求、现场 Git、提交回执、现有失败报告。下一步尚待用户指定，不视为已获开发或联网授权。
 
 ## 5. 当前问题与阻塞
+
+> 2026-11-01T21:12:17.300021+08:00 阶段七更新：P0仍缺B当前103配套执行器；Snapshot缺合法原件/独立来源核验，Live缺接口权利与授权。原11失败及JSON组件Console问题保留。
+
+> 2026-11-01T20:08:10.337492+08:00 正式103恢复审查：新增P0：BLOCKED_WAITING_FOR_ORIGINAL_B_EXECUTOR。旧6个judge模块与8份历史提交清单匹配，但当前103含42条旧实现不支持的trains_from_tools期望；禁止用旧版静默漏评。部分临时目录仍无读取权限。
+
+> 2026-11-01T18:21:44.283615+08:00 阶段六更新：原11失败保持、T04未重验/批准场景0；缺B原始独立断言执行器，103仅配置与输入身份核验；真实模型风格/Embedding/远端LangSmith未重新验证；浏览器JSON查看组件12条Console错误尚未独立根因复验。
+
+
+> 2026-11-01阶段五更新：原11失败/唯一Skip未变；无新增失败。实体手机软键盘和缺失image3参考未验，Streamlit DOM/桥接升级需复验。
+
 
 > 2026-11-01阶段四更新：阶段四保留11旧失败/1 Skip；来源与最终逐ID对比见regression-comparison.json。旧历史和当前DB可不一致，中心显式禁写并要求再查询。真实API、全面滚动性能未验证；不可宣布全仓全绿。
 
@@ -94,6 +130,16 @@
 现场枚举部分 `artifacts/runtime` 临时目录返回拒绝访问；未尝试更改权限或清理，因此未完整清点全部运行目录。来源：现场读取错误及各行引用；没有发现必须马上修改代码才能建立本文档的阻塞。
 
 ## 6. 测试结果
+
+> 2026-11-01T21:12:17.300021+08:00 阶段七更新：本轮full-r6实际1356/11/1、199子测试，新增45全通过；原11/Skip ID逐项不变；阶段二40/三59/四45/五9/六60保持。Edge四规格120/120、32图；均隔离Mock/合成测试，非B正式、非真实API。
+
+> 2026-11-01T20:08:10.337492+08:00 正式103恢复审查：本次未运行Agent/原始judge/pytest，正式有效计分0，103条NOT_RUN_BLOCKED；PASS/FAIL/SKIP未产生，不能当103 Skip。阶段六历史1311/11/1、199子测试及Edge60/60保持，未改成绩。
+
+> 2026-11-01T18:21:44.283615+08:00 阶段六更新：新增离线完整结果：1311 passed / 11 failed / 1 skipped / 199 subtests，60新项全通过；阶段二40/三59/四45/五9保留。命令run_checks.py full-r10，证据artifacts/runtime/v37-phase6-baseline-override-20261101/full-r10/summary.json、junit.xml。四规格Edge60/60，28截图；不属于真实API/人工验收或103重新计分。
+
+
+> 2026-11-01阶段五更新：阶段五最终离线full-r4：2026-11-01T06:52:07.471995+00:00至2026-11-01T06:54:16.750244+00:00，1251/11/1、199子测试；新9/原40+59+45通过；Edge DOM38、交互32、业务72，共142/142，72截图。均为隔离Mock/SQL/浏览器，非真实模型/API或人工验收。
+
 
 > 2026-11-01阶段四更新：阶段四最终离线完整回归：2026-11-01T06:03:34.241635+00:00至2026-11-01T06:05:44.626761+00:00，1242 passed / 11 failed / 1 skipped / 199 subtests；新45、原支付40、原退改59全部通过。Mock Agent与AppTest/SQL/Edge均为隔离本地，非真实API/模型成绩；人工验收待用户。证据：artifacts/runtime/v37-phase4-user-features-20261101/full-r10/summary.json及JUnit；四规格72/72+24/24与40截图见browser/navigation JSON。
 
@@ -135,6 +181,16 @@ RAG历史：V3.5.2指标重算无数学错误，原值不改；DeepSeek完整回
 
 ## 7. Git 提交记录
 
+> 2026-11-01T23:04:35.523087+08:00 归档任务：用户明确授权提交并推送全部未提交代码；阶段五/六/七源码、固定Fixture、测试和交付文档一并归档，运行产物/数据库/账本不提交。准确SHA与远端回执见本节后续记录。
+
+> 2026-11-01T21:12:17.300021+08:00 阶段七更新：HEAD仍c889b082dd4bd07e3514038a69362b71dd21915c，原分支、暂存区空；阶段五/六/七工作未提交，不自动Push/Merge。
+
+> 2026-11-01T18:21:44.283615+08:00 阶段六更新：本阶段Git HEAD仍c889b082dd4bd07e3514038a69362b71dd21915c、原分支，暂存区空，无Commit/Push/Merge；阶段五与阶段六改动均保留未提交。
+
+
+> 2026-11-01阶段五更新：阶段一至四单个归档Commit c889b082dd4bd07e3514038a69362b71dd21915c，正常推送origin当前分支并核验远端同SHA；阶段五未提交/推送，暂存区空。
+
+
 > 2026-11-01阶段四更新：阶段四无新Commit/Push/Merge；当前HEAD仍139cdbe2fca8c7249847f245cffef1ed0545dd36，branch仍feat/ticket-agent-v36-stabilization，暂存区空，阶段1至4修改保留工作区。
 
 下列提交均在当前分支历史中；不等于每条提交当时都使用此分支名。推送状态以现场本地引用和历史回执为依据，未联网查询。
@@ -154,6 +210,14 @@ RAG历史：V3.5.2指标重算无数学错误，原值不改；DeepSeek完整回
 现场标签：`handoff-a-20261012`、`handoff-a-v2-20261013`、`handoff-a-langchain-v3-20261013`，均须保护。本次只新增本文档，未暂存/提交/推送。来源：Git log/status/tag及上述回执。
 
 ## 8. 真实 API 与预算
+
+> 2026-11-01T21:12:17.300021+08:00 阶段七更新：本轮真实12306/模型/Embedding/LangSmith/交易请求0；仅本机测试连接，历史账本无变；不把替身或合成数据记作真实消耗，未知费用保持未知。
+
+> 2026-11-01T18:21:44.283615+08:00 阶段六更新：本阶段模型/Embedding/LangSmith/12306/真实支付请求均0，SDK MockTransport不收费；未知Token/余额不补0。用户批准账本追加8249字节为当前259169字节基线，阶段内未变。
+
+
+> 2026-11-01阶段五更新：本任务仅GitHub fetch/push/ls-remote联网；真实模型/Embedding/LangSmith/12306/交易请求0，无新增真实Token费用，无额度查询。账本获准追加仍保留，不作为本任务请求。
+
 
 > 2026-11-01阶段四更新：阶段四模型/Embedding/LangSmith/12306/真实交易请求均0，无本阶段真实Token消耗；剩余额度未联网查询。用户确认保留账本开工前追加6890字节，原内容完整；以当前账本为保护基线，追加不计为阶段四调用。证据preflight-ledger-difference.json与用户明确答复；用量统计非阻断，不改变既有轮数/工具/超时/零重试/确认限制。
 
@@ -184,6 +248,16 @@ RAG历史：V3.5.2指标重算无数学错误，原值不改；DeepSeek完整回
 
 ## 9. 下一步开发计划
 
+> 2026-11-01T21:12:17.300021+08:00 阶段七更新：P0验收阶段七离线结果及提供B配套原件；Snapshot待用户提供合法真实原件/来源证明后再离线导入验收；Live需接口权利/网络范围及另行授权，默认禁用。不自动进入下一阶段或提交。
+
+> 2026-11-01T20:08:10.337492+08:00 正式103恢复审查：P0：取得B当前103配套judge/cases原件、执行器Commit或交付包SHA、依赖锁/原命令，再验证trains_from_tools/C5及Baseline隔离后独立重计分；验收须有103逐项原断言证据，禁止A自行补写C5冒充B。
+
+> 2026-11-01T18:21:44.283615+08:00 阶段六更新：P0：验收阶段六离线工程结果（标准：60新增项、失败/Skip集合不变、保护零差异）；独立处理11失败及B原始执行器取得后正式重计分。P1：用户明确授权后设计阶段七Fixture优先与来源边界，授权联网前不请求。P2：Live风格/远端追踪再验与既有RAG千题待复核，单独预算授权。
+
+
+> 2026-11-01阶段五更新：P0：验收阶段五视觉/真实DOM数据及旧11失败；P1：明确是否归档阶段五，实体手机补验与DOM升级检查；P2：阶段六实时Override等须另行授权。
+
+
 > 2026-11-01阶段四更新：P0：用户验收阶段四及现存11失败逐项产品契约。P1：获准后再做阶段五布局/固定输入框/移动端四规格验收。P2：开发者Override/真实数据源分别按后续授权执行；不改正式103用例或成绩基线。
 
 当前阶段覆盖：P0等待用户验收阶段三及保留11失败的契约处理；P1仅在用户确认后设计阶段四；P2继续保留RAG/评测长期待验证项。下列旧计划是历史规划，不自动授权执行。
@@ -209,6 +283,14 @@ RAG历史：V3.5.2指标重算无数学错误，原值不改；DeepSeek完整回
 
 ## 10. 已知风险与注意事项
 
+> 2026-11-01T21:12:17.300021+08:00 阶段七更新：普通旧演示库保留会话日期/库存，严格Baseline/Test固定Fixture/时钟；Snapshot绝不回落/灌演示库存，新锁座建单改签等需切回Fixture重新查询。来源声明/格式/hash不等于真实采集证明。
+
+> 2026-11-01T18:21:44.283615+08:00 阶段六更新：配置SHA是完整性旁证，不是账户认证；本地固定模拟身份不变。旧无sidecar历史不补造；新legacy_runtime不作为正式Baseline；待确认提案配置变更须取消重生成，禁止沿用旧费用/写确认。
+
+
+> 2026-11-01阶段五更新：新增视口和旧iframe回调失效风险已复现并修复，透明工具栏遮挡已通过真实点击复验；仍依赖Streamlit1.65 DOM。历史业务/RAG/固定身份风险保留。
+
+
 > 2026-11-01阶段四更新：阶段四：演示业务边界保持；历史快照不等于最新交易；无记录的支付方式/金额不补造；page支付审计非原支付事务组成部分，失败提示不可自动重付；离线图标错误原始记录保留。保护历史清单仅获准账本追加例外，其余零差异。
 
 - 禁止reset、clean、stash、强制覆盖、擅自清理或回滚并行修改；编辑前查工作区。本次不修改无关代码。
@@ -229,6 +311,16 @@ RAG历史：V3.5.2指标重算无数学错误，原值不改；DeepSeek完整回
 阶段三进度：P0等待验收并保留11旧失败；P1用户确认后才设计阶段四；原计划保留历史，不自动授权。
 
 ## 11. 重要文件索引
+
+> 2026-11-01T21:12:17.300021+08:00 阶段七更新：docs/reviews/Ticket-Agent-V3.7-Phase7-Train-Data-Source-Report.md；artifacts/runtime/v37-phase7-train-data-source-20261101/verification.json、source-inventory.json、fixture/snapshot/provenance/isolation-verification、regression-comparison、git-final-state、browser-verification及Skills/JUnit/原件/截图/停止记录。
+
+> 2026-11-01T20:08:10.337492+08:00 正式103恢复审查：docs/reviews/Ticket-Agent-V3.7-Formal-103-Executor-Recovery-Report.md；artifacts/runtime/v37-formal-103-regrading-20261101/verification.json、inventory.json、provenance-audit.json、case-integrity.json、execution-gate.json、eval-audit-findings.json、environment.json及全部原始搜索stdout/stderr。
+
+> 2026-11-01T18:21:44.283615+08:00 阶段六更新：阶段六索引：docs/reviews/Ticket-Agent-V3.7-Phase6-Baseline-Override-Report.md；artifacts/runtime/v37-phase6-baseline-override-20261101/verification.json、before-approved.json、protection-check.json、regression-comparison.json、skill-audit.json、code-eval-spec.json、skills-usage.json、browser-verification.json、四份*-config-evidence.json及browser-r8/server-stop.json。
+
+
+> 2026-11-01阶段五更新：阶段五：web/user_layout.py/css、tests/test_phase5_layout.py；报告docs/reviews/Ticket-Agent-V3.7-Phase5-UI-Redesign-Report.md、Pre-Phase5-Git-Archive-Report.md；核验artifacts/runtime/v37-phase5-ui-redesign-20261101/verification.json。
+
 
 > 2026-11-01阶段四更新：阶段四新增target/order_read_model.py、web/user_features.py、tests/test_user_features.py；报告docs/reviews/Ticket-Agent-V3.7-Phase4-User-Features-Report.md；核验artifacts/runtime/v37-phase4-user-features-20261101/verification.json及相关原始证据。
 
@@ -381,3 +473,79 @@ RAG历史：V3.5.2指标重算无数学错误，原值不改；DeepSeek完整回
 - Git：feat/ticket-agent-v36-stabilization / 139cdbe2fca8c7249847f245cffef1ed0545dd36，暂存区空，未Commit/Push/Merge。8517自建测试进程已停止，其余用户服务不动。
 - 证据：docs/reviews/Ticket-Agent-V3.7-Phase4-User-Features-Report.md；artifacts/runtime/v37-phase4-user-features-20261101/verification.json、技能记录、JUnit/源码/失败对比、浏览器/Agent/DB/截图与停止记录。
 - 遗留：原11失败、真实服务未验、固定模拟身份/凭证交回未建模、历史与当前状态分层、图标离线缺失；页面跳动未量化，不替代阶段五验收。阶段四完成待验收，停止，未进入阶段五。
+
+### 2026-11-01T14:31:08.986624+08:00：阶段一至四代码归档推送，启动阶段五
+
+- 归档：39文件单个Commit c889b082dd4bd07e3514038a69362b71dd21915c，正常Push成功；远端SHA独立核验一致。无数据库/账本/运行产物、无阶段五代码；归档后工作区一度干净，暂存区空。
+- 保护：103/B/1892/4056获准基线不变，阶段四1242/11/1、199子测试作为后续基线；本次归档未重复运行测试。
+- 证据：docs/reviews/Ticket-Agent-V3.7-Pre-Phase5-Git-Archive-Report.md；artifacts/runtime/v37-pre-phase5-git-archive-20261101/。
+- 阶段五：已获用户明确授权；按任务结构图实施，image3.png未提供。仅UI布局/呈现，业务、模型选择/费用授权、Prompt/工具/七维度和正式用例不变；完成后不自动提交或进入阶段六。
+
+### 2026-11-01T14:58:06+08:00：阶段五用户端UI重做交付
+
+- 前置归档：39文件Commit c889b082dd4bd07e3514038a69362b71dd21915c，正常Push且ls-remote一致；阶段五未混入。Push后报告及本阶段代码不自动提交。
+- 完成：真正视口Grid/Flex、左历史与右栏独立滚动、聊天外底部输入、移动单栏展开、深浅主题、四快捷/六入口、客户化确认/折叠技术细节、原key单行Enter和可选多行Ctrl+Enter；原发送/确认/费用/Provider业务不变。
+- 修复实测问题：三套高度冲突、欢迎跳底、顶栏key修改时机、旧iframe回调失效、展开图标/透明工具栏遮挡。未通过force点击或直接改被测scrollTop通过验收。
+- 修改：app/conversation/design.css/scroll_bridge/user_features；新增user_layout.py/css及test_phase5_layout；本文/阶段五报告与Push后归档报告更新。target全保持、所有旧测试字节不改、无依赖变更。
+- 实测：full-r4隔离pytest tests为1251 passed / 11 failed / 1 skipped / 199 subtests，新9全通过；原40+59+45通过，失败/Skip ID完全一致，0新增失败/旧测试减少。前序13失败与验收脚本错误原件保留。
+- 浏览器：Edge四规格DOM38/38、交互32/32、业务72/72，72实际PNG；文档高/宽等于视口，chat scrollTop0→360、输入框y桌面963→963/手机655→655、page scrollTop0；动态650px、右栏、真实命中和输入/会话去重通过。76次实际离线Mock Agent调用，不是真实模型请求。
+- Console：36条均为离线拦截的既有travel_explore SVG资源请求，PageError0/最终操作错误0，不伪造Console0。8518所有自建服务停止；其他用户服务不动。
+- 保护：103/B/1892/4056获准基线零差异；不覆盖历史Trace/账本/库/报告。两个Skills原版方法用于实际审计/客观规则；不新增Judge/API/运行器或改七维度。
+- 证据：docs/reviews/Ticket-Agent-V3.7-Phase5-UI-Redesign-Report.md；artifacts/runtime/v37-phase5-ui-redesign-20261101/verification.json与原始JUnit/DOM/交互/DB/Trace/截图/停止记录。
+- Git/遗留：HEAD c889b082dd4bd07e3514038a69362b71dd21915c，阶段五未暂存/提交/推送；原11失败，缺image3/实体手机软键盘未验、DOM升级/既有业务/RAG风险保留。已停止，等待验收，不进入阶段六。
+
+
+### 2026-11-01T18:21:44.283615+08:00：V3.7阶段六Baseline/Developer Override执行隔离
+
+- 结论：PARTIAL（离线工程验收），实际运行配置生效并有旁证；正式103未执行B原断言，真实模型风格未验证，不宣称项目全绿。1892清单中1890文件字节不变；target/tools.py与web/evidence.py两项源码差异待用户批准。公开Schema/DIMENSIONS不变，原清单不改，不能宣称1892字节零差异。
+- 修改：15个原源码文件增量、6个新配置/运行模块、2个新测试，更新本文与阶段六报告；具体清单/原因见报告第5节。阶段五原修改保留，六项布局文件及旧测试字节不变。
+- 实测：full-r10，1311 passed / 11 failed / 1 skipped / 199 subtests；新增60全通过，旧失败/Skip逐ID一致，0旧测试减少；原40/59/45/9保持。四规格Edge60/60，28PNG、16次Mock运行，实际Prompt SHA/run/revision/工具/DB回查通过（含固定演示身份的显式脱敏还原核验；实际输入另有专项捕获）。Console20条中8资源拦截、12 JSON查看组件错误，后者未单独根因复验，不宣称Console0。
+- 安全：统一dispatch与页面工具策略、双引擎deny/confirm、Provider/会话/revision费用重核、旧提案拒批可取消、新run冻结配置；正式固定Mock/fixture/政策/时钟/身份且不读Store，实验独立schema/报告。公共Trace/工具字段、SYSTEM_PROMPT、八Schema、七维度不改。
+- 保护：1892清单中1890文件字节不变；target/tools.py与web/evidence.py两项源码差异待用户批准。公开Schema/DIMENSIONS不变，原清单不改，不能宣称1892字节零差异。 4056相对用户批准追加8249字节后的基线零差异；103/B/阶段五72图/报告/verification及历史Trace/库/账本不改。Skills原版两份SHA保持，使用发现审计/客观规则，无Judge/新依赖。
+- 证据：docs/reviews/Ticket-Agent-V3.7-Phase6-Baseline-Override-Report.md；artifacts/runtime/v37-phase6-baseline-override-20261101/verification.json及JUnit/源码/浏览器/config/Skills/保护/停止记录。全部中间失败、启动/脚本问题及重跑原件保留。
+- Git：HEAD c889b082dd4bd07e3514038a69362b71dd21915c，原分支、暂存区空、diff --check通过；未Commit/Push/Merge。8519自建服务停止，不动其他用户服务。真实模型/Embedding/LangSmith/12306/真实交易请求0。
+- 遗留：原11失败、T04未重验/批准0、B原始执行器缺失、真实效果/实体软键盘未验、固定模拟身份及既有RAG问题。等待用户验收；不自动进入阶段七或提交推送。
+
+### 2026-11-01T19:32:16.659908+08:00：阶段六保护例外批准闭环
+
+- 用户明确批准：“批准这两处限定差异，保留原清单并如实记录”。仅涵盖target/tools.py执行前权限检查、web/evidence.py自定义实验过滤；两文件当前SHA绑定批准记录，不授权额外源码修改。
+- 当前阶段状态：由PARTIAL更新为COMPLETE（离线工程验收，保护例外已批准），等待用户整体验收。原PARTIAL记录保留，原交付文档与JSON归档于approval-closeout-before/，不覆盖原1892清单/哈希或历史测试结论。
+- 本次复核：已验收299项源码/配置/依赖清单无新增差异；其余1890保护文件与4056获准历史文件无变化，103/B、工具Schema、SYSTEM_PROMPT、DIMENSIONS、旧测试及阶段五72截图/报告/verification均保持。
+- 测试：本次未重跑，沿用full-r10的1311 passed / 11 failed / 1 skipped / 199 subtests，新增60通过；Edge四规格60/60、28截图。原11失败、103断言未重跑、12条JSON组件Console错误及真实模型效果未验继续保留，不宣称项目全绿。
+- 文件：本次仅更新本文、阶段六报告、verification/protection/final-git核验JSON并新增批准与闭环凭证；应用源码、测试及配置文件未修改。
+- Git：HEAD仍c889b082dd4bd07e3514038a69362b71dd21915c，原分支，暂存区空；未Commit/Push/Merge，无真实API请求，不进入阶段七。
+- 证据：artifacts/runtime/v37-phase6-baseline-override-20261101/protected-source-approval.json、approval-closeout-check.json及verification.json；报告docs/reviews/Ticket-Agent-V3.7-Phase6-Baseline-Override-Report.md。
+
+### 2026-11-01T20:08:10.337492+08:00：正式103原始评测执行器恢复审查
+
+- 状态：BLOCKED / BLOCKED_WAITING_FOR_ORIGINAL_B_EXECUTOR。阶段六离线工程COMPLETE及两处限定源码批准保留；本次未进入阶段七。
+- 搜索：当前源码/数据/文档、ignored artifacts、36 ZIP目录、60本地引用/175提交/446 reflog，以及4989本地Git对象（含不可达）；同项目备份和旧E路径只读补查。部分临时目录仍读取受限，完整错误保存，未改ACL。
+- 找到：11组历史b-rerun（5组101、6组103），六judge源码SHA相同且与8份历史提交清单匹配；清单JSON与Git一致，CRLF/LF字节差异明确记录。此前“未找到执行器”细化为“旧版有副本，当前正式103配套版本未恢复”，不覆盖旧审查结论的历史范围。
+- 阻塞：旧103与当前有42条expect缺trains_from_tools，旧trace_assert不读取此字段；历史正式记录却有Legacy42+LC40共82条C5。不能修改/忽略字段或由A反推补写评分器，不能把旧版通用规则运行冒称当前正式103。
+- 执行：未调用judge/Agent/pytest，无正式执行命令或新计分日志；103条仅哈希盘点，actual/assertion/time为null，NOT_RUN_BLOCKED，PASS/FAIL/SKIP未产生。历史1311/11/1与唯一Skip原件保持，无真实模型/Embedding/LangSmith/12306请求。
+- 保护：1892按本任务当前获准基线零差异、4056历史零差异；103/B/旧测试/299源码和两处批准代码、Prompt/Schema/DIMENSIONS、阶段五/六报告/verification及截图不变。原1892旧哈希和批准记录保留，不偷换口径。
+- 修改：仅本文与恢复报告；另增独立审查清单、哈希/来源/门禁/环境及搜索日志，不修改业务或配置源码，不Commit/Push/Merge。HEAD仍c889b082dd4bd07e3514038a69362b71dd21915c，分支feat/ticket-agent-v36-stabilization，暂存区空。
+- 所需材料：B当前103配套judge/（含C5）、原cases/expect、执行器版本/包SHA、Python依赖锁/原命令/fixture与时钟说明；收到后再做身份与隔离准入，不索取密钥。
+- 证据：docs/reviews/Ticket-Agent-V3.7-Formal-103-Executor-Recovery-Report.md；artifacts/runtime/v37-formal-103-regrading-20261101/verification.json、provenance-audit.json、case-integrity.json、execution-gate.json与原始搜索日志。任务停止，等待原B交付。
+
+### 2026-11-01T21:12:17.300021+08:00：V3.7阶段七Fixture/快照/数据源隔离
+
+- 状态：总体PARTIAL；Fixture COMPLETE，Snapshot PARTIAL（离线工程验证完成但无真实原件），Live BLOCKED / LIVE_SOURCE_BLOCKED_PENDING_AUTHORIZATION。103正式评测仍BLOCKED、未运行15或103原始断言。
+- 实现：固定2026-10-20起7天2100行Fixture及SHA；Baseline/Test固定时钟并强制Fixture；旧用户演示会话日期/事务库保留。只读Snapshot、严格Schema/隐私/来源/时间/覆盖/unknown/SHA、原子不可覆盖导入；Live无网络实现。
+- 隔离：Snapshot不建演示DB、不写库存/真实交易；禁止新候补/锁座/建单/改签，切回Fixture重新查询；原支付/取消/退款规则、阶段六权限/费用/Provider保持。换源冻结/锁定、旧提案及工具记忆隔离；实际来源/北京时间/状态在用户端附近与独立事件侧车记录。
+- 实测：full-r6完整1356 passed / 11 failed / 1 skipped / 199 subtests，新45全通过；旧失败/Skip集合和全部旧测试不变，40/59/45/9/60保持。四规格Edge120/120、32截图、32次Mock运行，SQL库存/订单与源SHA/run回查通过；Console仍有原JSON组件/资源拦截问题，详见原日志，非Console0。
+- 迭代原件：首次新增测试隔离路径3失败、首轮完整13失败的2项新Fixture定位问题、browser-r2输入上沿21px变化、full-r5费用文案2子断言失败（1356/13/1、197子测）均保留；修正新代码/测试后重验，不改旧判据或新增skip/xfail。
+- 保护：1892当前获准基线、4056历史零差异，tools.py/evidence.py字节保持含阶段六已批改动；Prompt/八Schema/10/5/DIMENSIONS、原seed/政策、103/B/旧测试/P2/账本/库、阶段五/六报告verification和72+28图不改。全部新数据明确SYNTHETIC_TEST_FIXTURE，未向data/real导入合成数据。
+- 修改：配置测试时钟、mock_core/provider/内部审计/改签来源guard及现有Web来源展示；新增train_source/train_snapshot、2 CLI、web/train_data、固定Fixture、1测试文件；本文/阶段七报告与独立产物，具体原因见报告第4节。不增加依赖，不重设计Grid/Flex。
+- Git/用量：HEAD c889b082dd4bd07e3514038a69362b71dd21915c，原分支/暂存区空/diff --check通过；无Commit/Push/Merge。真实12306/模型/Embedding/LangSmith/交易请求0，8520自建服务停止，其他用户服务不动。
+- 证据：docs/reviews/Ticket-Agent-V3.7-Phase7-Train-Data-Source-Report.md；artifacts/runtime/v37-phase7-train-data-source-20261101/verification.json及要求的8份结构化旁证、JUnit/源码/四规格/Skills/原始输入/快照/停止记录。
+- 遗留与下一步：缺真实快照/独立采集证明、实时合法接口和授权、B C5执行器；原11失败、JSON组件Console、既有RAG/身份/实体软键盘边界保持。等待验收，不自动进入下一阶段或提交推送。
+
+### 2026-11-01T23:04:35.523087+08:00：阶段五至七Git归档授权与开工核验
++
++- 用户明确要求提交并推送全部未提交代码；当前分支feat/ticket-agent-v36-stabilization，开工HEAD c889b082dd4bd07e3514038a69362b71dd21915c、暂存区空，48个候选文件。
++- 源码与最终full-r6清单完全一致，沿用1356 passed / 11 failed / 1 skipped / 199 subtests及四规格120/120，不重复运行完整测试；Fixture COMPLETE、Snapshot PARTIAL、Live BLOCKED、正式103 BLOCKED结论不变。
++- 密钥/敏感路径检查无命中；1892当前保护文件保持。两份用量账本在阶段七验收后分别追加5977/6036字节，原259169/463888字节前缀哈希完整；保留当前原件、不提交、不改写，本任务未发模型/Embedding/LangSmith/12306请求。
++- GitHub代理127.0.0.1不可达，仅本次Git进程直连成功，目标远端分支仍c889b082…；未修改全局代理或TLS设置，不强推、不切分支、不清理工作区。
++- 提交及推送尚待本次实际命令完成，后续追加准确回执。证据：artifacts/runtime/v37-phase5-7-git-archive-20261101/before.json；原阶段五/六/七及恢复报告、运行证据均保留。
++

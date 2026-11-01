@@ -69,6 +69,19 @@ def developer_page(sessions,compact=False):
             from web.trace_view import trace_page
             trace_page([s.trace_dir for s in sessions])
     with decisions:
+        from pathlib import Path
+        import config
+        approved=list((config.BASE_DIR/'data/p2_scenarios/approved').glob('*.json'))
+        st.write('已批准用例数量：',len(approved))
+        st.warning('历史T04漏检保留；本阶段未重新验证T04，当前状态：未验证。')
+        from web.run_evidence import rule_rows
+        from web.evidence import cases,read_json,B_SOURCE,batch
+        historic=batch();manifest=read_json(B_SOURCE/'manifest.json')
+        for row in rule_rows(SYSTEM_PROMPT,cases(),manifest):
+            st.write(row['rule_id']+' · '+row['text'])
+            st.caption('来源：正式Baseline Prompt；覆盖用例：'+', '.join(row['case_ids']))
+            st.caption('历史结果：'+str({r['id']:r['status'] for r in historic['rows'] if r['id'] in row['case_ids']}))
+            st.caption('当前是否通过：未验证；最后验证时间：未记录；非Developer实验成绩。')
         st.markdown('**模拟操作确认**：页面在模型提出模拟写操作后提供用户确认；具体行为和限制见 `web/runtime.py`、`target/langchain_agent.py`。')
         st.markdown('**历史与实时分离**：本地 Trace 保留实际执行记录；历史结果不代表本次运行。')
         st.caption('开发历史和验证范围见 docs/handoff/v36；逐项决策背景与证据映射待补充。')
