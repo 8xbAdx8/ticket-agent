@@ -9,10 +9,10 @@
 - 项目目标：以模拟票务 Agent 为被测对象，建立工具调用、业务约束、多轮交互、RAG、缺陷注入和质量审计的可复现验证闭环。
 - 项目定位：智能体可靠性与测试工作空间；车次、库存、订单、支付均为自建模拟业务，不连接真实铁路、航司或支付系统。模型 API 可以是真实服务。
 - 当前版本：界面明确显示 **3.7**，README 含 V3.7 增量；当前分支名仍含 V3.6。未确认统一发布版本号，不将分支名、界面版本和正式发布版本视为同一概念。
-- 当前开发阶段：V3.7阶段七离线工程交付，总体PARTIAL；Fixture COMPLETE、Snapshot PARTIAL（缺真实原件）、Live BLOCKED。最终1356 passed / 11 failed / 1 skipped、199子测试，新增45通过；Edge四规格120/120、32截图。阶段五至七成果按本次用户授权归档，阶段六COMPLETE保留；103正式重评仍BLOCKED，未进入下一阶段。
+- 当前开发阶段：V3.7阶段七离线工程交付，总体PARTIAL；Fixture COMPLETE、Snapshot PARTIAL（缺真实原件）、Live BLOCKED。最终1356 passed / 11 failed / 1 skipped、199子测试，新增45通过；Edge四规格120/120、32截图。阶段五至七源码已归档并推送d70fda9，阶段六COMPLETE保留；103正式重评仍BLOCKED，未进入下一阶段。
 - 项目路径：`D:\codexproject\ticket-agent`。
 - Git 仓库：`https://github.com/8xbAdx8/ticket-agent.git`；当前分支：`feat/ticket-agent-v36-stabilization`。
-- 当前 HEAD：以现场 `git rev-parse HEAD` 为准；本次阶段五至七归档前为 `c889b082dd4bd07e3514038a69362b71dd21915c`。源码归档SHA及推送结果见第7、12节最新记录与归档回执。
+- 当前 HEAD：以现场 `git rev-parse HEAD` 为准；最新完整源码归档提交 `d70fda9d7e04e8ba4595e6712ed3047dce2f1d8a` 已推送当前分支。其后归档文档/EOF格式收尾随本文所在提交记录，运行逻辑不变；历史HEAD记录保留。
 - 首次建立前（历史）：工作区干净、暂存区为空、非忽略未跟踪文件为0；本文档当时不存在。阶段1开始时仅有既有未跟踪本文及阶段0报告；最终状态见第12节。
 - 环境：推荐 `.venv-v35`；其 `pyvenv.cfg` 记录 Python 3.12.14，历史回归报告也记录此版本；本次未启动解释器或重新验证完整依赖安装。
 
@@ -77,6 +77,8 @@
 信息来源：上述源码、`docs/handoff/Ticket_Agent_作品介绍文档.md`、`docs/handoff/八工具Live模拟购票说明.md`、`docs/architecture/P2_AI测试场景生成方案.md`、`data/p2_scenarios/approved/README.md`、第6节报告。未把计划功能计入已完成。
 
 ## 4. 当前开发进度
+
+> 2026-11-01T23:09:18.892258+08:00 Git归档更新：阶段五至七源码归档48文件已提交并推送d70fda9d7e04e8ba4595e6712ed3047dce2f1d8a，远端SHA独立一致；此前“未提交”字样属于历史时点。Snapshot PARTIAL、Live/正式103 BLOCKED不变，未继续开发。
 
 > 2026-11-01T21:12:17.300021+08:00 阶段七更新：阶段七离线交付停止等待验收；Fixture COMPLETE/Snapshot PARTIAL/Live BLOCKED，未进入下一阶段，未提交。
 
@@ -181,6 +183,8 @@ RAG历史：V3.5.2指标重算无数学错误，原值不改；DeepSeek完整回
 
 ## 7. Git 提交记录
 
+> 2026-11-01T23:09:18.892258+08:00 Git归档更新：重要提交：d70fda9d7e04e8ba4595e6712ed3047dce2f1d8a（feat(v3.7): archive phases 5-7 offline implementation），48文件，已正常Push至原分支并ls-remote核验；后续本文/归档报告与一行EOF格式修正为收尾提交，不强推/合并。
+
 > 2026-11-01T23:04:35.523087+08:00 归档任务：用户明确授权提交并推送全部未提交代码；阶段五/六/七源码、固定Fixture、测试和交付文档一并归档，运行产物/数据库/账本不提交。准确SHA与远端回执见本节后续记录。
 
 > 2026-11-01T21:12:17.300021+08:00 阶段七更新：HEAD仍c889b082dd4bd07e3514038a69362b71dd21915c，原分支、暂存区空；阶段五/六/七工作未提交，不自动Push/Merge。
@@ -248,6 +252,8 @@ RAG历史：V3.5.2指标重算无数学错误，原值不改；DeepSeek完整回
 
 ## 9. 下一步开发计划
 
+> 2026-11-01T23:09:18.892258+08:00 Git归档更新：本次源码归档推送任务已完成；继续等待阶段七验收、合法真实快照/来源证明及B当前103执行器。未来功能或Live联网另行明确任务，不因Git推送自动启动。
+
 > 2026-11-01T21:12:17.300021+08:00 阶段七更新：P0验收阶段七离线结果及提供B配套原件；Snapshot待用户提供合法真实原件/来源证明后再离线导入验收；Live需接口权利/网络范围及另行授权，默认禁用。不自动进入下一阶段或提交。
 
 > 2026-11-01T20:08:10.337492+08:00 正式103恢复审查：P0：取得B当前103配套judge/cases原件、执行器Commit或交付包SHA、依赖锁/原命令，再验证trains_from_tools/C5及Baseline隔离后独立重计分；验收须有103逐项原断言证据，禁止A自行补写C5冒充B。
@@ -311,6 +317,8 @@ RAG历史：V3.5.2指标重算无数学错误，原值不改；DeepSeek完整回
 阶段三进度：P0等待验收并保留11旧失败；P1用户确认后才设计阶段四；原计划保留历史，不自动授权。
 
 ## 11. 重要文件索引
+
+> 2026-11-01T23:09:18.892258+08:00 Git归档更新：Git归档：docs/reviews/Ticket-Agent-V3.7-Phases5-7-Git-Archive-Report.md；artifacts/runtime/v37-phase5-7-git-archive-20261101/含before、source-commit、remote-source及最终verification与远端回执。
 
 > 2026-11-01T21:12:17.300021+08:00 阶段七更新：docs/reviews/Ticket-Agent-V3.7-Phase7-Train-Data-Source-Report.md；artifacts/runtime/v37-phase7-train-data-source-20261101/verification.json、source-inventory.json、fixture/snapshot/provenance/isolation-verification、regression-comparison、git-final-state、browser-verification及Skills/JUnit/原件/截图/停止记录。
 
@@ -548,4 +556,13 @@ RAG历史：V3.5.2指标重算无数学错误，原值不改；DeepSeek完整回
 +- 密钥/敏感路径检查无命中；1892当前保护文件保持。两份用量账本在阶段七验收后分别追加5977/6036字节，原259169/463888字节前缀哈希完整；保留当前原件、不提交、不改写，本任务未发模型/Embedding/LangSmith/12306请求。
 +- GitHub代理127.0.0.1不可达，仅本次Git进程直连成功，目标远端分支仍c889b082…；未修改全局代理或TLS设置，不强推、不切分支、不清理工作区。
 +- 提交及推送尚待本次实际命令完成，后续追加准确回执。证据：artifacts/runtime/v37-phase5-7-git-archive-20261101/before.json；原阶段五/六/七及恢复报告、运行证据均保留。
++
+### 2026-11-01T23:09:18.892258+08:00：阶段五至七源码提交推送及归档收尾
++
++- 源码提交：d70fda9d7e04e8ba4595e6712ed3047dce2f1d8a，feat(v3.7): archive phases 5-7 offline implementation；48文件，包含用户界面、Developer隔离、Fixture/快照源、45新测试及阶段5/6/7和103恢复报告。正常Push成功，ls-remote已独立核验与本地一致，原分支不变。
++- 归档收尾：更新本文和Git归档报告；原未跟踪web/user_layout.py末尾多一空行，暂存区检查发现后仍发出源码提交属于本次操作疏漏，未重写历史；单独收尾提交只删除该空行，Python AST一致，无运行逻辑变化。
++- 验证：除上述EOF外，源码与阶段七full-r6清单完全相同；沿用1356 passed / 11 failed / 1 skipped / 199 subtests、Edge120/120与32截图，本次未重复运行完整测试、不改变旧失败/Skip或正式成绩。Fixture COMPLETE、Snapshot PARTIAL、Live BLOCKED、正式103 BLOCKED不变。
++- 保护：1892当前获准保护文件保持、原报告/截图/B/expect/旧测试不改；两份API账本仅确认验收后的追加前缀完整，未归因来源、未提交或改写，不能再将阶段七当时4056零差异表述为当前时点零差异。本任务真实API0，仅GitHub网络操作。
++- 安全：48文件暂存内容密钥检查无命中，运行产物/SQLite/Chroma/账本/真实回复未入提交；只在本次Git进程绕过不可达本机代理，TLS验证与全局设置保持。
++- 完整最新HEAD/收尾Push结果见现场Git及artifacts/runtime/v37-phase5-7-git-archive-20261101/verification.json；本文不会把自身提交SHA写成另一个历史HEAD。无强推、reset、clean、stash、分支切换或Merge，未进入下一阶段。
 +

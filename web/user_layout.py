@@ -58,4 +58,3 @@ def rail(session):
     st.markdown('### 政策速查')
     st.caption('项目内示例政策，保留条款编号和原文来源。')
     st.button('浏览示例政策',key='rail_policy_'+session.sid,on_click=open_panel,args=(session.sid,'问政策'),width='stretch')
-
