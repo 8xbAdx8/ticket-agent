@@ -365,6 +365,7 @@ class OpenAIProvider:
         resp = self.client.chat.completions.create(
             model=config.MODEL_NAME, messages=_to_api(messages), tools=tools, tool_choice="auto"
         )
+        self.last_finish_reason = getattr(resp.choices[0],"finish_reason",None)
         msg = resp.choices[0].message
         usage = resp.usage
         self.last_usage = {"prompt": usage.prompt_tokens if usage else 0, "completion": usage.completion_tokens if usage else 0}

@@ -54,6 +54,7 @@ class LangChainMockModel(BaseChatModel):
         calls = [{"id":c["id"], "name":c["name"], "args":c["arguments"], "type":"tool_call"}
                  for c in response.get("tool_calls", [])]
         message = AIMessage(content=response.get("content") or "", tool_calls=calls,
+                            response_metadata={"finish_reason":response.get("finish_reason",getattr(self.decision_provider,"last_finish_reason","stop"))},
                             usage_metadata={"input_tokens":0, "output_tokens":0, "total_tokens":0})
         return ChatResult(generations=[ChatGeneration(message=message)])
 

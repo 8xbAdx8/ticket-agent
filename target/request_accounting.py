@@ -102,8 +102,19 @@ def reserve(request, budget, provider, body, *, permitted=None):
         raise error('duplicate_request_dispatch')
     summary = {'model': body.get('model'), 'message_roles': [m.get('role') for m in body.get('messages', [])],
                'returned_tool_call_ids': [m.get('tool_call_id') for m in body.get('messages', []) if m.get('role') == 'tool']}
+    from target.acceptance_budget import active
+    batch=active()
+    if batch:
+        identity=uuid.uuid4().hex
+        scope=ACTIVE.get()
+        try:batch.reserve(identity,provider,body,request.content,trace_id=scope[1] if scope else None,model_step=scope[2] if scope else None)
+        except Exception as exc:
+            from target.deepseek_runtime import DeepSeekError
+            if isinstance(exc,DeepSeekError):raise
+            raise error('acceptance_budget_unavailable') from None
+        request.extensions['ticket_acceptance_reservation']=(batch,identity)
     try:
-        identity = budget.reserve(summary)
+        identity = budget.reserve(summary,request_id=identity) if batch else budget.reserve(summary)
     except Exception:
         identity = uuid.uuid4().hex
         emit({'event': 'usage_recording_warning', 'provider': provider, 'category': 'usage_log_write_failed'})
@@ -133,6 +144,14 @@ def reserve(request, budget, provider, body, *, permitted=None):
 
 
 def _record(request, **values):
+    entry=request.extensions.get('ticket_acceptance_reservation')
+    if entry:
+        batch,request_id=entry
+        try:batch.settle(request_id,values.get('usage'),values.get('category','outcome_unknown'))
+        except Exception:
+            # Its durable reservation remains charged. A broken batch cannot
+            # grant the next HTTP request, even if usage logging remains usable.
+            emit({'event':'acceptance_settlement_warning','request_id':request_id})
     budget, identity, _, provider = request.extensions['ticket_reservation']
     started = request.extensions.get('ticket_usage_started')
     if started is not None:

@@ -7,7 +7,11 @@ from pathlib import Path
 
 TOOL_LABELS = {"query_tickets": "查询余票", "monitor_seat": "候补监控", "lock_seat": "锁座",
                "create_order": "创建订单", "pay_order": "支付订单", "cancel_order": "取消/退票",
-               "query_order": "查询订单", "search_policy": "检索政策"}
+               "query_order": "查询订单", "search_policy": "检索政策",
+               "railway_search_stations": "查询车站", "railway_query_trips": "查询静态车次", "railway_trip_stops": "查询经停站",
+               "railway_check_inventory": "查询模拟余票", "railway_quote_fare": "生成模拟报价", "railway_get_order": "查询本人订单",
+               "railway_create_order": "创建模拟订单", "railway_pay_order": "模拟支付", "railway_cancel_order": "取消模拟订单",
+               "railway_refund_order": "模拟退票", "railway_change_order": "模拟改签"}
 STATUS_LABELS = {"pending": "待支付", "paid": "已支付", "cancelled": "已取消", "refunded": "已退票", "expired": "已过期"}
 
 
@@ -56,6 +60,8 @@ def ticket_cards(result):
     cards = []
     source=result.get('data_source') or {}
     source_label=('SYNTHETIC_TEST_FIXTURE · 非真实数据' if source.get('classification')=='SYNTHETIC_TEST_FIXTURE' else '历史快照 · 非实时余票') if source.get('mode')=='snapshot' else '演示数据 · 不真实出票'
+    if source.get('mode')=='live':
+        source_label='SYNTHETIC_TEST_FIXTURE · 非真实数据' if source.get('classification')=='SYNTHETIC_TEST_FIXTURE' else '独立只读查询 · 非实时保证'
     for t in trains:
         stock = t.get("seats_left")
         if type(stock) in (int, float):

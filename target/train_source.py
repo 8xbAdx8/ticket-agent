@@ -155,9 +155,12 @@ class SnapshotTrainSource:
         return [copy.deepcopy(t) for t in data['trains'] if t['train_no']==train_no and t['date']==date]
 
 class LiveTrainSource:
-    """Deliberately has no client, URL, login, crawler or network code."""
-    def query_tickets(self,*args,**kwargs):return _result('LIVE_DISABLED',[],{'mode':'live','blocker':LIVE_BLOCK})
-    def get_train_detail(self,*args,**kwargs):return self.query_tickets()
+    """Explicitly enabled, loopback-only service; no transaction capability."""
+    def query_tickets(self,*args,**kwargs):
+        from target.train_assistant_adapter import TrainAssistantAdapter,configured_client
+        try:return TrainAssistantAdapter(configured_client()).query_tickets(*args,**kwargs)
+        except ValueError:return _result('SOURCE_UNAVAILABLE',[],{'mode':'live','error_code':'INVALID_SERVICE_CONFIGURATION'})
+    def get_train_detail(self,*args,**kwargs):return []
 
 def _record(result,choice):
     from target.run_events import identity,emit
@@ -177,7 +180,7 @@ def query_tickets(from_city,to_city,date,seat_type=None,kind=None,*,fixture_back
         validate_choice(choice)
         if choice.mode=='fixture':result=FixtureTrainSource(fixture_backend).query_tickets(from_city,to_city,date,seat_type,kind)
         elif choice.mode=='snapshot':result=SnapshotTrainSource(choice,(STATE.get() or {}).get('now')).query_tickets(from_city,to_city,date,seat_type,kind)
-        else:result=LiveTrainSource().query_tickets()
+        else:result=LiveTrainSource().query_tickets(from_city,to_city,date,seat_type,kind)
     except FixtureUnavailable:result=_result('FIXTURE_MISSING',[],{'mode':'fixture'})
     except ValueError:result=_result('SOURCE_UNAVAILABLE',[],{'mode':choice.mode if choice.mode in ('fixture','snapshot','live') else 'unavailable'})
     except Exception:
@@ -192,7 +195,10 @@ def assert_demo_acquisition():
 def external_authority():
     choice=selected()
     if choice.mode=='fixture':return None
-    if choice.mode!='snapshot':return {'available':False,'trains':[],'source':'live_disabled'}
+    if choice.mode=='live':
+        result=(STATE.get() or {}).get('last_result') or {}
+        return {'available':bool(result) and 'error' not in result,'trains':sorted({t['train_no'] for t in result.get('trains',[])}),
+                'source':'independent_query_service','source_sha256':result.get('data_source',{}).get('response_sha256')}
     data,meta,error=SnapshotTrainSource(choice,(STATE.get() or {}).get('now')).read()
     return {'available':data is not None,'trains':sorted({t['train_no'] for t in data['trains']}) if data else [],
             'source':'validated_local_snapshot','source_sha256':meta.get('sha256'),'reason':error}
@@ -204,6 +210,6 @@ def summary(result):
         stock='未知' if t['seats_left'] is None else str(t['seats_left'])
         price='未提供' if t['price'] is None else str(t['price'])
         lines.append(f"{t['train_no']} {t['from_city']}→{t['to_city']} {t['date']} {t['depart']} {t['seat_type']}，票价{price}，余票{stock}。")
-    lines.append('历史快照不是实时余票保证；仅供查询，不会真实锁座、出票或扣款。')
+    lines.append(('独立服务查询结果不保证实时可售；' if m.get('mode')=='live' else '历史快照不是实时余票保证；')+'仅供查询，不会真实锁座、出票或扣款。')
     if m.get('classification')==SYNTHETIC:lines.append('SYNTHETIC_TEST_FIXTURE：合成测试数据，非真实12306数据。')
     return '\n'.join(lines)

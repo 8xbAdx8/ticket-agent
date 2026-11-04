@@ -107,7 +107,7 @@ class Settings:
     provider_name: ClassVar[str] = "deepseek"
     timeout: float = 20
     max_requests: int = 0  # Deprecated compatibility field; never an admission limit.
-    max_output_tokens: int = 512
+    max_output_tokens: int = 1024
     max_model_calls: int = 3
     max_tool_calls: int = 8
     turn_token_budget: int = 12000
@@ -120,14 +120,14 @@ class Settings:
     def from_env(cls):
         values = dict(timeout=float(os.getenv("DEEPSEEK_TIMEOUT", "20")),
             max_requests=0,  # Ignore obsolete DEEPSEEK_MAX_REQUESTS, including stale/invalid values.
-            max_output_tokens=int(os.getenv("DEEPSEEK_MAX_OUTPUT_TOKENS", "512")),
+            max_output_tokens=int(os.getenv("DEEPSEEK_MAX_OUTPUT_TOKENS", "1024")),
             max_model_calls=int(os.getenv("DEEPSEEK_MAX_MODEL_CALLS", "3")),
             max_tool_calls=int(os.getenv("DEEPSEEK_MAX_TOOL_CALLS", "8")),
             turn_token_budget=int(os.getenv("DEEPSEEK_TURN_TOKEN_BUDGET", "12000")),
             max_payload_bytes=int(os.getenv("DEEPSEEK_MAX_PAYLOAD_BYTES", "32000")),
             ledger_path=Path(os.getenv("DEEPSEEK_BUDGET_PATH",str(cls.ledger_path))))
-        bounds = {"timeout":(1,60),"max_output_tokens":(16,1024),
-                  "max_model_calls":(1,4),"max_tool_calls":(1,8),"turn_token_budget":(512,32000),
+        bounds = {"timeout":(1,60),"max_output_tokens":(16,2048),
+                  "max_model_calls":(1,8),"max_tool_calls":(1,8),"turn_token_budget":(512,64000),
                   "max_payload_bytes":(1000,64000)}
         if any(not low <= values[k] <= high for k,(low,high) in bounds.items()):
             raise DeepSeekError("invalid_safety_limits")
@@ -163,7 +163,8 @@ def allowed_tools(settings):
     if settings.profile == "full_sandbox":
         validate_sandbox(settings)  # 发送HTTP请求前也重新验证，防止运行中改变配置。
         from target.tools import TOOL_NAMES
-        return frozenset(TOOL_NAMES)
+        from target.v39.registry import NAMES as RAILWAY_NAMES
+        return frozenset((*TOOL_NAMES, *RAILWAY_NAMES))
     return READ_ONLY
 
 

@@ -50,16 +50,17 @@ def alias(old,new,default=""):
     return left or right or default
 
 
-def model_config(provider,*,active=False):
+def model_config(provider,*,active=False,environment=None):
+    getenv=os.getenv if environment is None else environment.get
     if provider=="deepseek":
-        model=os.getenv("DEEPSEEK_MODEL",os.getenv("AGENT_MODEL","deepseek-flash") if active else "deepseek-flash")
-        endpoint=os.getenv("DEEPSEEK_BASE_URL",os.getenv("AGENT_BASE_URL","https://api.deepseek.com") if active else "https://api.deepseek.com")
+        model=getenv("DEEPSEEK_MODEL",getenv("AGENT_MODEL","deepseek-flash") if active else "deepseek-flash")
+        endpoint=getenv("DEEPSEEK_BASE_URL",getenv("AGENT_BASE_URL","https://api.deepseek.com") if active else "https://api.deepseek.com")
         key_env="DEEPSEEK_API_KEY"
     elif provider=="bailian":
-        model=os.getenv("DASHSCOPE_MODEL","qwen3.8-flash"); endpoint=os.getenv("DASHSCOPE_BASE_URL",""); key_env="DASHSCOPE_API_KEY"
+        model=getenv("DASHSCOPE_MODEL","qwen3.8-flash"); endpoint=getenv("DASHSCOPE_BASE_URL",""); key_env="DASHSCOPE_API_KEY"
     else: raise ValueError("unknown_api_provider")
     return {"provider":provider,"model":model,"base_url":endpoint,"key_env":key_env,
-            "configured":all((os.getenv(key_env,"").strip(),model.strip(),endpoint.strip()))}
+            "configured":all((getenv(key_env,"").strip(),model.strip(),endpoint.strip()))}
 
 
 def safe_endpoint(value):

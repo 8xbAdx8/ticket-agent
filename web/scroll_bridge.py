@@ -23,20 +23,21 @@ import json
 import streamlit as st
 import streamlit.components.v1 as components
 
-ACTIONS = ("none", "bottom", "run")
+ACTIONS = ("none", "top", "bottom", "run")
 CHAT_KEY = "user_chat_scroll"
 NONCE_KEY = "scroll_nonce"
 ACTION_KEY = "scroll_action"
 ANCHOR_KEY = "scroll_anchor"
 
 
-def request(action, anchor=""):
+def request(action, anchor="", *, scope=None):
     """Queue one explicit scroll request; only this bumps the bridge token."""
     if action not in ACTIONS:
         raise ValueError("unknown scroll action")
     st.session_state[NONCE_KEY] = int(st.session_state.get(NONCE_KEY, 0)) + 1
     st.session_state[ACTION_KEY] = action
     st.session_state[ANCHOR_KEY] = anchor if action == "run" else ""
+    st.session_state['scroll_scope'] = scope if scope is not None else st.session_state.get('user_compose_session','')
 
 
 def current_request():
@@ -45,6 +46,7 @@ def current_request():
         "nonce": int(st.session_state.get(NONCE_KEY, 0)),
         "action": st.session_state.get(ACTION_KEY, "none"),
         "anchor": st.session_state.get(ANCHOR_KEY, ""),
+        "scope": st.session_state.get('scroll_scope',''),
     }
 
 
@@ -185,6 +187,11 @@ BRIDGE_JS = r"""
     var explicit = CFG.token !== lastToken;
     if (explicit) { try { store.setItem(KEY + ':token', CFG.token); } catch (err) {} }
 
+    if (explicit && CFG.action === 'top') {
+      box.scrollTop = 0;
+      setState({ top: 0, atBottom: false, height: box.scrollHeight, turns: CFG.turns });
+      return;
+    }
     if (explicit && CFG.action === 'bottom') {
       toBottom(); hideBadge(); markBottom(); return;
     }
@@ -201,7 +208,7 @@ BRIDGE_JS = r"""
       toBottom(); markBottom(); return;
     }
 
-    if (CFG.turns === 0 && CFG.action === 'none') {
+    if (CFG.turns === 0 && saved.top === undefined) {
       box.scrollTop = 0;
       setState({ top: 0, atBottom: false, height: box.scrollHeight, turns: 0 });
     } else if (saved.atBottom || saved.top === undefined) {
@@ -224,6 +231,15 @@ BRIDGE_JS = r"""
       return;
     }
     run(root);
+    // Follow streamed DOM changes only while the reader was already following.
+    if (window.parent.__taScrollObserver) window.parent.__taScrollObserver.disconnect();
+    var observer = new MutationObserver(function () {
+      var box = pickScroller(root), saved = {};
+      try { saved = JSON.parse(window.parent.sessionStorage.getItem('ta-scroll:' + CFG.chatKey + ':' + CFG.scope) || '{}'); } catch (err) {}
+      if (saved.atBottom) box.scrollTop = box.scrollHeight;
+    });
+    observer.observe(root, { childList: true, subtree: true, characterData: true });
+    window.parent.__taScrollObserver = observer;
     scheduleFit();
   }
   boot();
@@ -243,6 +259,8 @@ def bridge_html(chat_key, token, action, anchor, nonce, max_height=None, turns=0
 def mount(chat_key=CHAT_KEY, height=0, max_height=None, turns=0, scope=""):
     """Render the bridge; safe to call on every rerun."""
     pending = current_request()
+    if pending['scope'] and pending['scope'] != scope:
+        pending = dict(nonce=0,action='none',anchor='')
     token = scroll_token(pending["nonce"], pending["action"], pending["anchor"])
     components.html(
         bridge_html(chat_key, token, pending["action"], pending["anchor"], pending["nonce"],

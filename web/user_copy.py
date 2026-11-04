@@ -60,7 +60,13 @@ def processing_markup(event):
 
 
 def error_message(category):
+    if category=='model_output_truncated':
+        return '模型文字达到输出上限，回答未完整返回；已执行查询和已提交的模拟交易仍保留。请查看下方数据库状态，未自动重试。'
+    if str(category or '').startswith('acceptance_'):
+        return '本次验收批次已被安全预算拦截；本次未继续请求模型。已完成的交易和记录保留，不会自动重试，请核对批次预算。'
     """原始错误仍留在审计中；用户端给出可执行的下一步。"""
+    if category=='observed_token_budget_exhausted':
+        return '本轮上下文已达到安全预算，已停止继续调用模型；已执行工具结果完整保留。请新建会话或缩小查询范围后重试，不要重复已完成的查询。'
     if category in ('timeout', 'request_timeout'):
         return '本次请求超时，结果可能尚未确认。请先核对订单状态，再决定是否重试。'
     if category in ('rate_limited', 'server_error', 'service_unavailable'):

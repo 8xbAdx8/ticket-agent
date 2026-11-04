@@ -20,7 +20,7 @@ def _inside(root):
 
 def save_session(session):
     """Only the mutable index is replaced; audits/events/Trace are never rewritten."""
-    if session.read_only or not session.audits or not session.root.exists():return
+    if session.read_only or not session.root.exists() or not (session.audits or getattr(session,'operations',[])):return
     root=_inside(session.root)
     audits={a.get('trace_id'):a for a in session.audits
             if (a.get('public_trace') or {}).get('session_id')==session.sid}
@@ -28,6 +28,10 @@ def save_session(session):
     payload={'schema':'ticket-session-replay/1','session_id':session.sid,
              'settings':{n:getattr(session,n) for n in SETTINGS},
              'run_ids':list(audits),'history_run_ids':[a['trace_id'] for a in history if a],
+             'operations':getattr(session,'operations',[]),
+             'railway_state_reference':getattr(session,'railway_state_reference',None),
+             'selected_railway_trip':getattr(session,'selected_railway_trip',None),
+             'business_receipts':getattr(session,'business_receipts',[]),
              'updated_at':datetime.now(timezone.utc).isoformat()}
     from target.diagnostics import sanitize
     payload=sanitize(payload)
@@ -52,11 +56,25 @@ def restore_session(root, *, expected_sid=None):
     from web.runtime import Conversation
     from web.evidence import read_audit_records
     session=Conversation(**settings,root=root,sid=sid,read_only=True)
+    session.railway_state_reference=saved.get('railway_state_reference')
+    session.selected_railway_trip=saved.get('selected_railway_trip')
+    session.business_receipts=[r for r in saved.get('business_receipts',[]) if isinstance(r,dict) and r.get('session_id')==sid]
+    session.operations=[row for row in saved.get('operations',[]) if isinstance(row,dict) and row.get('session_id')==sid
+        and row.get('status') in ('QUEUED','RUNNING','SUCCEEDED','FAILED','BLOCKED','CANCELLED')
+        and isinstance(row.get('request_id'),str) and isinstance(row.get('operation'),str)
+        and isinstance(row.get('tools'),list) and all(isinstance(t,dict) and isinstance(t.get('tool'),str) for t in row['tools'])]
+    for row in session.operations:
+        if row['status'] in ('QUEUED','RUNNING'):
+            row.update(status='BLOCKED',stage='历史运行缺少最终回执，未自动重试，请核对订单状态。',
+                error=dict(category='interrupted_without_final_receipt'))
     records,errors=read_audit_records(root/'traces/audit_runs.jsonl')
     wanted=saved.get('run_ids') or []
     by_id={r['trace_id']:r for r in records if r.get('trace_id') in wanted
            and (r.get('public_trace') or {}).get('session_id')==sid}
     session.audits=[by_id[rid] for rid in wanted if rid in by_id]
+    for row in session.operations:
+        if row['status']=='SUCCEEDED' and row.get('kind')!='page_business' and (row.get('run_id') not in by_id or by_id[row['run_id']].get('error')):
+            row.update(status='BLOCKED',stage='历史状态缺少匹配的成功回执，请核对原始记录。',error=dict(category='unverified_success_index'))
     for rid in saved.get('history_run_ids') or []:
         audit=by_id.get(rid)
         if not audit or audit.get('error') or audit.get('contract_returned') is False:continue

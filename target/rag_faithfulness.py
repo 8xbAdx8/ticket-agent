@@ -224,6 +224,12 @@ def _execution_claims(text,events,order_statuses=None):
         tail=text[match.end():match.end()+12]
         previous=text[max(0,match.start()-12):match.start()]
         if re.search(r'未|没有|尚未|如果|假设|若|当',previous):continue
+        # A policy statement such as "每乘客最多一次成功退款" is not a claim
+        # that this turn executed a refund.  Only first-person/completed claims
+        # ("已成功退款" / "系统已退款") remain execution claims.
+        if match.group().startswith('成功') and re.search(
+                r'最多|允许|可以|可|政策|规则|每(?:位|名)?乘客', text[max(0,match.start()-30):match.start()]):
+            continue
         if re.match(r'订单(?:的|不|可|需|会|应|须)',tail):continue
         # Status adjectives modify an order rather than claiming this turn
         # executed a refund. Keep explicit first-person completion claims.

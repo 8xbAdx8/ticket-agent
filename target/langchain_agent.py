@@ -21,6 +21,8 @@ from target.langchain_model import LangChainMockModel
 from target.write_authorization import denial, purchase_clarification, privacy_denial
 from target.execution_config import bound_run,CURRENT
 from target.run_events import recorded_run
+from target.v39.registry import bounded_run as railway_bounded_run
+from target.v39.completion import OutputTruncated
 
 READ_ONLY_TOOLS = ("query_tickets", "search_policy")
 CONFIRMATION_TTL_SECONDS = 600
@@ -59,7 +61,16 @@ class TurnContext:
 
 class ContractMiddleware(AgentMiddleware):
     def wrap_model_call(self, request, handler):
+        from target.v39.model_result import messages as railway_messages
+        request=request.override(messages=railway_messages(request.messages))
         ctx = request.runtime.context
+        from target.v39.completion import local_answer
+        local=local_answer(ctx.user_message,ctx.events)
+        if local:
+            from target.run_events import emit
+            emit('agent_decision',source='deterministic_railway_duration',model_called=False,reply=local)
+            ctx.events.append(dict(event='deterministic_duration_answer',source='python',model_called=False,public_reply=local))
+            return ModelResponse(result=[AIMessage(content=local)])
         if ctx.model_calls == 0 and ctx.purchase_tools_available and not ctx.deepseek_settings:
             clarification = purchase_clarification(ctx.user_message)
             if clarification:
@@ -117,7 +128,8 @@ class ContractMiddleware(AgentMiddleware):
             for call in m.tool_calls:
                 emit('model_tool_proposed',tool=call['name'],args=call['args'],call_id=call['id'])
                 from target.execution_config import tool_denial
-                reason=tool_denial(call['name'],check_confirmation=False)
+                from target.v39 import registry as railway
+                reason=railway.denial(call['name']) if call['name'] in railway.NAMES else tool_denial(call['name'],check_confirmation=False)
                 if reason:emit('config_permission_denied','blocked',tool=call['name'],call_id=call['id'],executed=False,reason=reason)
             ctx.fault_run.model_requests.append({"model_step":ctx.model_calls,
                 "tool_calls":copy.deepcopy(m.tool_calls),"final_text":m.text if not m.tool_calls else None})
@@ -138,6 +150,14 @@ class ContractMiddleware(AgentMiddleware):
                 m.content = safe_text(m.content) if isinstance(m.content,str) else m.content
             ctx.trace.tokens["prompt"] += usage.get("input_tokens",0)
             ctx.trace.tokens["completion"] += usage.get("output_tokens",0)
+            if m.response_metadata.get('finish_reason')=='length':
+                from target.v39.completion import OutputTruncated
+                raw=dict(event='output_truncated',model_step=ctx.model_calls,original_model_reply=m.text,tool_calls=copy.deepcopy(m.tool_calls),usage=usage,complete=False)
+                ctx.events.append(raw)
+                from target.run_events import emit
+                emit('output_truncated','incomplete',**{k:v for k,v in raw.items() if k!='event'})
+                raise OutputTruncated()
+
             if ctx.deepseek_settings and m.invalid_tool_calls:
                 ctx.events.append({"event":"invalid_tool_calls","calls":m.invalid_tool_calls})
                 raise DeepSeekError("invalid_tool_call")
@@ -164,7 +184,8 @@ class ContractMiddleware(AgentMiddleware):
 
         # Ownership is independent of a model decision or an exact-proposal approval.
         from target.execution_config import tool_denial
-        pre_block = tool_denial(original['name'],check_confirmation=False) or privacy_denial(original['name'], original['args'], ctx.user_message)
+        from target.v39 import registry as railway
+        pre_block = (railway.denial(original['name']) if original['name'] in railway.NAMES else tool_denial(original['name'],check_confirmation=False)) or privacy_denial(original['name'], original['args'], ctx.user_message)
         missing_fields = []
         if (not pre_block and ctx.deepseek_settings and ctx.deepseek_settings.profile == 'full_sandbox'
                 and original['name'] in tools.TOOL_NAMES):
@@ -265,6 +286,11 @@ class ContractMiddleware(AgentMiddleware):
                      "timestamp":datetime.now(timezone.utc).isoformat(),"step":ctx.current_step+1}
             ctx.events.append(entry)
             run.executions.append({**entry,"original_result":original_result})
+            if name in ('railway_search_stations','railway_query_trips','railway_trip_stops','railway_get_order') and not ok and isinstance(result,dict) and result.get('error') in {
+                'INVALID_RAILWAY_ARGUMENTS','ORDER_FORBIDDEN','STATION_ID_REQUIRED','INVALID_INTERVAL','INVALID_STATION_NAME','INVALID_CURSOR'}:
+                # A failed read remains failed in Trace. Give the model the
+                # actual error for clarification instead of aborting its reply.
+                ctx.recoverable_blocks.add(call['id'])
             if (blocked and confirmed_execution is False and not run.config and ctx.deepseek_settings
                     and ctx.deepseek_settings.profile == 'full_sandbox' and (pre_block or blocked in {
                         '当前消息未明确授权该操作，请明确说明订票、支付、退票或候补请求。',
@@ -315,9 +341,10 @@ class ContractMiddleware(AgentMiddleware):
 
 
 def adapt_tool(name: str) -> StructuredTool:
-    definition = next(t["function"] for t in tools.TOOLS if t["function"]["name"] == name)
+    from target.v39 import registry as railway
+    definition = next(t["function"] for t in tools.TOOLS+railway.TOOLS if t["function"]["name"] == name)
     def execute(**args):
-        result, ok, _ = tools.dispatch(name,args)
+        result, ok, _ = railway.dispatch(name,args)
         if not ok:
             raise BackendToolFailure(result)
         return result
@@ -341,7 +368,14 @@ class LangChainAgent:
             raise ValueError("AGENT_LC_TOOLSET 只支持 read_only/all")
         names = tuple(tool_names) if tool_names is not None else (
             tuple(tools.TOOL_NAMES) if config.LC_TOOLSET == "all" else READ_ONLY_TOOLS)
-        if (not names and effective_config is None) or len(set(names)) != len(names) or set(names)-set(tools.TOOL_NAMES):
+        if len(set(names))!=len(names):raise ValueError('LangChain 工具不能重复')
+        from target.v39 import registry as railway
+        with_config=effective_config is not None and effective_config.execution_mode=='baseline'
+        additions=() if with_config else tuple(t['function']['name'] for t in railway.definitions([]))
+        if additions:
+            requested=[t for t in tools.TOOLS if t['function']['name'] in names]
+            names=tuple(t['function']['name'] for t in railway.definitions(requested))
+        if (not names and effective_config is None) or len(set(names)) != len(names) or set(names)-set((*tools.TOOL_NAMES,*additions)):
             raise ValueError("LangChain 工具必须是现有八个工具的非空、不重复子集")
         self.tool_names = names
         from target.fault_injection import normalize
@@ -392,6 +426,7 @@ class LangChainAgent:
 
     @recorded_run
     @bound_run
+    @railway_bounded_run
     def chat(self, session_id: str, message: str, *, save_trace=True, resume_decision=None) -> dict[str,Any]:
         trace = Trace(session_id,message)
         from target.run_events import bind
@@ -458,10 +493,23 @@ class LangChainAgent:
                 reply = '模型提出了一项模拟操作，请核对操作详情后确认或取消；目前尚未执行该操作。'
             else:
                 reply = output["messages"][-1].text or "抱歉，我没能完成这次操作。"
+            from target.v39.completion import resolve
+            reply,derived=resolve(reply,message,context.events)
+            if derived:
+                context.events.append(derived)
+                from target.run_events import emit
+                emit('deterministic_duration_answer',**{k:v for k,v in derived.items() if k!='event'})
             phase="reply_validation"
             if self.deepseek_settings:
                 from target.deepseek_runtime import DeepSeekError, validate_read_only_reply
-                if any(not e['ok'] and e['call_id'] not in context.recoverable_blocks for e in context.fault_run.executions):
+                from target.v39.read_recovery import inventory_recoveries
+                recovered=inventory_recoveries(context.events)
+                for failed_call_id,recovered_call_id in recovered.items():
+                    recovery=dict(event='railway_read_recovered',tool='railway_check_inventory',failed_call_id=failed_call_id,recovered_call_id=recovered_call_id,reason='station_names_resolved_to_unique_ids')
+                    context.events.append(recovery)
+                    from target.run_events import emit
+                    emit('railway_read_recovered',**{k:v for k,v in recovery.items() if k!='event'})
+                if any(not e['ok'] and e['call_id'] not in context.recoverable_blocks and e['call_id'] not in recovered for e in context.fault_run.executions):
                     raise DeepSeekError("tool_execution_failed")
                 if context.recoverable_blocks:
                     from target.rag_faithfulness import _execution_claims
@@ -507,7 +555,26 @@ class LangChainAgent:
                     if self.deepseek_settings and assessment.get("status")=="failed":
                         from target.deepseek_runtime import DeepSeekError
                         raise DeepSeekError("rag_answer_inconsistent")
+            from target.v39.counts import reconcile
+            original_reply=reply
+            reply,corrections=reconcile(reply,context.events)
+            if corrections:
+                from target.run_events import emit
+                emit('railway_count_correction',original_model_reply=original_reply,public_reply=reply,corrections=corrections)
+                context.events.append(dict(event='railway_count_correction',original_model_reply=original_reply,public_reply=reply,corrections=corrections))
+            from target.v39.business_claim_guard import apply as guard_business
+            original=reply
+            reply,guard=guard_business(reply,context.events,message)
+            if guard and guard['status']=='blocked':
+                context.events.append(dict(event='business_claim_guard',status='blocked',original_model_reply=original,public_reply=reply,assessment=guard))
+                from target.run_events import emit
+                emit('business_claim_guard','blocked',original_model_reply=original,public_reply=reply,assessment=guard)
             trace.finish(reply,"stop")
+        except OutputTruncated:
+            from target.v39.completion import incomplete_reply
+            reply=incomplete_reply(context.events)
+            trace.finish(reply,'stop')
+            context.events.append(dict(event='agent_incomplete',category='model_output_truncated',complete=False))
         except (ModelStepLimit,GraphRecursionError) as exc:
             reply = "达到最大执行步数，操作尚未完成；请查看工具轨迹。"
             trace.abort(reply,"max_steps_exceeded")
@@ -523,6 +590,9 @@ class LangChainAgent:
                 from target.live_evidence import token_summary
                 usage=token_summary(context.events)
                 notice=failure_notice(error["category"]) or "请求未完成（错误类别："+error["category"]+"），本轮未自动重试。"
+                if error['category']=='observed_token_budget_exhausted':
+                    from target.v39.completion import incomplete_reply
+                    notice=incomplete_reply(context.events,error['category'])
                 if usage["token_usage_status"]!="complete":
                     notice+=" 本轮 Token 用量"+("仅有部分记录。" if usage["token_usage_status"]=="partial" else "未知。")
                 trace.finish(notice,"stop")
@@ -558,7 +628,7 @@ class LangChainAgent:
             # 仅DeepSeek公开Trace脱敏，覆盖user_msg/工具参数/结果预览；Mock原样返回。
             result = json.loads(safe_text(json.dumps(result, ensure_ascii=False)))
         from target.diagnostics import make_audit
-        self.last_audit_report=make_audit(trace,context.fault_run,events=context.events,save=save_trace,public_trace=result)
+        self.last_audit_report=make_audit(trace,context.fault_run,events=context.events,save=save_trace,public_trace=result,error=({'category':'model_output_truncated','http_status':None} if any(e.get('event')=='agent_incomplete' for e in context.events) else None))
         if save_trace:
             trace.save(record=result)
             if self.deepseek_settings and config.PROVIDER == "deepseek":

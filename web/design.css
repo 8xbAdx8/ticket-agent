@@ -1,5 +1,5 @@
 /* Semantic HTML and public container keys; no generated Emotion class names. */
-html,body,[data-testid="stAppViewContainer"],.stApp{background:var(--ta-bg);color:var(--ta-text);font-family:Inter,"Segoe UI","Microsoft YaHei",sans-serif}
+html,body,[data-testid="stAppViewContainer"],.stApp{background:var(--ta-bg);color:var(--ta-text);font-family:var(--ta-font-body)}
 [data-testid="stHeader"]{background:transparent}
 [data-testid="stSidebar"]{background:var(--ta-panel);border-right:1px solid var(--ta-border)}
 [data-testid="stSidebar"]>div:first-child{padding-top:1.7rem}
@@ -277,3 +277,130 @@ hr{border-color:var(--ta-border)}a{color:var(--ta-accent)}
 @media(max-width:760px){[data-testid="stTable"]{overflow-x:auto}[data-testid="stTable"] table{min-width:700px}}
 @media(max-width:760px){.ta-ls-top{flex-wrap:wrap}.ta-ls-top span{flex:1 1 100%;text-align:right}}
 .ta-ls-top span{min-width:0;word-break:break-all}
+
+/* V3.7 railway workspace system. Presentation only; keep public widget keys. */
+:root{
+ --ta-font-body:"Segoe UI Variable","Segoe UI","Microsoft YaHei UI","Microsoft YaHei",sans-serif;
+ --ta-font-display:Bahnschrift,"Microsoft YaHei UI","Microsoft YaHei",sans-serif;
+ --ta-radius-control:8px;--ta-radius-ticket:12px;--ta-radius-panel:18px;
+ --ta-space-1:4px;--ta-space-2:8px;--ta-space-3:12px;--ta-space-4:16px;--ta-space-6:24px;--ta-space-8:32px;
+}
+.stApp{font-size:14px;line-height:1.7}
+.stApp h1,.stApp h2,.stApp h3,.ta-brand b,.ta-product b,.tc-train strong,.ta-kpi strong{font-family:var(--ta-font-display)}
+.stApp h1,.stApp h2{font-weight:650;letter-spacing:-.035em;text-wrap:balance}
+.stApp h3{font-size:16px!important;letter-spacing:0;font-weight:650!important}
+.stApp p{line-height:1.7}
+.block-container{padding:2.4rem 2.4rem 3rem;max-width:1680px}
+.ta-heading{align-items:flex-start;gap:24px;padding-bottom:24px;margin-bottom:24px;border-bottom:1px solid var(--ta-border)}
+.ta-heading h1{font-size:clamp(25px,2.2vw,34px);line-height:1.3;max-width:30em}
+.ta-heading p{max-width:70ch;font-size:13px;line-height:1.8}
+.ta-heading .ta-badge{margin-top:4px;white-space:normal;flex-shrink:0}
+.ta-badge,.ta-tag{font-size:12px;border-radius:6px;padding:4px 9px;line-height:1.5}
+.ta-badge{background:var(--ta-soft);border-color:var(--ta-border);color:var(--ta-strong)}
+.ta-eyebrow,.ta-rail-sub,.ta-train-head,.ta-demo-badge,.ta-ls-metric span{text-transform:none;letter-spacing:0}
+
+/* Navigation resembles a station directory; the active platform stays explicit. */
+[data-testid="stSidebar"]{background:var(--ta-panel)}
+[data-testid="stSidebar"]>div:first-child{padding-top:28px}
+.ta-brand{gap:12px;padding-bottom:28px;margin-bottom:8px;border-bottom:1px solid var(--ta-border)}
+.ta-logo{width:42px;height:42px;border-radius:10px;font-family:var(--ta-font-display);font-weight:700;background:var(--ta-accent);color:var(--ta-panel);box-shadow:inset 0 -4px 0 #00000018}
+.ta-brand b{font-size:19px;letter-spacing:-.02em}.ta-brand small{font-size:12px}
+[data-testid="stSidebar"] [data-testid="stRadioOption"]{min-height:44px;padding:9px 12px;border-radius:8px;margin:2px 0}
+[data-testid="stSidebar"] [data-testid="stRadioOption"]:has(input:checked){background:var(--ta-soft);box-shadow:inset 3px 0 var(--ta-accent)}
+[data-testid="stSidebar"] [data-testid="stRadioOption"]:has(input:checked) p{color:var(--ta-strong);font-weight:650}
+[data-testid="stSidebar"] [data-testid="stRadio"]>label p{font-size:12px;color:var(--ta-muted)}
+
+/* Consistent controls; invalid, disabled and focused states remain distinct. */
+.stButton button,[data-testid="stFormSubmitButton"] button,[data-testid="stPopover"] button{
+ border-radius:var(--ta-radius-control);min-height:40px;font-size:13px;font-weight:600;transition:background .15s,border-color .15s;
+}
+.stButton button:not(:disabled):hover,[data-testid="stFormSubmitButton"] button:not(:disabled):hover{border-color:var(--ta-accent);box-shadow:none}
+button:focus-visible,input:focus-visible,textarea:focus-visible,[role="tab"]:focus-visible{outline:2px solid var(--ta-accent)!important;outline-offset:3px}
+button:disabled{opacity:.55;cursor:not-allowed}
+[data-testid="stRadioOption"]:has(input:checked)>div>div:first-child{background:var(--ta-accent)!important;border-color:var(--ta-accent)!important}
+.stApp label:has(input[role="switch"]:checked)>div:first-of-type{background:var(--ta-accent)!important}
+.stApp label:has(input[role="switch"])>div:first-of-type>div{background:var(--ta-panel)!important}
+[data-testid="stRadioOption"]:has(input:focus-visible),[data-testid="stCheckbox"] label:has(input:focus-visible),[data-testid="stToggle"] label:has(input:focus-visible){outline:2px solid var(--ta-accent);outline-offset:3px;border-radius:6px}
+[data-testid="stTextInputRootElement"],[data-testid="stTextAreaRootElement"],[data-baseweb="select"]>div{border-radius:var(--ta-radius-control)!important}
+[data-baseweb="popover"]>div,[data-testid="stPopoverBody"],[role="dialog"]{background:var(--ta-panel)!important;color:var(--ta-text)!important;border:1px solid var(--ta-border);border-radius:var(--ta-radius-ticket);box-shadow:var(--ta-shadow)}
+[data-testid="stPopoverBody"]{padding:16px}
+[data-testid="stPopover"] button{background:var(--ta-panel)!important;color:var(--ta-text)!important;border-color:var(--ta-border)!important}
+[data-testid="stPopover"] button:hover,[data-testid="stPopover"] button:focus-visible{background:var(--ta-raised)!important;border-color:var(--ta-accent)!important}
+[data-testid="stPopover"] button *{color:inherit!important}
+[role="dialog"]{max-width:calc(100vw - 24px)}
+[data-testid="stTabs"] [role="tablist"]{border-bottom:1px solid var(--ta-border);gap:20px}
+[data-testid="stTabs"] [role="tab"]{padding:12px 0;min-height:44px}
+[data-testid="stAlert"]{border-radius:10px;font-size:13px}
+[data-testid="stExpander"] details{border-radius:10px;overflow:hidden}
+[data-testid="stExpander"] details>summary{min-height:44px}
+
+/* Ticket rows and receipts share alignment, not identical card silhouettes. */
+.ta-trains{border-radius:var(--ta-radius-ticket);margin:16px 0 8px}
+.ta-train-head{font-size:12px;padding:11px 16px}
+.ta-trains .ticket-card{padding:18px 16px;gap:16px}
+.tc-train strong{font-size:21px;letter-spacing:.015em;font-weight:650}
+.tc-route b{font-size:18px;font-weight:650;white-space:nowrap}
+.tc-arrow{display:inline-block;padding:0 7px;color:var(--ta-muted)}
+.tc-seat b{font-size:13px}.tc-fare b{font-size:22px;font-weight:650}
+.tc-fare{border-left:1px dashed var(--ta-border);padding-left:12px}
+.ticket-card .muted{font-size:11px;line-height:1.75;margin-top:3px}
+.stock{color:var(--ta-success)}.sold{color:var(--ta-warning)}
+.order-card{border-radius:var(--ta-radius-ticket);padding:20px 22px;border-top:3px solid var(--ta-accent);font-variant-numeric:tabular-nums}
+.order-card .order-top{display:flex;justify-content:space-between;gap:12px;font-size:12px;color:var(--ta-muted);padding-bottom:12px;margin-bottom:12px;border-bottom:1px dashed var(--ta-border)}
+.order-top span{color:var(--ta-text);font-weight:650}.order-money{padding:10px 0}.order-money strong{font-size:22px}
+.policy-card{border-radius:0 10px 10px 0;border-width:0 0 0 3px;border-left-color:var(--ta-accent);background:var(--ta-raised);padding:16px 20px}
+.policy-card strong{font-size:15px}.policy-card p{max-width:75ch;margin:8px 0;font-size:13px;line-height:1.9}
+.policy-card .stock{color:var(--ta-strong)}
+.st-key-action_confirm,.st-key-pending_confirm{border-color:var(--ta-warning)!important;background:var(--ta-panel);border-radius:12px!important;padding:18px!important}
+.ta-status-ok{border-color:var(--ta-success);color:var(--ta-success)}
+.ta-status-bad,.ta-ls-card .ta-ls-reason{color:var(--ta-danger);border-color:var(--ta-danger)}
+.ta-status-wait,.ta-mode-debug{color:var(--ta-warning);border-color:var(--ta-warning)}
+.ta-status-live{color:var(--ta-accent);border-color:var(--ta-accent)}
+
+/* Developer workbench: configuration, actual events, then inspectable evidence. */
+.st-key-design_panel,.st-key-workflow_panel,.st-key-evidence_panel{border-radius:14px!important;background:var(--ta-panel);border:1px solid var(--ta-border);padding:20px!important;scrollbar-gutter:stable}
+.st-key-design_panel>div:first-child,.st-key-workflow_panel>div:first-child,.st-key-evidence_panel>div:first-child{min-width:0}
+.st-key-design_panel h3,.st-key-workflow_panel h3,.st-key-evidence_panel h3{padding:0 0 12px;border-bottom:1px solid var(--ta-border)}
+.st-key-workflow_nodes{padding-left:12px;border-left:2px solid var(--ta-border)}
+.st-key-workflow_nodes button{justify-content:flex-start;text-align:left;font-size:12px;line-height:1.55;min-height:42px;border-radius:8px}
+.ta-event-card{border-radius:10px;padding:14px;background:var(--ta-panel)}
+.ta-kv{grid-template-columns:76px minmax(0,1fr);font-size:12px;line-height:1.8;padding:7px 0}
+.ta-ls-card{padding:18px;border-radius:12px}.ta-ls-card.ta-ls-ok{border-left-color:var(--ta-success)}
+.ta-ls-card.ta-ls-wait{border-left-color:var(--ta-warning)}.ta-ls-card.ta-ls-bad{border-left-color:var(--ta-danger)}
+.ta-ls-metric{border-radius:8px;padding:12px}.ta-ls-metric span{font-size:12px}.ta-ls-metric b{font-size:14px}
+.ta-phase.is-active .ta-phase-dot{background:var(--ta-accent)}
+.ta-phase.is-failed .ta-phase-dot{background:var(--ta-danger)}
+.ta-phase.is-blocked .ta-phase-dot,.ta-phase.is-waiting .ta-phase-dot{background:var(--ta-warning)}
+.ta-call.is-failed .ta-call-meta{color:var(--ta-danger)}.ta-call.is-blocked .ta-call-meta{color:var(--ta-warning)}
+
+/* Evaluation console: compact numerical registers and readable audit tables. */
+.ta-kpi{border-radius:10px;border-top:3px solid var(--ta-accent);padding:18px 20px;min-height:132px;box-shadow:none}
+.ta-kpi span{font-size:12px}.ta-kpi strong{font-size:34px;line-height:1.55;font-weight:600;letter-spacing:-.025em}
+.ta-kpi small{font-size:12px;line-height:1.65}
+.st-key-competition_matrix_heading{background:var(--ta-raised);padding:12px 16px;border-radius:8px;margin:8px 0}
+[data-testid="stHorizontalBlock"]:has([class*="st-key-competition_links_"]){padding:14px 16px;border-bottom:1px solid var(--ta-border)}
+[data-testid="stHorizontalBlock"]:has([class*="st-key-competition_links_"]):hover{background:var(--ta-panel)}
+.ta-table-wrap{border-radius:10px}.ta-table-wrap th{font-size:12px;letter-spacing:0;padding:12px 16px}
+.ta-table-wrap td{font-size:13px;padding:12px 16px;line-height:1.75}
+.ta-empty{border-style:solid;border-radius:12px;padding:24px}.ta-empty b{font-size:16px}
+.ta-chat-empty{border-style:solid;text-align:left;font-size:13px}
+@media(max-width:1000px){
+ .ta-heading{flex-wrap:wrap;gap:12px}
+ [data-testid="stHorizontalBlock"]:has(>[data-testid="stColumn"] .st-key-design_panel){flex-direction:column}
+ [data-testid="stHorizontalBlock"]:has(>[data-testid="stColumn"] .st-key-design_panel)>[data-testid="stColumn"]{width:100%!important;flex:1 1 auto!important}
+}
+@media(max-width:767px){
+ .block-container{padding:3.5rem 16px 24px}
+ .ta-heading{padding-bottom:18px;margin-bottom:18px}.ta-heading h1{font-size:25px}.ta-heading p{font-size:12px}
+ .ta-kpi{min-height:110px;padding:14px 16px}.ta-kpi strong{font-size:30px}
+ .ta-trains .ticket-card{padding:14px;gap:12px}.tc-train strong{font-size:20px}.tc-route b{font-size:17px}
+ .tc-fare{border-left:0;padding-left:0}.tc-fare b{font-size:20px}
+ .order-card{padding:16px}.policy-card{padding:14px 16px}
+ [data-testid="stHorizontalBlock"]:has([class*="st-key-competition_links_"]){padding:16px 8px}
+ .st-key-design_panel,.st-key-workflow_panel,.st-key-evidence_panel{padding:16px!important}
+}
+@media(prefers-reduced-motion:reduce){
+ *,*::before,*::after{scroll-behavior:auto!important}
+ .stButton button,[data-testid="stFormSubmitButton"] button,[data-testid="stPopover"] button,[class*="st-key-turn_"]{transition:none!important}
+ .ta-phase-dot,.ta-processing span{animation:none!important}
+}

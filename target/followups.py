@@ -303,6 +303,65 @@ def _prioritise_doc_questions(rows):
     return [doc[0]] + [row for row in rows if row is not doc[0]]
 
 
+def contextual_candidates(trace,events,audit,asked=(),prior_run_ids=()):
+    """Extend the existing catalogue with facts from this actual railway run."""
+    options,facts=candidates(trace,events,audit,asked,prior_run_ids)
+    current=[e for e in events if e.get('run_id')==audit['trace_id'] and e.get('session_id')==trace['session_id']
+             and e.get('event_type') in ('tool_result','railway_tool_result') and e.get('executed') is True and e.get('status')=='succeeded']
+    queries=[e for e in current if e.get('tool')=='railway_query_trips' and isinstance(e.get('output'),dict)]
+    asked_normal={normal(q) for q in [trace['user_msg'],*asked]}
+    def rows_for(questions,source=()):
+        seen=set();rows=[]
+        for label,question in questions:
+            if normal(question) in asked_normal or normal(question) in seen:continue
+            seen.add(normal(question));rows.append(dict(id='context_'+digest(question)[:12],question=question,label=label,
+                source_event_ids=list(source),doc_ids=[],kind='context'))
+        return rows
+    if queries:
+        query=queries[-1];output=query['output'];params=output.get('query_parameters') or query.get('args') or {}
+        day=params.get('service_date');trains=output.get('data') or []
+        if not day or not trains:return [],facts
+        names={s['stop_id']:s['stop_name'] for e in current if e.get('tool')=='railway_search_stations'
+               for s in (e.get('output') or {}).get('data',[]) if isinstance(s,dict) and 'stop_id' in s and 'stop_name' in s}
+        origin=params.get('origin_stop_id');destination=params.get('destination_stop_id')
+        context=f'出行日期{day}；'+(f'出发站{names.get(origin,origin)}（{origin}），到达站{names.get(destination,destination)}（{destination}）；' if origin and destination else '')
+        first=trains[0].get('trip_short_name');questions=[]
+        if first:questions.append((f'查看 {first} 的完整经停站',context+f'查询{first}的完整真实静态经停站，不办理交易。'))
+        if len(trains)>1 and first and trains[1].get('trip_short_name'):
+            other=trains[1]['trip_short_name'];questions.append((f'比较 {first} 和 {other}',context+f'比较{first}和{other}的实际到发时间与运行时长，以工具结果为准。'))
+        if first and origin and destination:questions.append((f'查询 {first} 的模拟余票',context+f'查询{first}的模拟余票；尚未提供的席别请先询问，不锁座、不下单。'))
+        questions.append(('查看本次路线的最短运行时间',context+'查询同路线并比较完整分页的最短运行时间，不猜测未返回的车次。'))
+        facts.update(intent='railway_query',followup_type='railway',ticket_results=[dict(run_id=audit['trace_id'],query_parameters=params,records=trains[:2])])
+        return rows_for(questions,[query['event_id']] if query.get('event_id') else []),facts
+    if any(e.get('tool')=='railway_trip_stops' for e in current):
+        trip_event=next(e for e in reversed(current) if e.get('tool')=='railway_trip_stops')
+        data=(trip_event.get('output') or {}).get('data') or {};trip=data.get('trip') or {};stops=data.get('stops') or []
+        number=trip.get('trip_short_name');day=(trip_event.get('args') or {}).get('service_date')
+        if number and day and stops:
+            facts.update(intent='railway_query',followup_type='railway')
+            return rows_for([(f'{number}经过多少站？',f'查询{number}在{day}的完整经停并统计真实站点数量。'),
+                ('哪个站停留时间最长？',f'查询{number}在{day}的经停，按实际到发时间比较停留时长。')],[trip_event['event_id']]),facts
+    orders=[e for e in current if e.get('tool')=='railway_get_order']
+    if orders:
+        event=orders[-1];data=event.get('output');order=(data[0] if data else {}) if isinstance(data,list) else data or {}
+        oid=order.get('order_id')
+        if oid:
+            questions=[('核对订单行程和乘客',f'只读查询本人订单{oid}的有效行程和乘客明细，不执行交易。'),
+                ('查看支付与退款状态',f'只读查询本人订单{oid}的支付、退款记录和当前状态，不支付、不退款。')]
+            if order.get('order_status') in ('PAID','CHANGED'):questions.append(('查看退改方案',f'查询本人订单{oid}的项目示例退改政策和可行方案；缺少新行程条件时先询问，不直接确认交易。'))
+            facts.update(intent='order_query',followup_type='context',ticket_results=[{'orders':[{k:order.get(k) for k in ('order_id','order_status','service_date','active_item_count','refund_status','change_status')}]}])
+            return rows_for(questions,[event['event_id']] if event.get('event_id') else []),facts
+    if options and facts.get('followup_type')!='clarification':return options,facts
+    topics={'行李':[('成人行李规定','查询项目示例成人行李重量和尺寸规定。'),('儿童行李规定','查询项目示例儿童旅客行李规定。'),('超重费用','查询P06模拟超重费用的计算方法。')],
+        '退票':[('退票手续费边界','查询项目示例P01在24小时和48小时的手续费边界。'),('改签后如何退票','查询项目示例改签后退票的适用条件。'),('部分退票规则','查询多名乘客订单部分退款的规则。')],
+        '报销':[('凭证领取条件','查询项目示例报销凭证领取条件。'),('退改后的凭证','查询退票或改签后的报销凭证规定。')]}
+    questions=next((v for k,v in topics.items() if k in trace['user_msg']),None)
+    if questions is None and facts.get('intent')=='clarify':
+        questions=[('开始规划铁路行程','帮我规划铁路出行，请先询问必要的路线和日期。'),
+            ('了解模拟购票流程','介绍本地模拟购票需要提供的信息与操作确认流程。'),('查询行李规定','查询项目内示例行李规定和费用计算方法。')]
+    return (rows_for(questions),facts) if questions else (options,facts)
+
+
 def _select(raw, available):
     body = json.loads(raw)
     if not isinstance(body, dict) or set(body) != {'suggestions'} or not isinstance(body['suggestions'], list):
@@ -346,11 +405,16 @@ def _invoke(model, settings, trace, run_id, payload, meter):
             emit('followup_model_request', 'running', max_output_tokens=limit)
             # The provider client is built with DEEPSEEK_TIMEOUT (8s in acceptance),
             # so a slow API fails fast and falls back instead of holding the answer.
-            response = model.bind(response_format={'type': 'json_object'}, max_tokens=limit).invoke(
+            response = model.bind(response_format={'type': 'json_object'}, max_tokens=limit,
+                                  timeout=min(settings.timeout,FOLLOWUP_TIMEOUT_SECONDS)).invoke(
                 [SystemMessage(SYSTEM), HumanMessage(text)], config={'callbacks': []})
+            usage = getattr(response, 'usage_metadata', None) or {}
+            meter['response_usage']={'prompt':usage.get('input_tokens'),'completion':usage.get('output_tokens')}
+            meter['raw_output']=response.content if isinstance(response.content,str) else None
             if getattr(response, 'tool_calls', None) or not isinstance(response.content, str):
                 raise ValueError('unexpected_model_output')
-            usage = getattr(response, 'usage_metadata', None) or {}
+            if (getattr(response,'response_metadata',None) or {}).get('finish_reason')=='length':
+                raise ValueError('followup_output_truncated')
             return response.content, {'prompt': usage.get('input_tokens'), 'completion': usage.get('output_tokens')}
         finally:
             meter['http_requests'] = sum(e.get('event') == 'http_request' for e in http_events)
@@ -359,7 +423,7 @@ def _invoke(model, settings, trace, run_id, payload, meter):
 
 
 def generate_and_save(trace, audit, directory, *, asked=(), live=False, authorized=False,
-                      model=None, settings=None, network_ready=False, prior_run_ids=()):
+                      model=None, settings=None, network_ready=False, prior_run_ids=(),enhanced=False):
     """Called only as part of a new completed run, never from a page render."""
     state = ACTIVE.get()
     run_id = audit.get('trace_id')
@@ -374,7 +438,8 @@ def generate_and_save(trace, audit, directory, *, asked=(), live=False, authoriz
             try: event = json.loads(line)
             except ValueError: continue
             if isinstance(event,dict):events.append(event)
-        options, facts = candidates(trace, events, audit, asked, prior_run_ids)
+        builder=contextual_candidates if enhanced else candidates
+        options, facts = builder(trace, events, audit, asked, prior_run_ids)
         intent, evidence_run_id = facts['intent'], facts['evidence_run_id']
         followup_type, business_state = facts['followup_type'], facts['business_state']
         state_event_ids = list(facts['state_event_ids'])
@@ -438,16 +503,17 @@ def generate_and_save(trace, audit, directory, *, asked=(), live=False, authoriz
                      intent=intent, doc_ids=doc_ids, chunk_ids=chunk_ids, evidence_run_id=evidence_run_id,
              followup_type=followup_type, business_state=business_state, state_event_ids=state_event_ids)
             except Exception as exc:
+                usage=meter.get('response_usage',usage)
                 from target.deepseek_runtime import safe_error
                 reason = str(exc) if isinstance(exc, ValueError) and str(exc) in {
                     'invalid_json_schema','empty_result','invalid_suggestion_count','ungrounded_or_duplicate_question',
                     'unexpected_model_output','model_configuration_unavailable','token_usage_unknown','token_budget_insufficient',
-                    'followup_timeout'} else (
+                    'followup_timeout','followup_output_truncated'} else (
                     'invalid_json' if isinstance(exc, json.JSONDecodeError) else safe_error(exc)['category'])
                 emit('followup_error', 'failed', category=reason)
                 emit('followup_generation_failed', 'failed', followup_id=followup_id,
                      generation_method=generation_method, provider=trace.get('provider'), model=trace.get('model'),
-                     model_called=meter['model_invocations'] > 0, token_usage=None,
+                     model_called=meter['model_invocations'] > 0, token_usage=usage if any(v is not None for v in usage.values()) else None,
                      latency_ms=round((time.perf_counter() - started) * 1000), fallback_reason=reason,
                      selected=False, next_run_id=None, error_category=reason,
                      intent=intent, doc_ids=doc_ids, chunk_ids=chunk_ids, evidence_run_id=evidence_run_id,

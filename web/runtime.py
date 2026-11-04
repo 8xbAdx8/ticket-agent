@@ -9,6 +9,7 @@ import json
 import os
 import threading
 import uuid
+from datetime import datetime, timezone
 from dataclasses import dataclass, field
 from pathlib import Path
 import config
@@ -17,6 +18,7 @@ from target.deepseek_runtime import safe_error
 from web.presentation import collect_results, turn_cursor
 
 CALL_LOCK = threading.RLock()
+_RENDER_BASE = None
 LIVE_AVAILABLE = config.PROVIDER == "deepseek"
 LIVE_MODEL = config.MODEL_NAME
 LIVE_URL = config.BASE_URL
@@ -36,8 +38,13 @@ def refresh_conversations(sessions):
 def scoped(values, environment=None):
     """All UI model/business calls hold this lock, including configuration restore."""
     with CALL_LOCK:
+        global _RENDER_BASE
+        previous_base=_RENDER_BASE
         prior = {name: getattr(config, name) for name in values}
         old_env = {name: os.environ.get(name) for name in (environment or {})}
+        if _RENDER_BASE is None:
+            baseline={name:getattr(config,name) for name in ('PROVIDER','ENGINE','MODEL_NAME','BASE_URL','API_KEY','DB_PATH','TRACE_DIR','LC_TOOLSET','USE_HTTP_MOCK','USE_VECTOR_RAG')}
+            _RENDER_BASE=(dict(baseline,**prior),dict(os.environ))
         try:
             for name, value in values.items():
                 setattr(config, name, value)
@@ -52,6 +59,17 @@ def scoped(values, environment=None):
                     os.environ.pop(name, None)
                 else:
                     os.environ[name] = value
+            _RENDER_BASE=previous_base
+
+
+def render_value(name):
+    base=_RENDER_BASE
+    return base[0].get(name,getattr(config,name)) if base else getattr(config,name)
+
+
+def render_environment():
+    base=_RENDER_BASE
+    return base[1] if base else os.environ
 
 
 def live_ready(provider=None):
@@ -95,6 +113,7 @@ class Conversation:
     baseline_binding: tuple = field(default_factory=tuple)
     train_source_choice: object = None
     last_train_query: dict | None = None
+    operations: list = field(default_factory=list)
 
     def __post_init__(self):
         if not self.baseline_binding:self.baseline_binding=(self.engine,self.live,self.live_provider,self.live_model)
@@ -116,8 +135,9 @@ class Conversation:
         return self.root/"traces"
 
     def _values(self):
-        from target.live_providers import configuration
-        cfg=configuration(self.live_provider) if self.live else {}
+        from target.api_config import model_config
+        environment=render_environment()
+        cfg=model_config(self.live_provider,active=environment.get('AGENT_PROVIDER')==self.live_provider,environment=environment) if self.live else {}
         model=LIVE_MODEL if self.live_provider=="deepseek" and LIVE_AVAILABLE else cfg.get("model")
         if self.live and self.live_model:model=self.live_model
         address=LIVE_URL if self.live_provider=="deepseek" and LIVE_AVAILABLE else cfg.get("base_url")
@@ -126,13 +146,50 @@ class Conversation:
                     MODEL_NAME=model if self.live else "langchain-mock" if self.engine=="langchain" else "mock-offline",
                     BASE_URL=address if self.live else "https://api.deepseek.com", API_KEY=os.getenv(cfg["key_env"],"") if self.live else "")
 
-    def send(self,message,request_id,event_callback=None,*,followup_authorized=False,followup_origin=None,confirmation=None):
+    def send(self,message,request_id,event_callback=None,*,followup_authorized=False,followup_origin=None,confirmation=None,entry='chat',defer_followups=False,_operation=None):
+        if self.read_only:raise ValueError('历史恢复为只读，请新建会话后执行')
+        if not getattr(self,'_unified_interaction',False) and entry=='chat' and _operation is None:
+            from target.execution_config import scope as effective_scope,CURRENT as EFFECTIVE,CONFIRMED
+            from target.v39.context import scope as context_scope,CURRENT as RAILWAY
+            from target.v39.registry import service_scope,SERVICE
+            with effective_scope(EFFECTIVE.get(),confirmed=CONFIRMED.get()),context_scope(RAILWAY.get()),service_scope(SERVICE.get()):
+                return self._send_with_events(message,request_id,event_callback,followup_authorized=followup_authorized,
+                    followup_origin=followup_origin,confirmation=confirmation,defer_followups=defer_followups)
+        from web import interaction
+        if _operation is not None:
+            from target.diagnostics import digest
+            if not any(r is _operation for r in self.operations) or _operation['status']!='QUEUED' or _operation['request_id']!=request_id or _operation['input_hash']!=digest(message):
+                raise ValueError('提交标识不匹配')
+            operation,fresh=_operation,True
+        else:operation,fresh=interaction.begin(self,message,request_id,entry)
+        if not fresh:return self.receipts[request_id]
+        def update(event):
+            interaction.observe(self,operation,event)
+            if event_callback:event_callback(event)
+        try:
+            from target.execution_config import scope as effective_scope,CURRENT as EFFECTIVE,CONFIRMED
+            from target.v39.context import scope as context_scope,CURRENT as RAILWAY
+            from target.v39.registry import service_scope,SERVICE
+            # _send activates these contexts. Restore the caller's values on
+            # completion so pooled workers cannot retain another session.
+            with effective_scope(EFFECTIVE.get(),confirmed=CONFIRMED.get()),context_scope(RAILWAY.get()),service_scope(SERVICE.get()):
+                result=self._send_with_events(message,request_id,update,followup_authorized=followup_authorized,
+                    followup_origin=followup_origin,confirmation=confirmation,defer_followups=defer_followups)
+            interaction.finish(self,operation,result=result)
+            return result
+        except Exception as exc:
+            interaction.finish(self,operation,error=exc)
+            raise
+
+    def _send_with_events(self,message,request_id,event_callback=None,*,followup_authorized=False,followup_origin=None,confirmation=None,defer_followups=False):
         if self.read_only:raise ValueError('历史恢复为只读，请新建会话后执行')
         self.error=None
         if followup_authorized and self.live:
             candidate=self.resolve_config()
-            if candidate and candidate.provider==self.live_provider:
-                self.config_cost_consent=(self.sid,candidate.provider,candidate.override_revision)
+            provider=candidate.provider if candidate else self.live_provider
+            revision=candidate.override_revision if candidate else 0
+            if provider==self.live_provider:
+                self.config_cost_consent=(self.sid,provider,revision)
         origin=followup_origin or {}
         from target.run_events import capture,emit
         try:
@@ -145,7 +202,7 @@ class Conversation:
                              question=origin.get('question'),next_run_id=None,intent=origin.get('intent'),
                              provider=None,model=None,latency_ms=None,token_usage=None,fallback_reason=None)
                     result=self._send(message,request_id)
-                    if fresh:self._record_followups(result,followup_authorized)
+                    if fresh and not defer_followups:self._record_followups(result,followup_authorized)
                     if origin.get('run_id'):
                         next_run_id=(self.audits[-1].get('trace_id') if self.audits else None)
                         emit('followup_submitted',followup_id=origin.get('followup_id'),
@@ -229,6 +286,15 @@ class Conversation:
 
     def _record_followups(self,record,authorized=False):
         if self.mode!='user':return
+        if any(n in record.get('tool_sequence',[]) for n in ('railway_query_trips','railway_search_stations','railway_trip_stops')):
+            from web.railway_followups import register
+            from web.result_rows import iter_rows
+            rows=[r for r in iter_rows(self.results[-1]) if r.get('tool')=='railway_query_trips'] if self.results else []
+            if rows:register(self,rows[-1])
+            elif 'railway_trip_stops' not in record.get('tool_sequence',[]):self.railway_followup_row=None
+            return  # Railway suggestions are deterministic; no auxiliary model request.
+        if getattr(self,'_rail_followup_dispatch',False):return
+        self.railway_followup_row=None
         from target.run_events import emit
         from target.followups import generate_and_save
         audit=self._audit_for(record)
@@ -262,6 +328,14 @@ class Conversation:
         if request_id in self.receipts:
             return self.receipts[request_id]
         effective=self.resolve_config()
+        # When the railway feature flag is on, attach the existing V3.9 service
+        # and trusted context to the original Agent run. The original page and
+        # old eight tools are otherwise untouched.
+        from web import v39_bridge
+        if v39_bridge.enabled():
+            effective=v39_bridge.activate(self,effective)
+        else:
+            v39_bridge.deactivate()
         if effective:
             previous=getattr(self.agent,'effective_config',None) if self.agent else None
             if self.pending_action() and previous and previous.config_hash!=effective.config_hash:
@@ -330,7 +404,12 @@ class Conversation:
                     old_agent=self.agent
                     kwargs={"engine":self.engine,"mutations":dict(self.mutations)}
                     if effective:kwargs['effective_config']=effective
-                    if not self.live and self.engine=="legacy":
+                    if getattr(self,'_v39_service',None) is not None and not self.live:
+                        # Offline railway sessions use the existing deterministic
+                        # planner so the original Agent can call real static tools.
+                        from target.v39.planner import RailwayDemoProvider
+                        kwargs["provider"]=RailwayDemoProvider()
+                    elif not self.live and self.engine=="legacy":
                         from target.providers import MockProvider
                         kwargs["provider"]=MockProvider(mutations=dict(self.mutations))
                     self.agent=Agent(**kwargs)
@@ -349,11 +428,13 @@ class Conversation:
                     self.error={'type':'AgentError',**audit_error}
                     raise RuntimeError('agent_recorded_execution_error')
                 full=collect_results(self.agent,self.sid,cursor,record)
-                self.history.append(record)
-                self.results.append(full)
-                if self.agent.last_audit_report:
-                    self.audits.append(self.agent.last_audit_report)
-                self.receipts[request_id]=record
+                from web.interaction import LOCK as operation_lock
+                with operation_lock:
+                    self.history.append(record)
+                    self.results.append(full)
+                    if self.agent.last_audit_report:
+                        self.audits.append(self.agent.last_audit_report)
+                    self.receipts[request_id]=record
                 return record
             except Exception as exc:
                 if self.error is None:self.error={"type":type(exc).__name__,**safe_error(exc)}
@@ -459,6 +540,11 @@ class Conversation:
                 except (OSError, ValueError):
                     self.persistence_warning = '演示支付已记录，但刷新展示快照未保存；请保留当前会话并核对订单。'
             return result
+
+    def confirm_railway_proposal(self, proposal_id, approved=True):
+        """Trusted confirmation; preserve the original Agent run and append a receipt."""
+        from web.business_actions import confirm
+        return confirm(self,proposal_id,approved)
 
     def confirm_action(self, approved, request_id,*,followup_authorized=False):
         if self.read_only:raise ValueError('历史回放不能恢复旧操作授权')

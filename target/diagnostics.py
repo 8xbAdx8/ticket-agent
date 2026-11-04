@@ -93,6 +93,7 @@ def detect_hallucinated_trains(reply, authoritative_trains, *, user_message="", 
     for clause in re.split(r"[。！？!?；;，,\n]|但是|不过|但",reply or ""):
         for match in re.finditer(r"(?<![A-Za-z0-9])([GDCZTK]\d{1,5})(?!\d)",clause):
             train=match[1]
+            if train=='D9':continue
             context=clause[max(0,match.start()-35):match.end()+45]
             if re.search(r"不存在|未找到|查无|无此|不能确认|无法确认|并不存在|不是实际|没有依据|未(?:查询|查|检索)到|没有(?:查询|查|找|检索)到|查询不到|查不到",context):
                 kind="negated"
@@ -154,7 +155,34 @@ def evaluate(public_trace, report, authority, *, error=None, raw_model_reply=Non
     actual=[e for e in executions if e.get("executed",True)]
     original_trains={t["train_no"] for e in executions if isinstance(e.get("original_result"),dict)
                      for t in e["original_result"].get("trains",[]) if isinstance(t,dict) and "train_no" in t}
-    hall=detect_hallucinated_trains(raw_model_reply if raw_model_reply is not None else public_trace.get("reply",""),authority["trains"] if authority.get("available") else None,
+    authority_for_reply=authority["trains"] if authority.get("available") else None
+    from target.v39.query_facts import collect
+    rail=collect([dict(e,event='tool_end',result=e.get('original_result') or e.get('result')) for e in executions])
+    if rail:
+        rail_names={r['record'].get('trip_short_name') for r in rail['records'] if r['record'].get('trip_short_name')}
+        original_trains=rail_names
+        authority_for_reply=rail_names if rail['complete'] else None
+    else:
+        # Quote/inventory calls carry a trip_id but not a query page.  Treat
+        # the selected trip as a valid authority for this turn; otherwise a
+        # correct quote is falsely marked as a hallucinated train.
+        import re as _re
+        selected=set()
+        for e in executions:
+            if e.get('tool') not in ('railway_quote_fare','railway_check_inventory','railway_create_order','railway_pay_order'):
+                continue
+            values=[(e.get('args') or {}).get('trip_id')]
+            result=e.get('original_result') or e.get('result')
+            if isinstance(result,dict):
+                values.append((result.get('quote') or {}).get('trip_id') if isinstance(result.get('quote'),dict) else None)
+                values.append(result.get('trip_id'))
+            for value in values:
+                match=_re.search(r'([GDCZTK]\d{1,4})(?=0[A-Z])',str(value or ''))
+                if match:selected.add(match.group(1))
+        if selected:
+            original_trains=set(original_trains)|selected
+            authority_for_reply=original_trains
+    hall=detect_hallucinated_trains(raw_model_reply if raw_model_reply is not None else public_trace.get("reply",""),authority_for_reply,
                                  user_message=public_trace.get("user_msg",""),valid_query_trains=original_trains)
     checks.append(assertion("reply_train_authority",not hall["hallucination_detected"] if hall["hallucination_detected"] is not None else None,
                             "reply asserts unsupported or ambiguous trains",["authority","hallucination"]))

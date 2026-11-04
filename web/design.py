@@ -3,8 +3,9 @@ from pathlib import Path
 import html
 import streamlit as st
 
-COLORS = {"passed": "#54c5aa", "failed": "#f17b86", "skipped": "#8ba1bb",
-          "not_applicable": "#a2a8b5", "not_verified": "#d9b76c", "indeterminate": "#b7a0df", "missing": "#68758b"}
+COLORS = {"passed": "var(--ta-success)", "failed": "var(--ta-danger)", "skipped": "var(--ta-muted)",
+          "not_applicable": "var(--ta-neutral)", "not_verified": "var(--ta-warning)",
+          "indeterminate": "var(--ta-uncertain)", "missing": "var(--ta-muted)"}
 LABELS = {"passed": "通过", "failed": "失败", "skipped": "跳过", "not_applicable": "不适用",
           "not_verified": "未验证", "indeterminate": "无法判定", "missing": "缺失"}
 
@@ -15,8 +16,17 @@ def escape(value):
 
 def theme(name):
     dark = name == "深色"
-    tokens = dict(bg="#111820", panel="#18222d", raised="#22313e", text="#edf3f7", muted="#a5b5c3", border="#324352", accent="#69d4b6") if dark else dict(
-        bg="#fbfcfd", panel="#ffffff", raised="#eef4f5", text="#142c3a", muted="#536a78", border="#dce6ea", accent="#087f72")
+    tokens = dict(
+        bg="#101d2d", panel="#172b40", raised="#20364d", text="#e6eff8", muted="#a3b6cd",
+        border="#304760", accent="#8db7ff", strong="#b8d1ff", soft="#1c3653",
+        success="#77d8bf", danger="#ffa7b6", warning="#edc878", uncertain="#cdb5ff", neutral="#b1bdca",
+        shadow="0 16px 48px -24px #00000099",
+    ) if dark else dict(
+        bg="#f3f6fa", panel="#ffffff", raised="#eaf0f7", text="#162e49", muted="#607188",
+        border="#d6e0ec", accent="#1555c4", strong="#123f91", soft="#e8f0fd",
+        success="#12765f", danger="#b83249", warning="#8c5b0a", uncertain="#7955ae", neutral="#5d6a7a",
+        shadow="0 16px 48px -24px #162e4933",
+    )
     css = ":root{" + ";".join("--ta-"+k+":"+v for k,v in tokens.items()) + ";--primary-color:var(--ta-accent);--background-color:var(--ta-bg);--secondary-background-color:var(--ta-panel);--text-color:var(--ta-text);}" 
     st.markdown("<style>"+css+(Path(__file__).with_name("design.css")).read_text(encoding="utf-8")+"</style>", unsafe_allow_html=True)
 

@@ -38,7 +38,8 @@ def manual_environment(provider,root,*,model=None,full_tools=False):
         # Four model rounds allow query → lock → order → final reply while
         # retaining the existing bounded execution and explicit pay guard.
         env.update(DEEPSEEK_LIVE_TEST_PROFILE='full_sandbox',DEEPSEEK_SANDBOX_DIR=str(root),AGENT_LC_TOOLSET='all',
-                   DEEPSEEK_MAX_MODEL_CALLS='4',BAILIAN_MAX_MODEL_CALLS='4',AGENT_MAX_STEPS='4')
+                   DEEPSEEK_MAX_MODEL_CALLS='6',BAILIAN_MAX_MODEL_CALLS='6',AGENT_MAX_STEPS='6',
+                   DEEPSEEK_MAX_PAYLOAD_BYTES='64000',DEEPSEEK_TURN_TOKEN_BUDGET='32000')
     return env
 
 

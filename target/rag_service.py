@@ -66,6 +66,11 @@ def retrieve(question,mode=None,*,allow_network=False,k=None,threshold=None):
         else:
             evidence=configured_index().retrieve(question,mode,k,float(threshold if threshold is not None else os.getenv('RAG_VECTOR_THRESHOLD','0.35')),
                 allow_network=allow_network,require_real=config.PROVIDER in ('deepseek','bailian'),quality_profile=os.getenv('RAG_QUALITY_PROFILE','v351'))
+        # The immutable corpus remains unchanged; the approved D9 projection is
+        # applied only to the runtime view used by this answer (and recorded).
+        from target.rag import _approved_policy_projection
+        evidence['hits']=_approved_policy_projection(question,evidence['hits'])
+        evidence['policy_projection']='D9_CHANGED_REFUND_P01' if any(h.get('policy_projection') for h in evidence['hits']) else None
         from target.rag_faults import evidence_risks
         # Keep raw evidence visible to risk checks; scope filtering must not
         # silently hide an injected conflicting/obsolete document.

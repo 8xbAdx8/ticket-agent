@@ -32,9 +32,11 @@ def build_environment(mode, runtime_root, inherited=None):
     env.pop("AGENT_API_KEY",None)
     today=datetime.now(timezone(timedelta(hours=8))).date().isoformat()
     workspace=Path(runtime_root)/mode/today
+    railway_db=ROOT/"artifacts/runtime/v392-launcher"/mode/today/"simulation.sqlite"
     env.update(PYTHONIOENCODING="utf-8",PYTHONUTF8="1",AGENT_USE_HTTP="0",AGENT_VECTOR_RAG="0",
         AGENT_MUTATIONS="{}",AGENT_MAX_STEPS="8",LANGSMITH_TRACING="false",LANGCHAIN_TRACING_V2="false",
         AGENT_DB_PATH=str(workspace/"tickets.db"),AGENT_TRACE_DIR=str(workspace/"traces"),
+        RAILWAY_SIM_DB_PATH=str(railway_db),
         STREAMLIT_BROWSER_GATHER_USAGE_STATS="false")
     if mode=="offline":
         env.pop("DEEPSEEK_API_KEY",None)
@@ -168,6 +170,7 @@ def main(argv=None):
         state={"mode":args.mode,"provider":env["AGENT_PROVIDER"],"engine":env["AGENT_ENGINE"],
                "toolset":env["AGENT_LC_TOOLSET"],"api_key_configured":key_present,
                "database":str(Path(env["AGENT_DB_PATH"]).relative_to(ROOT)),
+               "railway_database":str(Path(env["RAILWAY_SIM_DB_PATH"]).relative_to(ROOT)),
                "trace_dir":str(Path(env["AGENT_TRACE_DIR"]).relative_to(ROOT)),"model_requests_sent":0}
         if args.mode=="live":
             from target.api_usage import provider_usage
@@ -190,7 +193,7 @@ def main(argv=None):
         if args.mode=="live":
             print("所有Live入口：DeepSeek/千问/Embedding不设本地累计请求次数上限；每次显式发送才可能产生费用。"
                   "单轮防循环与零自动重试仍生效，旧验收账本保留。",flush=True)
-        print("数据库："+state["database"]+"\nTrace："+state["trace_dir"],flush=True)
+        print("数据库："+state["database"]+"\n铁路模拟数据库："+state["railway_database"]+"\nTrace："+state["trace_dir"],flush=True)
         prepare_database(env)
         return serve(env,port,open_browser=not args.no_browser)
     except (ValueError,OSError,sqlite3.Error) as exc:

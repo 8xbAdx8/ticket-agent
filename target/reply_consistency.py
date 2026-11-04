@@ -54,6 +54,31 @@ def normalize(field,value):
 
 
 def _authority(events):
+    # Select the latest query namespace. A preceding legacy Fixture query must
+    # not become the authority for a later real GTFS answer in the same turn.
+    static=[(i,e) for i,e in enumerate(events or []) if isinstance(e,dict) and e.get('event')=='tool_end'
+            and e.get('tool')=='railway_query_trips' and e.get('ok') is True
+            and isinstance(e.get('result'),dict) and isinstance(e['result'].get('data'),list)]
+    legacy=max((i for i,e in enumerate(events or []) if isinstance(e,dict) and e.get('event')=='tool_end'
+                and e.get('tool')=='query_tickets' and e.get('ok') is True),default=-1)
+    if static and static[-1][0]>legacy:
+        from target.v39.query_facts import collect
+        facts=collect(events)
+        i,e=static[-1];result=e['result'];args=e.get('args',{})
+        stations={}
+        for v in events[:i]:
+            if isinstance(v,dict) and v.get('event')=='tool_end' and v.get('tool')=='railway_search_stations' and v.get('ok') is True:
+                stations.update({r['stop_id']:r['stop_name'] for r in v.get('result',{}).get('data',[])})
+        rows=[]
+        for item in facts['records']:
+            record=item['record'];source=item['source'];args=source['args']
+            values={'train_no':record.get('trip_short_name'),'date':args.get('service_date')}
+            for field,name in (('depart','departure_at'),('arrive','arrival_at')):
+                if record.get(name):values[field]=record[name][11:16]
+            for field,name in (('from_city','origin_stop_id'),('to_city','destination_stop_id')):
+                if args.get(name) in stations:values[field]=stations[args[name]]
+            rows.append(dict(values={k:v for k,v in values.items() if v is not None},source=source))
+        return rows,[dict(event_index=i,rows=len(rows),call_id=e.get('call_id'),args=args,complete=facts['complete'],pages=facts['pages'],issues=facts['issues'])]
     rows,queries=[],[]
     for i,e in enumerate(events or []):
         if not isinstance(e,dict) or e.get('event')!='tool_end' or e.get('tool')!='query_tickets':continue
@@ -326,7 +351,7 @@ def check(reply,events):
                                'comparison':'policy_tool_returned_no_hits','line':denial['line'],
                                'authority_sources':[{'call_id':policy_queries[0].get('call_id')}]})
         elif denial.get('predicate')=='train_absent_from_query_result':
-            if len(queries)!=1:
+            if len(queries)!=1 or queries[0].get('complete') is False:
                 uncertain(denial,'negative_train_scope_unknown')
             else:
                 ids=sorted({r['values']['train_no'] for r in rows})
@@ -360,6 +385,9 @@ def check(reply,events):
         elif queries[0]['rows']:
             fail({'claims':[],**denial},'train_no','no_matching_trains',sorted({r['values']['train_no'] for r in rows}),'empty_result_contradiction')
         else:checks.append({'field':'train_no','claimed':'no_matching_trains','matched':True,'line':denial['line']})
+    if any(q.get('complete') is False for q in queries):
+        unresolved.append(dict(reason='incomplete_pagination',pages=queries[0].get('pages'),issues=queries[0].get('issues'),unresolved_candidate_findings=findings))
+        findings=[]
     status='failed' if findings else 'indeterminate' if unresolved else 'checked_fields_match' if checks else 'not_verified'
     return {'schema':'reply-consistency/2','status':status,
       'verdict':'inconsistent' if findings else 'indeterminate' if unresolved or not checks else 'consistent_for_checked_fields',

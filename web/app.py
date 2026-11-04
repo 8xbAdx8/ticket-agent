@@ -10,10 +10,11 @@ sys.path.insert(0, str(BASE))
 # LangSmith export is a separate consented action, never an automatic callback.
 import streamlit as st
 import config
+from contextlib import nullcontext
 from web.design import theme
 from web.user_copy import workspace_label
 
-from web.runtime import CALL_LOCK,refresh_conversations
+from web.runtime import CALL_LOCK,refresh_conversations,render_value,render_environment
 
 
 def main():
@@ -21,15 +22,15 @@ def main():
     refresh_conversations(st.session_state.get('user_sessions',[])+st.session_state.get('lab_archives',[])
                           +([st.session_state['lab_session']] if 'lab_session' in st.session_state else []))
     st.set_option("client.toolbarMode","minimal")
-    st.session_state.setdefault("default_live", config.PROVIDER in ("deepseek","bailian"))
-    st.session_state.setdefault("default_engine", config.ENGINE)
+    st.session_state.setdefault("default_live", render_value("PROVIDER") in ("deepseek","bailian"))
+    st.session_state.setdefault("default_engine", render_value("ENGINE"))
     st.session_state.setdefault("theme", "浅色")
     with st.sidebar:
         st.markdown('<div class="ta-brand"><div class="ta-logo">T</div><div><b>Ticket Agent</b><small>出行助手 · 3.7</small></div></div>', unsafe_allow_html=True)
         with st.expander('模型设置（高级）', expanded=False):
             choices=["Legacy Mock","LangChain Mock","DeepSeek Live","Qwen3.8-Flash Live"]
             qwen_ready=bool(os.getenv("DASHSCOPE_API_KEY","").strip())
-            initial=3 if (qwen_ready or config.PROVIDER=="bailian") else 2 if config.PROVIDER=="deepseek" else 1 if config.ENGINE=="langchain" else 0
+            initial=3 if (qwen_ready or render_value("PROVIDER")=="bailian") else 2 if render_value("PROVIDER")=="deepseek" else 1 if render_value("ENGINE")=="langchain" else 0
             selection=st.selectbox("新会话模型",choices,index=initial,key="provider_selection")
             st.session_state["default_live"]=selection.endswith("Live")
             st.session_state["default_engine"]="legacy" if selection=="Legacy Mock" else "langchain"
@@ -48,49 +49,49 @@ def main():
         st.caption("模型选项仅用于新建会话；在线服务可能产生模型使用费用。")
         st.caption("用户空间用于出行咨询；开发者空间查看技术诊断；测试控制台独立保留。")
     theme(selected_theme)
-    if page == "出行助手":
-        from web.conversation import user_page
-        with st.container(key='user_workspace'):
-            user_page()
-    elif page == "开发者工作台":
-        from web.developer_workspace import developer_page
-        sessions=st.session_state.get("user_sessions",[])+st.session_state.get("lab_archives",[])
-        if st.session_state.get("lab_session") is not None:
-            sessions=sessions+[st.session_state["lab_session"]]
-        developer_page(sessions)
-    elif page == "V3.7 离线验收":
-        from web.v37_console import page as acceptance_page
-        acceptance_page()
-    elif page == "测试总览":
-        from web.competition_view import competition_page
-        sessions = st.session_state.get("user_sessions", []) + st.session_state.get("lab_archives", [])
-        competition_page(sessions)
-    elif page == "测试实验室":
-        from web.laboratory import lab_page
-        lab_page()
-    elif page == "Trace 分析":
-        from web.trace_view import trace_page
-        sessions = st.session_state.get("user_sessions", []) + st.session_state.get("lab_archives", [])
-        trace_page([s.trace_dir for s in sessions])
-    elif page == "质量分析":
-        from web.quality import quality_page
-        sessions=st.session_state.get("user_sessions",[])+st.session_state.get("lab_archives",[])
-        quality_page(sessions)
-    elif page == "模型对比":
-        from web.comparison import comparison_page
-        sessions=st.session_state.get("user_sessions",[])+st.session_state.get("lab_archives",[])
-        comparison_page([s.trace_dir for s in sessions])
-    elif page == "集成中心":
-        from web.integrations import integrations_page
-        integrations_page()
-    elif page == "RAG 知识库":
-        from web.rag_page import rag_page
-        sessions=st.session_state.get("user_sessions",[])+st.session_state.get("lab_archives",[])
-        rag_page(sessions)
-    if page != '出行助手':
-        st.caption("Ticket Agent 3.7 · 当前使用演示数据，不提供真实出票服务。")
+    with (nullcontext() if page == "出行助手" else CALL_LOCK):
+        if page == "出行助手":
+            from web.conversation import user_page
+            with st.container(key='user_workspace'):
+                user_page()
+        elif page == "开发者工作台":
+            from web.developer_workspace import developer_page
+            sessions=st.session_state.get("user_sessions",[])+st.session_state.get("lab_archives",[])
+            if st.session_state.get("lab_session") is not None:
+                sessions=sessions+[st.session_state["lab_session"]]
+            developer_page(sessions)
+        elif page == "V3.7 离线验收":
+            from web.v37_console import page as acceptance_page
+            acceptance_page()
+        elif page == "测试总览":
+            from web.competition_view import competition_page
+            sessions = st.session_state.get("user_sessions", []) + st.session_state.get("lab_archives", [])
+            competition_page(sessions)
+        elif page == "测试实验室":
+            from web.laboratory import lab_page
+            lab_page()
+        elif page == "Trace 分析":
+            from web.trace_view import trace_page
+            sessions = st.session_state.get("user_sessions", []) + st.session_state.get("lab_archives", [])
+            trace_page([s.trace_dir for s in sessions])
+        elif page == "质量分析":
+            from web.quality import quality_page
+            sessions=st.session_state.get("user_sessions",[])+st.session_state.get("lab_archives",[])
+            quality_page(sessions)
+        elif page == "模型对比":
+            from web.comparison import comparison_page
+            sessions=st.session_state.get("user_sessions",[])+st.session_state.get("lab_archives",[])
+            comparison_page([s.trace_dir for s in sessions])
+        elif page == "集成中心":
+            from web.integrations import integrations_page
+            integrations_page()
+        elif page == "RAG 知识库":
+            from web.rag_page import rag_page
+            sessions=st.session_state.get("user_sessions",[])+st.session_state.get("lab_archives",[])
+            rag_page(sessions)
+        if page != '出行助手':
+            st.caption("Ticket Agent 3.7 · 当前使用演示数据，不提供真实出票服务。")
 
 
-# Serialize rendering with calls because legacy configuration is module-scoped.
-with CALL_LOCK:
-    main()
+# Agent calls own CALL_LOCK; rendering the user page must not wait for an auxiliary request.
+main()

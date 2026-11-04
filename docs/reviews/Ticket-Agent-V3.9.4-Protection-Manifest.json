@@ -1,0 +1,87 @@
+{
+  "head": "4340b6640025be95e8300a3d625a32cfb431e35d",
+  "branch": "feat/ticket-agent-v36-stabilization",
+  "staged": 0,
+  "assets": {
+    "data/fixtures/train-v1.json": {
+      "bytes": 390470,
+      "sha256": "feaec244decbe9ed25f42b5fa7767bb4fb65d76e5313d8b1a52db14826b29217"
+    },
+    "artifacts/runtime/railway-dataset-preparation-20261102-gtfs/output_gtfs.zip": {
+      "bytes": 62375903,
+      "sha256": "3877dbc0ebc0392afef4b111dd9ba837c97eb4aa45788542919be53d52a12030"
+    },
+    "artifacts/runtime/railway-static-phase8-20261102-184912/static.sqlite": {
+      "bytes": 893722624,
+      "sha256": "e32f0cd41b45532ea7aedf4c72a6ffc24f6eaa23c042ee8f35cb02aa50735c69"
+    },
+    "data/tickets.db": {
+      "bytes": 73728,
+      "sha256": "67e6c6e2fb51432dbc4e4c8a97849b2347f5fb811cd2922f6bc9fb06e93cc54e"
+    },
+    "data/v39/simulation.sqlite": {
+      "bytes": 380928,
+      "sha256": "a429b20be1242a4f6ea81c749df4a7718e6adf5138e973870821e97772c286fe"
+    },
+    "data/v39/simulation-v391.sqlite": {
+      "bytes": 462848,
+      "sha256": "9ebf39ecd8fd4caa277d6fa993ef0bbbeeb99355ab997d23a37678d0c44af939"
+    },
+    "web/datasets/b_v32_20261020/case_catalog.json": {
+      "bytes": 54354,
+      "sha256": "8e8cb2807311c868afe99eb6fb658463b178e33455c791b8752aab50f0adbfdc"
+    },
+    "target/prompt_config.py": {
+      "bytes": 2044,
+      "sha256": "bfea53df06bed25bcb463adf10d935a04ec48288c6015005cea57ea799a21bd7"
+    },
+    "target/tools.py": {
+      "bytes": 11190,
+      "sha256": "fa4d75661dacc045c0724086fb212ff26e7a032401b9a618ae181d3ae1e55123"
+    },
+    "target/v39/tool-schemas.json": {
+      "bytes": 12807,
+      "sha256": "cb5b95d41f9a65a88c37db931b460d40f50ae047470b996b20bbf5484b0889c6"
+    },
+    "target/v39/policy_profile.json": {
+      "bytes": 421,
+      "sha256": "09bc8ff71491f5f076e2969e47fb8af282239e083f335e188a07e2689389e2d3"
+    },
+    "target/baseline_profile.json": {
+      "bytes": 1151,
+      "sha256": "fe6b6e5b442b23e56bdec69b4f1d17a4b03da19e241f298c63ccaf7574b894fc"
+    },
+    "artifacts/runtime/api-usage/bailian/dbc4325ea7a9515b7a04/requests.jsonl": {
+      "bytes": 314598,
+      "sha256": "cecbf4f6a810419a7deaf16d18f0c46dcbea044e99459b6d6875cc55339d869e"
+    },
+    "artifacts/runtime/api-usage/deepseek/071347fb755d9c6ce0fd/requests.jsonl": {
+      "bytes": 479350,
+      "sha256": "c1b97e7517bf728a7398e8a3a4535e73348099fbf967dfd148343588e8360523"
+    }
+  },
+  "v391_conflict": {
+    "start_sha": "0f887d224268b65b74f2436a8dd2665d9ddb5cce6f8e22c75459f6ceea35666a",
+    "current": {
+      "bytes": 462848,
+      "sha256": "9ebf39ecd8fd4caa277d6fa993ef0bbbeeb99355ab997d23a37678d0c44af939"
+    },
+    "status": "BLOCKED",
+    "note": "inherited unexplained quote/proposal/audit; no orders/transactions; not connected/modified/deleted/rolled back"
+  },
+  "ledger": {
+    "bytes": 314598,
+    "sha256": "cecbf4f6a810419a7deaf16d18f0c46dcbea044e99459b6d6875cc55339d869e",
+    "prefix_274579": "87cfd3ed6b6dfdff0ecd8b1b7bc50f6e4726c5511d240b7d7bd417bd3f5b3776",
+    "prefix_preserved": true
+  },
+  "groups": {
+    "1892": "no new diff in this round",
+    "4056": "historical append preserved; no new model request",
+    "5538": "same baseline; source attribution unresolved"
+  },
+  "real_model_requests": 0,
+  "live_api": "NOT_RUN",
+  "formal_103": "BLOCKED_EXECUTOR",
+  "bridge": "NOT_ENABLED"
+}

@@ -29,7 +29,19 @@ def source_status(result):
         if meta.get('observed_dates'):st.caption('实际有记录日期：'+'、'.join(meta['observed_dates']))
         if meta.get('sha256'):st.caption('数据SHA256：'+meta['sha256'])
         st.caption('历史快照，非实时余票保证；查询不会真实锁座、出票或扣款。')
-    else:st.caption('实时数据源未授权、未接入；未发出任何实时请求。')
+    else:
+        classification=meta.get('classification')
+        if classification==SYNTHETIC:st.caption('数据来源：SYNTHETIC_TEST_FIXTURE · 本地合成协议服务，非真实12306余票。')
+        elif classification=='LIVE':st.caption('数据来源：12306独立只读查询服务；来源及数据时效尚未独立核验。')
+        elif meta.get('status')=='LIVE_DISABLED':st.caption('实时查询未启用；未发送真实铁路请求。')
+        else:st.caption('独立铁路查询服务不可用；未使用演示库存替代。')
+        if meta.get('fetched_at'):st.caption('查询观测时间：'+meta['fetched_at'])
+        if meta.get('requested_at'):st.caption('请求时间：'+meta['requested_at'])
+        if classification:st.caption('数据时点：'+str(meta.get('data_as_of') or 'UNKNOWN（来源未提供）'))
+        if any(t.get('seats_left') is None for t in (result or {}).get('trains',[])):st.caption('余票数量：UNKNOWN（未知，不按0张处理）')
+        if any(t.get('price') is None for t in (result or {}).get('trains',[])):st.caption('票价：UNKNOWN（未提供）')
+        if meta.get('error_code'):st.caption('查询状态说明：'+meta['error_code'])
+        st.caption('只提供查询，不访问账号、乘客、订单或支付接口；不保证实时可售。')
     status=meta.get('status')
     if status:
         text=status+' · '+meta.get('message','')
@@ -55,7 +67,7 @@ def settings(session):
         if session is None:st.info('先创建或选择一个会话。');return
         if session.read_only or session.execution_mode=='baseline' or os.getenv('TICKET_TEST_MODE')=='1' or st.session_state.get('dev_profile_view')=='正式 Baseline（只读）':
             st.caption('正式Baseline/Test固定Fixture；历史回放只读，不读取快照或恢复旧授权。');return
-        names={'固定演示数据':'fixture','本地快照':'snapshot','实时来源（未授权）':'live'}
+        names={'固定演示数据':'fixture','本地快照':'snapshot','实时来源（独立只读服务）':'live'}
         current=getattr(session.train_source_choice,'mode','fixture')
         mode=st.selectbox('车次数据来源',list(names),index=list(names.values()).index(current),key='train_source_mode_'+session.sid)
         choices=snapshots() if names[mode]=='snapshot' else []
@@ -63,7 +75,7 @@ def settings(session):
         if choices:
             pick=st.selectbox('已导入快照',range(len(choices)),format_func=lambda i:choices[i][2]['snapshot_id']+' · '+choices[i][2]['classification'],key='train_snapshot_'+session.sid)
         elif names[mode]=='snapshot':st.info('没有已验证的导入快照；选择后会明确返回SNAPSHOT_MISSING，不回落演示数据。')
-        if names[mode]=='live':st.warning('LIVE_SOURCE_BLOCKED_PENDING_AUTHORIZATION：本阶段没有网络适配器。')
+        if names[mode]=='live':st.info('需单独启动localhost查询服务，并显式启用TICKET_RAILWAY_QUERY_ENABLED。Provider模型授权不授予铁路访问权限；合成服务始终标记为非真实数据。')
         st.caption('切换不会调用模型或网络。快照模式禁止新候补、锁座、建单和改签；请切回演示数据并重新查询后演示购票。')
         if st.button('保存车次数据来源',key='train_source_save_'+session.sid):
             choice=SourceChoice(names[mode]) if pick is None else SourceChoice('snapshot',str(choices[pick][0].resolve()),choices[pick][1])

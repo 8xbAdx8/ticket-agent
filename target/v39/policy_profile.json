@@ -1,0 +1,12 @@
+{
+  "decision_id": "D9",
+  "status": "APPROVED",
+  "version": "V3.9.1-D9-B-P01-1",
+  "profile": "CHANGED_REFUND_P01",
+  "approved": true,
+  "partial_change": true,
+  "further_refund": true,
+  "max_changes": 1,
+  "scope": "V39_LOCAL_SIMULATION_ONLY",
+  "p01": {"above_48h_bp": 500, "from_24h_through_48h_bp": 1000, "below_24h_bp": 2000, "rounding": "HALF_UP", "basis": "CURRENT_SELECTED_ACTIVE_ITEM_PRICE_SNAPSHOT_FEN"}
+}

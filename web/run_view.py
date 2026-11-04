@@ -12,9 +12,9 @@ from web.presentation import TOOL_LABELS, escape
 
 PHASES = (("query", "查票"), ("policy", "检索政策"), ("confirm", "等待确认"),
           ("execute", "执行模拟操作"), ("done", "完成"))
-QUERY_TOOLS = {"query_tickets"}
+QUERY_TOOLS = {"query_tickets","railway_search_stations","railway_query_trips","railway_trip_stops","railway_check_inventory","railway_quote_fare"}
 POLICY_TOOLS = {"search_policy"}
-WRITE_TOOLS = {"monitor_seat", "lock_seat", "create_order", "pay_order", "cancel_order"}
+WRITE_TOOLS = {"monitor_seat", "lock_seat", "create_order", "pay_order", "cancel_order", "railway_create_order", "railway_pay_order", "railway_cancel_order", "railway_refund_order", "railway_change_order"}
 
 STATUS_TEXT = {"done": "已完成", "failed": "失败", "blocked": "已拦截", "active": "进行中",
                "waiting": "等待确认", "declined": "已取消", "pending": "未发生", "unknown": "未记录"}
@@ -49,7 +49,7 @@ EXECUTION_STAGES=(
     ('用户输入',{'user_input'}),
     ('模型 / 规则与工具选择',{'agent_start','agent_decision','model_start','model_end','model_error','model_tool_proposed'}),
     ('RAG 检索',{'rag_start','rag_result','rag_error'}),
-    ('工具与权限',{'tool_proposed','permission_check','parameter_validation','tool_start','tool_result','tool_message_created','tool_result_in_model_request'}),
+    ('工具与权限',{'tool_proposed','permission_check','parameter_validation','tool_start','tool_result','railway_tool_result','railway_tool_error','tool_message_created','tool_result_in_model_request'}),
     ('用户确认',{'confirmation_requested','user_confirmation','confirmation_declined','operation_resumed'}),
     ('最终回答与结束',{'agent_returned','agent_error','run_finished'}),
 )
@@ -109,11 +109,14 @@ def phase_states(events):
         if kind in ("tool_proposed", "tool_start") and phase and state[phase]["status"] in ("pending", "unknown"):
             state[phase]["status"] = "active"
             state[phase]["detail"] = "已提议 · " + TOOL_LABELS.get(tool, str(tool))
-        if kind == "tool_result" and phase:
+        if kind in ("tool_result","railway_tool_result","railway_tool_error") and phase:
             state[phase]["status"] = RESULT_STATUS.get(status, "unknown")
             duration = event.get("duration_ms")
             detail = TOOL_LABELS.get(tool, str(tool))
             state[phase]["detail"] = detail + (f" · {duration} ms" if isinstance(duration, int) else "")
+            if phase=='execute' and isinstance(event.get('output'),dict) and event['output'].get('status')=='CONFIRMATION_REQUIRED':
+                state['execute']['status']='pending';state['execute']['detail']='尚未执行交易'
+                state['confirm'].update(status='waiting',detail='等待用户核对确认卡')
         if kind == "confirmation_requested":
             state["confirm"]["status"] = "waiting"
             state["confirm"]["detail"] = TOOL_LABELS.get(tool, str(tool)) + " · 等待用户确认"
@@ -138,10 +141,24 @@ def phase_states(events):
         if kind == "agent_error":
             state["done"]["status"] = "failed"
             state["done"]["detail"] = "执行异常 · " + str(event.get("error") or "未记录类别")
+        if kind=='business_operation_completed':
+            receipt=event.get('business_receipt') or {}
+            if receipt.get('action'):
+                state['confirm'].update(status='declined' if receipt.get('approved') is False else 'done',detail='实际页面确认记录')
+                final='done' if receipt.get('database_verified') and receipt.get('status')=='SUCCEEDED' else 'failed' if receipt.get('status')=='FAILED' else 'declined' if receipt.get('status')=='CANCELLED' else 'blocked'
+                state['execute'].update(status=final,detail='SQLite与操作回执核验')
+                state['done'].update(status=final,detail='页面业务操作，不是新模型请求')
+            elif receipt.get('status')=='BLOCKED':
+                state['confirm'].update(status='waiting',detail='已生成确认卡，尚未交易')
+                state['execute'].update(status='pending',detail='尚未执行交易')
+                state['done'].update(status='waiting',detail='等待用户继续')
+            else:state['done'].update(status='done' if receipt.get('status')=='SUCCEEDED' else 'failed',detail='本地页面工具操作')
     failed = any(state[key]["status"] in ("failed", "blocked") for key in ("query", "policy", "execute"))
     if failed and state["done"]["status"] == "done":
         state["done"]["status"] = "failed"
         state["done"]["detail"] = "运行已结束，但存在未成功的模拟操作"
+    if state['confirm']['status']=='waiting' and state['done']['status']=='done':
+        state['done'].update(status='waiting',detail='等待确认，不代表交易完成')
     return [state[key] for key, _ in PHASES]
 
 

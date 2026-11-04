@@ -29,13 +29,17 @@ class Settings(DeepSeekSettings):
         try:
             settings = cls(timeout=float(os.getenv("BAILIAN_TIMEOUT", "20")),
                 max_requests=0,
+                max_output_tokens=int(os.getenv("DASHSCOPE_MAX_OUTPUT_TOKENS", os.getenv("DEEPSEEK_MAX_OUTPUT_TOKENS","1024"))),
                 max_model_calls=int(os.getenv("BAILIAN_MAX_MODEL_CALLS","3")),
+                max_tool_calls=int(os.getenv("DEEPSEEK_MAX_TOOL_CALLS","8")),
+                turn_token_budget=int(os.getenv("DEEPSEEK_TURN_TOKEN_BUDGET","48000")),
+                max_payload_bytes=int(os.getenv("DEEPSEEK_MAX_PAYLOAD_BYTES","32000")),
                 profile=os.getenv("DEEPSEEK_LIVE_TEST_PROFILE", "read_only"),
                 sandbox_root=Path(os.environ['DEEPSEEK_SANDBOX_DIR']) if os.getenv('DEEPSEEK_SANDBOX_DIR') else None,
                 ledger_path=Path(os.getenv("BAILIAN_BUDGET_PATH", str(cls.ledger_path))))
         except ValueError:
             raise BailianError("invalid_safety_limits") from None
-        if not 1 <= settings.timeout <= 60 or not 1<=settings.max_model_calls<=4:
+        if not 1 <= settings.timeout <= 60 or not 1<=settings.max_model_calls<=8 or not 1000<=settings.max_payload_bytes<=64000:
             raise BailianError("invalid_safety_limits")
         if settings.profile not in ('read_only', 'full_sandbox'):
             raise BailianError('invalid_test_profile')

@@ -18,6 +18,7 @@ from target.trace import Trace
 from target.providers import get_provider
 from target.run_events import recorded_run
 from target.execution_config import bound_run
+from target.v39.registry import bounded_run as railway_bounded_run
 
 SYSTEM_PROMPT = (
     "你是一个出行服务智能助手，帮助用户查询车次、抢票下单、退改签以及解答票务政策。\n"
@@ -102,6 +103,7 @@ class Agent:
 
     @recorded_run
     @bound_run
+    @railway_bounded_run
     def chat(self, session_id, message, save_trace=True):
         if not isinstance(session_id, str) or not session_id.strip() or not isinstance(message, str) or not message.strip():
             raise ValueError("session_id 与 message 必须是非空字符串")
@@ -147,7 +149,8 @@ class Agent:
         run=ACTIVE_LEGACY_RUN.get()
         trace.trace_id=run.run_id
         trace.provider = getattr(self.provider, "name", config.PROVIDER)
-        trace.runtime_tool_names=tuple(tools.TOOL_NAMES)
+        from target.v39 import registry as railway
+        trace.runtime_tool_names=tuple(t['function']['name'] for t in railway.definitions(tools.TOOLS))
         if self.effective_config:trace.model=self.effective_config.model
         from target.run_events import bind, emit
         bind(trace)
@@ -158,6 +161,14 @@ class Agent:
         for step in range(config.MAX_STEPS):
             event_start=len(run.events)
             try:
+                from target.v39.completion import local_answer
+                local=local_answer(message,[dict(e,event='tool_end') for e in run.executions])
+                if local:
+                    emit('agent_decision',source='deterministic_railway_duration',model_called=False,reply=local)
+                    reply=local
+                    messages.append(dict(role='assistant',content=reply,tool_calls=[]))
+                    trace.finish(reply,'stop')
+                    break
                 emit('model_start',system_prompt=messages[0].get('content'))
                 for prior in messages:
                     if prior.get('role')=='tool':
@@ -170,7 +181,9 @@ class Agent:
                         emit('tool_result_in_model_request',call_id=prior.get('tool_call_id'),tool=prior.get('name'),**evidence)
                 model_started=time.perf_counter()
                 definitions=tools.TOOLS if self.effective_config is None else [t for t in tools.TOOLS if t['function']['name'] in self.effective_config.tool_whitelist]
-                msg = self.provider.chat(messages, definitions)
+                definitions=railway.definitions(definitions)
+                from target.v39.model_result import legacy_messages
+                msg = self.provider.chat(legacy_messages(messages), definitions)
                 emit('model_end',tool_calls=msg.get('tool_calls') if isinstance(msg,dict) else None,
                      reply=msg.get('content') if isinstance(msg,dict) else None,
                      duration_ms=int((time.perf_counter()-model_started)*1000),
@@ -194,6 +207,15 @@ class Agent:
             for call in calls:emit('model_tool_proposed',tool=call['name'],args=call['arguments'],call_id=call['id'])
             for key in trace.tokens:
                 trace.tokens[key] += usage.get(key, 0)
+            if msg.get('finish_reason',getattr(self.provider,'last_finish_reason','stop'))=='length':
+                from target.v39.completion import incomplete_reply
+                raw=dict(event='output_truncated',original_response=msg,usage=usage,complete=False)
+                emit('output_truncated','incomplete',original_response=msg,usage=usage,complete=False)
+                run.model_requests.append(dict(model_step=step+1,source='legacy_provider',raw_response=msg,complete=False,tool_calls=[],final_text=msg.get('content')))
+                reply=incomplete_reply([dict(e,event='tool_end') for e in run.executions])
+                messages.append(dict(role='assistant',content=reply,tool_calls=[]))
+                trace.finish(reply,'stop');legacy_error=dict(category='model_output_truncated',phase='model')
+                break
             messages.append(msg)
             run.model_requests.append({"model_step":step+1,"source":"legacy_provider",
                 "tool_calls":[{"id":c["id"],"name":c["name"],"args":c["arguments"]} for c in calls],
@@ -215,7 +237,7 @@ class Agent:
                 try:
                     from target.rag_service import scope
                     with scope(trace_id=trace.trace_id,session_id=trace.session_id,call_id=call['id'],provider=trace.provider):
-                        result, ok, latency = tools.dispatch(name, args)
+                        result, ok, latency = railway.dispatch(name, args)
                 finally:
                     tools.DISPATCH_OBSERVER.reset(token)
                 import copy
@@ -241,6 +263,14 @@ class Agent:
             messages.append({"role": "assistant", "content": reply, "tool_calls": []})
             trace.abort(reply, "max_steps_exceeded")
 
+        from target.v39.completion import resolve
+        reply,derived=resolve(trace.reply,message,[dict(e,event='tool_end') for e in run.executions])
+        if derived:emit('deterministic_duration_answer',**{k:v for k,v in derived.items() if k!='event'})
+        from target.v39.business_claim_guard import apply as guard_business
+        original=reply
+        reply,guard=guard_business(reply,[dict(e,event='tool_end') for e in run.executions],message)
+        if guard and guard['status']=='blocked':emit('business_claim_guard','blocked',original_model_reply=original,public_reply=reply,assessment=guard)
+        trace.reply=reply
         out = trace.to_dict()
         from target.diagnostics import make_audit
         self.last_audit_report=make_audit(trace,run,save=save_trace,public_trace=out,error=legacy_error,contract_returned=True)

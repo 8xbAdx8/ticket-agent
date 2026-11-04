@@ -11,13 +11,42 @@ from web.runtime import Conversation, operation_kind, live_ready, failure_hint, 
 from web.presentation import ticket_cards, order_card, policy_cards, TOOL_LABELS
 from web import run_view, scroll_bridge
 from web import user_copy
+from web import interaction
+from web.result_rows import batches, iter_rows
 
 QUICK_PROMPTS = (
-    ("查余票", "查明天上海到杭州的高铁二等座"),
+    ("查余票", "查询 2026-11-05 上海虹桥到杭州东的铁路车次"),
     ("问政策", "锁座后多久必须完成支付？"),
     ("看订单", "查询我的订单"),
     ("退票费率", "退票手续费怎么算？"),
 )
+
+
+
+
+def _known_session_trains(session):
+    """Trains that this session actually received from a railway tool."""
+    from web.result_rows import iter_rows
+    import re
+    found=set()
+    def walk(value):
+        if isinstance(value,dict):
+            for key in ('trip_short_name','train_no','trip_id'):
+                if key in value:
+                    text=str(value.get(key) or '')
+                    if key=='trip_id':
+                        # GTFS trip ids embed the train plus a suffix such as
+                        # 5l000G75410A; the train is G7541, not G75410.
+                        matches=re.findall(r'([GDCZTK]\d{1,4})(?=0[A-Z])',text)
+                    else:
+                        matches=re.findall(r'(?<![A-Za-z0-9])([GDCZTK]\d{1,5})(?![0-9])',text)
+                    found.update(matches)
+            for item in value.values():walk(item)
+        elif isinstance(value,(list,tuple)):
+            for item in value:walk(item)
+    walk(getattr(session,'results',None))
+    walk(getattr(session,'railway_queries',None))
+    return found
 
 
 def unsafe_ticket_result(session, record):
@@ -29,6 +58,9 @@ def unsafe_ticket_result(session, record):
             continue
         judgement=audit.get('judgement') or {}
         if (judgement.get('hallucination') or {}).get('hallucination_detected') is True:
+            flagged={f.get('train') for f in (judgement.get('hallucination') or {}).get('findings',[]) if f.get('train')}
+            if flagged and flagged <= _known_session_trains(session):
+                return False
             return True
         return any(a.get('assertion')=='query_result_train_authority' and a.get('passed') is False
                    for a in judgement.get('assertions',[]) if isinstance(a,dict))
@@ -39,7 +71,18 @@ def show_guarded_reply(session, record):
     if unsafe_ticket_result(session,record):
         st.warning('本次回答与查票记录不一致，已暂停展示车次。请在开发者工作空间核查；不要据此订票。')
     else:
-        st.write(record['reply'])
+        paid_after_reply=False
+        if hasattr(session,'_audit_for') and getattr(session,'business_view',None):
+            from web.business_state import order_for_record
+            import re
+            paid_after_reply=bool(re.search(r'支付.{0,8}(?:尚无|没有|无).{0,8}成功证据',record['reply']) and any(o['payment_status']=='SUCCEEDED' and o['ledger_verified'] for o in order_for_record(session,record)))
+        if paid_after_reply:
+            st.caption('该回答记录的是确认前的证据状态；后续操作已提交，当前状态如下。')
+            with st.expander('查看当时的原始回答',expanded=False):st.write(record['reply'])
+        else:st.write(record['reply'])
+    if hasattr(session,'_audit_for') and getattr(session,'business_view',None):
+        from web.business_state import render_order_status
+        render_order_status(session,record)
 
 
 def _policy_evidence(hits):
@@ -56,13 +99,15 @@ def _policy_evidence(hits):
 
 def show_business(results, session=None):
     from web.train_data import source_status
-    for row in results:
+    for row in iter_rows(results):
         if row.get('tool')=='query_tickets' and isinstance(row.get('result'),dict) and row['result'].get('data_source'):
             source_status(row['result'])
-    successful=[r for r in results if r.get("ok") and isinstance(r.get("result"),dict)]
+    successful=[r for r in iter_rows(results) if r.get("ok") and isinstance(r.get("result"),dict)]
     if not successful:
         return
     last=successful[-1]
+    if all(r['tool'] in ('railway_search_stations','railway_query_trips','railway_trip_stops','railway_check_inventory') for r in successful):
+        last=next((r for r in reversed(successful) if r['tool'] in ('railway_query_trips','railway_trip_stops')),last)
     if last["tool"]=="search_policy":
         hits=last['result'].get('hits') or []
         if hits:
@@ -85,6 +130,30 @@ def show_business(results, session=None):
         if not last["result"].get("trains"):
             st.info("没有符合条件的班次，请调整路线、日期或席别后再查。")
         if not last['result'].get('data_source'):source_status(last['result'])
+    elif last["tool"].startswith("railway_"):
+        if last['tool'] in ('railway_search_stations','railway_query_trips','railway_trip_stops'):
+            from web.railway_queries import result_card
+            result_card(dict(tool=last['tool'],result=last['result'],ok=last.get('ok',False)),session)
+            return
+        # Render the actual tool result, not only the model's paraphrase.
+        result=last["result"]
+        if last["tool"]=="railway_query_trips" and isinstance(result,dict):
+            rows=result.get("data") or []
+            st.caption("真实静态结果 · 工具返回 "+str(len(rows))+" 班；模型文字若与本表数量不同，以本表为准。")
+            if rows:
+                st.dataframe([dict(车次=r.get('trip_short_name'),车次标识=r.get('trip_id'),出发=r.get('departure_at'),到达=r.get('arrival_at'),线路形状=r.get('shape_status')) for r in rows],hide_index=True,width='stretch')
+        elif last["tool"]=="railway_trip_stops" and isinstance(result,dict) and isinstance(result.get('data'),dict):
+            stops=result['data'].get('stops') or []
+            st.caption("真实静态经停 · 工具返回 "+str(len(stops))+" 站")
+            if stops:
+                st.dataframe([dict(站名=s.get('stop_name'),站序=s.get('raw_stop_sequence'),到达=s.get('arrival_at'),出发=s.get('departure_at')) for s in stops],hide_index=True,width='stretch')
+        elif last["tool"]=="railway_quote_fare" and isinstance(result,dict):
+            st.caption("模拟报价 · ¥"+f"{(result.get('quote') or {}).get('total_fen',0)/100:.2f}"+"；真实库存/票价仍为本地模拟。")
+        elif last["tool"] in ("railway_create_order","railway_pay_order","railway_cancel_order","railway_refund_order","railway_change_order") and isinstance(result,dict):
+            st.caption("铁路操作提案 · " + str(result.get("proposal_id") or result.get("status") or "已处理") + "；请在右侧待确认区核对。")
+        else:
+            st.caption("真实静态/模拟工具结果：")
+            st.json(result,expanded=False)
 
 
 def _followup_lifecycle(session, run_id, kind, **fields):
@@ -102,13 +171,40 @@ def _live_request_allowed(session):
     return bool(session.live and st.session_state.get('user_compose_session')==session.sid)
 
 
-def execute(session, message, request_id, origin=None,confirmation=None):
+def execute(session, message, request_id, origin=None,confirmation=None,entry='chat',on_event=None):
+    if getattr(session,'_unified_interaction',False):
+        future=interaction.submit(session,message,request_id,entry=entry,origin=origin,
+            authorized=_live_request_allowed(session),confirmation=confirmation)
+        if on_event:on_event({'event_type':'ui_submission_queued'})
+        # Avoid a flashing pending view for fast local responses. Slow model
+        # calls remain independent of the Streamlit render/rerun lifecycle.
+        if future:
+            import concurrent.futures
+            try:
+                completed=future.result(timeout=1)
+                session._chat_notified=True
+                rows=getattr(session,'operations',[])
+                if rows and rows[-1].get('run_id'):st.session_state['user_focus_run']=(session.sid,rows[-1]['run_id'])
+                if completed:
+                    # Deliver the answer before a bounded UI coalescing window;
+                    # slow auxiliary generation remains in its own worker.
+                    with st.chat_message('assistant'):show_guarded_reply(session,completed)
+                    from web.followup_jobs import JOBS
+                    audit=session._audit_for(completed)
+                    auxiliary=JOBS.get((session.sid,(audit or {}).get('trace_id')))
+                    if auxiliary:
+                        try:auxiliary.result(timeout=.2)
+                        except Exception:pass
+                    st.session_state['followups_poll_'+session.sid]=True
+            except (concurrent.futures.TimeoutError,concurrent.futures.CancelledError):pass
+        return None
     placeholder=st.empty()
     rag_placeholder=st.empty()
     seen=[]
     previous_run=(session.audits[-1].get('trace_id') if session.audits else None)
     def update(event):
         seen.append(event)
+        if on_event:on_event(event)
         placeholder.markdown(user_copy.processing_markup(event), unsafe_allow_html=True)
         from web.policy_interaction import policy_view
         view=policy_view(session.sid,event.get('run_id'),events=seen)
@@ -117,15 +213,24 @@ def execute(session, message, request_id, origin=None,confirmation=None):
     placeholder.markdown(PROCESSING,unsafe_allow_html=True)
     try:
         consent=_live_request_allowed(session)
+        if session.live:
+            resolved=session.resolve_config()
+            session.config_cost_consent=(session.sid,session.live_provider,resolved.override_revision if resolved else 0)
         origin=origin or {}
         options={'confirmation':confirmation} if confirmation is not None else {}
-        session.send(message,request_id,event_callback=update,followup_authorized=consent,
-                     followup_origin=origin if origin.get('run_id') else None,**options)
+        session._rail_followup_dispatch=bool(origin.get('context_id'))
+        try:
+            result=session.send(message,request_id,event_callback=update,followup_authorized=consent,entry=entry,
+                         defer_followups=bool(getattr(session,'_unified_interaction',False)),
+                         followup_origin=origin if origin.get('run_id') else None,**options)
+            return result
+        finally:session._rail_followup_dispatch=False
     except Exception:
         from target.reply_consistency import failure_notice
         notice=failure_notice(session.error["category"]) if session.error else None
         detail=tool_failure_hint(session)
         st.error(user_copy.error_message(session.error['category'] if session.error else None))
+        if session.error:st.caption('错误类别：'+str(session.error.get('category'))+'；未自动重试，未切换 Mock。')
     finally:
         if session.audits and session.audits[-1].get('trace_id')!=previous_run:
             st.session_state['user_focus_run']=(session.sid,session.audits[-1]['trace_id'])
@@ -213,7 +318,7 @@ def _followup_suggestions(session, record, view, offered=None):
     # These two existing actions now live on the authoritative order card, with
     # a shared explicit consent and the same atomic backend payment service.
     suggestions=[q for q in suggestions if q not in ('使用支付宝支付','使用微信支付')]
-    suggestions=[q for q in suggestions if offered is None or q not in offered]
+    suggestions=[q for q in suggestions if offered is None or q not in offered][:3]
     if not suggestions:return
     if offered is not None:offered.update(suggestions)
     pending=st.session_state.get('pending_operation') or {}
@@ -233,7 +338,8 @@ def _followup_suggestions(session, record, view, offered=None):
         st.markdown('**你可能还想了解**')
         st.caption('根据本轮已有信息整理；点击后将作为一条新消息发送，仍需完成必要的操作确认。')
         for n,question in enumerate(suggestions):
-            st.button(question,key='policy_followup_'+session.sid+'_'+str(view.get('run_id'))+'_'+str(n),
+            label=next((r.get('label') for r in saved.get('grounding',[]) if r.get('question')==question and r.get('label')),question)
+            st.button(label,key='policy_followup_'+session.sid+'_'+str(view.get('run_id'))+'_'+str(n),
                       on_click=_queue_followup,args=(session.sid,view.get('run_id'),question),
                       disabled=not ready,width='stretch')
         if session.live:
@@ -244,6 +350,19 @@ def _followup_suggestions(session, record, view, offered=None):
 
 def _consume_followup(session, busy):
     """Revalidate stale buttons and Live consent immediately before dispatch."""
+    rail=st.session_state.pop('railway_followup_request',None)
+    if rail:
+        from web import railway_followups as rf
+        from web.railway_cards import names_for
+        row=getattr(session,'railway_followup_row',None)
+        if busy or rail.get('draft')!=rf.draft(st.session_state,session.sid):return None
+        if session.live and (not _live_request_allowed(session) or not live_ready(session.live_provider)):return None
+        identity=str((row or {}).get('id') or __import__('hashlib').sha256(str(row).encode()).hexdigest()[:16])
+        focus=st.session_state.get('rail_focus_'+session.sid+'_'+identity)
+        trains=(row or {}).get('result',{}).get('data') or []
+        index=next((i for i,t in enumerate(trains) if t.get('trip_id')==focus),None)
+        detail=st.session_state.get('stops_'+session.sid+'_'+identity+'_'+str(index)+'_data') if index is not None else None
+        return rf.consume(session,rail,rf.build(session.sid,row,names_for(session),focus,detail))
     request=st.session_state.pop('user_followup_request',None)
     if not request:return None
     if request.get('sid')!=session.sid or busy:
@@ -304,6 +423,16 @@ def _run_rail(session, events):
     """保留本轮状态与历史选择；原始事件和审计在开发者端查看。"""
     with st.container(key='user_rail'):
         st.markdown('<div class="ta-rail-head"><b>本次处理</b><span>来自本轮记录</span></div>', unsafe_allow_html=True)
+        if getattr(session,'operations',[]):
+            rows=interaction.history(session);index=len(rows)-1
+            if len(rows)>1:index=st.selectbox('历史运行',range(len(rows)),index=index,format_func=lambda n:'第'+str(n+1)+'次处理',key='user_run_'+session.sid)
+            row=rows[index];st.markdown(interaction.markup(row),unsafe_allow_html=True)
+            if row.get('run_id'):
+                events,_=run_view.load_events(session.trace_dir,row['run_id'],session.sid)
+                st.markdown(user_copy.phase_markup(run_view.phase_states(events)),unsafe_allow_html=True)
+                st.button('在开发者端查看此运行',key='user_to_trace_'+session.sid,on_click=_open_user_run,args=(session.sid,row['run_id']))
+            if row.get('ended_at'):st.caption('结束时间：'+row['ended_at'])
+            return
         if not session.audits:
             st.caption('发送消息后，这里显示查询与订单处理的进度。')
             return
@@ -362,56 +491,80 @@ def _summary_markup(summary):
             '</div>')
 
 
-def _run_summary_bar(session, audit, events, mode_badge):
+def _run_summary_bar(session, audit, events, mode_badge,operation=None):
     """Always-visible description of the run on screen, plus the two jumps."""
     summary = run_view.run_summary(session, audit, events, mode_badge)
+    if operation:summary['status']={'QUEUED':'进行中','RUNNING':'进行中','SUCCEEDED':'已完成','FAILED':'失败','BLOCKED':'已拦截','CANCELLED':'已取消'}[operation['status']]
+    if operation and (operation.get('error') or {}).get('category')=='awaiting_confirmation':summary['status']='等待确认'
+    if operation and operation.get('kind')=='page_business':
+        summary.update(run_id=operation.get('run_id'),mode_label='本地模拟业务 · 未调用模型')
     matching=next((i for i,record in enumerate(session.history)
                    if (audit or {}).get('public_trace')==record),None)
     anchor = f"turn_{matching}" if matching is not None else ""
     with st.container(key='run_summary'):
-        info, actions = st.columns([3.1, 1.6], gap='small')
-        with info:
-            st.markdown(_summary_markup(summary), unsafe_allow_html=True)
-        with actions:
-            jump_run, jump_latest = st.columns(2, gap='small')
-            if jump_run.button('回到本次运行', key='scroll_to_run', width='stretch',
-                               disabled=not anchor,
-                               help='滚动对话到当前运行的结果，并高亮它'):
-                scroll_bridge.request('run', anchor)
-            if jump_latest.button('回到最新', key='scroll_to_latest', width='stretch',
-                                  disabled=not session.history,
-                                  help='滚动对话到最后一条消息'):
-                scroll_bridge.request('bottom')
+        st.markdown(_summary_markup(summary), unsafe_allow_html=True)
+        jump_run, jump_latest = st.columns(2, gap='small')
+        if jump_run.button('回到本次运行', key='scroll_to_run', width='stretch',
+                           disabled=not anchor,
+                           help='滚动对话到当前运行的结果，并高亮它'):
+            scroll_bridge.request('run', anchor)
+        if jump_latest.button('回到最新', key='scroll_to_latest', width='stretch',
+                              disabled=not session.history,
+                              help='滚动对话到最后一条消息'):
+            scroll_bridge.request('bottom')
     return summary
 
 
 def _conversation(session):
     """Messages, structured tool results, and the sandbox disclaimer."""
     with st.container(key='user_chat'):
+        with interaction.LOCK:
+            history=list(session.history);results=batches(session.results)
         # Newest turn owns overlapping recommendations; older turns must not
         # consume them before the current answer is rendered.
         latest=session.followups_for(session.history[-1]) if session.history else None
         offered=set((latest or {}).get('suggestions',[]))
-        for index, previous in enumerate(session.history):
+        for index, previous,operation in interaction.chat_turns(session):
+            if previous is None:
+                with st.container(key='failed_turn_'+operation['request_id']):
+                    with st.chat_message('user',avatar=':material/person:'):st.write(operation['operation'])
+                    with st.chat_message('assistant',avatar=':material/info:'):
+                        st.caption('系统提示 · 不是模型成功回答')
+                        if operation['status']=='CANCELLED':st.info('这条请求已取消，尚未调用Agent。')
+                        else:st.error(user_copy.error_message((operation.get('error') or {}).get('category')))
+                        from web.business_state import orders_for_operation
+                        from target.v39.read_model import status_text
+                        for order in orders_for_operation(session,operation):
+                            st.info(status_text(order))
+                            st.caption('这条模型请求未完整完成；以上为已提交业务状态，不表示交易失败，也没有重新执行交易。')
+                continue
             with st.container(key=f'turn_{index}'):
                 with st.chat_message("user",avatar=":material/person:"):
                     st.write(previous["user_msg"])
                 with st.chat_message("assistant",avatar=":material/smart_toy:"):
                     show_guarded_reply(session,previous)
                     view=_turn_policy(session,previous)
-                    _policy_panel(view, technical=False)
+                    if view.get('has_recorded_retrieval'):
+                        _policy_panel(view, technical=False)
+                    rail_tools=('railway_query_trips','railway_trip_stops','railway_search_stations')
+                    if index<len(results) and not unsafe_ticket_result(session,previous):
+                        from web.railway_queries import result_card
+                        for number,row in enumerate(results[index]):
+                            if row.get('ok') and row.get('tool') in rail_tools:
+                                copy=dict(row,id=str(view.get('run_id') or index)+'_'+str(number))
+                                result_card(copy,session)
                     if not unsafe_ticket_result(session,previous):
                         _followup_suggestions(session,previous,view,None if index==len(session.history)-1 else offered)
-        if session.history and not session.error:
-            if not unsafe_ticket_result(session,session.history[-1]):
+        if history and results and not session.error:
+            if not unsafe_ticket_result(session,history[-1]):
                 # Policy evidence now lives under its own answer, including history.
-                show_business([r for r in session.results[-1] if r.get('tool')!='search_policy'], session)
-            record=session.history[-1]
+                show_business([r for r in iter_rows(results[-1]) if r.get('tool') not in ('search_policy','railway_query_trips','railway_trip_stops','railway_search_stations')], session)
+            record=history[-1]
             if any(name in record['tool_sequence'] for name in ('monitor_seat','lock_seat','create_order','pay_order','cancel_order')):
                 st.info('本轮仅处理演示订单，不会真实出票或扣款。')
             if any(not c["ok"] for s in record["steps"] for c in s["calls"]):
                 st.warning("本轮有操作未成功，请核对订单状态；详细原因可在开发者工作空间查看。")
-        if not session.history and not session.pending_action() and not st.session_state.get('guided_demo'):
+        if not session.history and not getattr(session,'railway_queries',[]) and not session.pending_action() and not st.session_state.get('guided_demo'):
             st.markdown('<p class="ta-chat-empty">对话会显示在这里；也可以先点上面的快捷问题，或从左侧选择模型新建会话。</p>',
                         unsafe_allow_html=True)
 
@@ -482,9 +635,9 @@ def _composer(session, live_name):
             row=st.columns([9,1.4],gap='small')
             input_widget=row[0].text_area if multiline else row[0].text_input
             message=input_widget("输入消息",key="user_message",
-                placeholder="例如：查明天上海到杭州的高铁二等座",label_visibility="collapsed",**({'height':72} if multiline else {}))
+                placeholder="例如：查询 2026-11-05 上海虹桥到杭州东的铁路车次",label_visibility="collapsed",**({'height':72} if multiline else {}))
             send=row[1].form_submit_button("发送",key='user_send_'+st.session_state['user_submit_nonce'],
-                type="primary",disabled=session.read_only or session.live and not live_ready(session.live_provider))
+                type="primary",disabled=session.read_only or interaction.busy(session) or session.live and not live_ready(session.live_provider))
             st.caption('车次来源见本轮标注；锁座、下单、支付、退票会先请你确认。订单与支付均为演示，不会向12306提交订单或真实锁座，也不会真实扣款。')
     return message, send, allow_live
 
@@ -501,6 +654,7 @@ def user_page():
         st.session_state['user_active_session_index']=index
         st.session_state['user_session_index']=index
         st.query_params['session_id']=sessions[index].sid
+        scroll_bridge.request('bottom' if sessions[index].history else 'top',scope=sessions[index].sid)
     def new_session():
         return Conversation("user",engine=st.session_state["default_engine"],live=st.session_state["default_live"],
                             live_provider=st.session_state.get("default_provider","deepseek"),
@@ -536,10 +690,18 @@ def user_page():
         index=st.selectbox("历史会话",range(len(sessions)),format_func=lambda i:(sessions[i].history[0]["user_msg"][:18] if sessions[i].history else "新对话")+f" · {i+1}",key="user_session_index")
     st.session_state['user_active_session_index']=index
     session=sessions[index]
+    session._unified_interaction=True
+    from web.business_state import refresh as refresh_business_state
+    refresh_business_state(session)
+    selected_sid=st.session_state.get('scroll_selected_sid')
+    if selected_sid!=session.sid:
+        scroll_bridge.request('bottom' if session.history else 'top',scope=session.sid)
+        st.session_state['scroll_selected_sid']=session.sid
     focus=st.session_state.pop('user_focus_run',None)
     if focus and focus[0]==session.sid:
-        st.session_state['user_run_'+session.sid]=next((i for i,a in enumerate(session.audits)
-            if a.get('trace_id')==focus[1]),max(0,len(session.audits)-1))
+        rows=interaction.history(session)
+        st.session_state['user_run_'+session.sid]=next((i for i,a in enumerate(rows)
+            if a.get('run_id')==focus[1]),max(0,len(rows)-1))
     st.query_params['session_id']=session.sid
     restore_notice=st.session_state.pop('restore_notice',None)
     live_name="Qwen3.8-Flash" if session.live_provider=="bailian" and session.live_model=="qwen3.8-flash" else session.live_model or "Qwen (兼容旧配置)" if session.live_provider=="bailian" else "DeepSeek"
@@ -550,17 +712,20 @@ def user_page():
     action = session.pending_action()
     pending=st.session_state.get("pending_operation")
     pending_here=bool(pending and pending["sid"]==session.sid)
-    busy=bool(action) or pending_here or session.read_only
+    busy=bool(action) or pending_here or session.read_only or interaction.busy(session)
     followup=_consume_followup(session,busy)
+    submission=interaction.consume(session)
     audit, events, event_meta = run_view.latest_run(session) if session.audits else (None, [], {})
     chosen=st.session_state.get('user_run_'+session.sid)
-    if type(chosen) is int and 0<=chosen<len(session.audits):
-        audit=session.audits[chosen]
-        events,event_meta=run_view.load_events(session.trace_dir,audit.get('trace_id'),session.sid)
+    operations=interaction.history(session);display_operation=operations[-1] if operations else None
+    if type(chosen) is int and 0<=chosen<len(operations):
+        display_operation=operations[chosen]
+        audit=next((a for a in session.audits if a['trace_id']==display_operation.get('run_id')),None)
+        events,event_meta=run_view.load_events(session.trace_dir,(audit or {}).get('trace_id'),session.sid)
     if session.read_only or (audit is not None and audit is not session.audits[-1]):
         mode_badge='历史回放 · '+mode_badge
 
-    welcome = not session.history and not busy
+    welcome = not session.history and not getattr(session,'railway_queries',[]) and not busy
 
 
     if st.session_state.get('user_compose_session')!=session.sid:
@@ -570,6 +735,7 @@ def user_page():
         st.session_state['user_submit_nonce']=uuid.uuid4().hex
 
     def _chat_body():
+        displayed_error = session.error
         if session.config_notice:st.warning(session.config_notice)
         if restore_notice:st.info('未找到完整的本地会话索引，已新建会话；原文件未修改。')
         if session.read_only:st.info('已打开保存的历史会话，仅供查看，不会重新执行操作或产生模型费用。继续使用请新建会话。')
@@ -594,42 +760,75 @@ def user_page():
             from web.demo import demo_page
             demo_page()
         _conversation(session)
-        if followup:
-            with st.chat_message('user',avatar=':material/person:'):
-                st.write(followup['question'])
-            st.toast('已发送追问：'+followup['question'])
-            execute(session,followup['question'],followup['request_id'],origin=followup)
-            # Preserve the reader's scroll position; the existing bridge follows
-            # only readers already at bottom. No explicit bottom jump here.
-            st.rerun()
+        from web.business_panels import receipts as business_receipts
+        business_receipts(session)
+        if interaction.busy(session) and getattr(session,'_queued_submission',None):
+            with st.chat_message('user'):st.write(session._queued_submission['message'])
+            st.caption('正在处理这条请求；运行进度见本次处理。')
+        if displayed_error is not None and session.error is displayed_error:
+            # Keep the audit/trace, but clear this already-displayed request error
+            # only after the conversation has rendered its error state.
+            session.error=None
+        from web.railway_queries import history as railway_query_history
+        railway_query_history(session)
+        from web.followup_jobs import pending as followups_pending
+        @st.fragment(run_every=.5 if followups_pending(session) else None)
+        def _watch_followups():
+            if not followups_pending(session) and st.session_state.pop('followups_poll_'+session.sid,False):st.rerun()
+        if followups_pending(session):st.session_state['followups_poll_'+session.sid]=True
+        _watch_followups()
 
     def _column_body():
         with st.container(height='stretch',key='user_chat_scroll'):
             _chat_body()
             if not session.read_only:_confirm_cards(session, action, pending, pending_here)
-        return _composer(session, live_name)
+            chat_submission_slot=st.container()
+        return (*_composer(session, live_name),chat_submission_slot)
 
     with st.container(key='user_layout',horizontal=True,height='stretch'):
         with st.container(key='user_left',height='stretch'):
-            message, send, allow_live = _column_body()
+            message, send, allow_live,chat_submission_slot = _column_body()
         with st.container(key='user_right',height='stretch'):
             with st.container(key='mobile_info'):
                 info_open=st.toggle('相关信息 / 常用功能',key='user_info_open')
             with st.container(key='user_right_content',height='stretch'):
                 if info_open:st.markdown('<span class="ta-info-open"></span>',unsafe_allow_html=True)
                 user_layout.rail(session)
+                from web import v39_bridge
+                v39_bridge.render(session)
                 from web.order_actions import refund_panel,notice
                 refund_panel(session)
                 notice(session)
-                with st.expander('本次处理与历史运行',expanded=False):
-                    _run_summary_bar(session,audit,events,mode_badge)
-                    _run_rail(session,events)
+                st.markdown('### 本次处理与历史运行')
+                live_run_slot=st.empty()
+                @st.fragment(run_every=.35 if interaction.busy(session) else None)
+                def _watch_operation():
+                    rows=getattr(session,'operations',[])
+                    if rows and interaction.busy(session):st.markdown(interaction.markup(rows[-1]),unsafe_allow_html=True)
+                    if rows and rows[-1]['status']=='QUEUED' and st.button('取消排队',key='cancel_queued_'+session.sid):
+                        if interaction.cancel_queued(session):st.rerun()
+                    future=getattr(session,'_chat_future',None)
+                    if future and future.done() and not getattr(session,'_chat_notified',False):
+                        session._chat_notified=True
+                        if rows and rows[-1].get('run_id'):st.session_state['user_focus_run']=(session.sid,rows[-1]['run_id'])
+                        elif rows:st.session_state['user_run_'+session.sid]=len(interaction.history(session))-1
+                        st.rerun()
+                _watch_operation()
+                _run_summary_bar(session,audit,events,mode_badge,display_operation)
+                _run_rail(session,events)
                 if session.live:st.caption('政策检索与Embedding设置在开发者端管理；联网须明确授权，不会默认启用。')
                 if session.live and not live_ready(session.live_provider):
                     st.info(live_name+' 在线服务暂不可用。可以查看已保存的会话；不会自动切换到其他服务。')
                     st.info('不会自动切换 Mock；当前服务的配置与诊断请在开发者工作空间核对。')
 
-    if session.read_only:return
+    if session.read_only:
+        scroll_bridge.mount(turns=len(session.history),scope=session.sid)
+        return
+
+    if submission is None:submission=interaction.consume(session)
+    if followup:submission=dict(message=followup['question'],request_id=followup['request_id'],entry='followup',origin=followup)
+    if submission:
+        message,send,allow_live=submission['message'],True,_live_request_allowed(session) if session.live else False
 
     if send and action:
         st.warning("请先确认或取消待处理的模拟操作。")
@@ -649,19 +848,30 @@ def user_page():
         elif session.live and not session.full_tools and operation_kind(message, session.history):
             st.info("当前 Live 仅支持模拟查票和政策咨询，其余六个工具未开放。未发送请求。")
         else:
-            request_id=st.session_state['user_submit_nonce']
+            request_id=submission['request_id'] if submission else st.session_state['user_submit_nonce']
             st.session_state['user_submit_nonce']=uuid.uuid4().hex
             if operation_kind(message, session.history) and not (session.interactive and session.live and session.full_tools):
                 frozen=session.resolve_config()
                 st.session_state["pending_operation"]={"sid":session.sid,"message":message,"request_id":request_id,'config_hash':frozen.config_hash if frozen else None,'data_source_hash':session.train_source_hash()}
             else:
-                execute(session,message,request_id)
+                with chat_submission_slot:
+                    with st.chat_message('user'):st.write(message)
+                if (submission or {}).get('entry')!='followup':scroll_bridge.request('bottom',scope=session.sid)
+                scroll_bridge.mount(turns=len(session.history)+1,scope=session.sid)
+                def progress(event):
+                    op=next((r for r in session.operations if r['request_id']==request_id),None)
+                    if op:live_run_slot.markdown(interaction.markup(op),unsafe_allow_html=True)
+                with chat_submission_slot:
+                    result=execute(session,message,request_id,origin=(submission or {}).get('origin'),entry=(submission or {}).get('entry','chat'),on_event=progress)
+                if result:
+                    from web.followup_jobs import schedule
+                    if schedule(session,result,authorized=_live_request_allowed(session)):
+                        st.session_state['followups_poll_'+session.sid]=True
             st.session_state['user_clear_input']=True
-            scroll_bridge.request('bottom')
             st.rerun()
 
     # Mounted last so it observes the final layout of this render.
-    scroll_bridge.mount(turns=len(session.history),scope=session.sid)
+    scroll_bridge.mount(turns=len(session.history)+int(interaction.busy(session)),scope=session.sid)
 
 
 def show_remote_export(session):
