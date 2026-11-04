@@ -88,6 +88,8 @@ def approved(value):
 def tool_denial(name,*,check_confirmation=True):
     current=CURRENT.get()
     if current is None:return None  # Existing trusted offline harness remains compatible.
+    if name in ('railway_lock_seat','railway_lock'):
+        return '当前版本没有独立锁座操作。请先完成报价并创建建单提案，用户确认后系统会自动创建限时座位占用。'
     if name not in current.tool_whitelist:return '当前冻结配置禁止工具 '+name
     if name in WRITES:
         if dict(current.write_policy)[name]=='deny':return '当前冻结配置禁止写操作 '+name

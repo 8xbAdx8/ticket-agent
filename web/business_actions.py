@@ -122,9 +122,13 @@ def confirm(session,proposal_id,approved):
                     # committed. An auxiliary audit failure cannot undo payment.
                     session.persistence_warning='本地业务已提交，但页面审计辅助事件写入失败（'+type(exc).__name__+'）；以原生交易回执和数据库为准，未自动重试。'
                 engine=getattr(session.agent,'langchain_engine',None) if session.agent else None
-                pending=(getattr(engine,'pending_actions',{}) or {}).get(session.sid)
-                if pending and proposal_id in json.dumps(pending,ensure_ascii=False):
-                    engine.pending_actions.pop(session.sid,None);engine.pending_deadlines.pop(session.sid,None);engine.pending_sources.pop(session.sid,None)
+                # A trusted page action resolves the V3.9 proposal. The model-side
+                # LangGraph interrupt is a pause, not the transaction authority;
+                # leaving it behind would freeze the composer after the DB commit.
+                if engine is not None and (getattr(engine,'pending_actions',{}) or {}).get(session.sid) is not None:
+                    engine.pending_actions.pop(session.sid,None)
+                    engine.pending_deadlines.pop(session.sid,None)
+                    engine.pending_sources.pop(session.sid,None)
                 if approved and not result.get('error') and not verified:result=dict(result,error='DATABASE_RECEIPT_NOT_VERIFIED')
                 return _end(session,row,result,before=before,after=after,proposal_id=proposal_id,call_id=call_id,verified=verified,cancelled=not approved)
             except Exception as exc:

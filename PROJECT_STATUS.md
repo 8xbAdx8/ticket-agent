@@ -1076,3 +1076,27 @@ RAG历史：V3.5.2指标重算无数学错误，原值不改；DeepSeek完整回
 - 沿用本轮已执行证据：V39 337/0/0、原回归1441/11/1另199子测试、浏览器104/0/0、DeepSeek13HTTP/94435Token费用UNKNOWN；Git归档不重跑业务、不调用模型。
 - 归档与远端核验回执目录：artifacts/runtime/git-archive-20261105-001510/。初始Git代理指向127.0.0.1:16193不可用；允许命令级连接排查，不修改持久代理配置。
 - 下一步仍是独立审查及用户验收；正式103 BLOCKED、旧11失败1Skip、冻结库来源与Bridge限制保留。
+
+### 2026-11-05：V3.10 Prompt/锁座/二维码/追问架构整改
+
+- HEAD 953c8823bed988ec53579be794319d69adbf5b34；Codex 业务状态统一已提交；本轮 5 改 2 新增，未提交。
+- 修复：V3.10 prompt 移除 legacy lock_seat 指令；railway_lock_seat 明确为不存在并给出建单自动 hold 说明；V39 PAY pending 接入二维码；business_actions 清理模型 pending；失败/无 saved 追问 fallback。
+- 测试：V3.10 344/0/0；旧 1640/11/1，失败/skip ID 与 sealed 一致；浏览器核心 25/25，完整套件 25/47（旧“查车站”入口不可见）。
+- Live：DeepSeek 12 HTTP/完整 purchase+QR+PAID；Qwen 3 HTTP/查询；合计 15 HTTP/92,683 token，费用 UNKNOWN。
+- DB：V39-305... PAID，PAYMENT 3000 SUCCEEDED，hold CONSUMED；产品 v391 仍 BLOCKED。
+- 未完成：refund/change Live 复验、刷新 QR、完整浏览器、独立审查、用户验收。状态 PARTIAL。
+- 报告：docs/reviews/Ticket-Agent-V3.10-*.md；证据 artifacts/runtime/v310-architecture-20261105-003000/。
+
+### 2026-11-05：V3.10 追问提交链路与 20 轮稳定性修复
+- 根因：_consume_followup 只接受 saved followup 且用全历史文本去重，fallback 追问无法提交；按钮 key 重复触发 StreamlitDuplicateElementKey，聊天区空白。
+- 修复：按 parent_run_id+question 关联，fallback 可提交；sent_key 同父去重、不同父允许；按钮 key 加 turn_key；失败清除 pending。
+- 验证：原版 UI 单次点击 PASS；20/20 轮浏览器 PASS，消息 1→21，无蓝提示/无 duplicate/PageError0；V3.10 345/0/0；旧 1640/11/1 ID 与 sealed 相同。
+- 未完成：同父二次点击浏览器截图、退款/改签 Live 追问、完整浏览器套件、独立审查；状态 PARTIAL。
+- 报告：docs/reviews/Ticket-Agent-V3.10-Followup-Stability-Report.md；证据 artifacts/runtime/v310-followup-20261105-012500/。
+
+
+### 2026-11-05：V3.10增量用户授权归档
+
+- 用户再次明确要求提交并推送；归档当前Prompt锁座语义、模拟支付二维码和追问稳定性代码/新增测试/11份报告，共19个文件。父HEAD953c8823bed988ec53579be794319d69adbf5b34，分支feat/ticket-agent-v36-stabilization。
+- 业务验收状态继续PARTIAL；沿用上述V3.10报告的345/0/0与旧回归失败ID结论，本次仅Git归档，不重新执行业务测试或真实API，不宣称独立审查或完整浏览器验收通过。
+- 数据库、WAL/SHM、Trace和本地运行证据继续保留本地；不改D9/P01或正式103。包含本节的提交SHA以Git历史为准，实际推送/远端核验回执位于artifacts/runtime/git-archive-20261105-015216/。

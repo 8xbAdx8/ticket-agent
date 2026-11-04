@@ -93,13 +93,21 @@ def prepare(session, effective=None):
         "GTFS是真实来源的静态时刻表；LOCAL_DEMO_ONLY仅为使用范围限制，不表示车次数据由Mock编造。"
         "SHAPE_UNAVAILABLE仅表示线路几何形状缺失，不表示车次停运、经停缺失或无法查询经停。"
         "铁路静态查询（包括连续补充日期）使用railway_*，不要混用旧query_tickets的演示车次；旧工具保留给明确的旧演示业务和航班等原有功能。"
+        "V3.10铁路流程没有独立锁座工具，也不存在railway_lock_seat；此前legacy的lock_seat必须先锁座规则不适用于本会话。"
+        "正确流程是：查询库存→生成报价→railway_create_order建单提案→用户界面确认→Service自动创建hold并锁座→PENDING_PAYMENT。"
+        "用户说锁座时，解释建单确认后自动锁座；不得声称已经锁座，除非工具返回的订单和hold已由用户确认并存在。"
     )
     recent=getattr(session,'railway_queries',[])
     if recent and recent[-1]['ok'] and recent[-1]['tool']=='railway_query_trips' and recent[-1]['result'].get('status')=='FOUND':
         import json
         known={k:v for k,v in recent[-1]['args'].items() if k in ('service_date','origin_stop_id','destination_stop_id','train_no')}
         suffix+='\n本会话最近快捷查询的明确条件（仅在用户沿用时参考，新条件覆盖旧条件）：'+json.dumps(known,ensure_ascii=False)
-    prompt = effective.prompt + suffix
+    # Remove the legacy lock-first rule from the V3.10 effective prompt. The
+    # original SYSTEM_PROMPT remains untouched for legacy business.
+    legacy_lock = "4. 下单前必须先 lock_seat 拿到 lock_id，不可跳过；"
+    v310_lock = ("4. 本 V3.10 铁路流程不提供独立锁座工具；"
+                 "锁座只能由用户在界面确认 railway_create_order 后，由 Service 自动创建 hold；")
+    prompt = effective.prompt.replace(legacy_lock, v310_lock) + suffix
     effective = replace(
         effective,
         prompt=prompt,
@@ -206,6 +214,9 @@ def render(session):
                 if payload.get('item_ids') and snapshot:
                     chosen={i['item_id']:i['passenger_name'] for o in snapshot['orders'] for i in o['items']}
                     st.write('本次乘客：'+'、'.join(chosen.get(i,'无法核验') for i in payload['item_ids']))
+                if proposal.get('action')=='PAY' and snapshot:
+                    from web.v39_payment import panel as payment_qr
+                    payment_qr(session,snapshot,read_only=False)
                 ack = st.checkbox("我已核对，确认这次本地模拟操作", key="v39_bridge_ack_" + pid)
                 c1, c2 = st.columns(2)
                 if c1.button("确认", key="v39_bridge_yes_" + pid, disabled=not ack, type="primary"):

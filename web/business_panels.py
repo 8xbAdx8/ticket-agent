@@ -58,6 +58,11 @@ def summary(session):
                         st.dataframe([dict(乘客=i['passenger_name'],状态=i['item_status']) for i in o['items']],hide_index=True)
                         st.json(o['transactions'],expanded=False)
             st.caption('历史会话只读；不会恢复确认令牌或自动继续旧交易。')
+            try:
+                from web.v39_payment import panel as payment_qr
+                payment_qr(session,rail,read_only=True)
+            except (ValueError,TypeError):
+                st.caption('支付二维码状态暂不可读取；未执行支付。')
         elif not rail.get('pending_proposals'):
             from web.railway_simulation import _orders
             with scope(session._v39_effective):_orders(session._v39_service,session._v39_context,rail,session)

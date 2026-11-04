@@ -304,49 +304,79 @@ def _policy_panel(view, *, technical=True):
             st.json(view, expanded=False)
 
 
-def _queue_followup(sid, run_id, question):
-    st.session_state['user_followup_request']={'sid':sid,'run_id':run_id,'question':question,'request_id':uuid.uuid4().hex}
+def _queue_followup(sid, run_id, question, followup_id=None, source='normal'):
+    st.session_state['user_followup_request']={'sid':sid,'run_id':run_id,'question':question,
+        'followup_id':followup_id,'source':source,'request_id':uuid.uuid4().hex}
 
 
-def _followup_suggestions(session, record, view, offered=None):
+def _fallback_questions(session, record, operation=None):
+    """Deterministic next actions for every answer, including failures."""
+    try:
+        from web.business_state import current
+        rail=(current(session).get('railway') or {})
+        orders=rail.get('orders') or []
+        if any(o.get('order_status')=='PENDING_PAYMENT' for o in orders):
+            return ['查看订单详情','继续完成模拟支付','查看退款或改签规则']
+        if any(o.get('order_status') in ('PAID','CHANGED') for o in orders):
+            return ['查看订单与交易明细','申请部分退款','查看可改签方案']
+    except (ValueError,OSError,KeyError,AttributeError,TypeError):
+        pass
+    if operation and (operation.get('error') or {}).get('category'):
+        return ['重试这次查询','查看我的订单状态','查询项目示例政策']
+    tools=set(record.get('tool_sequence') or [])
+    if any(str(t).startswith('railway_') for t in tools):
+        return ['查看完整经停站','比较当前车次与下一班','查询其他席别余票']
+    return ['开始规划铁路行程','查询项目示例政策','查看我的订单']
+
+
+def _followup_suggestions(session, record, view, offered=None, operation=None, turn_key=None):
     from target.followups import normal
-    if view.get('status')=='failed':return
-    saved=session.followups_for(record)
-    if not saved:return  # Old history has no saved recommendations; no regeneration.
+    # Preserve the existing no-followup rule for a failed policy retrieval
+    # that has no actionable operation; real failed Agent turns pass operation.
+    if (view or {}).get('status')=='failed' and operation is None and not record:return
+    saved=session.followups_for(record) if record else None
     asked={normal(h['user_msg']) for h in session.history}
-    suggestions=[q for q in saved['suggestions'] if normal(q) not in asked]
-    # These two existing actions now live on the authoritative order card, with
-    # a shared explicit consent and the same atomic backend payment service.
+    suggestions=[q for q in (saved or {}).get('suggestions',[]) if normal(q) not in asked]
+    # These two actions live on the authoritative order card.
     suggestions=[q for q in suggestions if q not in ('使用支付宝支付','使用微信支付')]
+    source='saved'
+    if not suggestions:
+        suggestions=_fallback_questions(session,record or {},operation)
+        source='rule_fallback'
     suggestions=[q for q in suggestions if offered is None or q not in offered][:3]
     if not suggestions:return
     if offered is not None:offered.update(suggestions)
     pending=st.session_state.get('pending_operation') or {}
     ready=(not session.read_only and not session.pending_action() and pending.get('sid')!=session.sid and
            (not session.live or (_live_request_allowed(session) and live_ready(session.live_provider))))
-    shown_key='followup_displayed_'+str(view.get('run_id'))
+    run_id=(view.get('run_id') if view else None) or (operation or {}).get('run_id')
+    key_turn=str(turn_key if turn_key is not None else run_id)
+    shown_key='followup_displayed_'+str(run_id)+'_'+key_turn
     if not st.session_state.get(shown_key):
         st.session_state[shown_key]=True
-        _followup_lifecycle(session,view.get('run_id'),'followup_displayed',
-            followup_id=saved.get('followup_id'),generation_method=saved.get('generation_source'),
-            provider=(saved.get('provider') if saved.get('generation_source')=='model' else None),
-            model=(saved.get('model') if saved.get('generation_source')=='model' else None),
-            selected=list(suggestions),latency_ms=saved.get('latency_ms'),
-            token_usage=(saved.get('tokens') if saved.get('generation_source')=='model' else None),
-            fallback_reason=saved.get('fallback_reason'),next_run_id=None)
-    with st.container(key='policy_followups_'+str(view.get('run_id'))):
+        _followup_lifecycle(session,run_id,'followup_displayed',
+            followup_id=(saved or {}).get('followup_id'),generation_method=(saved or {}).get('generation_source') or source,
+            provider=((saved or {}).get('provider') if (saved or {}).get('generation_source')=='model' else None),
+            model=((saved or {}).get('model') if (saved or {}).get('generation_source')=='model' else None),
+            selected=list(suggestions),latency_ms=(saved or {}).get('latency_ms'),
+            token_usage=((saved or {}).get('tokens') if (saved or {}).get('generation_source')=='model' else None),
+            fallback_reason=(saved or {}).get('fallback_reason') or (None if source=='saved' else 'deterministic_fallback'),next_run_id=None)
+    with st.container():
         st.markdown('**你可能还想了解**')
         st.caption('根据本轮已有信息整理；点击后将作为一条新消息发送，仍需完成必要的操作确认。')
+        import hashlib
+        rendered_key='followup_questions_'+str(session.sid)+'_'+str(run_id)
+        st.session_state[rendered_key]=list(suggestions)
         for n,question in enumerate(suggestions):
-            label=next((r.get('label') for r in saved.get('grounding',[]) if r.get('question')==question and r.get('label')),question)
-            st.button(label,key='policy_followup_'+session.sid+'_'+str(view.get('run_id'))+'_'+str(n),
-                      on_click=_queue_followup,args=(session.sid,view.get('run_id'),question),
+            label=next((r.get('label') for r in (saved or {}).get('grounding',[]) if r.get('question')==question and r.get('label')),question)
+            fid=(saved or {}).get('followup_id') or ('fallback_'+hashlib.sha256((str(run_id)+'|'+question).encode()).hexdigest()[:16])
+            st.button(label,key='policy_followup_'+session.sid+'_'+str(run_id)+'_'+key_turn+'_'+str(n),
+                      on_click=_queue_followup,args=(session.sid,run_id,question,fid,source),
                       disabled=not ready,width='stretch')
         if session.live:
             st.caption('点击追问与普通消息一样计费；回答后整理追问可能额外使用一次模型服务。')
         if session.live and not ready:
             st.caption('请检查在线服务是否可用，并先完成待确认操作。')
-
 
 def _consume_followup(session, busy):
     """Revalidate stale buttons and Live consent immediately before dispatch."""
@@ -369,19 +399,39 @@ def _consume_followup(session, busy):
         st.info('会话已切换或存在待确认操作，尚未发送这条追问。');return None
     if session.live and (not _live_request_allowed(session) or not live_ready(session.live_provider)):
         st.warning('当前会话或在线服务尚未就绪，这条追问没有发送。请核对当前会话和费用提示。');return None
-    from target.followups import normal
+    question=request.get('question');run_id=request.get('run_id')
+    if not isinstance(question,str) or not question.strip() or not isinstance(run_id,str):return None
+    from target.diagnostics import digest as _digest
+    sent_key='followup_sent_'+str(session.sid)+'_'+run_id+'_'+_digest(question)
+    if st.session_state.get(sent_key):
+        st.info('同一父回答下的这条追问已经提交，未重复执行。下方对话和历史仍会保留。')
+        return None
+    rendered=st.session_state.get('followup_questions_'+str(session.sid)+'_'+run_id)
+    # A click must belong to a currently rendered answer. This rejects stale
+    # foreign run_ids while still allowing the deterministic fallback, which
+    # is stored under the same parent key during rendering.
+    if rendered is None:
+        st.info('当前轮次的追问已失效，请点击最新回答下的追问。')
+        return None
+    if question not in rendered:
+        st.info('这条追问不属于当前父回答，请点击该回答下的追问。')
+        return None
+    saved=None
     for record in session.history:
-        saved=session.followups_for(record)
-        if not saved or saved.get('run_id')!=request.get('run_id'):continue
-        already={normal(h['user_msg']) for h in session.history}
-        allowed=[q for q in saved['suggestions'] if normal(q) not in already]
-        if request.get('question') in allowed:
-            request['followup_id']=saved.get('followup_id')
-            request['generation_method']=saved.get('generation_source')
-            request['intent']=saved.get('intent')
-            return request
-    st.info('这条追问已发送过或没有可关联的本轮政策证据，未重复提交。')
-    return None
+        candidate=session.followups_for(record)
+        if candidate and candidate.get('run_id')==run_id:
+            saved=candidate;break
+    if saved and question in saved.get('suggestions',[]):
+        request['followup_id']=saved.get('followup_id')
+        request['generation_method']=saved.get('generation_source')
+        request['intent']=saved.get('intent')
+    else:
+        request['generation_method']='rule_fallback'
+        request['intent']='context'
+        request.setdefault('followup_id','fallback_'+_digest(question)[:12])
+    request['sent_key']=sent_key
+    st.session_state[sent_key]='pending'
+    return request
 
 
 def _followup_lifecycle_panel(session, events):
@@ -537,6 +587,7 @@ def _conversation(session):
                         for order in orders_for_operation(session,operation):
                             st.info(status_text(order))
                             st.caption('这条模型请求未完整完成；以上为已提交业务状态，不表示交易失败，也没有重新执行交易。')
+                        _followup_suggestions(session,None,{'status':'failed','run_id':operation.get('run_id')},operation=operation,turn_key=operation.get('request_id'))
                 continue
             with st.container(key=f'turn_{index}'):
                 with st.chat_message("user",avatar=":material/person:"):
@@ -554,7 +605,7 @@ def _conversation(session):
                                 copy=dict(row,id=str(view.get('run_id') or index)+'_'+str(number))
                                 result_card(copy,session)
                     if not unsafe_ticket_result(session,previous):
-                        _followup_suggestions(session,previous,view,None if index==len(session.history)-1 else offered)
+                        _followup_suggestions(session,previous,view,None if index==len(session.history)-1 else offered,turn_key=index)
         if history and results and not session.error:
             if not unsafe_ticket_result(session,history[-1]):
                 # Policy evidence now lives under its own answer, including history.
@@ -861,9 +912,19 @@ def user_page():
                 def progress(event):
                     op=next((r for r in session.operations if r['request_id']==request_id),None)
                     if op:live_run_slot.markdown(interaction.markup(op),unsafe_allow_html=True)
-                with chat_submission_slot:
-                    result=execute(session,message,request_id,origin=(submission or {}).get('origin'),entry=(submission or {}).get('entry','chat'),on_event=progress)
+                origin=(submission or {}).get('origin') or {}
+                try:
+                    with chat_submission_slot:
+                        result=execute(session,message,request_id,origin=origin,entry=(submission or {}).get('entry','chat'),on_event=progress)
+                except Exception:
+                    if origin.get('sent_key'):st.session_state.pop(origin['sent_key'],None)
+                    raise
                 if result:
+                    if origin.get('sent_key'):
+                        if not getattr(session,'error',None) and not result.get('error'):
+                            st.session_state[origin['sent_key']]='sent'
+                        else:
+                            st.session_state.pop(origin['sent_key'],None)
                     from web.followup_jobs import schedule
                     if schedule(session,result,authorized=_live_request_allowed(session)):
                         st.session_state['followups_poll_'+session.sid]=True
