@@ -13,6 +13,7 @@ import hashlib
 import os
 import threading
 import time
+from contextvars import ContextVar
 
 import streamlit as st
 
@@ -27,6 +28,7 @@ from target.v39.store import Store
 _SERVICES: dict[str, Service] = {}
 _LOCK = threading.RLock()
 _ACTIVE_SESSION = None
+_SERVICE_CLOCK=ContextVar('railway_service_clock',default=None)
 
 
 def _db_path() -> Path:
@@ -42,7 +44,7 @@ def _service(path: Path) -> Service:
     with _LOCK:
         service = _SERVICES.get(key)
         if service is None:
-            service = Service(Store(path), RailwayStatic(), policy=Policy())
+            service = Service(Store(path), RailwayStatic(), policy=Policy(),clock=_SERVICE_CLOCK.get())
             service.start()
             service.scenario("railway-demo", DATASET_VERSION)
             _SERVICES[key] = service
@@ -75,6 +77,8 @@ def prepare(session, effective=None):
     """Create/attach the per-session service and context; no UI side effects."""
     if not enabled() or session.execution_mode == "baseline":
         return None
+    from web.simulation_clock import binding
+    bound_path,simulation_clock=binding(session)
     if effective is None:
         effective = session.resolve_config() or _default_effective(session)
     names = tuple(dict.fromkeys((*effective.tool_whitelist, *_v39_names(session, effective))))
@@ -96,6 +100,8 @@ def prepare(session, effective=None):
         "V3.10铁路流程没有独立锁座工具，也不存在railway_lock_seat；此前legacy的lock_seat必须先锁座规则不适用于本会话。"
         "正确流程是：查询库存→生成报价→railway_create_order建单提案→用户界面确认→Service自动创建hold并锁座→PENDING_PAYMENT。"
         "用户说锁座时，解释建单确认后自动锁座；不得声称已经锁座，除非工具返回的订单和hold已由用户确认并存在。"
+        "建单前必须取得用户明确提供的模拟乘客姓名；缺少姓名先追问，不能把‘请提供乘客姓名’等提示语当作姓名调用工具。"
+        "工具返回NEEDS_INPUT时，只询问missing_fields对应信息；不得声称已生成提案、已锁座或已建单。"
     )
     recent=getattr(session,'railway_queries',[])
     if recent and recent[-1]['ok'] and recent[-1]['tool']=='railway_query_trips' and recent[-1]['result'].get('status')=='FOUND':
@@ -108,6 +114,11 @@ def prepare(session, effective=None):
     v310_lock = ("4. 本 V3.10 铁路流程不提供独立锁座工具；"
                  "锁座只能由用户在界面确认 railway_create_order 后，由 Service 自动创建 hold；")
     prompt = effective.prompt.replace(legacy_lock, v310_lock) + suffix
+    if simulation_clock:
+        import re
+        day=simulation_clock.snapshot()['now'][:10]
+        prompt=re.sub(r'当前北京时间日期 \d{4}-\d{2}-\d{2}', '当前铁路模拟北京时间日期 '+day,prompt)
+        prompt+='\n本会话铁路业务使用独立暂停模拟时钟，clock_id='+simulation_clock.clock_id+'；今天/明天相对于上述模拟日期，确切时间以工具simulation_clock和页面为准。不可将模拟时间说成现实日期；用户只能在页面推进时间。'
     effective = replace(
         effective,
         prompt=prompt,
@@ -115,9 +126,11 @@ def prepare(session, effective=None):
         tool_whitelist=names,
         config_hash=digest([effective.config_hash, names, prompt, "v393-original-ui"]),
     )
-    path = _db_path()
+    path = bound_path or _db_path()
     try:
-        service = _service(path)
+        clock_token=_SERVICE_CLOCK.set(simulation_clock)
+        try:service = _service(path)
+        finally:_SERVICE_CLOCK.reset(clock_token)
     except Exception:
         # Keep the original page usable; the rail/chat will show the actual
         # service error instead of silently switching to Mock.
@@ -131,6 +144,7 @@ def prepare(session, effective=None):
     session._v39_service = service
     session._v39_context = ctx
     session._v39_effective = effective
+    if simulation_clock and getattr(session,'root',None) and not (session.root/'session-replay.json').exists():session.save_replay()
     return service, ctx, effective
 
 
@@ -193,6 +207,8 @@ def render(session):
         effective = getattr(session, "_v39_effective", None)
         if service is None or ctx is None or effective is None:
             return
+        from web.simulation_clock import controls
+        controls(session,service)
         from web.railway_queries import panel
         panel(session,service,ctx,effective)
         from web.business_state import current
@@ -217,9 +233,12 @@ def render(session):
                 if proposal.get('action')=='PAY' and snapshot:
                     from web.v39_payment import panel as payment_qr
                     payment_qr(session,snapshot,read_only=False)
+                from target.v39.passengers import has_placeholders
+                invalid_name=proposal['action']=='CREATE_ORDER' and has_placeholders(payload.get('passengers'))
+                if invalid_name:st.warning('这张旧确认卡尚未包含有效乘客姓名，不能确认；请补充姓名重新生成，或撤销此卡。')
                 ack = st.checkbox("我已核对，确认这次本地模拟操作", key="v39_bridge_ack_" + pid)
                 c1, c2 = st.columns(2)
-                if c1.button("确认", key="v39_bridge_yes_" + pid, disabled=not ack, type="primary"):
+                if c1.button("确认", key="v39_bridge_yes_" + pid, disabled=not ack or invalid_name, type="primary"):
                     try:
                         result = session.confirm_railway_proposal(pid, True)
                         st.session_state["v39_bridge_notice"] = result

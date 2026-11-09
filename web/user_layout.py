@@ -9,11 +9,15 @@ def styles():
     st.html('<style>'+Path(__file__).with_name('user_layout.css').read_text(encoding='utf-8')+'</style>')
 
 
-def topbar(sessions, new_session, activate):
+def topbar(sessions, new_session, activate,clock=None):
     def create():
         sessions.append(new_session());activate(len(sessions)-1)
     with st.container(key='user_topbar',horizontal=True,vertical_alignment='center'):
-        st.markdown('<div class="ta-product"><span class="ta-product-mark">T</span><div><b>Ticket Agent</b><small>智能购票助手 · 演示空间</small></div></div>',unsafe_allow_html=True)
+        subtitle='智能购票助手 · 演示空间'
+        if clock:
+            from html import escape
+            subtitle='铁路模拟时间：'+escape(clock['now'][:16].replace('T',' '))+' · 北京时间 · 已暂停（非现实时间）'
+        st.markdown('<div class="ta-product"><span class="ta-product-mark">T</span><div><b>Ticket Agent</b><small>'+subtitle+'</small></div></div>',unsafe_allow_html=True)
         st.button('新会话',key='user_new_top',on_click=create)
         with st.popover('历史会话'):
             for index,session in enumerate(sessions):

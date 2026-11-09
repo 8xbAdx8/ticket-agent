@@ -16,7 +16,7 @@ def refresh(session):
     from target.v39.context import Context
     from target.execution_config import scope
     from target.v39.registry import enabled
-    view=dict(session_id=session.sid,railway=None,legacy=[],selected_trip=None,recommendations=[],error=None)
+    view=dict(session_id=session.sid,railway=None,legacy=[],selected_trip=None,recommendations=[],error=None,simulation_clock=None)
     try:
         ref=getattr(session,'railway_state_reference',None)
         prepared=None
@@ -25,12 +25,18 @@ def refresh(session):
             prepared=prepare(session)
         if prepared:
             service,ctx,effective=prepared
-            ref=dict(path=str(service.store.path),scenario_id=ctx.scenario_id)
+            ref=dict(getattr(session,'railway_state_reference',None) or ref or {},path=str(service.store.path),scenario_id=ctx.scenario_id)
             session.railway_state_reference=ref
             with scope(effective):view['railway']=read(service.store.path,ctx,now=service.now())
+            if getattr(service.clock,'simulation',False):view['simulation_clock']=service.clock.snapshot()
         elif ref and enabled() and session.execution_mode!='baseline':
             ctx=Context(session.sid,config.CURRENT_USER_PHONE,ref['scenario_id'],enabled=True)
-            with scope(None):view['railway']=read(Path(ref['path']),ctx)
+            clock=None
+            if ref.get('clock_path'):
+                from target.v39.simulation_clock import SimulationClock
+                clock=SimulationClock(ref['clock_path'],session.sid,ref['clock_id'])
+                view['simulation_clock']=clock.snapshot()
+            with scope(None):view['railway']=read(Path(ref['path']),ctx,now=clock() if clock else None)
         from target.order_read_model import orders
         view['legacy']=orders(session.root/'tickets.db')
     except (ValueError,OSError,KeyError,__import__('sqlite3').Error) as exc:

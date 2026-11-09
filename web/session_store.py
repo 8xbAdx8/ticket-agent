@@ -20,8 +20,11 @@ def _inside(root):
 
 def save_session(session):
     """Only the mutable index is replaced; audits/events/Trace are never rewritten."""
-    if session.read_only or not session.root.exists() or not (session.audits or getattr(session,'operations',[])):return
+    clock_bound=bool((getattr(session,'railway_state_reference',None) or {}).get('clock_path'))
+    if session.read_only or not (session.audits or getattr(session,'operations',[]) or clock_bound):return
     root=_inside(session.root)
+    if clock_bound:root.mkdir(parents=True,exist_ok=True)
+    if not root.exists():return
     audits={a.get('trace_id'):a for a in session.audits
             if (a.get('public_trace') or {}).get('session_id')==session.sid}
     history=[session._audit_for(record) for record in session.history]

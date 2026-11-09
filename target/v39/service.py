@@ -6,6 +6,7 @@ from target.v39.store import integer
 from target.v39.pricing import price,select_rule
 from target.v39.policy import Policy
 from target.v39.lifecycle import Lifecycle
+from target.v39.passengers import has_placeholders,require_names
 
 
 def insert(c,table,values):
@@ -25,9 +26,13 @@ class Service(Lifecycle):
 
     def stamp(self):return self.now().isoformat()
 
+    def infrastructure_now(self):
+        # Paused business time must not freeze or extend a real worker lease.
+        return datetime.now(timezone.utc) if getattr(self.clock,'simulation',False) else self.now()
+
     def start(self):
         self.store.initialize()
-        self.epoch=self.store.acquire_worker(self.worker,now=self.now())
+        self.epoch=self.store.acquire_worker(self.worker,now=self.infrastructure_now())
 
     def scenario(self,scenario_id,dataset_version,*,name='default'):
         capacities={'default':(20,8,3),'tight':(3,2,1),'sufficient':(100,50,20),'sold_out':(0,0,0),'payment_fail':(20,8,3)}
@@ -149,6 +154,7 @@ class Service(Lifecycle):
         ctx.require(action)
         if self.epoch is None:raise ValueError('CONFIRMATION_WORKER_NOT_STARTED')
         if action not in ('CREATE_ORDER','PAY','CANCEL','REFUND','CHANGE'):raise ValueError('INVALID_ACTION')
+        retired=[]
         with self.store.transaction() as c:
             self._scope(c,ctx)
             self._lease(c)
@@ -157,7 +163,7 @@ class Service(Lifecycle):
             if action=='CREATE_ORDER':
                 q=self._quote(c,ctx,payload['quote_id'])
                 names=payload['passengers']
-                if not isinstance(names,list) or len(names)!=q['passenger_count'] or any(not isinstance(n,str) or not n.strip() for n in names):raise ValueError('PASSENGER_MISMATCH')
+                require_names(names,q['passenger_count'])
                 if payload.get('contact',ctx.owner_phone)!=ctx.owner_phone:raise ValueError('ORDER_FORBIDDEN')
                 amount=q['total_fen'];payload['_display_preview']=dict(total_fen=amount,passengers=len(names))
                 aggregate=q['quote_id']
@@ -171,12 +177,26 @@ class Service(Lifecycle):
                 amount=self._preview(c,ctx,action,dict(order),payload)
             now=self.stamp()
             c.execute("UPDATE v39_proposals SET state='EXPIRED' WHERE session_id=? AND state='PENDING' AND expires_at<=?",(ctx.session_id,now))
+            if action=='CREATE_ORDER':
+                # Only retire an owned, unused legacy placeholder draft for this
+                # exact quote. Keep its original payload and history. This and
+                # the replacement proposal commit or roll back together.
+                drafts=c.execute("SELECT * FROM v39_proposals p WHERE session_id=? AND owner_phone=? AND scenario_id=? AND action='CREATE_ORDER' AND aggregate_id=? AND state='PENDING' AND NOT EXISTS (SELECT 1 FROM v39_orders o WHERE o.proposal_id=p.proposal_id) AND NOT EXISTS (SELECT 1 FROM v39_confirmation_tokens t WHERE t.proposal_id=p.proposal_id AND t.used_at IS NOT NULL)",(ctx.session_id,ctx.owner_phone,ctx.scenario_id,aggregate)).fetchall()
+                for draft in drafts:
+                    previous=json.loads(draft['payload_json'])
+                    if digest(previous)!=draft['request_hash'] or not has_placeholders(previous.get('passengers')):continue
+                    c.execute("UPDATE v39_proposals SET state='CANCELLED' WHERE proposal_id=? AND state='PENDING'",(draft['proposal_id'],))
+                    c.execute("UPDATE v39_confirmation_tokens SET invalidated_at=?,invalid_reason='PASSENGER_NAME_REQUIRED' WHERE proposal_id=? AND used_at IS NULL",(now,draft['proposal_id']))
+                    retired.append(draft['proposal_id'])
             pending=c.execute("SELECT COUNT(*) FROM v39_proposals WHERE session_id=? AND action=? AND aggregate_id=? AND state='PENDING'",(ctx.session_id,action,aggregate)).fetchone()[0]
             if pending>=(2 if action=='REFUND' else 1):raise ValueError('PROPOSAL_ALREADY_PENDING')
             pid='P'+uuid.uuid4().hex;raw=secrets.token_bytes(32);h=hashlib.sha256(raw).hexdigest();expiry=(self.now()+timedelta(seconds=300)).isoformat()
             values=dict(proposal_id=pid,session_id=ctx.session_id,owner_phone=ctx.owner_phone,action=action,aggregate_id=aggregate,quote_id=payload.get('quote_id') or payload.get('target_quote_id'),order_id=payload.get('order_id'),scenario_id=ctx.scenario_id,confirmation_owner_worker=self.worker,confirmation_boot_epoch=self.epoch,idempotency_key=pid,request_hash=digest(payload),payload_json=json.dumps(payload,ensure_ascii=False),state='PENDING',expires_at=expiry,created_at=now)
             values.update(ctx.snapshot());insert(c,'v39_proposals',values)
             insert(c,'v39_confirmation_tokens',dict(token_hash=h,proposal_id=pid,owner_worker_id=self.worker,owner_boot_epoch=self.epoch,session_id=ctx.session_id,owner_phone=ctx.owner_phone,action=action,aggregate_id=aggregate,quote_id=values['quote_id'],amount_fen=amount,args_hash=digest(payload),expires_at=expiry,created_at=now))
+            for old in retired:
+                insert(c,'v39_audit_events',dict(event_id=uuid.uuid4().hex,aggregate_type='proposal',aggregate_id=old,event_type='INVALID_PASSENGER_PROPOSAL_REPLACED',detail_json=json.dumps(dict(replacement_proposal_id=pid,reason='PASSENGER_NAME_REQUIRED')),created_at=now))
+        for old in retired:self._secrets.pop(old,None)
         self._secrets[pid]=raw
         return dict(proposal_id=pid,status='CONFIRMATION_REQUIRED',expires_at=expiry,simulation=True,
                     preview=payload.get('_refund_preview') or payload.get('_display_preview'))
@@ -254,6 +274,7 @@ class Service(Lifecycle):
 
     def _create(self,c,ctx,p,payload):
         q=self._quote(c,ctx,payload['quote_id']);names=payload['passengers']
+        require_names(names,q['passenger_count'])
         if datetime.fromisoformat(self._departure(q))<=self.now():raise ValueError('DEPARTURE_ALREADY_PASSED')
         self._expire(c,ctx.scenario_id)
         self._materialize(c,ctx,q)

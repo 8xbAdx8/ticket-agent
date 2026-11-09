@@ -25,6 +25,7 @@ if str(ROOT) not in sys.path:
 
 def build_environment(mode, runtime_root, inherited=None):
     env=dict(os.environ if inherited is None else inherited)
+    env.setdefault('RAILWAY_SIM_CLOCK_MODE','demo')
     if 'TICKET_LANGSMITH_EXPORT_ENABLED' not in env and any(env.get(k,'').lower()=='true' for k in ('LANGCHAIN_TRACING_V2','LANGSMITH_TRACING')):
         env['TICKET_LANGSMITH_EXPORT_ENABLED']='true'
     for name in list(env):

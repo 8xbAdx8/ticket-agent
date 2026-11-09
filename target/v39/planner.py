@@ -17,6 +17,9 @@ class RailwayDemoProvider:
         index=max(i for i,m in enumerate(messages) if m['role']=='user')
         text=messages[index]['content'].strip()
         today=datetime.now(timezone(timedelta(hours=8))).date()
+        from target.v39.registry import SERVICE
+        service=SERVICE.get()
+        if service and getattr(service.clock,'simulation',False):today=service.now().astimezone(timezone(timedelta(hours=8))).date()
         for word,days in [('后天',2),('明天',1),('今天',0)]:text=text.replace(word,(today+timedelta(days=days)).isoformat())
         results=[m for m in messages[index+1:] if m['role']=='tool']
         payload=json.loads(results[-1]['content']) if results else None

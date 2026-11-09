@@ -117,6 +117,8 @@ def phase_states(events):
             if phase=='execute' and isinstance(event.get('output'),dict) and event['output'].get('status')=='CONFIRMATION_REQUIRED':
                 state['execute']['status']='pending';state['execute']['detail']='尚未执行交易'
                 state['confirm'].update(status='waiting',detail='等待用户核对确认卡')
+            if phase=='execute' and isinstance(event.get('output'),dict) and event['output'].get('status')=='NEEDS_INPUT':
+                state['execute'].update(status='pending',detail='等待补充乘客姓名；尚未生成提案或执行交易')
         if kind == "confirmation_requested":
             state["confirm"]["status"] = "waiting"
             state["confirm"]["detail"] = TOOL_LABELS.get(tool, str(tool)) + " · 等待用户确认"

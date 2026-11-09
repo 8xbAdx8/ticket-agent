@@ -1,5 +1,14 @@
 ﻿# Ticket Agent 项目状态
 
+> **2026-11-09 AI测试体系V2（本轮增量优先）**：OVERALL **PARTIAL**。DeepSeek/Qwen真实生成各5候选，全部PENDING，用户人工批准0、AI候选V310执行0；另16个确定性参考计划复用原Registry/Service/隔离SQLite通过，不能混算。新增V310Adapter、版本化计划、质量/覆盖率与模型对照；工具11/11、状态6/6、声明合法转换10/10、Trace110/110、受控故障5/5，非完整语义/RAG/LiveAgent验收。最终专项70/0/0（新增46+原17+预算7）；最终冻结回归1891/11/1另199子测试，原11失败和1Skip逐ID无增减，非全绿；Edge八规格51/51、17PNG，PageError0、字体阻断Console32/Network32。5587保护项零差异。真实预算HTTP尝试14（4已知响应、10UNKNOWN保留预留），已知Token21776，费用UNKNOWN，剩余Token30501；不再调用模型。独立只读子Agent首审BLOCKED、整改复审CONDITIONAL PASS（限定离线子范围），用户验收待定。Live Agent/RAG质量/长上下文/超时截断NOT_RUN或PARTIAL。HEAD c1620cb4e9e8df094494fc77ef3f0d07ef9928c3，分支不变，未提交推送。报告 `docs/reviews/Ticket-Agent-AI-Test-Scenario-Generator-V2-Report.md`，独立材料 `docs/reviews/independent-review-v2/`，证据 `artifacts/runtime/ai-test-v2-20261109/`。既有V3.10交易/D9/P01/Prompt/工具/正式103/冻结数据均不变；正式103仍BLOCKED。
+
+
+> **2026-11-09 AI测试场景生成模块**：PARTIAL。测试控制台新增同级入口；候选生成/校验/Hash与相似去重/人工审核/修订历史/独立SQLite/JSON导出已实现，原P2 Legacy Mock执行与Trace接入。真实生成Provider接线与预算V2已实现，真实模型验证NOT_RUN，请求0、真实Token/费用UNKNOWN。最终专项24/0/0（新增17+预算7），完整隔离回归1842/11/1另199子测试，原失败/Skip ID无增减；整套回归后三项新增测试及小范围元数据/门控/预算丢失拒绝重建修复仅做专项复验。Edge 8规格35/35、PageError0，拦截图标Console32/Network32。保护5586文件零差异。铁路状态/调用顺序/性能及其他引擎执行尚需适配，NEEDS_REVIEW阻止批准；当前仅基线effective prompt，审核人仅本地审计标签。报告 `docs/reviews/Ticket-Agent-AI-Test-Scenario-Generator-Report.md`；证据 `artifacts/runtime/ai-scenario-20261109/`。HEAD c1620cb4e9e8df094494fc77ef3f0d07ef9928c3，未提交推送，独立审查NOT_RUN、用户验收待定。
+
+> **2026-11-05 最新版运行包修正（优先使用此包转交）**：按用户“仅最新版必要文件”的要求另制单ZIP运行包，约342MB（解压约1.47GB），替代此前3.74GB归档包作为转交文件。保留当前程序/两个原CMD/便携Python/铁路静态SQLite/Fixture/政策与Chroma索引/原三工作空间及测试数据；不携带历史业务DB、会话、账本、Trace、旧审查ZIP、旧工程和浏览器缓存，原件与完整归档均留在本机。生成全新演示种子DB，不读写冻结DB。新包重新解压SHA零差异；原离线CMD启动、GTFS查询→建单→支付→退款及数据库守恒通过；B快照哈希/Baseline八工具与Chroma本地索引验证通过；Edge四规格36/36、8截图，PageError0、拦截外部图标Console16/Network16。真实API0；在线无Key预检明确停止，另一台物理电脑仍待验收。交付 `artifacts/deliverables/Ticket-Agent-最新版运行包-Windows-x64-20261105.zip`；报告 `docs/reviews/Ticket-Agent-Latest-Runtime-Only-Package-Report.md`。本轮仅打包/文档更新，未改业务源码、未提交推送。
+
+> **2026-11-05 最新完整运行包（本轮增量）**：已将当前工作区（含未提交乘客提案修复和独立暂停模拟时钟）打包为Windows x64便携版，内置Python3.12.14与依赖；HEAD c1620cb4e9e8df094494fc77ef3f0d07ef9928c3，分支不变，无Commit/Push。按用户选择排除243个重复旧工程及缓存/受限临时目录，附逐项清单；1892/4056/5538保护清单全部收录、与本轮源文件哈希一致，104份遗漏历史临时日志已明确补齐。整包初次解压116844清单文件SHA零差异；解压副本V39 387/0/0，真实本地静态查询/建单/支付/退款及资金库存守恒PASS；原离线CMD启动、Edge四规格36/36、8截图（PageError0，外部资源拦截Console16/Network16）。API请求0；在线CMD无密钥预检明确停止，另一台物理电脑及Live尚未验收。正式103/Bridge/冻结DB来源状态不变。交付目录 `artifacts/deliverables/Ticket-Agent-Portable-20261105-110446/`；详见 `docs/reviews/Ticket-Agent-Latest-Portable-Package-Report.md`，最终整包SHA及逐文件清单随包。
+
 > **2026-11-04 业务状态统一专项（最新增量）**：保留现场V3.10.1成果；IMPLEMENTED，OFFLINE_VERIFIED / DATABASE_VERIFIED / BROWSER_VERIFIED；受控DeepSeek LIVE_API_VERIFIED（13HTTP、94435Token，费用UNKNOWN，保留一次1024输出截断FAIL与新只读PASS）；INDEPENDENTLY_REVIEWED=NOT_RUN，ACCEPTED=PENDING_USER。V39 337/0/0；旧1441/11/1另199子测试，失败/Skip ID未变。正式103仍BLOCKED。本轮20个代码/新增测试文件，未改D9/P01/交易SQL/公开工具/GTFS；新增持久验收预算V2。两个默认账本追加来自用户，前缀完整保留。完整报告`docs/reviews/Ticket-Agent-Business-State-Unification-Report.md`，证据`artifacts/runtime/v394-implementation-business-state-20261104-220744/`。HEAD仍4340b6640025be95e8300a3d625a32cfb431e35d，无提交推送。
 
 
@@ -1100,3 +1109,44 @@ RAG历史：V3.5.2指标重算无数学错误，原值不改；DeepSeek完整回
 - 用户再次明确要求提交并推送；归档当前Prompt锁座语义、模拟支付二维码和追问稳定性代码/新增测试/11份报告，共19个文件。父HEAD953c8823bed988ec53579be794319d69adbf5b34，分支feat/ticket-agent-v36-stabilization。
 - 业务验收状态继续PARTIAL；沿用上述V3.10报告的345/0/0与旧回归失败ID结论，本次仅Git归档，不重新执行业务测试或真实API，不宣称独立审查或完整浏览器验收通过。
 - 数据库、WAL/SHM、Trace和本地运行证据继续保留本地；不改D9/P01或正式103。包含本节的提交SHA以Git历史为准，实际推送/远端核验回执位于artifacts/runtime/git-archive-20261105-015216/。
+
+
+### 2026-11-05：乘客占位姓名与重复提案定点修复
+
+- 起始HEADc1620cb4e9e8df094494fc77ef3f0d07ef9928c3，分支feat/ticket-agent-v36-stabilization；仅本轮定点修复，未提交推送。
+- 根因：模型以“请提供乘客姓名”生成旧待确认卡，用户补“三三”后再次建提案撞PROPOSAL_ALREADY_PENDING；原故障记录保留，未在用户旧数据库重放交易。
+- 修复：占位姓名返回NEEDS_INPUT、不创建提案；确认端再校验；有效姓名仅可原子替换同会话/owner/scenario/报价的未使用错误旧卡，保留原payload与关联审计；正常卡不自动覆盖。旧错误卡确认禁用，撤销保留。D9/P01、公开工具Schema、SYSTEM_PROMPT、交易状态机不变。
+- 实际验证：最终V39 369/0/0（原345+新增24）；原完整回归1441/11/1另199子测试，失败及Skip ID与前批完全相同。新增AppTest入口污染曾导致T072进程池异常，原失败批次保留，修复测试隔离后全套重跑通过；旧断言未改。
+- 验证范围：真实隔离SQLite、Legacy/LangChain、并发/回滚/权限、Streamlit AppTest；真实API0，本轮未做Edge四规格或Live重验，不宣称这些通过。INDEPENDENTLY_REVIEWED=NOT_RUN、ACCEPTED=PENDING_USER。
+- 文档：docs/reviews/Ticket-Agent-V3.10-Passenger-Proposal-Fix.md；证据 artifacts/runtime/v310-passenger-proposal-fix-20261105-020128/。过期旧卡须撤销并重新报价，不恢复过期业务或绕过确认；有限占位校验不是通用身份验证。
+
+
+### 2026-11-05：独立暂停铁路模拟时钟
+
+- 用户授权长期复用静态铁路数据，不能通过删除发车限制或修改系统时钟实现。保留之前乘客提案修复的全部未提交工作。HEAD仍c1620cb4e9e8df094494fc77ef3f0d07ef9928c3，不提交推送。
+- 新铁路会话默认独立持久模拟时钟，从真实GTFS有效日午夜起步（当前源数据为2026-10-17 00:00北京时间）；标题栏明确“模拟/暂停/非现实时间”。可手动推进分钟/小时/天，不能倒拨，新会话隔离新场景。
+- Service业务规则统一模拟时间：报价/提案/锁座超时、发车、D9/P01、改签。Worker租约与Trace/API/耗时/会话审计继续真实时间。原Prompt/工具Schema/DIMENSIONS、GTFS、旧数据库与政策文件不改；历史真实时钟订单不迁移。
+- 实际测试：V39最终387/0/0（前369+新增18）；Edge四规格36/36、8截图，PageError0、Console16/网络16为被阻断外部图标；刷新不重置clock，推进15分钟后EXPIRED并释放held，旧订单保留。旧完整回归逐ID比对以test-summary.json为准，原失败不隐瞒。
+- 过程缺陷与修复：补齐空会话clock引用持久化；保留旧工厂签名与显式新隔离库路径；标签放原标题而非新增Grid行。首批失败证据均保留，旧断言/skip/xfail不改。localhost代理绕过仅当前离线测试子进程，不改系统配置。
+- 报告：docs/reviews/Ticket-Agent-V3.10-Simulation-Clock-Report.md；证据 artifacts/runtime/v310-simulation-clock-20261105-101123/。真实API0，未独立审查，ACCEPTED仍待用户。使用方式：刷新后点“新会话”；旧真实时间场景保留，不能倒拨旧单。
+
+- 本次时钟最终旧回归核对：1441/11/1另199子测试，失败与Skip ID逐项同前轮；新增失败0。测试服务8730/8731已按进程身份核验停止，8502用户服务未操作。
+
+
+### 2026-11-09：AI测试体系V2增量交付
+
+- 实施：仅改已有未跟踪target/scenario_generator.py、web/scenario_generator.py；新增target/scenario_v310.py、scenario_plans.py、scenario_quality.py、tests/test_ai_scenario_v2.py及报告/审查材料。原13项跟踪修改和其他未跟踪成果保留，业务源码无本轮新增修改。
+- 设计：Legacy P2原执行器保留，V310声明式计划经原Conversation/Registry/Service，独立DB/时钟/会话/Trace，固定Fixture并硬断网；人工审核不自动批准；确认必须有匹配DB凭据，旧回执与当前状态分开。
+- 真实生成：两模型各2响应/5候选，原文与CREATE持久化。DeepSeek已知10825、Qwen10951Token；费用UNKNOWN。初期载荷过大/失效本机系统代理失败均保留，未知10请求未退预算。模型比较固定CREATE原件，不把人工修订当模型质量。当前小样本不能判总体优劣。
+- 测试：最终unit-r7 70/0/0；campaign-r4 16参考计划通过、5故障检出；final-regression-r4 1891/11/1+199子测试，exit1，基线失败/Skip ID零增减；browser-r3八规格51/51、17PNG。最终代码SHA绑定完整回归快照，5587保护项差异0。完整命令与原始路径见V2报告。
+- 审查：独立只读子Agent两轮，原P1和扩展凭据/幂等问题整改后CONDITIONAL PASS；不是外部人工或用户验收。首轮BLOCKED/中间失败批次保留。
+- 限制：真实AI候选未获用户批准且未执行；生成仍偏旧P2结构，V310 DSL自动生成未充分验证；Live Agent、全部十领域实验、RAG质量、长上下文、超时截断/吞吐未完整验证。QR只验元数据非像素扫码。两原有未跟踪源码缺开工文本，交付开工SHA与最终完整源码，不伪称可还原纯逐行增量。
+- 下一步：先人工审核10候选并明确可执行计划，再另行安排缺失质量/上下文/LiveAgent验收；不能自动新增请求、批准用例或提交推送。OVERALL PARTIAL、ACCEPTED待用户。
+
+
+### 2026-11-09：用户授权GitHub归档
+
+- 用户明确授权提交GitHub。本条所在提交归档乘客提案/模拟时钟、AI场景生成与V2实现、测试/报告及单一8.2MiB审查ZIP；精确提交SHA见本条所属Git历史，推送完成以实际远端核验回执为准。
+- 归档前分支feat/ticket-agent-v36-stabilization，本地及远端父提交c1620cb4e9e8df094494fc77ef3f0d07ef9928c3。密钥扫描通过、最终代码SHA未变、git diff --check通过。不修改业务代码、不重复测试或调用模型。
+- 完整回归仍1891/11/1+199子测试、专项70/0/0、浏览器51/51；整体PARTIAL、独立复审CONDITIONAL PASS、用户验收待定。
+- 运行数据库/WAL/SHM、原始Trace、临时/重复解压材料不提交，全部本机保留。完整证据在单一审查ZIP，原SHA不变；详见docs/reviews/Ticket-Agent-AI-Test-V2-Git-Archive.md。

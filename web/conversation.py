@@ -758,7 +758,7 @@ def user_page():
     live_name="Qwen3.8-Flash" if session.live_provider=="bailian" and session.live_model=="qwen3.8-flash" else session.live_model or "Qwen (兼容旧配置)" if session.live_provider=="bailian" else "DeepSeek"
     mode_badge=(live_name+" 在线 · 演示订单" if session.live and session.full_tools
                 else live_name+" 在线 · 仅查询" if session.live else "离线演示")
-    user_layout.topbar(sessions,new_session,activate)
+    user_layout.topbar(sessions,new_session,activate,clock=(getattr(session,'business_view',{}) or {}).get('simulation_clock'))
 
     action = session.pending_action()
     pending=st.session_state.get("pending_operation")

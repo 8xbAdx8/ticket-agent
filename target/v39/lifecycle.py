@@ -15,7 +15,7 @@ class Lifecycle:
             raise ValueError('CONFIRMATION_LEASE_LOST')
         # BEGIN IMMEDIATE fences renewal and takeover. An expired owner may renew
         # only while its exact epoch still owns the singleton row.
-        c.execute('UPDATE v39_worker_lease SET lease_until=? WHERE slot=1',((self.now()+timedelta(seconds=60)).isoformat(),))
+        c.execute('UPDATE v39_worker_lease SET lease_until=? WHERE slot=1',((self.infrastructure_now()+timedelta(seconds=60)).isoformat(),))
 
     def close(self):
         if self.epoch:self.store.release_worker(self.worker,self.epoch)

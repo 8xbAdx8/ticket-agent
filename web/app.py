@@ -39,7 +39,7 @@ def main():
         mode = st.radio("工作空间", ["出行助手", "开发者工作台", "测试工作台"], key="workspace_mode",
                         format_func=workspace_label)
         if mode == "测试工作台":
-            page = st.radio("工作台导航", ["测试总览", "测试实验室", "Trace 分析", "质量分析", "模型对比", "RAG 知识库", "集成中心", "V3.7 离线验收"], key="workspace_page",format_func=lambda value:'离线回归中心' if value=='V3.7 离线验收' else value)
+            page = st.radio("工作台导航", ["测试总览", "测试实验室", "AI 测试场景生成", "Trace 分析", "质量分析", "模型对比", "RAG 知识库", "集成中心", "V3.7 离线验收"], key="workspace_page",format_func=lambda value:'离线回归中心' if value=='V3.7 离线验收' else value)
         elif mode == "开发者工作台":
             page = "开发者工作台"
         else:
@@ -63,6 +63,9 @@ def main():
         elif page == "V3.7 离线验收":
             from web.v37_console import page as acceptance_page
             acceptance_page()
+        elif page == "AI 测试场景生成":
+            from web.scenario_generator import page as scenario_page
+            scenario_page()
         elif page == "测试总览":
             from web.competition_view import competition_page
             sessions = st.session_state.get("user_sessions", []) + st.session_state.get("lab_archives", [])

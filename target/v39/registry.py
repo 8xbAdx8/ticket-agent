@@ -91,14 +91,23 @@ def dispatch(name,args):
             if name=='railway_create_order' and args['contact']!=ctx.owner_phone:raise ValueError('ORDER_FORBIDDEN')
             result=s.propose(ctx,ACTIONS[name],args)
         # A proposal is a successful tool operation, never a completed business action.
+        if isinstance(result,dict) and getattr(s.clock,'simulation',False):result=dict(result,simulation_clock=s.clock.snapshot())
         ok=not isinstance(result,dict) or 'error' not in result
     except Exception as exc:
-        import traceback
-        emit('railway_tool_error','failed',tool=name,error_type=type(exc).__name__,
-             error_code=str(exc) if isinstance(exc,ValueError) else 'RAILWAY_INTERNAL_ERROR',
-             stack=traceback.format_exc(),business_completed=False)
-        result=dict(error=str(exc) if isinstance(exc,ValueError) else 'RAILWAY_INTERNAL_ERROR',simulation=True);ok=False
-        if diagnostic['validation']['status']=='unknown':diagnostic['validation']=dict(status='invalid')
+        if name=='railway_create_order' and isinstance(exc,ValueError) and str(exc)=='PASSENGER_NAME_REQUIRED':
+            # Clarification is a valid response, never a created proposal or a
+            # completed transaction. Service rolled back all proposal writes.
+            result=dict(status='NEEDS_INPUT',missing_fields=['passengers'],
+                message='请先提供模拟乘客姓名；本次尚未生成建单提案，也未锁座或支付。',simulation=True)
+            ok=True
+            emit('railway_input_required','waiting',tool=name,missing_fields=['passengers'],business_completed=False)
+        else:
+            import traceback
+            emit('railway_tool_error','failed',tool=name,error_type=type(exc).__name__,
+                 error_code=str(exc) if isinstance(exc,ValueError) else 'RAILWAY_INTERNAL_ERROR',
+                 stack=traceback.format_exc(),business_completed=False)
+            result=dict(error=str(exc) if isinstance(exc,ValueError) else 'RAILWAY_INTERNAL_ERROR',simulation=True);ok=False
+            if diagnostic['validation']['status']=='unknown':diagnostic['validation']=dict(status='invalid')
     elapsed=int((time.perf_counter()-start)*1000)
     emit('railway_tool_result','succeeded' if ok else 'failed' if diagnostic['backend_executed'] else 'blocked',tool=name,executed=diagnostic['backend_executed'],output=result,duration_ms=elapsed,business_completed=False,simulation=True)
     observer=DISPATCH_OBSERVER.get()
