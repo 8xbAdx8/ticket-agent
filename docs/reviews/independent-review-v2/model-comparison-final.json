@@ -1,0 +1,186 @@
+{
+  "deepseek": {
+    "generation_attempts": 12,
+    "responses_received": 2,
+    "candidate_count": 5,
+    "quality": {
+      "population": "independent candidate repository; review actions are local audit labels",
+      "schema": {
+        "numerator": 5,
+        "denominator": 5,
+        "value": 1.0,
+        "display": "5/5",
+        "definition": "persisted metadata JSON schema after normalization; not raw response correctness"
+      },
+      "tools": {
+        "numerator": 3,
+        "denominator": 3,
+        "value": 1.0,
+        "display": "3/3",
+        "definition": "cases with named tool references containing only registered names; no-tool cases excluded"
+      },
+      "parameters": {
+        "numerator": 3,
+        "denominator": 3,
+        "value": 1.0,
+        "display": "3/3",
+        "definition": "statically resolved partial argument constraints; dynamic references excluded"
+      },
+      "duplicate": {
+        "numerator": 2,
+        "denominator": 5,
+        "value": 0.4,
+        "display": "2/5",
+        "definition": "exact or similarity duplicate flagged"
+      },
+      "executable": {
+        "numerator": 1,
+        "denominator": 5,
+        "value": 0.2,
+        "display": "1/5",
+        "definition": "validator/capability gate PASS, not execution success"
+      },
+      "reviewed": {
+        "numerator": 0,
+        "denominator": 5,
+        "value": 0.0,
+        "display": "0/5",
+        "definition": "current local approval records; not verified human identity"
+      },
+      "execution": {
+        "numerator": 0,
+        "denominator": 0,
+        "value": null,
+        "display": "N/A",
+        "definition": "independent recorded runs"
+      },
+      "assertion_complete": {
+        "numerator": 0,
+        "denominator": 0,
+        "value": null,
+        "display": "N/A",
+        "definition": "runs containing structured assertion evidence"
+      },
+      "trace_complete": {
+        "numerator": 0,
+        "denominator": 0,
+        "value": null,
+        "display": "N/A",
+        "definition": "trace evidence files exist"
+      }
+    },
+    "request_ids": [
+      "915ec70818ea481685a5734581bcc66d",
+      "9f34bbbcda2849c5b9ef580048ad66bb"
+    ],
+    "known_tokens": 10825,
+    "mean_known_tokens": 5412.5,
+    "cost": "UNKNOWN",
+    "human_acceptance": {
+      "numerator": 0,
+      "denominator": 0,
+      "value": null,
+      "display": "N/A",
+      "definition": "no verified human labels in this experiment"
+    },
+    "defect_detection": {
+      "numerator": 0,
+      "denominator": 0,
+      "value": null,
+      "display": "N/A",
+      "definition": "no approved AI-generated fault campaign"
+    }
+  },
+  "bailian": {
+    "generation_attempts": 12,
+    "responses_received": 2,
+    "candidate_count": 5,
+    "quality": {
+      "population": "independent candidate repository; review actions are local audit labels",
+      "schema": {
+        "numerator": 5,
+        "denominator": 5,
+        "value": 1.0,
+        "display": "5/5",
+        "definition": "persisted metadata JSON schema after normalization; not raw response correctness"
+      },
+      "tools": {
+        "numerator": 1,
+        "denominator": 1,
+        "value": 1.0,
+        "display": "1/1",
+        "definition": "cases with named tool references containing only registered names; no-tool cases excluded"
+      },
+      "parameters": {
+        "numerator": 1,
+        "denominator": 1,
+        "value": 1.0,
+        "display": "1/1",
+        "definition": "statically resolved partial argument constraints; dynamic references excluded"
+      },
+      "duplicate": {
+        "numerator": 0,
+        "denominator": 5,
+        "value": 0.0,
+        "display": "0/5",
+        "definition": "exact or similarity duplicate flagged"
+      },
+      "executable": {
+        "numerator": 4,
+        "denominator": 5,
+        "value": 0.8,
+        "display": "4/5",
+        "definition": "validator/capability gate PASS, not execution success"
+      },
+      "reviewed": {
+        "numerator": 0,
+        "denominator": 5,
+        "value": 0.0,
+        "display": "0/5",
+        "definition": "current local approval records; not verified human identity"
+      },
+      "execution": {
+        "numerator": 0,
+        "denominator": 0,
+        "value": null,
+        "display": "N/A",
+        "definition": "independent recorded runs"
+      },
+      "assertion_complete": {
+        "numerator": 0,
+        "denominator": 0,
+        "value": null,
+        "display": "N/A",
+        "definition": "runs containing structured assertion evidence"
+      },
+      "trace_complete": {
+        "numerator": 0,
+        "denominator": 0,
+        "value": null,
+        "display": "N/A",
+        "definition": "trace evidence files exist"
+      }
+    },
+    "request_ids": [
+      "8883a4136ca84ca4aa7168cc67462782",
+      "e0390c2e0e6040c0951f1bbd7d88e9df"
+    ],
+    "known_tokens": 10951,
+    "mean_known_tokens": 5475.5,
+    "cost": "UNKNOWN",
+    "human_acceptance": {
+      "numerator": 0,
+      "denominator": 0,
+      "value": null,
+      "display": "N/A",
+      "definition": "no verified human labels in this experiment"
+    },
+    "defect_detection": {
+      "numerator": 0,
+      "denominator": 0,
+      "value": null,
+      "display": "N/A",
+      "definition": "no approved AI-generated fault campaign"
+    }
+  }
+}

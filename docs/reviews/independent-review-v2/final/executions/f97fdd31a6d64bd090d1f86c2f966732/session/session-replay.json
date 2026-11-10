@@ -1,0 +1,125 @@
+{
+  "schema": "ticket-session-replay/1",
+  "session_id": "web-a5e2bf3344a4",
+  "settings": {
+    "mode": "user",
+    "engine": "legacy",
+    "live": false,
+    "live_provider": "deepseek",
+    "live_model": null,
+    "case_id": null,
+    "rag_mode": null,
+    "interactive": false,
+    "full_tools": true,
+    "mutations": {}
+  },
+  "run_ids": [],
+  "history_run_ids": [],
+  "operations": [
+    {
+      "request_id": "page-401d06a7c9204e41ab81a2e282174f4c",
+      "input_hash": "eeaf7b020b2d5cbf68c9711afc68e7c56d63bf9a6a10530cb567b28b19bb0e3e",
+      "run_id": "page-401d06a7c9204e41ab81a2e282174f4c",
+      "session_id": "web-a5e2bf3344a4",
+      "operation": "生成本地操作确认卡",
+      "entry": "page_business",
+      "provider": "mock",
+      "model": null,
+      "status": "SUCCEEDED",
+      "started_at": "2026-11-09T14:32:09.010374+00:00",
+      "ended_at": "2026-11-09T14:32:09.041383+00:00",
+      "tools": [
+        {
+          "tool": "railway_search_stations",
+          "call_id": "page-call-7e7ba7bb8bec440a93b09e83f3aa6689",
+          "status": "succeeded",
+          "executed": true
+        }
+      ],
+      "error": null,
+      "agent_started": false,
+      "stage": "本地模拟操作已完成",
+      "tokens": null,
+      "kind": "page_business",
+      "order_id": null,
+      "result_summary": "FOUND",
+      "business_operation_id": "page-401d06a7c9204e41ab81a2e282174f4c"
+    }
+  ],
+  "railway_state_reference": {
+    "path": "D:\\codexproject\\ticket-agent\\artifacts\\runtime\\v310-ai-executions\\f97fdd31a6d64bd090d1f86c2f966732\\simulation.sqlite",
+    "scenario_id": "railway-demo",
+    "clock_path": "D:\\codexproject\\ticket-agent\\artifacts\\runtime\\v310-ai-executions\\f97fdd31a6d64bd090d1f86c2f966732\\simulation-clock.sqlite",
+    "clock_id": "b066abda78f74b6ba14c835dc882647a"
+  },
+  "selected_railway_trip": null,
+  "business_receipts": [
+    {
+      "operation_id": "page-401d06a7c9204e41ab81a2e282174f4c",
+      "session_id": "web-a5e2bf3344a4",
+      "order_id": null,
+      "proposal_id": null,
+      "tool_call_id": "page-call-7e7ba7bb8bec440a93b09e83f3aa6689",
+      "status": "SUCCEEDED",
+      "actual_result": {
+        "status": "FOUND",
+        "data": [
+          {
+            "stop_id": "AOH",
+            "stop_name": "上海虹桥",
+            "stop_lat": "31.195978",
+            "stop_lon": "121.316200",
+            "location_type": "0",
+            "raw_json": "{\"stop_id\": \"AOH\", \"stop_name\": \"上海虹桥\", \"stop_lat\": \"31.195978\", \"stop_lon\": \"121.316200\", \"location_type\": \"0\"}"
+          }
+        ],
+        "data_source": "CHINESE_RAILWAY_GTFS",
+        "data_type": "STATIC_SCHEDULE",
+        "real_time": false,
+        "availability_available": false,
+        "fare_available": false,
+        "booking_available": false,
+        "availability": "UNKNOWN",
+        "fare": null,
+        "data_version": "20261101",
+        "source_sha256": "3877dbc0ebc0392afef4b111dd9ba837c97eb4aa45788542919be53d52a12030",
+        "rights_status": "RIGHTS_REVIEW_PENDING",
+        "usage_scope": "LOCAL_DEMO_ONLY",
+        "selection_required": false,
+        "source": "GTFS_SQLITE",
+        "total_count": 1,
+        "returned_count": 1,
+        "limit": 50,
+        "has_more": false,
+        "query_parameters": {
+          "name": "上海虹桥",
+          "cursor": null
+        },
+        "next_cursor": null,
+        "dataset_version": "gtfs-20261101-063437",
+        "database_sha256": "e32f0cd41b45532ea7aedf4c72a6ffc24f6eaa23c042ee8f35cb02aa50735c69",
+        "simulation_clock": {
+          "clock_id": "b066abda78f74b6ba14c835dc882647a",
+          "mode": "PAUSED",
+          "simulation": true,
+          "timezone": "Asia/Shanghai",
+          "now": "2026-10-17T00:00:00+08:00",
+          "anchor": "2026-10-16T16:00:00+00:00",
+          "revision": 0,
+          "dataset_version": "gtfs-20261101-063437"
+        }
+      },
+      "database_verified": true,
+      "before": null,
+      "after": null,
+      "action": null,
+      "approved": null,
+      "source_run_id": null,
+      "started_at": "2026-11-09T14:32:09.010374+00:00",
+      "finished_at": "2026-11-09T14:32:09.041383+00:00",
+      "source": "trusted_page_operation",
+      "model_called": false
+    }
+  ],
+  "updated_at": "2026-11-09T14:32:09.044390+00:00"
+}

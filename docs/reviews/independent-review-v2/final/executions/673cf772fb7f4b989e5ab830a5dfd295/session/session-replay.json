@@ -1,0 +1,116 @@
+{
+  "schema": "ticket-session-replay/1",
+  "session_id": "web-94e047346460",
+  "settings": {
+    "mode": "user",
+    "engine": "legacy",
+    "live": false,
+    "live_provider": "deepseek",
+    "live_model": null,
+    "case_id": null,
+    "rag_mode": null,
+    "interactive": false,
+    "full_tools": true,
+    "mutations": {}
+  },
+  "run_ids": [],
+  "history_run_ids": [],
+  "operations": [
+    {
+      "request_id": "page-796ab7dd74914466b7397e130b8c6625",
+      "input_hash": "eeaf7b020b2d5cbf68c9711afc68e7c56d63bf9a6a10530cb567b28b19bb0e3e",
+      "run_id": "page-796ab7dd74914466b7397e130b8c6625",
+      "session_id": "web-94e047346460",
+      "operation": "生成本地操作确认卡",
+      "entry": "page_business",
+      "provider": "mock",
+      "model": null,
+      "status": "SUCCEEDED",
+      "started_at": "2026-11-09T14:31:54.975124+00:00",
+      "ended_at": "2026-11-09T14:31:55.086296+00:00",
+      "tools": [
+        {
+          "tool": "railway_search_stations",
+          "call_id": "page-call-6a7a4da36fc04789b0ad66d40bfbac2f",
+          "status": "succeeded",
+          "executed": true
+        }
+      ],
+      "error": null,
+      "agent_started": false,
+      "stage": "本地模拟操作已完成",
+      "tokens": null,
+      "kind": "page_business",
+      "order_id": null,
+      "result_summary": "NO_MATCH",
+      "business_operation_id": "page-796ab7dd74914466b7397e130b8c6625"
+    }
+  ],
+  "railway_state_reference": {
+    "path": "D:\\codexproject\\ticket-agent\\artifacts\\runtime\\v310-ai-executions\\673cf772fb7f4b989e5ab830a5dfd295\\simulation.sqlite",
+    "scenario_id": "railway-demo",
+    "clock_path": "D:\\codexproject\\ticket-agent\\artifacts\\runtime\\v310-ai-executions\\673cf772fb7f4b989e5ab830a5dfd295\\simulation-clock.sqlite",
+    "clock_id": "f6d700f2a4994fc695f16bcfe5ca3ea0"
+  },
+  "selected_railway_trip": null,
+  "business_receipts": [
+    {
+      "operation_id": "page-796ab7dd74914466b7397e130b8c6625",
+      "session_id": "web-94e047346460",
+      "order_id": null,
+      "proposal_id": null,
+      "tool_call_id": "page-call-6a7a4da36fc04789b0ad66d40bfbac2f",
+      "status": "SUCCEEDED",
+      "actual_result": {
+        "status": "NO_MATCH",
+        "data": [],
+        "data_source": "CHINESE_RAILWAY_GTFS",
+        "data_type": "STATIC_SCHEDULE",
+        "real_time": false,
+        "availability_available": false,
+        "fare_available": false,
+        "booking_available": false,
+        "availability": "UNKNOWN",
+        "fare": null,
+        "data_version": "20261101",
+        "source_sha256": "3877dbc0ebc0392afef4b111dd9ba837c97eb4aa45788542919be53d52a12030",
+        "rights_status": "RIGHTS_REVIEW_PENDING",
+        "usage_scope": "LOCAL_DEMO_ONLY",
+        "selection_required": false,
+        "source": "GTFS_SQLITE",
+        "total_count": 0,
+        "returned_count": 0,
+        "limit": 50,
+        "has_more": false,
+        "query_parameters": {
+          "name": "不存在的合成车站",
+          "cursor": null
+        },
+        "next_cursor": null,
+        "dataset_version": "gtfs-20261101-063437",
+        "database_sha256": "e32f0cd41b45532ea7aedf4c72a6ffc24f6eaa23c042ee8f35cb02aa50735c69",
+        "simulation_clock": {
+          "clock_id": "f6d700f2a4994fc695f16bcfe5ca3ea0",
+          "mode": "PAUSED",
+          "simulation": true,
+          "timezone": "Asia/Shanghai",
+          "now": "2026-10-17T00:00:00+08:00",
+          "anchor": "2026-10-16T16:00:00+00:00",
+          "revision": 0,
+          "dataset_version": "gtfs-20261101-063437"
+        }
+      },
+      "database_verified": true,
+      "before": null,
+      "after": null,
+      "action": null,
+      "approved": null,
+      "source_run_id": null,
+      "started_at": "2026-11-09T14:31:54.975124+00:00",
+      "finished_at": "2026-11-09T14:31:55.086296+00:00",
+      "source": "trusted_page_operation",
+      "model_called": false
+    }
+  ],
+  "updated_at": "2026-11-09T14:31:55.088806+00:00"
+}

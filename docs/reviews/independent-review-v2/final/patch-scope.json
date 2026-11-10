@@ -1,0 +1,11 @@
+{
+  "note": "HEAD diff includes earlier uncommitted work. Current complete source patch includes existing untracked files; opening only has hashes, not before text. Not a pure task incremental patch.",
+  "files": [
+    "target/scenario_generator.py",
+    "target/scenario_v310.py",
+    "target/scenario_plans.py",
+    "target/scenario_quality.py",
+    "web/scenario_generator.py",
+    "tests/test_ai_scenario_v2.py"
+  ]
+}

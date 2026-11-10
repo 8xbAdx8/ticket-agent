@@ -1,0 +1,243 @@
+{
+  "reference_plan": "railway_queries",
+  "case_id": "V310-INTEGRATION-railway_queries",
+  "execution_id": "f97fdd31a6d64bd090d1f86c2f966732",
+  "status": "failed",
+  "mode": "deterministic_v310_integration",
+  "model_requests": 0,
+  "fault": "ui_drift",
+  "steps": [
+    {
+      "index": 0,
+      "kind": "tool",
+      "tool": "railway_search_stations",
+      "args": {
+        "name": "上海虹桥"
+      },
+      "output": {
+        "status": "FOUND",
+        "data": [
+          {
+            "stop_id": "AOH",
+            "stop_name": "上海虹桥",
+            "stop_lat": "31.195978",
+            "stop_lon": "121.316200",
+            "location_type": "0",
+            "raw_json": "{\"stop_id\": \"AOH\", \"stop_name\": \"上海虹桥\", \"stop_lat\": \"31.195978\", \"stop_lon\": \"121.316200\", \"location_type\": \"0\"}"
+          }
+        ],
+        "data_source": "CHINESE_RAILWAY_GTFS",
+        "data_type": "STATIC_SCHEDULE",
+        "real_time": false,
+        "availability_available": false,
+        "fare_available": false,
+        "booking_available": false,
+        "availability": "UNKNOWN",
+        "fare": null,
+        "data_version": "20261101",
+        "source_sha256": "3877dbc0ebc0392afef4b111dd9ba837c97eb4aa45788542919be53d52a12030",
+        "rights_status": "RIGHTS_REVIEW_PENDING",
+        "usage_scope": "LOCAL_DEMO_ONLY",
+        "selection_required": false,
+        "source": "GTFS_SQLITE",
+        "total_count": 1,
+        "returned_count": 1,
+        "limit": 50,
+        "has_more": false,
+        "query_parameters": {
+          "name": "上海虹桥",
+          "cursor": null
+        },
+        "next_cursor": null,
+        "dataset_version": "gtfs-20261101-063437",
+        "database_sha256": "e32f0cd41b45532ea7aedf4c72a6ffc24f6eaa23c042ee8f35cb02aa50735c69",
+        "simulation_clock": {
+          "clock_id": "b066abda78f74b6ba14c835dc882647a",
+          "mode": "PAUSED",
+          "simulation": true,
+          "timezone": "Asia/Shanghai",
+          "now": "2026-10-17T00:00:00+08:00",
+          "anchor": "2026-10-16T16:00:00+00:00",
+          "revision": 0,
+          "dataset_version": "gtfs-20261101-063437"
+        }
+      },
+      "error": null,
+      "checks": [
+        {
+          "path": "result.returned_count",
+          "op": "ge",
+          "expected": 1,
+          "actual": 1,
+          "ok": true
+        },
+        {
+          "path": "metrics.foreign_keys_ok",
+          "ok": true,
+          "actual": true
+        },
+        {
+          "path": "metrics.inventory_conserved",
+          "ok": true,
+          "actual": true
+        },
+        {
+          "path": "metrics.money_conserved",
+          "ok": true,
+          "actual": true
+        },
+        {
+          "path": "metrics.ui_consistent",
+          "ok": false,
+          "actual": false
+        }
+      ],
+      "snapshot": {
+        "state": {
+          "schema": "ticket-business-read-model/1",
+          "session_id": "web-a5e2bf3344a4",
+          "source": "LOCAL_SQLITE_COMMITTED",
+          "scenario_id": "railway-demo",
+          "orders": [],
+          "quotes": [],
+          "pending_proposals": [],
+          "proposals": [],
+          "operations": [],
+          "operation_events": [
+            {
+              "event_id": "c5784bdc53a64eb3843e40839062eeef",
+              "aggregate_type": "page",
+              "aggregate_id": "web-a5e2bf3344a4",
+              "event_type": "railway_search_stations",
+              "from_state": null,
+              "to_state": null,
+              "detail_json": "{\"source\": \"page_operation\", \"ok\": true, \"elapsed_ms\": 4, \"args\": {\"tool_arguments\": {\"name\": \"上海虹桥\"}, \"tool_call_id\": \"page-call-7e7ba7bb8bec440a93b09e83f3aa6689\", \"operation_id\": \"page-401d06a7c9204e41ab81a2e282174f4c\", \"scenario_id\": \"railway-demo\"}, \"result\": {\"status\": \"FOUND\", \"data\": [{\"stop_id\": \"AOH\", \"stop_name\": \"上海虹桥\", \"stop_lat\": \"31.195978\", \"stop_lon\": \"121.316200\", \"location_type\": \"0\", \"raw_json\": \"{\\\"stop_id\\\": \\\"AOH\\\", \\\"stop_name\\\": \\\"上海虹桥\\\", \\\"stop_lat\\\": \\\"31.195978\\\", \\\"stop_lon\\\": \\\"121.316200\\\", \\\"location_type\\\": \\\"0\\\"}\"}], \"data_source\": \"CHINESE_RAILWAY_GTFS\", \"data_type\": \"STATIC_SCHEDULE\", \"real_time\": false, \"availability_available\": false, \"fare_available\": false, \"booking_available\": false, \"availability\": \"UNKNOWN\", \"fare\": null, \"data_version\": \"20261101\", \"source_sha256\": \"3877dbc0ebc0392afef4b111dd9ba837c97eb4aa45788542919be53d52a12030\", \"rights_status\": \"RIGHTS_REVIEW_PENDING\", \"usage_scope\": \"LOCAL_DEMO_ONLY\", \"selection_required\": false, \"source\": \"GTFS_SQLITE\", \"total_count\": 1, \"returned_count\": 1, \"limit\": 50, \"has_more\": false, \"query_parameters\": {\"name\": \"上海虹桥\", \"cursor\": null}, \"next_cursor\": null, \"dataset_version\": \"gtfs-20261101-063437\", \"database_sha256\": \"e32f0cd41b45532ea7aedf4c72a6ffc24f6eaa23c042ee8f35cb02aa50735c69\", \"simulation_clock\": {\"clock_id\": \"b066abda78f74b6ba14c835dc882647a\", \"mode\": \"PAUSED\", \"simulation\": true, \"timezone\": \"Asia/Shanghai\", \"now\": \"2026-10-17T00:00:00+08:00\", \"anchor\": \"2026-10-16T16:00:00+00:00\", \"revision\": 0, \"dataset_version\": \"gtfs-20261101-063437\"}}}",
+              "request_id": null,
+              "created_at": "2026-10-16T16:00:00+00:00"
+            }
+          ],
+          "updated_at": "2026-10-16T16:00:00+00:00",
+          "state_sha256": "5b52a395e9e95d52e97193728dd6c3467d69aad4e3bea17acaeb630f88cec9ff"
+        },
+        "ui": {
+          "schema": "ticket-business-read-model/1",
+          "session_id": "web-a5e2bf3344a4",
+          "source": "LOCAL_SQLITE_COMMITTED",
+          "scenario_id": "railway-demo",
+          "orders": [
+            {
+              "order_id": "injected-wrong-order",
+              "order_status": "PAID",
+              "payment_status": "SUCCEEDED",
+              "net_paid_fen": 1
+            }
+          ],
+          "quotes": [],
+          "pending_proposals": [],
+          "proposals": [],
+          "operations": [],
+          "operation_events": [
+            {
+              "event_id": "c5784bdc53a64eb3843e40839062eeef",
+              "aggregate_type": "page",
+              "aggregate_id": "web-a5e2bf3344a4",
+              "event_type": "railway_search_stations",
+              "from_state": null,
+              "to_state": null,
+              "detail_json": "{\"source\": \"page_operation\", \"ok\": true, \"elapsed_ms\": 4, \"args\": {\"tool_arguments\": {\"name\": \"上海虹桥\"}, \"tool_call_id\": \"page-call-7e7ba7bb8bec440a93b09e83f3aa6689\", \"operation_id\": \"page-401d06a7c9204e41ab81a2e282174f4c\", \"scenario_id\": \"railway-demo\"}, \"result\": {\"status\": \"FOUND\", \"data\": [{\"stop_id\": \"AOH\", \"stop_name\": \"上海虹桥\", \"stop_lat\": \"31.195978\", \"stop_lon\": \"121.316200\", \"location_type\": \"0\", \"raw_json\": \"{\\\"stop_id\\\": \\\"AOH\\\", \\\"stop_name\\\": \\\"上海虹桥\\\", \\\"stop_lat\\\": \\\"31.195978\\\", \\\"stop_lon\\\": \\\"121.316200\\\", \\\"location_type\\\": \\\"0\\\"}\"}], \"data_source\": \"CHINESE_RAILWAY_GTFS\", \"data_type\": \"STATIC_SCHEDULE\", \"real_time\": false, \"availability_available\": false, \"fare_available\": false, \"booking_available\": false, \"availability\": \"UNKNOWN\", \"fare\": null, \"data_version\": \"20261101\", \"source_sha256\": \"3877dbc0ebc0392afef4b111dd9ba837c97eb4aa45788542919be53d52a12030\", \"rights_status\": \"RIGHTS_REVIEW_PENDING\", \"usage_scope\": \"LOCAL_DEMO_ONLY\", \"selection_required\": false, \"source\": \"GTFS_SQLITE\", \"total_count\": 1, \"returned_count\": 1, \"limit\": 50, \"has_more\": false, \"query_parameters\": {\"name\": \"上海虹桥\", \"cursor\": null}, \"next_cursor\": null, \"dataset_version\": \"gtfs-20261101-063437\", \"database_sha256\": \"e32f0cd41b45532ea7aedf4c72a6ffc24f6eaa23c042ee8f35cb02aa50735c69\", \"simulation_clock\": {\"clock_id\": \"b066abda78f74b6ba14c835dc882647a\", \"mode\": \"PAUSED\", \"simulation\": true, \"timezone\": \"Asia/Shanghai\", \"now\": \"2026-10-17T00:00:00+08:00\", \"anchor\": \"2026-10-16T16:00:00+00:00\", \"revision\": 0, \"dataset_version\": \"gtfs-20261101-063437\"}}}",
+              "request_id": null,
+              "created_at": "2026-10-16T16:00:00+00:00"
+            }
+          ],
+          "updated_at": "2026-10-16T16:00:00+00:00",
+          "state_sha256": "5b52a395e9e95d52e97193728dd6c3467d69aad4e3bea17acaeb630f88cec9ff"
+        },
+        "db": {
+          "v39_orders": [],
+          "v39_order_items": [],
+          "v39_holds": [],
+          "v39_transactions": [],
+          "v39_inventory_segments": [],
+          "v39_inventory_events": [],
+          "v39_refund_requests": [],
+          "v39_change_requests": [],
+          "v39_proposals": [],
+          "v39_idempotency": [],
+          "v39_refund_items": [],
+          "v39_hold_segments": [],
+          "v39_transaction_allocations": []
+        },
+        "metrics": {
+          "order_count": 0,
+          "hold_count": 0,
+          "transaction_count": 0,
+          "held": 0,
+          "sold": 0,
+          "foreign_keys_ok": true,
+          "inventory_conserved": true,
+          "money_conserved": true,
+          "ui_consistent": false
+        },
+        "result": {
+          "status": "FOUND",
+          "data": [
+            {
+              "stop_id": "AOH",
+              "stop_name": "上海虹桥",
+              "stop_lat": "31.195978",
+              "stop_lon": "121.316200",
+              "location_type": "0",
+              "raw_json": "{\"stop_id\": \"AOH\", \"stop_name\": \"上海虹桥\", \"stop_lat\": \"31.195978\", \"stop_lon\": \"121.316200\", \"location_type\": \"0\"}"
+            }
+          ],
+          "data_source": "CHINESE_RAILWAY_GTFS",
+          "data_type": "STATIC_SCHEDULE",
+          "real_time": false,
+          "availability_available": false,
+          "fare_available": false,
+          "booking_available": false,
+          "availability": "UNKNOWN",
+          "fare": null,
+          "data_version": "20261101",
+          "source_sha256": "3877dbc0ebc0392afef4b111dd9ba837c97eb4aa45788542919be53d52a12030",
+          "rights_status": "RIGHTS_REVIEW_PENDING",
+          "usage_scope": "LOCAL_DEMO_ONLY",
+          "selection_required": false,
+          "source": "GTFS_SQLITE",
+          "total_count": 1,
+          "returned_count": 1,
+          "limit": 50,
+          "has_more": false,
+          "query_parameters": {
+            "name": "上海虹桥",
+            "cursor": null
+          },
+          "next_cursor": null,
+          "dataset_version": "gtfs-20261101-063437",
+          "database_sha256": "e32f0cd41b45532ea7aedf4c72a6ffc24f6eaa23c042ee8f35cb02aa50735c69",
+          "simulation_clock": {
+            "clock_id": "b066abda78f74b6ba14c835dc882647a",
+            "mode": "PAUSED",
+            "simulation": true,
+            "timezone": "Asia/Shanghai",
+            "now": "2026-10-17T00:00:00+08:00",
+            "anchor": "2026-10-16T16:00:00+00:00",
+            "revision": 0,
+            "dataset_version": "gtfs-20261101-063437"
+          }
+        }
+      },
+      "trace_id": "f97fdd31a6d64bd090d1f86c2f966732-0",
+      "executed_tools": [
+        "railway_search_stations"
+      ],
+      "executed": true,
+      "verified": false
+    }
+  ],
+  "started_at": 1794234728.7543244,
+  "evidence_root": "D:\\codexproject\\ticket-agent\\artifacts\\runtime\\v310-ai-executions\\f97fdd31a6d64bd090d1f86c2f966732",
+  "agent_invoked": false,
+  "finished_at": 1794234729.0871127,
+  "duration_s": 0.33278822898864746
+}

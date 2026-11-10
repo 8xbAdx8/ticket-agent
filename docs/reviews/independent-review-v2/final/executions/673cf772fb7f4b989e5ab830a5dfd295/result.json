@@ -1,0 +1,218 @@
+{
+  "reference_plan": "no_match",
+  "case_id": "V310-INTEGRATION-no_match",
+  "execution_id": "673cf772fb7f4b989e5ab830a5dfd295",
+  "status": "passed",
+  "mode": "deterministic_v310_integration",
+  "model_requests": 0,
+  "fault": null,
+  "steps": [
+    {
+      "index": 0,
+      "kind": "tool",
+      "tool": "railway_search_stations",
+      "args": {
+        "name": "不存在的合成车站"
+      },
+      "output": {
+        "status": "NO_MATCH",
+        "data": [],
+        "data_source": "CHINESE_RAILWAY_GTFS",
+        "data_type": "STATIC_SCHEDULE",
+        "real_time": false,
+        "availability_available": false,
+        "fare_available": false,
+        "booking_available": false,
+        "availability": "UNKNOWN",
+        "fare": null,
+        "data_version": "20261101",
+        "source_sha256": "3877dbc0ebc0392afef4b111dd9ba837c97eb4aa45788542919be53d52a12030",
+        "rights_status": "RIGHTS_REVIEW_PENDING",
+        "usage_scope": "LOCAL_DEMO_ONLY",
+        "selection_required": false,
+        "source": "GTFS_SQLITE",
+        "total_count": 0,
+        "returned_count": 0,
+        "limit": 50,
+        "has_more": false,
+        "query_parameters": {
+          "name": "不存在的合成车站",
+          "cursor": null
+        },
+        "next_cursor": null,
+        "dataset_version": "gtfs-20261101-063437",
+        "database_sha256": "e32f0cd41b45532ea7aedf4c72a6ffc24f6eaa23c042ee8f35cb02aa50735c69",
+        "simulation_clock": {
+          "clock_id": "f6d700f2a4994fc695f16bcfe5ca3ea0",
+          "mode": "PAUSED",
+          "simulation": true,
+          "timezone": "Asia/Shanghai",
+          "now": "2026-10-17T00:00:00+08:00",
+          "anchor": "2026-10-16T16:00:00+00:00",
+          "revision": 0,
+          "dataset_version": "gtfs-20261101-063437"
+        }
+      },
+      "error": null,
+      "checks": [
+        {
+          "path": "result.returned_count",
+          "op": "eq",
+          "expected": 0,
+          "actual": 0,
+          "ok": true
+        },
+        {
+          "path": "metrics.foreign_keys_ok",
+          "ok": true,
+          "actual": true
+        },
+        {
+          "path": "metrics.inventory_conserved",
+          "ok": true,
+          "actual": true
+        },
+        {
+          "path": "metrics.money_conserved",
+          "ok": true,
+          "actual": true
+        },
+        {
+          "path": "metrics.ui_consistent",
+          "ok": true,
+          "actual": true
+        }
+      ],
+      "snapshot": {
+        "state": {
+          "schema": "ticket-business-read-model/1",
+          "session_id": "web-94e047346460",
+          "source": "LOCAL_SQLITE_COMMITTED",
+          "scenario_id": "railway-demo",
+          "orders": [],
+          "quotes": [],
+          "pending_proposals": [],
+          "proposals": [],
+          "operations": [],
+          "operation_events": [
+            {
+              "event_id": "e03af81c72a04f1c88226f5e376cee67",
+              "aggregate_type": "page",
+              "aggregate_id": "web-94e047346460",
+              "event_type": "railway_search_stations",
+              "from_state": null,
+              "to_state": null,
+              "detail_json": "{\"source\": \"page_operation\", \"ok\": true, \"elapsed_ms\": 10, \"args\": {\"tool_arguments\": {\"name\": \"不存在的合成车站\"}, \"tool_call_id\": \"page-call-6a7a4da36fc04789b0ad66d40bfbac2f\", \"operation_id\": \"page-796ab7dd74914466b7397e130b8c6625\", \"scenario_id\": \"railway-demo\"}, \"result\": {\"status\": \"NO_MATCH\", \"data\": [], \"data_source\": \"CHINESE_RAILWAY_GTFS\", \"data_type\": \"STATIC_SCHEDULE\", \"real_time\": false, \"availability_available\": false, \"fare_available\": false, \"booking_available\": false, \"availability\": \"UNKNOWN\", \"fare\": null, \"data_version\": \"20261101\", \"source_sha256\": \"3877dbc0ebc0392afef4b111dd9ba837c97eb4aa45788542919be53d52a12030\", \"rights_status\": \"RIGHTS_REVIEW_PENDING\", \"usage_scope\": \"LOCAL_DEMO_ONLY\", \"selection_required\": false, \"source\": \"GTFS_SQLITE\", \"total_count\": 0, \"returned_count\": 0, \"limit\": 50, \"has_more\": false, \"query_parameters\": {\"name\": \"不存在的合成车站\", \"cursor\": null}, \"next_cursor\": null, \"dataset_version\": \"gtfs-20261101-063437\", \"database_sha256\": \"e32f0cd41b45532ea7aedf4c72a6ffc24f6eaa23c042ee8f35cb02aa50735c69\", \"simulation_clock\": {\"clock_id\": \"f6d700f2a4994fc695f16bcfe5ca3ea0\", \"mode\": \"PAUSED\", \"simulation\": true, \"timezone\": \"Asia/Shanghai\", \"now\": \"2026-10-17T00:00:00+08:00\", \"anchor\": \"2026-10-16T16:00:00+00:00\", \"revision\": 0, \"dataset_version\": \"gtfs-20261101-063437\"}}}",
+              "request_id": null,
+              "created_at": "2026-10-16T16:00:00+00:00"
+            }
+          ],
+          "updated_at": "2026-10-16T16:00:00+00:00",
+          "state_sha256": "1baf21e67774565cedabc6b5fba1cc3544684214b72102a373a80e7fd4f821b9"
+        },
+        "ui": {
+          "schema": "ticket-business-read-model/1",
+          "session_id": "web-94e047346460",
+          "source": "LOCAL_SQLITE_COMMITTED",
+          "scenario_id": "railway-demo",
+          "orders": [],
+          "quotes": [],
+          "pending_proposals": [],
+          "proposals": [],
+          "operations": [],
+          "operation_events": [
+            {
+              "event_id": "e03af81c72a04f1c88226f5e376cee67",
+              "aggregate_type": "page",
+              "aggregate_id": "web-94e047346460",
+              "event_type": "railway_search_stations",
+              "from_state": null,
+              "to_state": null,
+              "detail_json": "{\"source\": \"page_operation\", \"ok\": true, \"elapsed_ms\": 10, \"args\": {\"tool_arguments\": {\"name\": \"不存在的合成车站\"}, \"tool_call_id\": \"page-call-6a7a4da36fc04789b0ad66d40bfbac2f\", \"operation_id\": \"page-796ab7dd74914466b7397e130b8c6625\", \"scenario_id\": \"railway-demo\"}, \"result\": {\"status\": \"NO_MATCH\", \"data\": [], \"data_source\": \"CHINESE_RAILWAY_GTFS\", \"data_type\": \"STATIC_SCHEDULE\", \"real_time\": false, \"availability_available\": false, \"fare_available\": false, \"booking_available\": false, \"availability\": \"UNKNOWN\", \"fare\": null, \"data_version\": \"20261101\", \"source_sha256\": \"3877dbc0ebc0392afef4b111dd9ba837c97eb4aa45788542919be53d52a12030\", \"rights_status\": \"RIGHTS_REVIEW_PENDING\", \"usage_scope\": \"LOCAL_DEMO_ONLY\", \"selection_required\": false, \"source\": \"GTFS_SQLITE\", \"total_count\": 0, \"returned_count\": 0, \"limit\": 50, \"has_more\": false, \"query_parameters\": {\"name\": \"不存在的合成车站\", \"cursor\": null}, \"next_cursor\": null, \"dataset_version\": \"gtfs-20261101-063437\", \"database_sha256\": \"e32f0cd41b45532ea7aedf4c72a6ffc24f6eaa23c042ee8f35cb02aa50735c69\", \"simulation_clock\": {\"clock_id\": \"f6d700f2a4994fc695f16bcfe5ca3ea0\", \"mode\": \"PAUSED\", \"simulation\": true, \"timezone\": \"Asia/Shanghai\", \"now\": \"2026-10-17T00:00:00+08:00\", \"anchor\": \"2026-10-16T16:00:00+00:00\", \"revision\": 0, \"dataset_version\": \"gtfs-20261101-063437\"}}}",
+              "request_id": null,
+              "created_at": "2026-10-16T16:00:00+00:00"
+            }
+          ],
+          "updated_at": "2026-10-16T16:00:00+00:00",
+          "state_sha256": "1baf21e67774565cedabc6b5fba1cc3544684214b72102a373a80e7fd4f821b9"
+        },
+        "db": {
+          "v39_orders": [],
+          "v39_order_items": [],
+          "v39_holds": [],
+          "v39_transactions": [],
+          "v39_inventory_segments": [],
+          "v39_inventory_events": [],
+          "v39_refund_requests": [],
+          "v39_change_requests": [],
+          "v39_proposals": [],
+          "v39_idempotency": [],
+          "v39_refund_items": [],
+          "v39_hold_segments": [],
+          "v39_transaction_allocations": []
+        },
+        "metrics": {
+          "order_count": 0,
+          "hold_count": 0,
+          "transaction_count": 0,
+          "held": 0,
+          "sold": 0,
+          "foreign_keys_ok": true,
+          "inventory_conserved": true,
+          "money_conserved": true,
+          "ui_consistent": true
+        },
+        "result": {
+          "status": "NO_MATCH",
+          "data": [],
+          "data_source": "CHINESE_RAILWAY_GTFS",
+          "data_type": "STATIC_SCHEDULE",
+          "real_time": false,
+          "availability_available": false,
+          "fare_available": false,
+          "booking_available": false,
+          "availability": "UNKNOWN",
+          "fare": null,
+          "data_version": "20261101",
+          "source_sha256": "3877dbc0ebc0392afef4b111dd9ba837c97eb4aa45788542919be53d52a12030",
+          "rights_status": "RIGHTS_REVIEW_PENDING",
+          "usage_scope": "LOCAL_DEMO_ONLY",
+          "selection_required": false,
+          "source": "GTFS_SQLITE",
+          "total_count": 0,
+          "returned_count": 0,
+          "limit": 50,
+          "has_more": false,
+          "query_parameters": {
+            "name": "不存在的合成车站",
+            "cursor": null
+          },
+          "next_cursor": null,
+          "dataset_version": "gtfs-20261101-063437",
+          "database_sha256": "e32f0cd41b45532ea7aedf4c72a6ffc24f6eaa23c042ee8f35cb02aa50735c69",
+          "simulation_clock": {
+            "clock_id": "f6d700f2a4994fc695f16bcfe5ca3ea0",
+            "mode": "PAUSED",
+            "simulation": true,
+            "timezone": "Asia/Shanghai",
+            "now": "2026-10-17T00:00:00+08:00",
+            "anchor": "2026-10-16T16:00:00+00:00",
+            "revision": 0,
+            "dataset_version": "gtfs-20261101-063437"
+          }
+        }
+      },
+      "trace_id": "673cf772fb7f4b989e5ab830a5dfd295-0",
+      "executed_tools": [
+        "railway_search_stations"
+      ],
+      "executed": true,
+      "verified": true
+    }
+  ],
+  "started_at": 1794234714.257976,
+  "evidence_root": "D:\\codexproject\\ticket-agent\\artifacts\\runtime\\v310-ai-executions\\673cf772fb7f4b989e5ab830a5dfd295",
+  "agent_invoked": false,
+  "finished_at": 1794234715.1438262,
+  "duration_s": 0.885850191116333
+}

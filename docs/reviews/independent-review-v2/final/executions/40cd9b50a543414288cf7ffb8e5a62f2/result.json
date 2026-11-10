@@ -1,0 +1,1152 @@
+{
+  "reference_plan": "railway_queries",
+  "case_id": "V310-INTEGRATION-railway_queries",
+  "execution_id": "40cd9b50a543414288cf7ffb8e5a62f2",
+  "status": "passed",
+  "mode": "deterministic_v310_integration",
+  "model_requests": 0,
+  "fault": null,
+  "steps": [
+    {
+      "index": 0,
+      "kind": "tool",
+      "tool": "railway_search_stations",
+      "args": {
+        "name": "上海虹桥"
+      },
+      "output": {
+        "status": "FOUND",
+        "data": [
+          {
+            "stop_id": "AOH",
+            "stop_name": "上海虹桥",
+            "stop_lat": "31.195978",
+            "stop_lon": "121.316200",
+            "location_type": "0",
+            "raw_json": "{\"stop_id\": \"AOH\", \"stop_name\": \"上海虹桥\", \"stop_lat\": \"31.195978\", \"stop_lon\": \"121.316200\", \"location_type\": \"0\"}"
+          }
+        ],
+        "data_source": "CHINESE_RAILWAY_GTFS",
+        "data_type": "STATIC_SCHEDULE",
+        "real_time": false,
+        "availability_available": false,
+        "fare_available": false,
+        "booking_available": false,
+        "availability": "UNKNOWN",
+        "fare": null,
+        "data_version": "20261101",
+        "source_sha256": "3877dbc0ebc0392afef4b111dd9ba837c97eb4aa45788542919be53d52a12030",
+        "rights_status": "RIGHTS_REVIEW_PENDING",
+        "usage_scope": "LOCAL_DEMO_ONLY",
+        "selection_required": false,
+        "source": "GTFS_SQLITE",
+        "total_count": 1,
+        "returned_count": 1,
+        "limit": 50,
+        "has_more": false,
+        "query_parameters": {
+          "name": "上海虹桥",
+          "cursor": null
+        },
+        "next_cursor": null,
+        "dataset_version": "gtfs-20261101-063437",
+        "database_sha256": "e32f0cd41b45532ea7aedf4c72a6ffc24f6eaa23c042ee8f35cb02aa50735c69",
+        "simulation_clock": {
+          "clock_id": "1b55d6b4c564441cad8e967f40ef3ded",
+          "mode": "PAUSED",
+          "simulation": true,
+          "timezone": "Asia/Shanghai",
+          "now": "2026-10-17T00:00:00+08:00",
+          "anchor": "2026-10-16T16:00:00+00:00",
+          "revision": 0,
+          "dataset_version": "gtfs-20261101-063437"
+        }
+      },
+      "error": null,
+      "checks": [
+        {
+          "path": "result.returned_count",
+          "op": "ge",
+          "expected": 1,
+          "actual": 1,
+          "ok": true
+        },
+        {
+          "path": "metrics.foreign_keys_ok",
+          "ok": true,
+          "actual": true
+        },
+        {
+          "path": "metrics.inventory_conserved",
+          "ok": true,
+          "actual": true
+        },
+        {
+          "path": "metrics.money_conserved",
+          "ok": true,
+          "actual": true
+        },
+        {
+          "path": "metrics.ui_consistent",
+          "ok": true,
+          "actual": true
+        }
+      ],
+      "snapshot": {
+        "state": {
+          "schema": "ticket-business-read-model/1",
+          "session_id": "web-09029a5f2de0",
+          "source": "LOCAL_SQLITE_COMMITTED",
+          "scenario_id": "railway-demo",
+          "orders": [],
+          "quotes": [],
+          "pending_proposals": [],
+          "proposals": [],
+          "operations": [],
+          "operation_events": [
+            {
+              "event_id": "f4b6cc5bf96644d682de5d622ab0b964",
+              "aggregate_type": "page",
+              "aggregate_id": "web-09029a5f2de0",
+              "event_type": "railway_search_stations",
+              "from_state": null,
+              "to_state": null,
+              "detail_json": "{\"source\": \"page_operation\", \"ok\": true, \"elapsed_ms\": 2, \"args\": {\"tool_arguments\": {\"name\": \"上海虹桥\"}, \"tool_call_id\": \"page-call-88fb358eecc943da8c56ac5b1cf03b12\", \"operation_id\": \"page-7dfe01b08ca74898a322513b3455e19a\", \"scenario_id\": \"railway-demo\"}, \"result\": {\"status\": \"FOUND\", \"data\": [{\"stop_id\": \"AOH\", \"stop_name\": \"上海虹桥\", \"stop_lat\": \"31.195978\", \"stop_lon\": \"121.316200\", \"location_type\": \"0\", \"raw_json\": \"{\\\"stop_id\\\": \\\"AOH\\\", \\\"stop_name\\\": \\\"上海虹桥\\\", \\\"stop_lat\\\": \\\"31.195978\\\", \\\"stop_lon\\\": \\\"121.316200\\\", \\\"location_type\\\": \\\"0\\\"}\"}], \"data_source\": \"CHINESE_RAILWAY_GTFS\", \"data_type\": \"STATIC_SCHEDULE\", \"real_time\": false, \"availability_available\": false, \"fare_available\": false, \"booking_available\": false, \"availability\": \"UNKNOWN\", \"fare\": null, \"data_version\": \"20261101\", \"source_sha256\": \"3877dbc0ebc0392afef4b111dd9ba837c97eb4aa45788542919be53d52a12030\", \"rights_status\": \"RIGHTS_REVIEW_PENDING\", \"usage_scope\": \"LOCAL_DEMO_ONLY\", \"selection_required\": false, \"source\": \"GTFS_SQLITE\", \"total_count\": 1, \"returned_count\": 1, \"limit\": 50, \"has_more\": false, \"query_parameters\": {\"name\": \"上海虹桥\", \"cursor\": null}, \"next_cursor\": null, \"dataset_version\": \"gtfs-20261101-063437\", \"database_sha256\": \"e32f0cd41b45532ea7aedf4c72a6ffc24f6eaa23c042ee8f35cb02aa50735c69\", \"simulation_clock\": {\"clock_id\": \"1b55d6b4c564441cad8e967f40ef3ded\", \"mode\": \"PAUSED\", \"simulation\": true, \"timezone\": \"Asia/Shanghai\", \"now\": \"2026-10-17T00:00:00+08:00\", \"anchor\": \"2026-10-16T16:00:00+00:00\", \"revision\": 0, \"dataset_version\": \"gtfs-20261101-063437\"}}}",
+              "request_id": null,
+              "created_at": "2026-10-16T16:00:00+00:00"
+            }
+          ],
+          "updated_at": "2026-10-16T16:00:00+00:00",
+          "state_sha256": "bd770dff20bc05f54775d10ff4f1f27500fb0ba266d1fe131872f61d38c08836"
+        },
+        "ui": {
+          "schema": "ticket-business-read-model/1",
+          "session_id": "web-09029a5f2de0",
+          "source": "LOCAL_SQLITE_COMMITTED",
+          "scenario_id": "railway-demo",
+          "orders": [],
+          "quotes": [],
+          "pending_proposals": [],
+          "proposals": [],
+          "operations": [],
+          "operation_events": [
+            {
+              "event_id": "f4b6cc5bf96644d682de5d622ab0b964",
+              "aggregate_type": "page",
+              "aggregate_id": "web-09029a5f2de0",
+              "event_type": "railway_search_stations",
+              "from_state": null,
+              "to_state": null,
+              "detail_json": "{\"source\": \"page_operation\", \"ok\": true, \"elapsed_ms\": 2, \"args\": {\"tool_arguments\": {\"name\": \"上海虹桥\"}, \"tool_call_id\": \"page-call-88fb358eecc943da8c56ac5b1cf03b12\", \"operation_id\": \"page-7dfe01b08ca74898a322513b3455e19a\", \"scenario_id\": \"railway-demo\"}, \"result\": {\"status\": \"FOUND\", \"data\": [{\"stop_id\": \"AOH\", \"stop_name\": \"上海虹桥\", \"stop_lat\": \"31.195978\", \"stop_lon\": \"121.316200\", \"location_type\": \"0\", \"raw_json\": \"{\\\"stop_id\\\": \\\"AOH\\\", \\\"stop_name\\\": \\\"上海虹桥\\\", \\\"stop_lat\\\": \\\"31.195978\\\", \\\"stop_lon\\\": \\\"121.316200\\\", \\\"location_type\\\": \\\"0\\\"}\"}], \"data_source\": \"CHINESE_RAILWAY_GTFS\", \"data_type\": \"STATIC_SCHEDULE\", \"real_time\": false, \"availability_available\": false, \"fare_available\": false, \"booking_available\": false, \"availability\": \"UNKNOWN\", \"fare\": null, \"data_version\": \"20261101\", \"source_sha256\": \"3877dbc0ebc0392afef4b111dd9ba837c97eb4aa45788542919be53d52a12030\", \"rights_status\": \"RIGHTS_REVIEW_PENDING\", \"usage_scope\": \"LOCAL_DEMO_ONLY\", \"selection_required\": false, \"source\": \"GTFS_SQLITE\", \"total_count\": 1, \"returned_count\": 1, \"limit\": 50, \"has_more\": false, \"query_parameters\": {\"name\": \"上海虹桥\", \"cursor\": null}, \"next_cursor\": null, \"dataset_version\": \"gtfs-20261101-063437\", \"database_sha256\": \"e32f0cd41b45532ea7aedf4c72a6ffc24f6eaa23c042ee8f35cb02aa50735c69\", \"simulation_clock\": {\"clock_id\": \"1b55d6b4c564441cad8e967f40ef3ded\", \"mode\": \"PAUSED\", \"simulation\": true, \"timezone\": \"Asia/Shanghai\", \"now\": \"2026-10-17T00:00:00+08:00\", \"anchor\": \"2026-10-16T16:00:00+00:00\", \"revision\": 0, \"dataset_version\": \"gtfs-20261101-063437\"}}}",
+              "request_id": null,
+              "created_at": "2026-10-16T16:00:00+00:00"
+            }
+          ],
+          "updated_at": "2026-10-16T16:00:00+00:00",
+          "state_sha256": "bd770dff20bc05f54775d10ff4f1f27500fb0ba266d1fe131872f61d38c08836"
+        },
+        "db": {
+          "v39_orders": [],
+          "v39_order_items": [],
+          "v39_holds": [],
+          "v39_transactions": [],
+          "v39_inventory_segments": [],
+          "v39_inventory_events": [],
+          "v39_refund_requests": [],
+          "v39_change_requests": [],
+          "v39_proposals": [],
+          "v39_idempotency": [],
+          "v39_refund_items": [],
+          "v39_hold_segments": [],
+          "v39_transaction_allocations": []
+        },
+        "metrics": {
+          "order_count": 0,
+          "hold_count": 0,
+          "transaction_count": 0,
+          "held": 0,
+          "sold": 0,
+          "foreign_keys_ok": true,
+          "inventory_conserved": true,
+          "money_conserved": true,
+          "ui_consistent": true
+        },
+        "result": {
+          "status": "FOUND",
+          "data": [
+            {
+              "stop_id": "AOH",
+              "stop_name": "上海虹桥",
+              "stop_lat": "31.195978",
+              "stop_lon": "121.316200",
+              "location_type": "0",
+              "raw_json": "{\"stop_id\": \"AOH\", \"stop_name\": \"上海虹桥\", \"stop_lat\": \"31.195978\", \"stop_lon\": \"121.316200\", \"location_type\": \"0\"}"
+            }
+          ],
+          "data_source": "CHINESE_RAILWAY_GTFS",
+          "data_type": "STATIC_SCHEDULE",
+          "real_time": false,
+          "availability_available": false,
+          "fare_available": false,
+          "booking_available": false,
+          "availability": "UNKNOWN",
+          "fare": null,
+          "data_version": "20261101",
+          "source_sha256": "3877dbc0ebc0392afef4b111dd9ba837c97eb4aa45788542919be53d52a12030",
+          "rights_status": "RIGHTS_REVIEW_PENDING",
+          "usage_scope": "LOCAL_DEMO_ONLY",
+          "selection_required": false,
+          "source": "GTFS_SQLITE",
+          "total_count": 1,
+          "returned_count": 1,
+          "limit": 50,
+          "has_more": false,
+          "query_parameters": {
+            "name": "上海虹桥",
+            "cursor": null
+          },
+          "next_cursor": null,
+          "dataset_version": "gtfs-20261101-063437",
+          "database_sha256": "e32f0cd41b45532ea7aedf4c72a6ffc24f6eaa23c042ee8f35cb02aa50735c69",
+          "simulation_clock": {
+            "clock_id": "1b55d6b4c564441cad8e967f40ef3ded",
+            "mode": "PAUSED",
+            "simulation": true,
+            "timezone": "Asia/Shanghai",
+            "now": "2026-10-17T00:00:00+08:00",
+            "anchor": "2026-10-16T16:00:00+00:00",
+            "revision": 0,
+            "dataset_version": "gtfs-20261101-063437"
+          }
+        }
+      },
+      "trace_id": "40cd9b50a543414288cf7ffb8e5a62f2-0",
+      "executed_tools": [
+        "railway_search_stations"
+      ],
+      "executed": true,
+      "verified": true
+    },
+    {
+      "index": 1,
+      "kind": "tool",
+      "tool": "railway_query_trips",
+      "args": {
+        "service_date": "2026-11-05",
+        "origin_stop_id": "AOH",
+        "destination_stop_id": "HGH",
+        "limit": 3
+      },
+      "output": {
+        "status": "FOUND",
+        "data": [
+          {
+            "route_id": "G7541",
+            "service_id": "S93",
+            "trip_id": "5l000G75410A",
+            "trip_short_name": "G7541",
+            "trip_headsign": "台州西",
+            "shape_id": "shape-2122",
+            "raw_json": "{\"route_id\": \"G7541\", \"service_id\": \"S93\", \"trip_id\": \"5l000G75410A\", \"trip_short_name\": \"G7541\", \"trip_headsign\": \"台州西\", \"shape_id\": \"shape-2122\"}",
+            "origin_arrival": "05:52:00",
+            "origin_departure": "05:52:00",
+            "destination_arrival": "06:51:00",
+            "destination_departure": "06:55:00",
+            "origin_sequence": 1,
+            "destination_sequence": 4,
+            "shape_status": "AVAILABLE",
+            "departure_at": "2026-11-05T05:52:00+08:00",
+            "arrival_at": "2026-11-05T06:51:00+08:00"
+          },
+          {
+            "route_id": "G1321",
+            "service_id": "S93",
+            "trip_id": "5l000G132108",
+            "trip_short_name": "G1321",
+            "trip_headsign": "六盘水",
+            "shape_id": "shape-2034",
+            "raw_json": "{\"route_id\": \"G1321\", \"service_id\": \"S93\", \"trip_id\": \"5l000G132108\", \"trip_short_name\": \"G1321\", \"trip_headsign\": \"六盘水\", \"shape_id\": \"shape-2034\"}",
+            "origin_arrival": "06:07:00",
+            "origin_departure": "06:07:00",
+            "destination_arrival": "06:56:00",
+            "destination_departure": "07:00:00",
+            "origin_sequence": 1,
+            "destination_sequence": 2,
+            "shape_status": "AVAILABLE",
+            "departure_at": "2026-11-05T06:07:00+08:00",
+            "arrival_at": "2026-11-05T06:56:00+08:00"
+          },
+          {
+            "route_id": "G7331",
+            "service_id": "S93",
+            "trip_id": "5l000G733102",
+            "trip_short_name": "G7331",
+            "trip_headsign": "瑞安",
+            "shape_id": "shape-2110",
+            "raw_json": "{\"route_id\": \"G7331\", \"service_id\": \"S93\", \"trip_id\": \"5l000G733102\", \"trip_short_name\": \"G7331\", \"trip_headsign\": \"瑞安\", \"shape_id\": \"shape-2110\"}",
+            "origin_arrival": "06:13:00",
+            "origin_departure": "06:13:00",
+            "destination_arrival": "07:07:00",
+            "destination_departure": "07:11:00",
+            "origin_sequence": 1,
+            "destination_sequence": 3,
+            "shape_status": "AVAILABLE",
+            "departure_at": "2026-11-05T06:13:00+08:00",
+            "arrival_at": "2026-11-05T07:07:00+08:00"
+          }
+        ],
+        "data_source": "CHINESE_RAILWAY_GTFS",
+        "data_type": "STATIC_SCHEDULE",
+        "real_time": false,
+        "availability_available": false,
+        "fare_available": false,
+        "booking_available": false,
+        "availability": "UNKNOWN",
+        "fare": null,
+        "data_version": "20261101",
+        "source_sha256": "3877dbc0ebc0392afef4b111dd9ba837c97eb4aa45788542919be53d52a12030",
+        "rights_status": "RIGHTS_REVIEW_PENDING",
+        "usage_scope": "LOCAL_DEMO_ONLY",
+        "service_date": "20261105",
+        "next_cursor": "3",
+        "source": "GTFS_SQLITE",
+        "total_count": 109,
+        "returned_count": 3,
+        "limit": 3,
+        "has_more": true,
+        "query_parameters": {
+          "service_date": "2026-11-05",
+          "origin_stop_id": "AOH",
+          "destination_stop_id": "HGH",
+          "train_no": null,
+          "cursor": null
+        },
+        "dataset_version": "gtfs-20261101-063437",
+        "database_sha256": "e32f0cd41b45532ea7aedf4c72a6ffc24f6eaa23c042ee8f35cb02aa50735c69",
+        "simulation_clock": {
+          "clock_id": "1b55d6b4c564441cad8e967f40ef3ded",
+          "mode": "PAUSED",
+          "simulation": true,
+          "timezone": "Asia/Shanghai",
+          "now": "2026-10-17T00:00:00+08:00",
+          "anchor": "2026-10-16T16:00:00+00:00",
+          "revision": 0,
+          "dataset_version": "gtfs-20261101-063437"
+        }
+      },
+      "error": null,
+      "checks": [
+        {
+          "path": "result.returned_count",
+          "op": "ge",
+          "expected": 1,
+          "actual": 3,
+          "ok": true
+        },
+        {
+          "path": "metrics.foreign_keys_ok",
+          "ok": true,
+          "actual": true
+        },
+        {
+          "path": "metrics.inventory_conserved",
+          "ok": true,
+          "actual": true
+        },
+        {
+          "path": "metrics.money_conserved",
+          "ok": true,
+          "actual": true
+        },
+        {
+          "path": "metrics.ui_consistent",
+          "ok": true,
+          "actual": true
+        }
+      ],
+      "snapshot": {
+        "state": {
+          "schema": "ticket-business-read-model/1",
+          "session_id": "web-09029a5f2de0",
+          "source": "LOCAL_SQLITE_COMMITTED",
+          "scenario_id": "railway-demo",
+          "orders": [],
+          "quotes": [],
+          "pending_proposals": [],
+          "proposals": [],
+          "operations": [],
+          "operation_events": [
+            {
+              "event_id": "f19dbb7f61744099a01cbf1d58274f96",
+              "aggregate_type": "page",
+              "aggregate_id": "web-09029a5f2de0",
+              "event_type": "railway_query_trips",
+              "from_state": null,
+              "to_state": null,
+              "detail_json": "{\"source\": \"page_operation\", \"ok\": true, \"elapsed_ms\": 9, \"args\": {\"tool_arguments\": {\"service_date\": \"2026-11-05\", \"origin_stop_id\": \"AOH\", \"destination_stop_id\": \"HGH\", \"limit\": 3}, \"tool_call_id\": \"page-call-9dc056e239fa492e93867d4f37cc0b24\", \"operation_id\": \"page-3c249e9e35754b9aba89324bbb2d6a71\", \"scenario_id\": \"railway-demo\"}, \"result\": {\"status\": \"FOUND\", \"data\": [{\"route_id\": \"G7541\", \"service_id\": \"S93\", \"trip_id\": \"5l000G75410A\", \"trip_short_name\": \"G7541\", \"trip_headsign\": \"台州西\", \"shape_id\": \"shape-2122\", \"raw_json\": \"{\\\"route_id\\\": \\\"G7541\\\", \\\"service_id\\\": \\\"S93\\\", \\\"trip_id\\\": \\\"5l000G75410A\\\", \\\"trip_short_name\\\": \\\"G7541\\\", \\\"trip_headsign\\\": \\\"台州西\\\", \\\"shape_id\\\": \\\"shape-2122\\\"}\", \"origin_arrival\": \"05:52:00\", \"origin_departure\": \"05:52:00\", \"destination_arrival\": \"06:51:00\", \"destination_departure\": \"06:55:00\", \"origin_sequence\": 1, \"destination_sequence\": 4, \"shape_status\": \"AVAILABLE\", \"departure_at\": \"2026-11-05T05:52:00+08:00\", \"arrival_at\": \"2026-11-05T06:51:00+08:00\"}, {\"route_id\": \"G1321\", \"service_id\": \"S93\", \"trip_id\": \"5l000G132108\", \"trip_short_name\": \"G1321\", \"trip_headsign\": \"六盘水\", \"shape_id\": \"shape-2034\", \"raw_json\": \"{\\\"route_id\\\": \\\"G1321\\\", \\\"service_id\\\": \\\"S93\\\", \\\"trip_id\\\": \\\"5l000G132108\\\", \\\"trip_short_name\\\": \\\"G1321\\\", \\\"trip_headsign\\\": \\\"六盘水\\\", \\\"shape_id\\\": \\\"shape-2034\\\"}\", \"origin_arrival\": \"06:07:00\", \"origin_departure\": \"06:07:00\", \"destination_arrival\": \"06:56:00\", \"destination_departure\": \"07:00:00\", \"origin_sequence\": 1, \"destination_sequence\": 2, \"shape_status\": \"AVAILABLE\", \"departure_at\": \"2026-11-05T06:07:00+08:00\", \"arrival_at\": \"2026-11-05T06:56:00+08:00\"}, {\"route_id\": \"G7331\", \"service_id\": \"S93\", \"trip_id\": \"5l000G733102\", \"trip_short_name\": \"G7331\", \"trip_headsign\": \"瑞安\", \"shape_id\": \"shape-2110\", \"raw_json\": \"{\\\"route_id\\\": \\\"G7331\\\", \\\"service_id\\\": \\\"S93\\\", \\\"trip_id\\\": \\\"5l000G733102\\\", \\\"trip_short_name\\\": \\\"G7331\\\", \\\"trip_headsign\\\": \\\"瑞安\\\", \\\"shape_id\\\": \\\"shape-2110\\\"}\", \"origin_arrival\": \"06:13:00\", \"origin_departure\": \"06:13:00\", \"destination_arrival\": \"07:07:00\", \"destination_departure\": \"07:11:00\", \"origin_sequence\": 1, \"destination_sequence\": 3, \"shape_status\": \"AVAILABLE\", \"departure_at\": \"2026-11-05T06:13:00+08:00\", \"arrival_at\": \"2026-11-05T07:07:00+08:00\"}], \"data_source\": \"CHINESE_RAILWAY_GTFS\", \"data_type\": \"STATIC_SCHEDULE\", \"real_time\": false, \"availability_available\": false, \"fare_available\": false, \"booking_available\": false, \"availability\": \"UNKNOWN\", \"fare\": null, \"data_version\": \"20261101\", \"source_sha256\": \"3877dbc0ebc0392afef4b111dd9ba837c97eb4aa45788542919be53d52a12030\", \"rights_status\": \"RIGHTS_REVIEW_PENDING\", \"usage_scope\": \"LOCAL_DEMO_ONLY\", \"service_date\": \"20261105\", \"next_cursor\": \"3\", \"source\": \"GTFS_SQLITE\", \"total_count\": 109, \"returned_count\": 3, \"limit\": 3, \"has_more\": true, \"query_parameters\": {\"service_date\": \"2026-11-05\", \"origin_stop_id\": \"AOH\", \"destination_stop_id\": \"HGH\", \"train_no\": null, \"cursor\": null}, \"dataset_version\": \"gtfs-20261101-063437\", \"database_sha256\": \"e32f0cd41b45532ea7aedf4c72a6ffc24f6eaa23c042ee8f35cb02aa50735c69\", \"simulation_clock\": {\"clock_id\": \"1b55d6b4c564441cad8e967f40ef3ded\", \"mode\": \"PAUSED\", \"simulation\": true, \"timezone\": \"Asia/Shanghai\", \"now\": \"2026-10-17T00:00:00+08:00\", \"anchor\": \"2026-10-16T16:00:00+00:00\", \"revision\": 0, \"dataset_version\": \"gtfs-20261101-063437\"}}}",
+              "request_id": null,
+              "created_at": "2026-10-16T16:00:00+00:00"
+            },
+            {
+              "event_id": "f4b6cc5bf96644d682de5d622ab0b964",
+              "aggregate_type": "page",
+              "aggregate_id": "web-09029a5f2de0",
+              "event_type": "railway_search_stations",
+              "from_state": null,
+              "to_state": null,
+              "detail_json": "{\"source\": \"page_operation\", \"ok\": true, \"elapsed_ms\": 2, \"args\": {\"tool_arguments\": {\"name\": \"上海虹桥\"}, \"tool_call_id\": \"page-call-88fb358eecc943da8c56ac5b1cf03b12\", \"operation_id\": \"page-7dfe01b08ca74898a322513b3455e19a\", \"scenario_id\": \"railway-demo\"}, \"result\": {\"status\": \"FOUND\", \"data\": [{\"stop_id\": \"AOH\", \"stop_name\": \"上海虹桥\", \"stop_lat\": \"31.195978\", \"stop_lon\": \"121.316200\", \"location_type\": \"0\", \"raw_json\": \"{\\\"stop_id\\\": \\\"AOH\\\", \\\"stop_name\\\": \\\"上海虹桥\\\", \\\"stop_lat\\\": \\\"31.195978\\\", \\\"stop_lon\\\": \\\"121.316200\\\", \\\"location_type\\\": \\\"0\\\"}\"}], \"data_source\": \"CHINESE_RAILWAY_GTFS\", \"data_type\": \"STATIC_SCHEDULE\", \"real_time\": false, \"availability_available\": false, \"fare_available\": false, \"booking_available\": false, \"availability\": \"UNKNOWN\", \"fare\": null, \"data_version\": \"20261101\", \"source_sha256\": \"3877dbc0ebc0392afef4b111dd9ba837c97eb4aa45788542919be53d52a12030\", \"rights_status\": \"RIGHTS_REVIEW_PENDING\", \"usage_scope\": \"LOCAL_DEMO_ONLY\", \"selection_required\": false, \"source\": \"GTFS_SQLITE\", \"total_count\": 1, \"returned_count\": 1, \"limit\": 50, \"has_more\": false, \"query_parameters\": {\"name\": \"上海虹桥\", \"cursor\": null}, \"next_cursor\": null, \"dataset_version\": \"gtfs-20261101-063437\", \"database_sha256\": \"e32f0cd41b45532ea7aedf4c72a6ffc24f6eaa23c042ee8f35cb02aa50735c69\", \"simulation_clock\": {\"clock_id\": \"1b55d6b4c564441cad8e967f40ef3ded\", \"mode\": \"PAUSED\", \"simulation\": true, \"timezone\": \"Asia/Shanghai\", \"now\": \"2026-10-17T00:00:00+08:00\", \"anchor\": \"2026-10-16T16:00:00+00:00\", \"revision\": 0, \"dataset_version\": \"gtfs-20261101-063437\"}}}",
+              "request_id": null,
+              "created_at": "2026-10-16T16:00:00+00:00"
+            }
+          ],
+          "updated_at": "2026-10-16T16:00:00+00:00",
+          "state_sha256": "8047ab7f8017a505f637c58e7bedb54b80cf7b898888c2bae18c65bbc9d72d6c"
+        },
+        "ui": {
+          "schema": "ticket-business-read-model/1",
+          "session_id": "web-09029a5f2de0",
+          "source": "LOCAL_SQLITE_COMMITTED",
+          "scenario_id": "railway-demo",
+          "orders": [],
+          "quotes": [],
+          "pending_proposals": [],
+          "proposals": [],
+          "operations": [],
+          "operation_events": [
+            {
+              "event_id": "f19dbb7f61744099a01cbf1d58274f96",
+              "aggregate_type": "page",
+              "aggregate_id": "web-09029a5f2de0",
+              "event_type": "railway_query_trips",
+              "from_state": null,
+              "to_state": null,
+              "detail_json": "{\"source\": \"page_operation\", \"ok\": true, \"elapsed_ms\": 9, \"args\": {\"tool_arguments\": {\"service_date\": \"2026-11-05\", \"origin_stop_id\": \"AOH\", \"destination_stop_id\": \"HGH\", \"limit\": 3}, \"tool_call_id\": \"page-call-9dc056e239fa492e93867d4f37cc0b24\", \"operation_id\": \"page-3c249e9e35754b9aba89324bbb2d6a71\", \"scenario_id\": \"railway-demo\"}, \"result\": {\"status\": \"FOUND\", \"data\": [{\"route_id\": \"G7541\", \"service_id\": \"S93\", \"trip_id\": \"5l000G75410A\", \"trip_short_name\": \"G7541\", \"trip_headsign\": \"台州西\", \"shape_id\": \"shape-2122\", \"raw_json\": \"{\\\"route_id\\\": \\\"G7541\\\", \\\"service_id\\\": \\\"S93\\\", \\\"trip_id\\\": \\\"5l000G75410A\\\", \\\"trip_short_name\\\": \\\"G7541\\\", \\\"trip_headsign\\\": \\\"台州西\\\", \\\"shape_id\\\": \\\"shape-2122\\\"}\", \"origin_arrival\": \"05:52:00\", \"origin_departure\": \"05:52:00\", \"destination_arrival\": \"06:51:00\", \"destination_departure\": \"06:55:00\", \"origin_sequence\": 1, \"destination_sequence\": 4, \"shape_status\": \"AVAILABLE\", \"departure_at\": \"2026-11-05T05:52:00+08:00\", \"arrival_at\": \"2026-11-05T06:51:00+08:00\"}, {\"route_id\": \"G1321\", \"service_id\": \"S93\", \"trip_id\": \"5l000G132108\", \"trip_short_name\": \"G1321\", \"trip_headsign\": \"六盘水\", \"shape_id\": \"shape-2034\", \"raw_json\": \"{\\\"route_id\\\": \\\"G1321\\\", \\\"service_id\\\": \\\"S93\\\", \\\"trip_id\\\": \\\"5l000G132108\\\", \\\"trip_short_name\\\": \\\"G1321\\\", \\\"trip_headsign\\\": \\\"六盘水\\\", \\\"shape_id\\\": \\\"shape-2034\\\"}\", \"origin_arrival\": \"06:07:00\", \"origin_departure\": \"06:07:00\", \"destination_arrival\": \"06:56:00\", \"destination_departure\": \"07:00:00\", \"origin_sequence\": 1, \"destination_sequence\": 2, \"shape_status\": \"AVAILABLE\", \"departure_at\": \"2026-11-05T06:07:00+08:00\", \"arrival_at\": \"2026-11-05T06:56:00+08:00\"}, {\"route_id\": \"G7331\", \"service_id\": \"S93\", \"trip_id\": \"5l000G733102\", \"trip_short_name\": \"G7331\", \"trip_headsign\": \"瑞安\", \"shape_id\": \"shape-2110\", \"raw_json\": \"{\\\"route_id\\\": \\\"G7331\\\", \\\"service_id\\\": \\\"S93\\\", \\\"trip_id\\\": \\\"5l000G733102\\\", \\\"trip_short_name\\\": \\\"G7331\\\", \\\"trip_headsign\\\": \\\"瑞安\\\", \\\"shape_id\\\": \\\"shape-2110\\\"}\", \"origin_arrival\": \"06:13:00\", \"origin_departure\": \"06:13:00\", \"destination_arrival\": \"07:07:00\", \"destination_departure\": \"07:11:00\", \"origin_sequence\": 1, \"destination_sequence\": 3, \"shape_status\": \"AVAILABLE\", \"departure_at\": \"2026-11-05T06:13:00+08:00\", \"arrival_at\": \"2026-11-05T07:07:00+08:00\"}], \"data_source\": \"CHINESE_RAILWAY_GTFS\", \"data_type\": \"STATIC_SCHEDULE\", \"real_time\": false, \"availability_available\": false, \"fare_available\": false, \"booking_available\": false, \"availability\": \"UNKNOWN\", \"fare\": null, \"data_version\": \"20261101\", \"source_sha256\": \"3877dbc0ebc0392afef4b111dd9ba837c97eb4aa45788542919be53d52a12030\", \"rights_status\": \"RIGHTS_REVIEW_PENDING\", \"usage_scope\": \"LOCAL_DEMO_ONLY\", \"service_date\": \"20261105\", \"next_cursor\": \"3\", \"source\": \"GTFS_SQLITE\", \"total_count\": 109, \"returned_count\": 3, \"limit\": 3, \"has_more\": true, \"query_parameters\": {\"service_date\": \"2026-11-05\", \"origin_stop_id\": \"AOH\", \"destination_stop_id\": \"HGH\", \"train_no\": null, \"cursor\": null}, \"dataset_version\": \"gtfs-20261101-063437\", \"database_sha256\": \"e32f0cd41b45532ea7aedf4c72a6ffc24f6eaa23c042ee8f35cb02aa50735c69\", \"simulation_clock\": {\"clock_id\": \"1b55d6b4c564441cad8e967f40ef3ded\", \"mode\": \"PAUSED\", \"simulation\": true, \"timezone\": \"Asia/Shanghai\", \"now\": \"2026-10-17T00:00:00+08:00\", \"anchor\": \"2026-10-16T16:00:00+00:00\", \"revision\": 0, \"dataset_version\": \"gtfs-20261101-063437\"}}}",
+              "request_id": null,
+              "created_at": "2026-10-16T16:00:00+00:00"
+            },
+            {
+              "event_id": "f4b6cc5bf96644d682de5d622ab0b964",
+              "aggregate_type": "page",
+              "aggregate_id": "web-09029a5f2de0",
+              "event_type": "railway_search_stations",
+              "from_state": null,
+              "to_state": null,
+              "detail_json": "{\"source\": \"page_operation\", \"ok\": true, \"elapsed_ms\": 2, \"args\": {\"tool_arguments\": {\"name\": \"上海虹桥\"}, \"tool_call_id\": \"page-call-88fb358eecc943da8c56ac5b1cf03b12\", \"operation_id\": \"page-7dfe01b08ca74898a322513b3455e19a\", \"scenario_id\": \"railway-demo\"}, \"result\": {\"status\": \"FOUND\", \"data\": [{\"stop_id\": \"AOH\", \"stop_name\": \"上海虹桥\", \"stop_lat\": \"31.195978\", \"stop_lon\": \"121.316200\", \"location_type\": \"0\", \"raw_json\": \"{\\\"stop_id\\\": \\\"AOH\\\", \\\"stop_name\\\": \\\"上海虹桥\\\", \\\"stop_lat\\\": \\\"31.195978\\\", \\\"stop_lon\\\": \\\"121.316200\\\", \\\"location_type\\\": \\\"0\\\"}\"}], \"data_source\": \"CHINESE_RAILWAY_GTFS\", \"data_type\": \"STATIC_SCHEDULE\", \"real_time\": false, \"availability_available\": false, \"fare_available\": false, \"booking_available\": false, \"availability\": \"UNKNOWN\", \"fare\": null, \"data_version\": \"20261101\", \"source_sha256\": \"3877dbc0ebc0392afef4b111dd9ba837c97eb4aa45788542919be53d52a12030\", \"rights_status\": \"RIGHTS_REVIEW_PENDING\", \"usage_scope\": \"LOCAL_DEMO_ONLY\", \"selection_required\": false, \"source\": \"GTFS_SQLITE\", \"total_count\": 1, \"returned_count\": 1, \"limit\": 50, \"has_more\": false, \"query_parameters\": {\"name\": \"上海虹桥\", \"cursor\": null}, \"next_cursor\": null, \"dataset_version\": \"gtfs-20261101-063437\", \"database_sha256\": \"e32f0cd41b45532ea7aedf4c72a6ffc24f6eaa23c042ee8f35cb02aa50735c69\", \"simulation_clock\": {\"clock_id\": \"1b55d6b4c564441cad8e967f40ef3ded\", \"mode\": \"PAUSED\", \"simulation\": true, \"timezone\": \"Asia/Shanghai\", \"now\": \"2026-10-17T00:00:00+08:00\", \"anchor\": \"2026-10-16T16:00:00+00:00\", \"revision\": 0, \"dataset_version\": \"gtfs-20261101-063437\"}}}",
+              "request_id": null,
+              "created_at": "2026-10-16T16:00:00+00:00"
+            }
+          ],
+          "updated_at": "2026-10-16T16:00:00+00:00",
+          "state_sha256": "8047ab7f8017a505f637c58e7bedb54b80cf7b898888c2bae18c65bbc9d72d6c"
+        },
+        "db": {
+          "v39_orders": [],
+          "v39_order_items": [],
+          "v39_holds": [],
+          "v39_transactions": [],
+          "v39_inventory_segments": [],
+          "v39_inventory_events": [],
+          "v39_refund_requests": [],
+          "v39_change_requests": [],
+          "v39_proposals": [],
+          "v39_idempotency": [],
+          "v39_refund_items": [],
+          "v39_hold_segments": [],
+          "v39_transaction_allocations": []
+        },
+        "metrics": {
+          "order_count": 0,
+          "hold_count": 0,
+          "transaction_count": 0,
+          "held": 0,
+          "sold": 0,
+          "foreign_keys_ok": true,
+          "inventory_conserved": true,
+          "money_conserved": true,
+          "ui_consistent": true
+        },
+        "result": {
+          "status": "FOUND",
+          "data": [
+            {
+              "route_id": "G7541",
+              "service_id": "S93",
+              "trip_id": "5l000G75410A",
+              "trip_short_name": "G7541",
+              "trip_headsign": "台州西",
+              "shape_id": "shape-2122",
+              "raw_json": "{\"route_id\": \"G7541\", \"service_id\": \"S93\", \"trip_id\": \"5l000G75410A\", \"trip_short_name\": \"G7541\", \"trip_headsign\": \"台州西\", \"shape_id\": \"shape-2122\"}",
+              "origin_arrival": "05:52:00",
+              "origin_departure": "05:52:00",
+              "destination_arrival": "06:51:00",
+              "destination_departure": "06:55:00",
+              "origin_sequence": 1,
+              "destination_sequence": 4,
+              "shape_status": "AVAILABLE",
+              "departure_at": "2026-11-05T05:52:00+08:00",
+              "arrival_at": "2026-11-05T06:51:00+08:00"
+            },
+            {
+              "route_id": "G1321",
+              "service_id": "S93",
+              "trip_id": "5l000G132108",
+              "trip_short_name": "G1321",
+              "trip_headsign": "六盘水",
+              "shape_id": "shape-2034",
+              "raw_json": "{\"route_id\": \"G1321\", \"service_id\": \"S93\", \"trip_id\": \"5l000G132108\", \"trip_short_name\": \"G1321\", \"trip_headsign\": \"六盘水\", \"shape_id\": \"shape-2034\"}",
+              "origin_arrival": "06:07:00",
+              "origin_departure": "06:07:00",
+              "destination_arrival": "06:56:00",
+              "destination_departure": "07:00:00",
+              "origin_sequence": 1,
+              "destination_sequence": 2,
+              "shape_status": "AVAILABLE",
+              "departure_at": "2026-11-05T06:07:00+08:00",
+              "arrival_at": "2026-11-05T06:56:00+08:00"
+            },
+            {
+              "route_id": "G7331",
+              "service_id": "S93",
+              "trip_id": "5l000G733102",
+              "trip_short_name": "G7331",
+              "trip_headsign": "瑞安",
+              "shape_id": "shape-2110",
+              "raw_json": "{\"route_id\": \"G7331\", \"service_id\": \"S93\", \"trip_id\": \"5l000G733102\", \"trip_short_name\": \"G7331\", \"trip_headsign\": \"瑞安\", \"shape_id\": \"shape-2110\"}",
+              "origin_arrival": "06:13:00",
+              "origin_departure": "06:13:00",
+              "destination_arrival": "07:07:00",
+              "destination_departure": "07:11:00",
+              "origin_sequence": 1,
+              "destination_sequence": 3,
+              "shape_status": "AVAILABLE",
+              "departure_at": "2026-11-05T06:13:00+08:00",
+              "arrival_at": "2026-11-05T07:07:00+08:00"
+            }
+          ],
+          "data_source": "CHINESE_RAILWAY_GTFS",
+          "data_type": "STATIC_SCHEDULE",
+          "real_time": false,
+          "availability_available": false,
+          "fare_available": false,
+          "booking_available": false,
+          "availability": "UNKNOWN",
+          "fare": null,
+          "data_version": "20261101",
+          "source_sha256": "3877dbc0ebc0392afef4b111dd9ba837c97eb4aa45788542919be53d52a12030",
+          "rights_status": "RIGHTS_REVIEW_PENDING",
+          "usage_scope": "LOCAL_DEMO_ONLY",
+          "service_date": "20261105",
+          "next_cursor": "3",
+          "source": "GTFS_SQLITE",
+          "total_count": 109,
+          "returned_count": 3,
+          "limit": 3,
+          "has_more": true,
+          "query_parameters": {
+            "service_date": "2026-11-05",
+            "origin_stop_id": "AOH",
+            "destination_stop_id": "HGH",
+            "train_no": null,
+            "cursor": null
+          },
+          "dataset_version": "gtfs-20261101-063437",
+          "database_sha256": "e32f0cd41b45532ea7aedf4c72a6ffc24f6eaa23c042ee8f35cb02aa50735c69",
+          "simulation_clock": {
+            "clock_id": "1b55d6b4c564441cad8e967f40ef3ded",
+            "mode": "PAUSED",
+            "simulation": true,
+            "timezone": "Asia/Shanghai",
+            "now": "2026-10-17T00:00:00+08:00",
+            "anchor": "2026-10-16T16:00:00+00:00",
+            "revision": 0,
+            "dataset_version": "gtfs-20261101-063437"
+          }
+        }
+      },
+      "trace_id": "40cd9b50a543414288cf7ffb8e5a62f2-1",
+      "executed_tools": [
+        "railway_query_trips"
+      ],
+      "executed": true,
+      "verified": true
+    },
+    {
+      "index": 2,
+      "kind": "tool",
+      "tool": "railway_trip_stops",
+      "args": {
+        "trip_id": "5l000G75410A",
+        "service_date": "2026-11-05"
+      },
+      "output": {
+        "status": "FOUND",
+        "data": {
+          "trip": {
+            "route_id": "G7541",
+            "service_id": "S93",
+            "trip_id": "5l000G75410A",
+            "trip_short_name": "G7541",
+            "trip_headsign": "台州西",
+            "shape_id": "shape-2122",
+            "raw_json": "{\"route_id\": \"G7541\", \"service_id\": \"S93\", \"trip_id\": \"5l000G75410A\", \"trip_short_name\": \"G7541\", \"trip_headsign\": \"台州西\", \"shape_id\": \"shape-2122\"}",
+            "shape_status": "AVAILABLE"
+          },
+          "stops": [
+            {
+              "trip_id": "5l000G75410A",
+              "arrival_time": "05:52:00",
+              "departure_time": "05:52:00",
+              "stop_id": "AOH",
+              "stop_sequence": "1",
+              "raw_json": "{\"trip_id\": \"5l000G75410A\", \"arrival_time\": \"05:52:00\", \"departure_time\": \"05:52:00\", \"stop_id\": \"AOH\", \"stop_sequence\": \"1\"}",
+              "arrival_seconds": 21120,
+              "departure_seconds": 21120,
+              "sequence_index": 1,
+              "stop_name": "上海虹桥",
+              "arrival_at": "2026-11-05T05:52:00+08:00",
+              "departure_at": "2026-11-05T05:52:00+08:00",
+              "raw_stop_sequence": "1",
+              "position": 0
+            },
+            {
+              "trip_id": "5l000G75410A",
+              "arrival_time": "06:25:00",
+              "departure_time": "06:27:00",
+              "stop_id": "TCH",
+              "stop_sequence": "2",
+              "raw_json": "{\"trip_id\": \"5l000G75410A\", \"arrival_time\": \"06:25:00\", \"departure_time\": \"06:27:00\", \"stop_id\": \"TCH\", \"stop_sequence\": \"2\"}",
+              "arrival_seconds": 23100,
+              "departure_seconds": 23220,
+              "sequence_index": 2,
+              "stop_name": "桐乡",
+              "arrival_at": "2026-11-05T06:25:00+08:00",
+              "departure_at": "2026-11-05T06:27:00+08:00",
+              "raw_stop_sequence": "2",
+              "position": 1
+            },
+            {
+              "trip_id": "5l000G75410A",
+              "arrival_time": "06:39:00",
+              "departure_time": "06:41:00",
+              "stop_id": "EVH",
+              "stop_sequence": "3",
+              "raw_json": "{\"trip_id\": \"5l000G75410A\", \"arrival_time\": \"06:39:00\", \"departure_time\": \"06:41:00\", \"stop_id\": \"EVH\", \"stop_sequence\": \"3\"}",
+              "arrival_seconds": 23940,
+              "departure_seconds": 24060,
+              "sequence_index": 3,
+              "stop_name": "临平南",
+              "arrival_at": "2026-11-05T06:39:00+08:00",
+              "departure_at": "2026-11-05T06:41:00+08:00",
+              "raw_stop_sequence": "3",
+              "position": 2
+            },
+            {
+              "trip_id": "5l000G75410A",
+              "arrival_time": "06:51:00",
+              "departure_time": "06:55:00",
+              "stop_id": "HGH",
+              "stop_sequence": "4",
+              "raw_json": "{\"trip_id\": \"5l000G75410A\", \"arrival_time\": \"06:51:00\", \"departure_time\": \"06:55:00\", \"stop_id\": \"HGH\", \"stop_sequence\": \"4\"}",
+              "arrival_seconds": 24660,
+              "departure_seconds": 24900,
+              "sequence_index": 4,
+              "stop_name": "杭州东",
+              "arrival_at": "2026-11-05T06:51:00+08:00",
+              "departure_at": "2026-11-05T06:55:00+08:00",
+              "raw_stop_sequence": "4",
+              "position": 3
+            },
+            {
+              "trip_id": "5l000G75410A",
+              "arrival_time": "07:14:00",
+              "departure_time": "07:16:00",
+              "stop_id": "SLH",
+              "stop_sequence": "5",
+              "raw_json": "{\"trip_id\": \"5l000G75410A\", \"arrival_time\": \"07:14:00\", \"departure_time\": \"07:16:00\", \"stop_id\": \"SLH\", \"stop_sequence\": \"5\"}",
+              "arrival_seconds": 26040,
+              "departure_seconds": 26160,
+              "sequence_index": 5,
+              "stop_name": "绍兴北",
+              "arrival_at": "2026-11-05T07:14:00+08:00",
+              "departure_at": "2026-11-05T07:16:00+08:00",
+              "raw_stop_sequence": "5",
+              "position": 4
+            },
+            {
+              "trip_id": "5l000G75410A",
+              "arrival_time": "07:49:00",
+              "departure_time": "07:51:00",
+              "stop_id": "NGH",
+              "stop_sequence": "6",
+              "raw_json": "{\"trip_id\": \"5l000G75410A\", \"arrival_time\": \"07:49:00\", \"departure_time\": \"07:51:00\", \"stop_id\": \"NGH\", \"stop_sequence\": \"6\"}",
+              "arrival_seconds": 28140,
+              "departure_seconds": 28260,
+              "sequence_index": 6,
+              "stop_name": "宁波",
+              "arrival_at": "2026-11-05T07:49:00+08:00",
+              "departure_at": "2026-11-05T07:51:00+08:00",
+              "raw_stop_sequence": "6",
+              "position": 5
+            },
+            {
+              "trip_id": "5l000G75410A",
+              "arrival_time": "08:08:00",
+              "departure_time": "08:10:00",
+              "stop_id": "FHH",
+              "stop_sequence": "7",
+              "raw_json": "{\"trip_id\": \"5l000G75410A\", \"arrival_time\": \"08:08:00\", \"departure_time\": \"08:10:00\", \"stop_id\": \"FHH\", \"stop_sequence\": \"7\"}",
+              "arrival_seconds": 29280,
+              "departure_seconds": 29400,
+              "sequence_index": 7,
+              "stop_name": "奉化",
+              "arrival_at": "2026-11-05T08:08:00+08:00",
+              "departure_at": "2026-11-05T08:10:00+08:00",
+              "raw_stop_sequence": "7",
+              "position": 6
+            },
+            {
+              "trip_id": "5l000G75410A",
+              "arrival_time": "08:36:00",
+              "departure_time": "08:38:00",
+              "stop_id": "OQH",
+              "stop_sequence": "8",
+              "raw_json": "{\"trip_id\": \"5l000G75410A\", \"arrival_time\": \"08:36:00\", \"departure_time\": \"08:38:00\", \"stop_id\": \"OQH\", \"stop_sequence\": \"8\"}",
+              "arrival_seconds": 30960,
+              "departure_seconds": 31080,
+              "sequence_index": 8,
+              "stop_name": "三门县",
+              "arrival_at": "2026-11-05T08:36:00+08:00",
+              "departure_at": "2026-11-05T08:38:00+08:00",
+              "raw_stop_sequence": "8",
+              "position": 7
+            },
+            {
+              "trip_id": "5l000G75410A",
+              "arrival_time": "08:49:00",
+              "departure_time": "08:51:00",
+              "stop_id": "UFH",
+              "stop_sequence": "9",
+              "raw_json": "{\"trip_id\": \"5l000G75410A\", \"arrival_time\": \"08:49:00\", \"departure_time\": \"08:51:00\", \"stop_id\": \"UFH\", \"stop_sequence\": \"9\"}",
+              "arrival_seconds": 31740,
+              "departure_seconds": 31860,
+              "sequence_index": 9,
+              "stop_name": "临海",
+              "arrival_at": "2026-11-05T08:49:00+08:00",
+              "departure_at": "2026-11-05T08:51:00+08:00",
+              "raw_stop_sequence": "9",
+              "position": 8
+            },
+            {
+              "trip_id": "5l000G75410A",
+              "arrival_time": "09:03:00",
+              "departure_time": "09:03:00",
+              "stop_id": "TZH",
+              "stop_sequence": "10",
+              "raw_json": "{\"trip_id\": \"5l000G75410A\", \"arrival_time\": \"09:03:00\", \"departure_time\": \"09:03:00\", \"stop_id\": \"TZH\", \"stop_sequence\": \"10\"}",
+              "arrival_seconds": 32580,
+              "departure_seconds": 32580,
+              "sequence_index": 10,
+              "stop_name": "台州西",
+              "arrival_at": "2026-11-05T09:03:00+08:00",
+              "departure_at": "2026-11-05T09:03:00+08:00",
+              "raw_stop_sequence": "10",
+              "position": 9
+            }
+          ]
+        },
+        "data_source": "CHINESE_RAILWAY_GTFS",
+        "data_type": "STATIC_SCHEDULE",
+        "real_time": false,
+        "availability_available": false,
+        "fare_available": false,
+        "booking_available": false,
+        "availability": "UNKNOWN",
+        "fare": null,
+        "data_version": "20261101",
+        "source_sha256": "3877dbc0ebc0392afef4b111dd9ba837c97eb4aa45788542919be53d52a12030",
+        "rights_status": "RIGHTS_REVIEW_PENDING",
+        "usage_scope": "LOCAL_DEMO_ONLY",
+        "service_date": "20261105",
+        "dataset_version": "gtfs-20261101-063437",
+        "database_sha256": "e32f0cd41b45532ea7aedf4c72a6ffc24f6eaa23c042ee8f35cb02aa50735c69",
+        "simulation_clock": {
+          "clock_id": "1b55d6b4c564441cad8e967f40ef3ded",
+          "mode": "PAUSED",
+          "simulation": true,
+          "timezone": "Asia/Shanghai",
+          "now": "2026-10-17T00:00:00+08:00",
+          "anchor": "2026-10-16T16:00:00+00:00",
+          "revision": 0,
+          "dataset_version": "gtfs-20261101-063437"
+        }
+      },
+      "error": null,
+      "checks": [
+        {
+          "path": "result.status",
+          "op": "eq",
+          "expected": "FOUND",
+          "actual": "FOUND",
+          "ok": true
+        },
+        {
+          "path": "metrics.foreign_keys_ok",
+          "ok": true,
+          "actual": true
+        },
+        {
+          "path": "metrics.inventory_conserved",
+          "ok": true,
+          "actual": true
+        },
+        {
+          "path": "metrics.money_conserved",
+          "ok": true,
+          "actual": true
+        },
+        {
+          "path": "metrics.ui_consistent",
+          "ok": true,
+          "actual": true
+        }
+      ],
+      "snapshot": {
+        "state": {
+          "schema": "ticket-business-read-model/1",
+          "session_id": "web-09029a5f2de0",
+          "source": "LOCAL_SQLITE_COMMITTED",
+          "scenario_id": "railway-demo",
+          "orders": [],
+          "quotes": [],
+          "pending_proposals": [],
+          "proposals": [],
+          "operations": [],
+          "operation_events": [
+            {
+              "event_id": "6897e6d74aae4adcad5b3d8e40545c28",
+              "aggregate_type": "page",
+              "aggregate_id": "web-09029a5f2de0",
+              "event_type": "railway_trip_stops",
+              "from_state": null,
+              "to_state": null,
+              "detail_json": "{\"source\": \"page_operation\", \"ok\": true, \"elapsed_ms\": 3, \"args\": {\"tool_arguments\": {\"trip_id\": \"5l000G75410A\", \"service_date\": \"2026-11-05\"}, \"tool_call_id\": \"page-call-e26b2fbbce554e3f9583251b84acebeb\", \"operation_id\": \"page-ce99ebfcf1f24b7cba30463208b587c4\", \"scenario_id\": \"railway-demo\"}, \"result\": {\"status\": \"FOUND\", \"data\": {\"trip\": {\"route_id\": \"G7541\", \"service_id\": \"S93\", \"trip_id\": \"5l000G75410A\", \"trip_short_name\": \"G7541\", \"trip_headsign\": \"台州西\", \"shape_id\": \"shape-2122\", \"raw_json\": \"{\\\"route_id\\\": \\\"G7541\\\", \\\"service_id\\\": \\\"S93\\\", \\\"trip_id\\\": \\\"5l000G75410A\\\", \\\"trip_short_name\\\": \\\"G7541\\\", \\\"trip_headsign\\\": \\\"台州西\\\", \\\"shape_id\\\": \\\"shape-2122\\\"}\", \"shape_status\": \"AVAILABLE\"}, \"stops\": [{\"trip_id\": \"5l000G75410A\", \"arrival_time\": \"05:52:00\", \"departure_time\": \"05:52:00\", \"stop_id\": \"AOH\", \"stop_sequence\": \"1\", \"raw_json\": \"{\\\"trip_id\\\": \\\"5l000G75410A\\\", \\\"arrival_time\\\": \\\"05:52:00\\\", \\\"departure_time\\\": \\\"05:52:00\\\", \\\"stop_id\\\": \\\"AOH\\\", \\\"stop_sequence\\\": \\\"1\\\"}\", \"arrival_seconds\": 21120, \"departure_seconds\": 21120, \"sequence_index\": 1, \"stop_name\": \"上海虹桥\", \"arrival_at\": \"2026-11-05T05:52:00+08:00\", \"departure_at\": \"2026-11-05T05:52:00+08:00\", \"raw_stop_sequence\": \"1\", \"position\": 0}, {\"trip_id\": \"5l000G75410A\", \"arrival_time\": \"06:25:00\", \"departure_time\": \"06:27:00\", \"stop_id\": \"TCH\", \"stop_sequence\": \"2\", \"raw_json\": \"{\\\"trip_id\\\": \\\"5l000G75410A\\\", \\\"arrival_time\\\": \\\"06:25:00\\\", \\\"departure_time\\\": \\\"06:27:00\\\", \\\"stop_id\\\": \\\"TCH\\\", \\\"stop_sequence\\\": \\\"2\\\"}\", \"arrival_seconds\": 23100, \"departure_seconds\": 23220, \"sequence_index\": 2, \"stop_name\": \"桐乡\", \"arrival_at\": \"2026-11-05T06:25:00+08:00\", \"departure_at\": \"2026-11-05T06:27:00+08:00\", \"raw_stop_sequence\": \"2\", \"position\": 1}, {\"trip_id\": \"5l000G75410A\", \"arrival_time\": \"06:39:00\", \"departure_time\": \"06:41:00\", \"stop_id\": \"EVH\", \"stop_sequence\": \"3\", \"raw_json\": \"{\\\"trip_id\\\": \\\"5l000G75410A\\\", \\\"arrival_time\\\": \\\"06:39:00\\\", \\\"departure_time\\\": \\\"06:41:00\\\", \\\"stop_id\\\": \\\"EVH\\\", \\\"stop_sequence\\\": \\\"3\\\"}\", \"arrival_seconds\": 23940, \"departure_seconds\": 24060, \"sequence_index\": 3, \"stop_name\": \"临平南\", \"arrival_at\": \"2026-11-05T06:39:00+08:00\", \"departure_at\": \"2026-11-05T06:41:00+08:00\", \"raw_stop_sequence\": \"3\", \"position\": 2}, {\"trip_id\": \"5l000G75410A\", \"arrival_time\": \"06:51:00\", \"departure_time\": \"06:55:00\", \"stop_id\": \"HGH\", \"stop_sequence\": \"4\", \"raw_json\": \"{\\\"trip_id\\\": \\\"5l000G75410A\\\", \\\"arrival_time\\\": \\\"06:51:00\\\", \\\"departure_time\\\": \\\"06:55:00\\\", \\\"stop_id\\\": \\\"HGH\\\", \\\"stop_sequence\\\": \\\"4\\\"}\", \"arrival_seconds\": 24660, \"departure_seconds\": 24900, \"sequence_index\": 4, \"stop_name\": \"杭州东\", \"arrival_at\": \"2026-11-05T06:51:00+08:00\", \"departure_at\": \"2026-11-05T06:55:00+08:00\", \"raw_stop_sequence\": \"4\", \"position\": 3}, {\"trip_id\": \"5l000G75410A\", \"arrival_time\": \"07:14:00\", \"departure_time\": \"07:16:00\", \"stop_id\": \"SLH\", \"stop_sequence\": \"5\", \"raw_json\": \"{\\\"trip_id\\\": \\\"5l000G75410A\\\", \\\"arrival_time\\\": \\\"07:14:00\\\", \\\"departure_time\\\": \\\"07:16:00\\\", \\\"stop_id\\\": \\\"SLH\\\", \\\"stop_sequence\\\": \\\"5\\\"}\", \"arrival_seconds\": 26040, \"departure_seconds\": 26160, \"sequence_index\": 5, \"stop_name\": \"绍兴北\", \"arrival_at\": \"2026-11-05T07:14:00+08:00\", \"departure_at\": \"2026-11-05T07:16:00+08:00\", \"raw_stop_sequence\": \"5\", \"position\": 4}, {\"trip_id\": \"5l000G75410A\", \"arrival_time\": \"07:49:00\", \"departure_time\": \"07:51:00\", \"stop_id\": \"NGH\", \"stop_sequence\": \"6\", \"raw_json\": \"{\\\"trip_id\\\": \\\"5l000G75410A\\\", \\\"arrival_time\\\": \\\"07:49:00\\\", \\\"departure_time\\\": \\\"07:51:00\\\", \\\"stop_id\\\": \\\"NGH\\\", \\\"stop_sequence\\\": \\\"6\\\"}\", \"arrival_seconds\": 28140, \"departure_seconds\": 28260, \"sequence_index\": 6, \"stop_name\": \"宁波\", \"arrival_at\": \"2026-11-05T07:49:00+08:00\", \"departure_at\": \"2026-11-05T07:51:00+08:00\", \"raw_stop_sequence\": \"6\", \"position\": 5}, {\"trip_id\": \"5l000G75410A\", \"arrival_time\": \"08:08:00\", \"departure_time\": \"08:10:00\", \"stop_id\": \"FHH\", \"stop_sequence\": \"7\", \"raw_json\": \"{\\\"trip_id\\\": \\\"5l000G75410A\\\", \\\"arrival_time\\\": \\\"08:08:00\\\", \\\"departure_time\\\": \\\"08:10:00\\\", \\\"stop_id\\\": \\\"FHH\\\", \\\"stop_sequence\\\": \\\"7\\\"}\", \"arrival_seconds\": 29280, \"departure_seconds\": 29400, \"sequence_index\": 7, \"stop_name\": \"奉化\", \"arrival_at\": \"2026-11-05T08:08:00+08:00\", \"departure_at\": \"2026-11-05T08:10:00+08:00\", \"raw_stop_sequence\": \"7\", \"position\": 6}, {\"trip_id\": \"5l000G75410A\", \"arrival_time\": \"08:36:00\", \"departure_time\": \"08:38:00\", \"stop_id\": \"OQH\", \"stop_sequence\": \"8\", \"raw_json\": \"{\\\"trip_id\\\": \\\"5l000G75410A\\\", \\\"arrival_time\\\": \\\"08:36:00\\\", \\\"departure_time\\\": \\\"08:38:00\\\", \\\"stop_id\\\": \\\"OQH\\\", \\\"stop_sequence\\\": \\\"8\\\"}\", \"arrival_seconds\": 30960, \"departure_seconds\": 31080, \"sequence_index\": 8, \"stop_name\": \"三门县\", \"arrival_at\": \"2026-11-05T08:36:00+08:00\", \"departure_at\": \"2026-11-05T08:38:00+08:00\", \"raw_stop_sequence\": \"8\", \"position\": 7}, {\"trip_id\": \"5l000G75410A\", \"arrival_time\": \"08:49:00\", \"departure_time\": \"08:51:00\", \"stop_id\": \"UFH\", \"stop_sequence\": \"9\", \"raw_json\": \"{\\\"trip_id\\\": \\\"5l000G75410A\\\", \\\"arrival_time\\\": \\\"08:49:00\\\", \\\"departure_time\\\": \\\"08:51:00\\\", \\\"stop_id\\\": \\\"UFH\\\", \\\"stop_sequence\\\": \\\"9\\\"}\", \"arrival_seconds\": 31740, \"departure_seconds\": 31860, \"sequence_index\": 9, \"stop_name\": \"临海\", \"arrival_at\": \"2026-11-05T08:49:00+08:00\", \"departure_at\": \"2026-11-05T08:51:00+08:00\", \"raw_stop_sequence\": \"9\", \"position\": 8}, {\"trip_id\": \"5l000G75410A\", \"arrival_time\": \"09:03:00\", \"departure_time\": \"09:03:00\", \"stop_id\": \"TZH\", \"stop_sequence\": \"10\", \"raw_json\": \"{\\\"trip_id\\\": \\\"5l000G75410A\\\", \\\"arrival_time\\\": \\\"09:03:00\\\", \\\"departure_time\\\": \\\"09:03:00\\\", \\\"stop_id\\\": \\\"TZH\\\", \\\"stop_sequence\\\": \\\"10\\\"}\", \"arrival_seconds\": 32580, \"departure_seconds\": 32580, \"sequence_index\": 10, \"stop_name\": \"台州西\", \"arrival_at\": \"2026-11-05T09:03:00+08:00\", \"departure_at\": \"2026-11-05T09:03:00+08:00\", \"raw_stop_sequence\": \"10\", \"position\": 9}]}, \"data_source\": \"CHINESE_RAILWAY_GTFS\", \"data_type\": \"STATIC_SCHEDULE\", \"real_time\": false, \"availability_available\": false, \"fare_available\": false, \"booking_available\": false, \"availability\": \"UNKNOWN\", \"fare\": null, \"data_version\": \"20261101\", \"source_sha256\": \"3877dbc0ebc0392afef4b111dd9ba837c97eb4aa45788542919be53d52a12030\", \"rights_status\": \"RIGHTS_REVIEW_PENDING\", \"usage_scope\": \"LOCAL_DEMO_ONLY\", \"service_date\": \"20261105\", \"dataset_version\": \"gtfs-20261101-063437\", \"database_sha256\": \"e32f0cd41b45532ea7aedf4c72a6ffc24f6eaa23c042ee8f35cb02aa50735c69\", \"simulation_clock\": {\"clock_id\": \"1b55d6b4c564441cad8e967f40ef3ded\", \"mode\": \"PAUSED\", \"simulation\": true, \"timezone\": \"Asia/Shanghai\", \"now\": \"2026-10-17T00:00:00+08:00\", \"anchor\": \"2026-10-16T16:00:00+00:00\", \"revision\": 0, \"dataset_version\": \"gtfs-20261101-063437\"}}}",
+              "request_id": null,
+              "created_at": "2026-10-16T16:00:00+00:00"
+            },
+            {
+              "event_id": "f19dbb7f61744099a01cbf1d58274f96",
+              "aggregate_type": "page",
+              "aggregate_id": "web-09029a5f2de0",
+              "event_type": "railway_query_trips",
+              "from_state": null,
+              "to_state": null,
+              "detail_json": "{\"source\": \"page_operation\", \"ok\": true, \"elapsed_ms\": 9, \"args\": {\"tool_arguments\": {\"service_date\": \"2026-11-05\", \"origin_stop_id\": \"AOH\", \"destination_stop_id\": \"HGH\", \"limit\": 3}, \"tool_call_id\": \"page-call-9dc056e239fa492e93867d4f37cc0b24\", \"operation_id\": \"page-3c249e9e35754b9aba89324bbb2d6a71\", \"scenario_id\": \"railway-demo\"}, \"result\": {\"status\": \"FOUND\", \"data\": [{\"route_id\": \"G7541\", \"service_id\": \"S93\", \"trip_id\": \"5l000G75410A\", \"trip_short_name\": \"G7541\", \"trip_headsign\": \"台州西\", \"shape_id\": \"shape-2122\", \"raw_json\": \"{\\\"route_id\\\": \\\"G7541\\\", \\\"service_id\\\": \\\"S93\\\", \\\"trip_id\\\": \\\"5l000G75410A\\\", \\\"trip_short_name\\\": \\\"G7541\\\", \\\"trip_headsign\\\": \\\"台州西\\\", \\\"shape_id\\\": \\\"shape-2122\\\"}\", \"origin_arrival\": \"05:52:00\", \"origin_departure\": \"05:52:00\", \"destination_arrival\": \"06:51:00\", \"destination_departure\": \"06:55:00\", \"origin_sequence\": 1, \"destination_sequence\": 4, \"shape_status\": \"AVAILABLE\", \"departure_at\": \"2026-11-05T05:52:00+08:00\", \"arrival_at\": \"2026-11-05T06:51:00+08:00\"}, {\"route_id\": \"G1321\", \"service_id\": \"S93\", \"trip_id\": \"5l000G132108\", \"trip_short_name\": \"G1321\", \"trip_headsign\": \"六盘水\", \"shape_id\": \"shape-2034\", \"raw_json\": \"{\\\"route_id\\\": \\\"G1321\\\", \\\"service_id\\\": \\\"S93\\\", \\\"trip_id\\\": \\\"5l000G132108\\\", \\\"trip_short_name\\\": \\\"G1321\\\", \\\"trip_headsign\\\": \\\"六盘水\\\", \\\"shape_id\\\": \\\"shape-2034\\\"}\", \"origin_arrival\": \"06:07:00\", \"origin_departure\": \"06:07:00\", \"destination_arrival\": \"06:56:00\", \"destination_departure\": \"07:00:00\", \"origin_sequence\": 1, \"destination_sequence\": 2, \"shape_status\": \"AVAILABLE\", \"departure_at\": \"2026-11-05T06:07:00+08:00\", \"arrival_at\": \"2026-11-05T06:56:00+08:00\"}, {\"route_id\": \"G7331\", \"service_id\": \"S93\", \"trip_id\": \"5l000G733102\", \"trip_short_name\": \"G7331\", \"trip_headsign\": \"瑞安\", \"shape_id\": \"shape-2110\", \"raw_json\": \"{\\\"route_id\\\": \\\"G7331\\\", \\\"service_id\\\": \\\"S93\\\", \\\"trip_id\\\": \\\"5l000G733102\\\", \\\"trip_short_name\\\": \\\"G7331\\\", \\\"trip_headsign\\\": \\\"瑞安\\\", \\\"shape_id\\\": \\\"shape-2110\\\"}\", \"origin_arrival\": \"06:13:00\", \"origin_departure\": \"06:13:00\", \"destination_arrival\": \"07:07:00\", \"destination_departure\": \"07:11:00\", \"origin_sequence\": 1, \"destination_sequence\": 3, \"shape_status\": \"AVAILABLE\", \"departure_at\": \"2026-11-05T06:13:00+08:00\", \"arrival_at\": \"2026-11-05T07:07:00+08:00\"}], \"data_source\": \"CHINESE_RAILWAY_GTFS\", \"data_type\": \"STATIC_SCHEDULE\", \"real_time\": false, \"availability_available\": false, \"fare_available\": false, \"booking_available\": false, \"availability\": \"UNKNOWN\", \"fare\": null, \"data_version\": \"20261101\", \"source_sha256\": \"3877dbc0ebc0392afef4b111dd9ba837c97eb4aa45788542919be53d52a12030\", \"rights_status\": \"RIGHTS_REVIEW_PENDING\", \"usage_scope\": \"LOCAL_DEMO_ONLY\", \"service_date\": \"20261105\", \"next_cursor\": \"3\", \"source\": \"GTFS_SQLITE\", \"total_count\": 109, \"returned_count\": 3, \"limit\": 3, \"has_more\": true, \"query_parameters\": {\"service_date\": \"2026-11-05\", \"origin_stop_id\": \"AOH\", \"destination_stop_id\": \"HGH\", \"train_no\": null, \"cursor\": null}, \"dataset_version\": \"gtfs-20261101-063437\", \"database_sha256\": \"e32f0cd41b45532ea7aedf4c72a6ffc24f6eaa23c042ee8f35cb02aa50735c69\", \"simulation_clock\": {\"clock_id\": \"1b55d6b4c564441cad8e967f40ef3ded\", \"mode\": \"PAUSED\", \"simulation\": true, \"timezone\": \"Asia/Shanghai\", \"now\": \"2026-10-17T00:00:00+08:00\", \"anchor\": \"2026-10-16T16:00:00+00:00\", \"revision\": 0, \"dataset_version\": \"gtfs-20261101-063437\"}}}",
+              "request_id": null,
+              "created_at": "2026-10-16T16:00:00+00:00"
+            },
+            {
+              "event_id": "f4b6cc5bf96644d682de5d622ab0b964",
+              "aggregate_type": "page",
+              "aggregate_id": "web-09029a5f2de0",
+              "event_type": "railway_search_stations",
+              "from_state": null,
+              "to_state": null,
+              "detail_json": "{\"source\": \"page_operation\", \"ok\": true, \"elapsed_ms\": 2, \"args\": {\"tool_arguments\": {\"name\": \"上海虹桥\"}, \"tool_call_id\": \"page-call-88fb358eecc943da8c56ac5b1cf03b12\", \"operation_id\": \"page-7dfe01b08ca74898a322513b3455e19a\", \"scenario_id\": \"railway-demo\"}, \"result\": {\"status\": \"FOUND\", \"data\": [{\"stop_id\": \"AOH\", \"stop_name\": \"上海虹桥\", \"stop_lat\": \"31.195978\", \"stop_lon\": \"121.316200\", \"location_type\": \"0\", \"raw_json\": \"{\\\"stop_id\\\": \\\"AOH\\\", \\\"stop_name\\\": \\\"上海虹桥\\\", \\\"stop_lat\\\": \\\"31.195978\\\", \\\"stop_lon\\\": \\\"121.316200\\\", \\\"location_type\\\": \\\"0\\\"}\"}], \"data_source\": \"CHINESE_RAILWAY_GTFS\", \"data_type\": \"STATIC_SCHEDULE\", \"real_time\": false, \"availability_available\": false, \"fare_available\": false, \"booking_available\": false, \"availability\": \"UNKNOWN\", \"fare\": null, \"data_version\": \"20261101\", \"source_sha256\": \"3877dbc0ebc0392afef4b111dd9ba837c97eb4aa45788542919be53d52a12030\", \"rights_status\": \"RIGHTS_REVIEW_PENDING\", \"usage_scope\": \"LOCAL_DEMO_ONLY\", \"selection_required\": false, \"source\": \"GTFS_SQLITE\", \"total_count\": 1, \"returned_count\": 1, \"limit\": 50, \"has_more\": false, \"query_parameters\": {\"name\": \"上海虹桥\", \"cursor\": null}, \"next_cursor\": null, \"dataset_version\": \"gtfs-20261101-063437\", \"database_sha256\": \"e32f0cd41b45532ea7aedf4c72a6ffc24f6eaa23c042ee8f35cb02aa50735c69\", \"simulation_clock\": {\"clock_id\": \"1b55d6b4c564441cad8e967f40ef3ded\", \"mode\": \"PAUSED\", \"simulation\": true, \"timezone\": \"Asia/Shanghai\", \"now\": \"2026-10-17T00:00:00+08:00\", \"anchor\": \"2026-10-16T16:00:00+00:00\", \"revision\": 0, \"dataset_version\": \"gtfs-20261101-063437\"}}}",
+              "request_id": null,
+              "created_at": "2026-10-16T16:00:00+00:00"
+            }
+          ],
+          "updated_at": "2026-10-16T16:00:00+00:00",
+          "state_sha256": "5227b6a270d46b83f174e4dbec694ef7e4dc5749bd2faa99bf894dd0b7ae40fe"
+        },
+        "ui": {
+          "schema": "ticket-business-read-model/1",
+          "session_id": "web-09029a5f2de0",
+          "source": "LOCAL_SQLITE_COMMITTED",
+          "scenario_id": "railway-demo",
+          "orders": [],
+          "quotes": [],
+          "pending_proposals": [],
+          "proposals": [],
+          "operations": [],
+          "operation_events": [
+            {
+              "event_id": "6897e6d74aae4adcad5b3d8e40545c28",
+              "aggregate_type": "page",
+              "aggregate_id": "web-09029a5f2de0",
+              "event_type": "railway_trip_stops",
+              "from_state": null,
+              "to_state": null,
+              "detail_json": "{\"source\": \"page_operation\", \"ok\": true, \"elapsed_ms\": 3, \"args\": {\"tool_arguments\": {\"trip_id\": \"5l000G75410A\", \"service_date\": \"2026-11-05\"}, \"tool_call_id\": \"page-call-e26b2fbbce554e3f9583251b84acebeb\", \"operation_id\": \"page-ce99ebfcf1f24b7cba30463208b587c4\", \"scenario_id\": \"railway-demo\"}, \"result\": {\"status\": \"FOUND\", \"data\": {\"trip\": {\"route_id\": \"G7541\", \"service_id\": \"S93\", \"trip_id\": \"5l000G75410A\", \"trip_short_name\": \"G7541\", \"trip_headsign\": \"台州西\", \"shape_id\": \"shape-2122\", \"raw_json\": \"{\\\"route_id\\\": \\\"G7541\\\", \\\"service_id\\\": \\\"S93\\\", \\\"trip_id\\\": \\\"5l000G75410A\\\", \\\"trip_short_name\\\": \\\"G7541\\\", \\\"trip_headsign\\\": \\\"台州西\\\", \\\"shape_id\\\": \\\"shape-2122\\\"}\", \"shape_status\": \"AVAILABLE\"}, \"stops\": [{\"trip_id\": \"5l000G75410A\", \"arrival_time\": \"05:52:00\", \"departure_time\": \"05:52:00\", \"stop_id\": \"AOH\", \"stop_sequence\": \"1\", \"raw_json\": \"{\\\"trip_id\\\": \\\"5l000G75410A\\\", \\\"arrival_time\\\": \\\"05:52:00\\\", \\\"departure_time\\\": \\\"05:52:00\\\", \\\"stop_id\\\": \\\"AOH\\\", \\\"stop_sequence\\\": \\\"1\\\"}\", \"arrival_seconds\": 21120, \"departure_seconds\": 21120, \"sequence_index\": 1, \"stop_name\": \"上海虹桥\", \"arrival_at\": \"2026-11-05T05:52:00+08:00\", \"departure_at\": \"2026-11-05T05:52:00+08:00\", \"raw_stop_sequence\": \"1\", \"position\": 0}, {\"trip_id\": \"5l000G75410A\", \"arrival_time\": \"06:25:00\", \"departure_time\": \"06:27:00\", \"stop_id\": \"TCH\", \"stop_sequence\": \"2\", \"raw_json\": \"{\\\"trip_id\\\": \\\"5l000G75410A\\\", \\\"arrival_time\\\": \\\"06:25:00\\\", \\\"departure_time\\\": \\\"06:27:00\\\", \\\"stop_id\\\": \\\"TCH\\\", \\\"stop_sequence\\\": \\\"2\\\"}\", \"arrival_seconds\": 23100, \"departure_seconds\": 23220, \"sequence_index\": 2, \"stop_name\": \"桐乡\", \"arrival_at\": \"2026-11-05T06:25:00+08:00\", \"departure_at\": \"2026-11-05T06:27:00+08:00\", \"raw_stop_sequence\": \"2\", \"position\": 1}, {\"trip_id\": \"5l000G75410A\", \"arrival_time\": \"06:39:00\", \"departure_time\": \"06:41:00\", \"stop_id\": \"EVH\", \"stop_sequence\": \"3\", \"raw_json\": \"{\\\"trip_id\\\": \\\"5l000G75410A\\\", \\\"arrival_time\\\": \\\"06:39:00\\\", \\\"departure_time\\\": \\\"06:41:00\\\", \\\"stop_id\\\": \\\"EVH\\\", \\\"stop_sequence\\\": \\\"3\\\"}\", \"arrival_seconds\": 23940, \"departure_seconds\": 24060, \"sequence_index\": 3, \"stop_name\": \"临平南\", \"arrival_at\": \"2026-11-05T06:39:00+08:00\", \"departure_at\": \"2026-11-05T06:41:00+08:00\", \"raw_stop_sequence\": \"3\", \"position\": 2}, {\"trip_id\": \"5l000G75410A\", \"arrival_time\": \"06:51:00\", \"departure_time\": \"06:55:00\", \"stop_id\": \"HGH\", \"stop_sequence\": \"4\", \"raw_json\": \"{\\\"trip_id\\\": \\\"5l000G75410A\\\", \\\"arrival_time\\\": \\\"06:51:00\\\", \\\"departure_time\\\": \\\"06:55:00\\\", \\\"stop_id\\\": \\\"HGH\\\", \\\"stop_sequence\\\": \\\"4\\\"}\", \"arrival_seconds\": 24660, \"departure_seconds\": 24900, \"sequence_index\": 4, \"stop_name\": \"杭州东\", \"arrival_at\": \"2026-11-05T06:51:00+08:00\", \"departure_at\": \"2026-11-05T06:55:00+08:00\", \"raw_stop_sequence\": \"4\", \"position\": 3}, {\"trip_id\": \"5l000G75410A\", \"arrival_time\": \"07:14:00\", \"departure_time\": \"07:16:00\", \"stop_id\": \"SLH\", \"stop_sequence\": \"5\", \"raw_json\": \"{\\\"trip_id\\\": \\\"5l000G75410A\\\", \\\"arrival_time\\\": \\\"07:14:00\\\", \\\"departure_time\\\": \\\"07:16:00\\\", \\\"stop_id\\\": \\\"SLH\\\", \\\"stop_sequence\\\": \\\"5\\\"}\", \"arrival_seconds\": 26040, \"departure_seconds\": 26160, \"sequence_index\": 5, \"stop_name\": \"绍兴北\", \"arrival_at\": \"2026-11-05T07:14:00+08:00\", \"departure_at\": \"2026-11-05T07:16:00+08:00\", \"raw_stop_sequence\": \"5\", \"position\": 4}, {\"trip_id\": \"5l000G75410A\", \"arrival_time\": \"07:49:00\", \"departure_time\": \"07:51:00\", \"stop_id\": \"NGH\", \"stop_sequence\": \"6\", \"raw_json\": \"{\\\"trip_id\\\": \\\"5l000G75410A\\\", \\\"arrival_time\\\": \\\"07:49:00\\\", \\\"departure_time\\\": \\\"07:51:00\\\", \\\"stop_id\\\": \\\"NGH\\\", \\\"stop_sequence\\\": \\\"6\\\"}\", \"arrival_seconds\": 28140, \"departure_seconds\": 28260, \"sequence_index\": 6, \"stop_name\": \"宁波\", \"arrival_at\": \"2026-11-05T07:49:00+08:00\", \"departure_at\": \"2026-11-05T07:51:00+08:00\", \"raw_stop_sequence\": \"6\", \"position\": 5}, {\"trip_id\": \"5l000G75410A\", \"arrival_time\": \"08:08:00\", \"departure_time\": \"08:10:00\", \"stop_id\": \"FHH\", \"stop_sequence\": \"7\", \"raw_json\": \"{\\\"trip_id\\\": \\\"5l000G75410A\\\", \\\"arrival_time\\\": \\\"08:08:00\\\", \\\"departure_time\\\": \\\"08:10:00\\\", \\\"stop_id\\\": \\\"FHH\\\", \\\"stop_sequence\\\": \\\"7\\\"}\", \"arrival_seconds\": 29280, \"departure_seconds\": 29400, \"sequence_index\": 7, \"stop_name\": \"奉化\", \"arrival_at\": \"2026-11-05T08:08:00+08:00\", \"departure_at\": \"2026-11-05T08:10:00+08:00\", \"raw_stop_sequence\": \"7\", \"position\": 6}, {\"trip_id\": \"5l000G75410A\", \"arrival_time\": \"08:36:00\", \"departure_time\": \"08:38:00\", \"stop_id\": \"OQH\", \"stop_sequence\": \"8\", \"raw_json\": \"{\\\"trip_id\\\": \\\"5l000G75410A\\\", \\\"arrival_time\\\": \\\"08:36:00\\\", \\\"departure_time\\\": \\\"08:38:00\\\", \\\"stop_id\\\": \\\"OQH\\\", \\\"stop_sequence\\\": \\\"8\\\"}\", \"arrival_seconds\": 30960, \"departure_seconds\": 31080, \"sequence_index\": 8, \"stop_name\": \"三门县\", \"arrival_at\": \"2026-11-05T08:36:00+08:00\", \"departure_at\": \"2026-11-05T08:38:00+08:00\", \"raw_stop_sequence\": \"8\", \"position\": 7}, {\"trip_id\": \"5l000G75410A\", \"arrival_time\": \"08:49:00\", \"departure_time\": \"08:51:00\", \"stop_id\": \"UFH\", \"stop_sequence\": \"9\", \"raw_json\": \"{\\\"trip_id\\\": \\\"5l000G75410A\\\", \\\"arrival_time\\\": \\\"08:49:00\\\", \\\"departure_time\\\": \\\"08:51:00\\\", \\\"stop_id\\\": \\\"UFH\\\", \\\"stop_sequence\\\": \\\"9\\\"}\", \"arrival_seconds\": 31740, \"departure_seconds\": 31860, \"sequence_index\": 9, \"stop_name\": \"临海\", \"arrival_at\": \"2026-11-05T08:49:00+08:00\", \"departure_at\": \"2026-11-05T08:51:00+08:00\", \"raw_stop_sequence\": \"9\", \"position\": 8}, {\"trip_id\": \"5l000G75410A\", \"arrival_time\": \"09:03:00\", \"departure_time\": \"09:03:00\", \"stop_id\": \"TZH\", \"stop_sequence\": \"10\", \"raw_json\": \"{\\\"trip_id\\\": \\\"5l000G75410A\\\", \\\"arrival_time\\\": \\\"09:03:00\\\", \\\"departure_time\\\": \\\"09:03:00\\\", \\\"stop_id\\\": \\\"TZH\\\", \\\"stop_sequence\\\": \\\"10\\\"}\", \"arrival_seconds\": 32580, \"departure_seconds\": 32580, \"sequence_index\": 10, \"stop_name\": \"台州西\", \"arrival_at\": \"2026-11-05T09:03:00+08:00\", \"departure_at\": \"2026-11-05T09:03:00+08:00\", \"raw_stop_sequence\": \"10\", \"position\": 9}]}, \"data_source\": \"CHINESE_RAILWAY_GTFS\", \"data_type\": \"STATIC_SCHEDULE\", \"real_time\": false, \"availability_available\": false, \"fare_available\": false, \"booking_available\": false, \"availability\": \"UNKNOWN\", \"fare\": null, \"data_version\": \"20261101\", \"source_sha256\": \"3877dbc0ebc0392afef4b111dd9ba837c97eb4aa45788542919be53d52a12030\", \"rights_status\": \"RIGHTS_REVIEW_PENDING\", \"usage_scope\": \"LOCAL_DEMO_ONLY\", \"service_date\": \"20261105\", \"dataset_version\": \"gtfs-20261101-063437\", \"database_sha256\": \"e32f0cd41b45532ea7aedf4c72a6ffc24f6eaa23c042ee8f35cb02aa50735c69\", \"simulation_clock\": {\"clock_id\": \"1b55d6b4c564441cad8e967f40ef3ded\", \"mode\": \"PAUSED\", \"simulation\": true, \"timezone\": \"Asia/Shanghai\", \"now\": \"2026-10-17T00:00:00+08:00\", \"anchor\": \"2026-10-16T16:00:00+00:00\", \"revision\": 0, \"dataset_version\": \"gtfs-20261101-063437\"}}}",
+              "request_id": null,
+              "created_at": "2026-10-16T16:00:00+00:00"
+            },
+            {
+              "event_id": "f19dbb7f61744099a01cbf1d58274f96",
+              "aggregate_type": "page",
+              "aggregate_id": "web-09029a5f2de0",
+              "event_type": "railway_query_trips",
+              "from_state": null,
+              "to_state": null,
+              "detail_json": "{\"source\": \"page_operation\", \"ok\": true, \"elapsed_ms\": 9, \"args\": {\"tool_arguments\": {\"service_date\": \"2026-11-05\", \"origin_stop_id\": \"AOH\", \"destination_stop_id\": \"HGH\", \"limit\": 3}, \"tool_call_id\": \"page-call-9dc056e239fa492e93867d4f37cc0b24\", \"operation_id\": \"page-3c249e9e35754b9aba89324bbb2d6a71\", \"scenario_id\": \"railway-demo\"}, \"result\": {\"status\": \"FOUND\", \"data\": [{\"route_id\": \"G7541\", \"service_id\": \"S93\", \"trip_id\": \"5l000G75410A\", \"trip_short_name\": \"G7541\", \"trip_headsign\": \"台州西\", \"shape_id\": \"shape-2122\", \"raw_json\": \"{\\\"route_id\\\": \\\"G7541\\\", \\\"service_id\\\": \\\"S93\\\", \\\"trip_id\\\": \\\"5l000G75410A\\\", \\\"trip_short_name\\\": \\\"G7541\\\", \\\"trip_headsign\\\": \\\"台州西\\\", \\\"shape_id\\\": \\\"shape-2122\\\"}\", \"origin_arrival\": \"05:52:00\", \"origin_departure\": \"05:52:00\", \"destination_arrival\": \"06:51:00\", \"destination_departure\": \"06:55:00\", \"origin_sequence\": 1, \"destination_sequence\": 4, \"shape_status\": \"AVAILABLE\", \"departure_at\": \"2026-11-05T05:52:00+08:00\", \"arrival_at\": \"2026-11-05T06:51:00+08:00\"}, {\"route_id\": \"G1321\", \"service_id\": \"S93\", \"trip_id\": \"5l000G132108\", \"trip_short_name\": \"G1321\", \"trip_headsign\": \"六盘水\", \"shape_id\": \"shape-2034\", \"raw_json\": \"{\\\"route_id\\\": \\\"G1321\\\", \\\"service_id\\\": \\\"S93\\\", \\\"trip_id\\\": \\\"5l000G132108\\\", \\\"trip_short_name\\\": \\\"G1321\\\", \\\"trip_headsign\\\": \\\"六盘水\\\", \\\"shape_id\\\": \\\"shape-2034\\\"}\", \"origin_arrival\": \"06:07:00\", \"origin_departure\": \"06:07:00\", \"destination_arrival\": \"06:56:00\", \"destination_departure\": \"07:00:00\", \"origin_sequence\": 1, \"destination_sequence\": 2, \"shape_status\": \"AVAILABLE\", \"departure_at\": \"2026-11-05T06:07:00+08:00\", \"arrival_at\": \"2026-11-05T06:56:00+08:00\"}, {\"route_id\": \"G7331\", \"service_id\": \"S93\", \"trip_id\": \"5l000G733102\", \"trip_short_name\": \"G7331\", \"trip_headsign\": \"瑞安\", \"shape_id\": \"shape-2110\", \"raw_json\": \"{\\\"route_id\\\": \\\"G7331\\\", \\\"service_id\\\": \\\"S93\\\", \\\"trip_id\\\": \\\"5l000G733102\\\", \\\"trip_short_name\\\": \\\"G7331\\\", \\\"trip_headsign\\\": \\\"瑞安\\\", \\\"shape_id\\\": \\\"shape-2110\\\"}\", \"origin_arrival\": \"06:13:00\", \"origin_departure\": \"06:13:00\", \"destination_arrival\": \"07:07:00\", \"destination_departure\": \"07:11:00\", \"origin_sequence\": 1, \"destination_sequence\": 3, \"shape_status\": \"AVAILABLE\", \"departure_at\": \"2026-11-05T06:13:00+08:00\", \"arrival_at\": \"2026-11-05T07:07:00+08:00\"}], \"data_source\": \"CHINESE_RAILWAY_GTFS\", \"data_type\": \"STATIC_SCHEDULE\", \"real_time\": false, \"availability_available\": false, \"fare_available\": false, \"booking_available\": false, \"availability\": \"UNKNOWN\", \"fare\": null, \"data_version\": \"20261101\", \"source_sha256\": \"3877dbc0ebc0392afef4b111dd9ba837c97eb4aa45788542919be53d52a12030\", \"rights_status\": \"RIGHTS_REVIEW_PENDING\", \"usage_scope\": \"LOCAL_DEMO_ONLY\", \"service_date\": \"20261105\", \"next_cursor\": \"3\", \"source\": \"GTFS_SQLITE\", \"total_count\": 109, \"returned_count\": 3, \"limit\": 3, \"has_more\": true, \"query_parameters\": {\"service_date\": \"2026-11-05\", \"origin_stop_id\": \"AOH\", \"destination_stop_id\": \"HGH\", \"train_no\": null, \"cursor\": null}, \"dataset_version\": \"gtfs-20261101-063437\", \"database_sha256\": \"e32f0cd41b45532ea7aedf4c72a6ffc24f6eaa23c042ee8f35cb02aa50735c69\", \"simulation_clock\": {\"clock_id\": \"1b55d6b4c564441cad8e967f40ef3ded\", \"mode\": \"PAUSED\", \"simulation\": true, \"timezone\": \"Asia/Shanghai\", \"now\": \"2026-10-17T00:00:00+08:00\", \"anchor\": \"2026-10-16T16:00:00+00:00\", \"revision\": 0, \"dataset_version\": \"gtfs-20261101-063437\"}}}",
+              "request_id": null,
+              "created_at": "2026-10-16T16:00:00+00:00"
+            },
+            {
+              "event_id": "f4b6cc5bf96644d682de5d622ab0b964",
+              "aggregate_type": "page",
+              "aggregate_id": "web-09029a5f2de0",
+              "event_type": "railway_search_stations",
+              "from_state": null,
+              "to_state": null,
+              "detail_json": "{\"source\": \"page_operation\", \"ok\": true, \"elapsed_ms\": 2, \"args\": {\"tool_arguments\": {\"name\": \"上海虹桥\"}, \"tool_call_id\": \"page-call-88fb358eecc943da8c56ac5b1cf03b12\", \"operation_id\": \"page-7dfe01b08ca74898a322513b3455e19a\", \"scenario_id\": \"railway-demo\"}, \"result\": {\"status\": \"FOUND\", \"data\": [{\"stop_id\": \"AOH\", \"stop_name\": \"上海虹桥\", \"stop_lat\": \"31.195978\", \"stop_lon\": \"121.316200\", \"location_type\": \"0\", \"raw_json\": \"{\\\"stop_id\\\": \\\"AOH\\\", \\\"stop_name\\\": \\\"上海虹桥\\\", \\\"stop_lat\\\": \\\"31.195978\\\", \\\"stop_lon\\\": \\\"121.316200\\\", \\\"location_type\\\": \\\"0\\\"}\"}], \"data_source\": \"CHINESE_RAILWAY_GTFS\", \"data_type\": \"STATIC_SCHEDULE\", \"real_time\": false, \"availability_available\": false, \"fare_available\": false, \"booking_available\": false, \"availability\": \"UNKNOWN\", \"fare\": null, \"data_version\": \"20261101\", \"source_sha256\": \"3877dbc0ebc0392afef4b111dd9ba837c97eb4aa45788542919be53d52a12030\", \"rights_status\": \"RIGHTS_REVIEW_PENDING\", \"usage_scope\": \"LOCAL_DEMO_ONLY\", \"selection_required\": false, \"source\": \"GTFS_SQLITE\", \"total_count\": 1, \"returned_count\": 1, \"limit\": 50, \"has_more\": false, \"query_parameters\": {\"name\": \"上海虹桥\", \"cursor\": null}, \"next_cursor\": null, \"dataset_version\": \"gtfs-20261101-063437\", \"database_sha256\": \"e32f0cd41b45532ea7aedf4c72a6ffc24f6eaa23c042ee8f35cb02aa50735c69\", \"simulation_clock\": {\"clock_id\": \"1b55d6b4c564441cad8e967f40ef3ded\", \"mode\": \"PAUSED\", \"simulation\": true, \"timezone\": \"Asia/Shanghai\", \"now\": \"2026-10-17T00:00:00+08:00\", \"anchor\": \"2026-10-16T16:00:00+00:00\", \"revision\": 0, \"dataset_version\": \"gtfs-20261101-063437\"}}}",
+              "request_id": null,
+              "created_at": "2026-10-16T16:00:00+00:00"
+            }
+          ],
+          "updated_at": "2026-10-16T16:00:00+00:00",
+          "state_sha256": "5227b6a270d46b83f174e4dbec694ef7e4dc5749bd2faa99bf894dd0b7ae40fe"
+        },
+        "db": {
+          "v39_orders": [],
+          "v39_order_items": [],
+          "v39_holds": [],
+          "v39_transactions": [],
+          "v39_inventory_segments": [],
+          "v39_inventory_events": [],
+          "v39_refund_requests": [],
+          "v39_change_requests": [],
+          "v39_proposals": [],
+          "v39_idempotency": [],
+          "v39_refund_items": [],
+          "v39_hold_segments": [],
+          "v39_transaction_allocations": []
+        },
+        "metrics": {
+          "order_count": 0,
+          "hold_count": 0,
+          "transaction_count": 0,
+          "held": 0,
+          "sold": 0,
+          "foreign_keys_ok": true,
+          "inventory_conserved": true,
+          "money_conserved": true,
+          "ui_consistent": true
+        },
+        "result": {
+          "status": "FOUND",
+          "data": {
+            "trip": {
+              "route_id": "G7541",
+              "service_id": "S93",
+              "trip_id": "5l000G75410A",
+              "trip_short_name": "G7541",
+              "trip_headsign": "台州西",
+              "shape_id": "shape-2122",
+              "raw_json": "{\"route_id\": \"G7541\", \"service_id\": \"S93\", \"trip_id\": \"5l000G75410A\", \"trip_short_name\": \"G7541\", \"trip_headsign\": \"台州西\", \"shape_id\": \"shape-2122\"}",
+              "shape_status": "AVAILABLE"
+            },
+            "stops": [
+              {
+                "trip_id": "5l000G75410A",
+                "arrival_time": "05:52:00",
+                "departure_time": "05:52:00",
+                "stop_id": "AOH",
+                "stop_sequence": "1",
+                "raw_json": "{\"trip_id\": \"5l000G75410A\", \"arrival_time\": \"05:52:00\", \"departure_time\": \"05:52:00\", \"stop_id\": \"AOH\", \"stop_sequence\": \"1\"}",
+                "arrival_seconds": 21120,
+                "departure_seconds": 21120,
+                "sequence_index": 1,
+                "stop_name": "上海虹桥",
+                "arrival_at": "2026-11-05T05:52:00+08:00",
+                "departure_at": "2026-11-05T05:52:00+08:00",
+                "raw_stop_sequence": "1",
+                "position": 0
+              },
+              {
+                "trip_id": "5l000G75410A",
+                "arrival_time": "06:25:00",
+                "departure_time": "06:27:00",
+                "stop_id": "TCH",
+                "stop_sequence": "2",
+                "raw_json": "{\"trip_id\": \"5l000G75410A\", \"arrival_time\": \"06:25:00\", \"departure_time\": \"06:27:00\", \"stop_id\": \"TCH\", \"stop_sequence\": \"2\"}",
+                "arrival_seconds": 23100,
+                "departure_seconds": 23220,
+                "sequence_index": 2,
+                "stop_name": "桐乡",
+                "arrival_at": "2026-11-05T06:25:00+08:00",
+                "departure_at": "2026-11-05T06:27:00+08:00",
+                "raw_stop_sequence": "2",
+                "position": 1
+              },
+              {
+                "trip_id": "5l000G75410A",
+                "arrival_time": "06:39:00",
+                "departure_time": "06:41:00",
+                "stop_id": "EVH",
+                "stop_sequence": "3",
+                "raw_json": "{\"trip_id\": \"5l000G75410A\", \"arrival_time\": \"06:39:00\", \"departure_time\": \"06:41:00\", \"stop_id\": \"EVH\", \"stop_sequence\": \"3\"}",
+                "arrival_seconds": 23940,
+                "departure_seconds": 24060,
+                "sequence_index": 3,
+                "stop_name": "临平南",
+                "arrival_at": "2026-11-05T06:39:00+08:00",
+                "departure_at": "2026-11-05T06:41:00+08:00",
+                "raw_stop_sequence": "3",
+                "position": 2
+              },
+              {
+                "trip_id": "5l000G75410A",
+                "arrival_time": "06:51:00",
+                "departure_time": "06:55:00",
+                "stop_id": "HGH",
+                "stop_sequence": "4",
+                "raw_json": "{\"trip_id\": \"5l000G75410A\", \"arrival_time\": \"06:51:00\", \"departure_time\": \"06:55:00\", \"stop_id\": \"HGH\", \"stop_sequence\": \"4\"}",
+                "arrival_seconds": 24660,
+                "departure_seconds": 24900,
+                "sequence_index": 4,
+                "stop_name": "杭州东",
+                "arrival_at": "2026-11-05T06:51:00+08:00",
+                "departure_at": "2026-11-05T06:55:00+08:00",
+                "raw_stop_sequence": "4",
+                "position": 3
+              },
+              {
+                "trip_id": "5l000G75410A",
+                "arrival_time": "07:14:00",
+                "departure_time": "07:16:00",
+                "stop_id": "SLH",
+                "stop_sequence": "5",
+                "raw_json": "{\"trip_id\": \"5l000G75410A\", \"arrival_time\": \"07:14:00\", \"departure_time\": \"07:16:00\", \"stop_id\": \"SLH\", \"stop_sequence\": \"5\"}",
+                "arrival_seconds": 26040,
+                "departure_seconds": 26160,
+                "sequence_index": 5,
+                "stop_name": "绍兴北",
+                "arrival_at": "2026-11-05T07:14:00+08:00",
+                "departure_at": "2026-11-05T07:16:00+08:00",
+                "raw_stop_sequence": "5",
+                "position": 4
+              },
+              {
+                "trip_id": "5l000G75410A",
+                "arrival_time": "07:49:00",
+                "departure_time": "07:51:00",
+                "stop_id": "NGH",
+                "stop_sequence": "6",
+                "raw_json": "{\"trip_id\": \"5l000G75410A\", \"arrival_time\": \"07:49:00\", \"departure_time\": \"07:51:00\", \"stop_id\": \"NGH\", \"stop_sequence\": \"6\"}",
+                "arrival_seconds": 28140,
+                "departure_seconds": 28260,
+                "sequence_index": 6,
+                "stop_name": "宁波",
+                "arrival_at": "2026-11-05T07:49:00+08:00",
+                "departure_at": "2026-11-05T07:51:00+08:00",
+                "raw_stop_sequence": "6",
+                "position": 5
+              },
+              {
+                "trip_id": "5l000G75410A",
+                "arrival_time": "08:08:00",
+                "departure_time": "08:10:00",
+                "stop_id": "FHH",
+                "stop_sequence": "7",
+                "raw_json": "{\"trip_id\": \"5l000G75410A\", \"arrival_time\": \"08:08:00\", \"departure_time\": \"08:10:00\", \"stop_id\": \"FHH\", \"stop_sequence\": \"7\"}",
+                "arrival_seconds": 29280,
+                "departure_seconds": 29400,
+                "sequence_index": 7,
+                "stop_name": "奉化",
+                "arrival_at": "2026-11-05T08:08:00+08:00",
+                "departure_at": "2026-11-05T08:10:00+08:00",
+                "raw_stop_sequence": "7",
+                "position": 6
+              },
+              {
+                "trip_id": "5l000G75410A",
+                "arrival_time": "08:36:00",
+                "departure_time": "08:38:00",
+                "stop_id": "OQH",
+                "stop_sequence": "8",
+                "raw_json": "{\"trip_id\": \"5l000G75410A\", \"arrival_time\": \"08:36:00\", \"departure_time\": \"08:38:00\", \"stop_id\": \"OQH\", \"stop_sequence\": \"8\"}",
+                "arrival_seconds": 30960,
+                "departure_seconds": 31080,
+                "sequence_index": 8,
+                "stop_name": "三门县",
+                "arrival_at": "2026-11-05T08:36:00+08:00",
+                "departure_at": "2026-11-05T08:38:00+08:00",
+                "raw_stop_sequence": "8",
+                "position": 7
+              },
+              {
+                "trip_id": "5l000G75410A",
+                "arrival_time": "08:49:00",
+                "departure_time": "08:51:00",
+                "stop_id": "UFH",
+                "stop_sequence": "9",
+                "raw_json": "{\"trip_id\": \"5l000G75410A\", \"arrival_time\": \"08:49:00\", \"departure_time\": \"08:51:00\", \"stop_id\": \"UFH\", \"stop_sequence\": \"9\"}",
+                "arrival_seconds": 31740,
+                "departure_seconds": 31860,
+                "sequence_index": 9,
+                "stop_name": "临海",
+                "arrival_at": "2026-11-05T08:49:00+08:00",
+                "departure_at": "2026-11-05T08:51:00+08:00",
+                "raw_stop_sequence": "9",
+                "position": 8
+              },
+              {
+                "trip_id": "5l000G75410A",
+                "arrival_time": "09:03:00",
+                "departure_time": "09:03:00",
+                "stop_id": "TZH",
+                "stop_sequence": "10",
+                "raw_json": "{\"trip_id\": \"5l000G75410A\", \"arrival_time\": \"09:03:00\", \"departure_time\": \"09:03:00\", \"stop_id\": \"TZH\", \"stop_sequence\": \"10\"}",
+                "arrival_seconds": 32580,
+                "departure_seconds": 32580,
+                "sequence_index": 10,
+                "stop_name": "台州西",
+                "arrival_at": "2026-11-05T09:03:00+08:00",
+                "departure_at": "2026-11-05T09:03:00+08:00",
+                "raw_stop_sequence": "10",
+                "position": 9
+              }
+            ]
+          },
+          "data_source": "CHINESE_RAILWAY_GTFS",
+          "data_type": "STATIC_SCHEDULE",
+          "real_time": false,
+          "availability_available": false,
+          "fare_available": false,
+          "booking_available": false,
+          "availability": "UNKNOWN",
+          "fare": null,
+          "data_version": "20261101",
+          "source_sha256": "3877dbc0ebc0392afef4b111dd9ba837c97eb4aa45788542919be53d52a12030",
+          "rights_status": "RIGHTS_REVIEW_PENDING",
+          "usage_scope": "LOCAL_DEMO_ONLY",
+          "service_date": "20261105",
+          "dataset_version": "gtfs-20261101-063437",
+          "database_sha256": "e32f0cd41b45532ea7aedf4c72a6ffc24f6eaa23c042ee8f35cb02aa50735c69",
+          "simulation_clock": {
+            "clock_id": "1b55d6b4c564441cad8e967f40ef3ded",
+            "mode": "PAUSED",
+            "simulation": true,
+            "timezone": "Asia/Shanghai",
+            "now": "2026-10-17T00:00:00+08:00",
+            "anchor": "2026-10-16T16:00:00+00:00",
+            "revision": 0,
+            "dataset_version": "gtfs-20261101-063437"
+          }
+        }
+      },
+      "trace_id": "40cd9b50a543414288cf7ffb8e5a62f2-2",
+      "executed_tools": [
+        "railway_trip_stops"
+      ],
+      "executed": true,
+      "verified": true
+    }
+  ],
+  "started_at": 1794234707.2249696,
+  "evidence_root": "D:\\codexproject\\ticket-agent\\artifacts\\runtime\\v310-ai-executions\\40cd9b50a543414288cf7ffb8e5a62f2",
+  "agent_invoked": false,
+  "finished_at": 1794234708.298138,
+  "duration_s": 1.0731682777404785
+}

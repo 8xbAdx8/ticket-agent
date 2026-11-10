@@ -1,0 +1,28 @@
+[
+  {
+    "provider": "deepseek",
+    "category": "工具调用",
+    "status": "SUCCEEDED",
+    "cases": [
+      "AI-GEN-d9fe41ccd0b24fd6"
+    ],
+    "error": null,
+    "usage": {
+      "prompt": 4948,
+      "completion": 229
+    }
+  },
+  {
+    "provider": "bailian",
+    "category": "工具调用",
+    "status": "SUCCEEDED",
+    "cases": [
+      "AI-GEN-f9b651e2ed0c4969"
+    ],
+    "error": null,
+    "usage": {
+      "prompt": 5056,
+      "completion": 267
+    }
+  }
+]

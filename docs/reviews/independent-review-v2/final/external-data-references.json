@@ -1,0 +1,7 @@
+{
+  "note": "Review evidence bundle, not a portable runtime. Existing static SQLite, original GTFS, frozen data and regression fixture ZIP remain in project; see original paths/SHA in opening protected manifest.",
+  "static_db": "artifacts/runtime/railway-static-phase8-20261102-184912/static.sqlite",
+  "static_sha256": "e32f0cd41b45532ea7aedf4c72a6ffc24f6eaa23c042ee8f35cb02aa50735c69",
+  "required_regression_package": "artifacts/deliverables/Ticket-Agent-V3.6-P0-离线复测包-20261029-v2.zip",
+  "regression_package_sha256": "c170b90aaf8dcf03b9c6c918e8024cf72665a4a9082a030700c97e32cba2b9a9"
+}

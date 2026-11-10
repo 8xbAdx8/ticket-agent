@@ -9,7 +9,7 @@ from datetime import datetime,timezone
 from pathlib import Path
 import hashlib,json,os,sqlite3,uuid
 
-POLICY=dict(schema='ticket-acceptance-budget/2',max_http_requests=50,max_total_tokens=400000,
+POLICY=dict(schema='ticket-acceptance-budget/3',max_http_requests=50,max_total_tokens=None,
     warning_tokens=320000,max_output_tokens=4096,max_read_retries=2,max_transaction_retries=0)
 RETRY=ContextVar('ticket_acceptance_retry',default=None)
 WRITE={'lock_seat','create_order','pay_order','cancel_order','monitor_seat','railway_create_order','railway_pay_order','railway_refund_order','railway_change_order','railway_cancel_order'}
@@ -20,8 +20,9 @@ def fail(category):
 
 
 class Batch:
-    def __init__(self,path):
+    def __init__(self,path,*,max_http=None):
         self.path=Path(path).resolve()
+        self.max_http=int(max_http) if max_http is not None else POLICY['max_http_requests']
         root=Path(__file__).resolve().parents[1]
         if self.path.is_relative_to(root) and not self.path.is_relative_to(root/'artifacts/runtime'):
             raise ValueError('ACCEPTANCE_BUDGET_PATH_REQUIRED')
@@ -34,7 +35,16 @@ class Batch:
         c=sqlite3.connect(self.path.as_uri()+'?mode=rw',uri=True,timeout=10,isolation_level=None)
         c.row_factory=sqlite3.Row;c.execute('PRAGMA busy_timeout=10000')
         row=c.execute('SELECT policy FROM batch WHERE id=1').fetchone()
-        if not row or json.loads(row[0])!=POLICY:c.close();raise ValueError('ACCEPTANCE_BATCH_POLICY_MISMATCH')
+        if not row:
+            c.close();raise ValueError('ACCEPTANCE_BATCH_POLICY_MISMATCH')
+        old=json.loads(row[0])
+        if old!=POLICY:
+            # In-place audit-preserving migration: retain every request row,
+            # unknown reservation and batch id; only remove the obsolete
+            # project-wide token ceiling policy.
+            if old.get('max_total_tokens')==400000 and old.get('max_http_requests')==50:
+                c.execute('UPDATE batch SET policy=? WHERE id=1',(json.dumps(POLICY,sort_keys=True),));c.commit();return c
+            c.close();raise ValueError('ACCEPTANCE_BATCH_POLICY_MISMATCH')
         return c
 
     def initialize(self):
@@ -50,7 +60,7 @@ CREATE TABLE requests(request_id TEXT PRIMARY KEY,provider TEXT NOT NULL,trace_i
             c.execute('INSERT INTO batch VALUES(1,?,?,?,NULL)',(uuid.uuid4().hex,json.dumps(POLICY,sort_keys=True),now()));c.commit()
 
     @staticmethod
-    def _summary(c):
+    def _summary(c,max_http=50):
         rows=[dict(r) for r in c.execute('SELECT * FROM requests ORDER BY rowid')]
         known=[r for r in rows if type(r['prompt']) is int and type(r['completion']) is int]
         observed=sum(r['prompt']+r['completion'] for r in known)
@@ -58,13 +68,13 @@ CREATE TABLE requests(request_id TEXT PRIMARY KEY,provider TEXT NOT NULL,trace_i
         return dict(batch_id=c.execute('SELECT batch_id FROM batch WHERE id=1').fetchone()[0],policy=POLICY,
             http_requests=len(rows),observed_tokens=observed if len(known)==len(rows) else None,
             known_observed_tokens=observed,charged_or_reserved_tokens=committed,
-            remaining_http_requests=max(0,50-len(rows)),remaining_tokens=max(0,400000-committed),
+            remaining_http_requests=max(0,int(max_http)-len(rows)),remaining_tokens=None,
             warning=committed>=320000,halt_reason=c.execute('SELECT halt_reason FROM batch WHERE id=1').fetchone()[0],
             unresolved_request_ids=[r['request_id'] for r in rows if r not in known],requests=rows,cost=None,cost_basis='UNKNOWN')
 
     def snapshot(self):
         with closing(self.connect()) as c:
-            c.execute('BEGIN');return self._summary(c)
+            c.execute('BEGIN');return self._summary(c,self.max_http)
 
     def reserve(self,request_id,provider,body,raw,*,trace_id=None,model_step=None):
         output=body.get('max_tokens',body.get('max_completion_tokens'))
@@ -79,10 +89,11 @@ CREATE TABLE requests(request_id TEXT PRIMARY KEY,provider TEXT NOT NULL,trace_i
         retry=RETRY.get()
         with closing(self.connect()) as c:
             c.execute('BEGIN IMMEDIATE')
-            state=self._summary(c)
+            state=self._summary(c,self.max_http)
             if state['halt_reason']:fail('acceptance_batch_halted')
-            if state['http_requests']>=50:fail('acceptance_http_budget_exhausted')
-            if state['charged_or_reserved_tokens']+bound>400000:fail('acceptance_token_budget_exhausted')
+            if state['http_requests']>=self.max_http:fail('acceptance_http_budget_exhausted')
+            # Token accounting is observability/audit only. Provider quotas, HTTP
+            # admission and output limits remain enforced; no project-wide token cap.
             parent=None;attempt=0
             if retry:
                 parent=retry

@@ -1,0 +1,150 @@
+{
+  "reference_plan": "invalid_parameters",
+  "case_id": "V310-INTEGRATION-invalid_parameters",
+  "execution_id": "72f7cca50dc440e6af2468c441538a9c",
+  "status": "passed",
+  "mode": "deterministic_v310_integration",
+  "model_requests": 0,
+  "fault": null,
+  "steps": [
+    {
+      "index": 0,
+      "kind": "tool",
+      "tool": "railway_query_trips",
+      "args": {},
+      "output": {
+        "error": "INVALID_RAILWAY_ARGUMENTS",
+        "simulation": true
+      },
+      "error": null,
+      "checks": [
+        {
+          "path": "result.error",
+          "op": "eq",
+          "expected": "INVALID_RAILWAY_ARGUMENTS",
+          "actual": "INVALID_RAILWAY_ARGUMENTS",
+          "ok": true
+        },
+        {
+          "path": "expected_error",
+          "ok": true,
+          "actual": "INVALID_RAILWAY_ARGUMENTS",
+          "expected": "INVALID_RAILWAY_ARGUMENTS"
+        },
+        {
+          "path": "metrics.foreign_keys_ok",
+          "ok": true,
+          "actual": true
+        },
+        {
+          "path": "metrics.inventory_conserved",
+          "ok": true,
+          "actual": true
+        },
+        {
+          "path": "metrics.money_conserved",
+          "ok": true,
+          "actual": true
+        },
+        {
+          "path": "metrics.ui_consistent",
+          "ok": true,
+          "actual": true
+        }
+      ],
+      "snapshot": {
+        "state": {
+          "schema": "ticket-business-read-model/1",
+          "session_id": "web-2f21f352a7d9",
+          "source": "LOCAL_SQLITE_COMMITTED",
+          "scenario_id": "railway-demo",
+          "orders": [],
+          "quotes": [],
+          "pending_proposals": [],
+          "proposals": [],
+          "operations": [],
+          "operation_events": [
+            {
+              "event_id": "3534375d9b084e18ab562f5f982ed06c",
+              "aggregate_type": "page",
+              "aggregate_id": "web-2f21f352a7d9",
+              "event_type": "railway_query_trips",
+              "from_state": null,
+              "to_state": null,
+              "detail_json": "{\"source\": \"page_operation\", \"ok\": false, \"elapsed_ms\": 3, \"args\": {\"tool_arguments\": {}, \"tool_call_id\": \"page-call-fb67d0aebaa64297b5c78f0b7413ccf1\", \"operation_id\": \"page-365c5a449a454a5f8567f528b7b39671\", \"scenario_id\": \"railway-demo\"}, \"result\": {\"error\": \"INVALID_RAILWAY_ARGUMENTS\", \"simulation\": true}}",
+              "request_id": null,
+              "created_at": "2026-10-16T16:00:00+00:00"
+            }
+          ],
+          "updated_at": "2026-10-16T16:00:00+00:00",
+          "state_sha256": "38d1567747215217042c0275146f796b9366c23a4c6c5e58fd07c88b5eb3127a"
+        },
+        "ui": {
+          "schema": "ticket-business-read-model/1",
+          "session_id": "web-2f21f352a7d9",
+          "source": "LOCAL_SQLITE_COMMITTED",
+          "scenario_id": "railway-demo",
+          "orders": [],
+          "quotes": [],
+          "pending_proposals": [],
+          "proposals": [],
+          "operations": [],
+          "operation_events": [
+            {
+              "event_id": "3534375d9b084e18ab562f5f982ed06c",
+              "aggregate_type": "page",
+              "aggregate_id": "web-2f21f352a7d9",
+              "event_type": "railway_query_trips",
+              "from_state": null,
+              "to_state": null,
+              "detail_json": "{\"source\": \"page_operation\", \"ok\": false, \"elapsed_ms\": 3, \"args\": {\"tool_arguments\": {}, \"tool_call_id\": \"page-call-fb67d0aebaa64297b5c78f0b7413ccf1\", \"operation_id\": \"page-365c5a449a454a5f8567f528b7b39671\", \"scenario_id\": \"railway-demo\"}, \"result\": {\"error\": \"INVALID_RAILWAY_ARGUMENTS\", \"simulation\": true}}",
+              "request_id": null,
+              "created_at": "2026-10-16T16:00:00+00:00"
+            }
+          ],
+          "updated_at": "2026-10-16T16:00:00+00:00",
+          "state_sha256": "38d1567747215217042c0275146f796b9366c23a4c6c5e58fd07c88b5eb3127a"
+        },
+        "db": {
+          "v39_orders": [],
+          "v39_order_items": [],
+          "v39_holds": [],
+          "v39_transactions": [],
+          "v39_inventory_segments": [],
+          "v39_inventory_events": [],
+          "v39_refund_requests": [],
+          "v39_change_requests": [],
+          "v39_proposals": [],
+          "v39_idempotency": [],
+          "v39_refund_items": [],
+          "v39_hold_segments": [],
+          "v39_transaction_allocations": []
+        },
+        "metrics": {
+          "order_count": 0,
+          "hold_count": 0,
+          "transaction_count": 0,
+          "held": 0,
+          "sold": 0,
+          "foreign_keys_ok": true,
+          "inventory_conserved": true,
+          "money_conserved": true,
+          "ui_consistent": true
+        },
+        "result": {
+          "error": "INVALID_RAILWAY_ARGUMENTS",
+          "simulation": true
+        }
+      },
+      "trace_id": "72f7cca50dc440e6af2468c441538a9c-0",
+      "executed_tools": [],
+      "executed": false,
+      "verified": true
+    }
+  ],
+  "started_at": 1794234713.9467726,
+  "evidence_root": "D:\\codexproject\\ticket-agent\\artifacts\\runtime\\v310-ai-executions\\72f7cca50dc440e6af2468c441538a9c",
+  "agent_invoked": false,
+  "finished_at": 1794234714.2538948,
+  "duration_s": 0.30712223052978516
+}

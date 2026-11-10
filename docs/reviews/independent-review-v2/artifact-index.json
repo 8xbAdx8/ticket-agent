@@ -1,0 +1,21 @@
+{
+  "job": "D:\\codexproject\\ticket-agent\\artifacts\\runtime\\ai-test-v2-20261109",
+  "opening": "opening.json",
+  "live": "live/candidates.sqlite",
+  "live_requests": [
+    "live-attempt3/",
+    "live-attempt4/"
+  ],
+  "live_failed_attempts": [
+    "live/",
+    "live-attempt2/"
+  ],
+  "usage": "budget-snapshot.json",
+  "adapter": "adapter-final.json",
+  "coverage": "coverage.json",
+  "mutations": "mutations.json",
+  "regression": "final-regression/results/",
+  "browser": "browser-final/",
+  "protection": "protection-final.json",
+  "comparison": "baseline-comparison.json"
+}

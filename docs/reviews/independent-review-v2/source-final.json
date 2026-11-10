@@ -1,0 +1,17 @@
+{
+  "changed_opening_files": [
+    "target/scenario_generator.py",
+    "web/scenario_generator.py"
+  ],
+  "final_regression_source_matches": {
+    "target/scenario_generator.py": true,
+    "target/scenario_v310.py": true,
+    "target/scenario_plans.py": true,
+    "target/scenario_quality.py": true,
+    "web/scenario_generator.py": true,
+    "web/app.py": true,
+    "tests/test_ai_scenario_v2.py": true,
+    "tests/test_ai_scenario_generator.py": true
+  },
+  "head": "c1620cb4e9e8df094494fc77ef3f0d07ef9928c3"
+}

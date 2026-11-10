@@ -1,0 +1,149 @@
+{
+  "population": "deterministic V310 integration; excludes injected faults; does not measure Live Agent quality",
+  "tools": {
+    "numerator": 11,
+    "denominator": 11,
+    "value": 1.0,
+    "display": "11/11",
+    "definition": "distinct actually executed tools with verified steps / current registered railway tools"
+  },
+  "tool_names": [
+    "railway_cancel_order",
+    "railway_change_order",
+    "railway_check_inventory",
+    "railway_create_order",
+    "railway_get_order",
+    "railway_pay_order",
+    "railway_query_trips",
+    "railway_quote_fare",
+    "railway_refund_order",
+    "railway_search_stations",
+    "railway_trip_stops"
+  ],
+  "workflows": {
+    "numerator": 5,
+    "denominator": 5,
+    "value": 1.0,
+    "display": "5/5",
+    "definition": "query/create/pay/refund/change with committed evidence"
+  },
+  "states": {
+    "numerator": 6,
+    "denominator": 6,
+    "value": 1.0,
+    "display": "6/6",
+    "definition": "observed committed order states / declared six-state inventory"
+  },
+  "transitions": {
+    "numerator": 10,
+    "denominator": 10,
+    "value": 1.0,
+    "display": "10/10",
+    "definition": "observed confirmation/expiry edges / ten declared legal edges including refund self-transitions"
+  },
+  "observed_transitions": [
+    [
+      "CHANGED",
+      "CANCELLED"
+    ],
+    [
+      "CHANGED",
+      "CHANGED"
+    ],
+    [
+      "NONE",
+      "PENDING_PAYMENT"
+    ],
+    [
+      "PAID",
+      "CANCELLED"
+    ],
+    [
+      "PAID",
+      "CHANGED"
+    ],
+    [
+      "PAID",
+      "PAID"
+    ],
+    [
+      "PENDING_PAYMENT",
+      "CANCELLED"
+    ],
+    [
+      "PENDING_PAYMENT",
+      "EXPIRED"
+    ],
+    [
+      "PENDING_PAYMENT",
+      "PAID"
+    ],
+    [
+      "PENDING_PAYMENT",
+      "PAYMENT_FAILED"
+    ]
+  ],
+  "missing_transitions": [],
+  "security": {
+    "numerator": 7,
+    "denominator": 7,
+    "value": 1.0,
+    "display": "7/7",
+    "definition": "passed named negative/guard/idempotency plans / seven declared checks"
+  },
+  "exceptions": {
+    "numerator": 4,
+    "denominator": 4,
+    "value": 1.0,
+    "display": "4/4",
+    "definition": "passed expiry/failure/invalid-parameter plans / four declared checks; timeout/truncation unmeasured"
+  },
+  "multi_turn": {
+    "numerator": 1,
+    "denominator": 1,
+    "value": 1.0,
+    "display": "1/1",
+    "definition": "two-turn real Mock Conversation input plan / one declared plan; not generalized context coverage"
+  },
+  "reply_consistency": {
+    "numerator": 1,
+    "denominator": 1,
+    "value": 1.0,
+    "display": "1/1",
+    "definition": "paid readback has no stale waiting-for-payment claim / one declared check"
+  },
+  "rag": {
+    "numerator": 0,
+    "denominator": 0,
+    "value": null,
+    "display": "N/A",
+    "definition": "no RAG quality execution in this adapter batch"
+  },
+  "trace": {
+    "numerator": 110,
+    "denominator": 110,
+    "value": 1.0,
+    "display": "110/110",
+    "definition": "per-step trace identifiers and existing evidence file"
+  },
+  "models": {
+    "numerator": 0,
+    "denominator": 2,
+    "value": 0.0,
+    "display": "0/2",
+    "definition": "completed Live Agent execution / DeepSeek and Qwen, not model request attempts"
+  },
+  "defects": {
+    "numerator": 4,
+    "denominator": 4,
+    "value": 1.0,
+    "display": "4/4",
+    "definition": "controlled fault runs that fail the original independent assertions"
+  },
+  "unmeasured": [
+    "Live Agent",
+    "arbitrary natural-language truth",
+    "timeout/truncation recovery",
+    "load/concurrent throughput"
+  ]
+}

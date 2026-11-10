@@ -1,5 +1,9 @@
 ﻿# Ticket Agent 项目状态
 
+> **2026-11-10 Git归档与推送**：用户已明确授权提交推送当前V3.11及后续R1源码、测试和报告，整体仍 **PARTIAL**。提交前离线SDK检查90/0/0（R1 3 + V311 76 + V310 4 +预算7），真实API0。原1971/11/1是V311冻结版本的完整回归，不能扩大为当前R1完整回归成绩；R1完整回归/浏览器/完整独立验收仍未完成。运行数据库、原始Trace、artifacts运行证据和大数据留本机，不加入本次Git提交。实际归档Commit及远端同SHA回执索引：`artifacts/runtime/github-push-20261110-v311-r1/push-receipt.json`；历史报告中的“未提交/推送”保留为当时状态。
+
+> **2026-11-10 V3.11 当前有效增量**：整体 **PARTIAL**。原Agent自然语言验收、独立SQL Oracle、批次预算/3、SDK故障及测试控制台实验区已实现；76专项通过，最终完整1971/11/1另199子测试，旧失败/Skip ID不变。Live39HTTP（DS24/Qwen15）、320985Token、费用UNKNOWN；Qwen已模拟支付，DS已支付并部分退款；改签/新建单两轮被原单轮Token保护截断，未确认待办，不放宽限制。SDK工具11/11、状态6/6、转换10/10，不混算Live9/11、2/6、3/10。Edge主批次八规格64/64，PageError0、外链字体阻断Console24/Network24。5587仅用户批准的预算测试例外，其余5586一致；60个新测试DB快照不变量通过。独立只读子Agent限定CONDITIONAL PASS，非用户验收。正式103/Bridge仍BLOCKED。HEAD2bba4caa379b111aadcefd0369e79cf6259e33e7，暂存空，未提交推送。详情 `docs/reviews/V311-IMPLEMENTATION-REPORT.md`、证据 `artifacts/runtime/v310-v311-20261110-implementation/`。下列旧“当前”描述为原时点历史，以上述最新增量为准。
+
 > **2026-11-09 AI测试体系V2（本轮增量优先）**：OVERALL **PARTIAL**。DeepSeek/Qwen真实生成各5候选，全部PENDING，用户人工批准0、AI候选V310执行0；另16个确定性参考计划复用原Registry/Service/隔离SQLite通过，不能混算。新增V310Adapter、版本化计划、质量/覆盖率与模型对照；工具11/11、状态6/6、声明合法转换10/10、Trace110/110、受控故障5/5，非完整语义/RAG/LiveAgent验收。最终专项70/0/0（新增46+原17+预算7）；最终冻结回归1891/11/1另199子测试，原11失败和1Skip逐ID无增减，非全绿；Edge八规格51/51、17PNG，PageError0、字体阻断Console32/Network32。5587保护项零差异。真实预算HTTP尝试14（4已知响应、10UNKNOWN保留预留），已知Token21776，费用UNKNOWN，剩余Token30501；不再调用模型。独立只读子Agent首审BLOCKED、整改复审CONDITIONAL PASS（限定离线子范围），用户验收待定。Live Agent/RAG质量/长上下文/超时截断NOT_RUN或PARTIAL。HEAD c1620cb4e9e8df094494fc77ef3f0d07ef9928c3，分支不变，未提交推送。报告 `docs/reviews/Ticket-Agent-AI-Test-Scenario-Generator-V2-Report.md`，独立材料 `docs/reviews/independent-review-v2/`，证据 `artifacts/runtime/ai-test-v2-20261109/`。既有V3.10交易/D9/P01/Prompt/工具/正式103/冻结数据均不变；正式103仍BLOCKED。
 
 
@@ -1150,3 +1154,53 @@ RAG历史：V3.5.2指标重算无数学错误，原值不改；DeepSeek完整回
 - 归档前分支feat/ticket-agent-v36-stabilization，本地及远端父提交c1620cb4e9e8df094494fc77ef3f0d07ef9928c3。密钥扫描通过、最终代码SHA未变、git diff --check通过。不修改业务代码、不重复测试或调用模型。
 - 完整回归仍1891/11/1+199子测试、专项70/0/0、浏览器51/51；整体PARTIAL、独立复审CONDITIONAL PASS、用户验收待定。
 - 运行数据库/WAL/SHM、原始Trace、临时/重复解压材料不提交，全部本机保留。完整证据在单一审查ZIP，原SHA不变；详见docs/reviews/Ticket-Agent-AI-Test-V2-Git-Archive.md。
+
+### 2026-11-10：AI Test V2 下一阶段（V3.10 DSL/门控/适配器）
+
+- 现场 HEAD 2bba4caa379b111aadcefd0369e79cf6259e33e7，分支不变；22 项未跟踪 V2 审查/证据，未提交、未推送、未 reset。
+- 已实现 V310_SYSTEM/Store adapter=v310/UI 选择；Mock V310 生成→质量 PASS→TEST_ONLY V310Adapter 3 步 passed；弱断言/缺 confirm 拒绝。
+- AI 专项 74/0/0（V2 46+原生成器17+新4+预算7）；V3.10 387/0/0。旧历史基线 1891/11/1；当前快照直接 pytest 因 static 未复制出现 114 failed/40 errors，不能声称旧回归 PASS。
+- Live：DeepSeek 1 次 OpenAIConnectionError；Qwen 1 次 acceptance_token_budget_exhausted；原生 V310 候选 0、AI 候选执行 0；预算剩余 8669 Token/35 HTTP，费用 UNKNOWN，未重试未增额。
+- 浏览器当前四规格未重跑；V2 51/51 只作历史基线；独立审查 NOT_RUN；产品 v391/BLOCKED 未变。
+- 状态 PARTIAL。报告 docs/reviews/Ticket-Agent-AI-Test-*.md；证据 artifacts/runtime/v310-ai-test-20261110/。
+
+### 2026-11-10：AI Test V3.10 Live 阻塞与最终验收
+
+- 网络诊断：DeepSeek/Qwen DNS/TCP/TLS 均通，HTTP 401 无 Key 探针证明 HTTP 栈可达；旧 OpenAIConnectionError 不是 DNS/TCP/TLS。
+- 真实响应：DeepSeek prompt619/completion283 raw已保存，候选因 from/to 等非法参数 REJECTED；Qwen raw已保存，候选因 step 字段/无 checks REJECTED。原生高质量候选 0/0，AI候选执行 0；TEST_ONLY 3步 PASS。
+- 预算：17 HTTP、已知23567、未知预留369555、剩余6878、费用UNKNOWN；未提高/重置/删未知；无自动重试。
+- AI 74/0/0；V3.10 387/0/0；浏览器当前4分辨率×深浅8/8、PageError/Console/RequestFailed=0；旧冻结快照1441/80/1，非有效1891/11/1；5587全量保护NOT_RUN；独立审查NOT_RUN。
+- 状态 PARTIAL；证据 artifacts/runtime/v310-live-20261110/，ZIP b9cdfebea5c94a694703f3c6166992f8d758b8513fd27e435574cc3a239da863。未提交推送。
+
+### 2026-11-10：AI Test 双模型真实生成/执行与最终验收
+
+- 取消累计 Token 硬上限：预算 policy schema /3，max_total_tokens=None；31请求、已知140281、未知预留403918、费用UNKNOWN，历史账本/未知记录未删。
+- DeepSeek/Qwen 各5条真实AI候选质量PASS，经用户实际批准，V310Adapter各5条执行PASS（共10/10）；均为只读（search/query/inventory），不冒充建单/支付/退款/改签覆盖。
+- 质量门控：完整11工具schema、required/type/enum、真实result路径、trusted confirm、业务state/db/ui；坏候选/重复保留REJECTED，未篡改原始响应。
+- AI 74/0/0；V3.10 387/0/0；浏览器当前8/8（4分辨率×深浅）；关键保护资产未变；5587全量未重算；旧快照1441/80/1非有效1891/11/1；独立审查NOT_RUN。
+- 真实业务缺陷：最终10条只读未发现；早期失败为候选断言/参数缺陷，未确认实现缺陷。
+- 状态 PARTIAL。报告 docs/reviews/Ticket-Agent-AI-Test-*.md；证据 artifacts/runtime/v310-live-20261110/。未提交/推送。
+
+
+### 2026-11-10：V3.11 原Agent业务测试增量
+
+- 用户正式批准50HTTP/各25、pilot24/各12、独立模拟写及5587预算测试限定例外；原账本不重置。
+- 新代码/文件及原因见V311-IMPLEMENTATION-REPORT；原Agent/Provider/Registry/Service/D9/P01/八工具/十一工具/正式103未改。已有5处跟踪修改及293未跟踪成果保留。
+- 实际命令、逐ID回归、矩阵与原始Trace/DB/用量见本批次；新增76通过，完整1971通过/11失败/1Skip/199子测试；退出1，不全绿。
+- Live39次/320985Token/费用UNKNOWN，全部结算、自动重试0。原误报FAIL保留；两条原单轮Token截断未伪装成功。DS新场景net6150=2人有效面值6000+成功手续费150。
+- SDK/Live/DSL分别计量；目前Live9工具/4流程/2状态/3转换，完整目标未达成；安全细分/RAG/真实HTTP故障及完整浏览器交易仍PARTIAL/NOT_RUN。
+- 浏览器主SDK八规格64/0；实际数据库确认唯一模拟支付9000；阻断字体资源Console24/Network24单列，旧失败批次保留。
+- 保护5587已查，唯一批准例外原4697eb83…/当前c09730dc…；60份新DB只读不变量及备份。正式103仍BLOCKED、旧11失败未删除。
+- 独立只读子Agent最终CONDITIONAL PASS仅限实际验证范围；ACCEPTED待用户，不能COMPLETE。
+- 下一步先审查单轮上下文及预算/工具回传体积，保持单轮限制，版本化完善自然语言Spec绑定及质量门禁，再由用户确认Live剩余或新批次。不得自动继续API或提交推送。
+
+- V311封存补充：浏览器控件/历史八规格24/24及16截图，与主64/64分列；测试夹具批量批准由实际候选DB核对3APPROVED，不是新真实AI人工审批。独立补审确认旧DSL参考夹具与门禁不兼容仍阻塞完整AI候选闭环，保持PARTIAL。详见V311报告最终补充。
+
+### 2026-11-10：V3.11-R1 多轮生命周期实施（审批后）
+
+- R1独立批次96/48/24；pilot DeepSeek/Qwen均查询→报价→建单→确认，订单PENDING_PAYMENT 6000分/2人。
+- DeepSeek完成支付+部分退款（refunded2850/fee150/active1）；改签轮未调用railway_query_trips，取消未取得proposal。Qwen完成支付、取消PASS；支付提案轮曾因reply_claims未来时态误报FAIL，已修复并保留原FAIL。
+- Oracle 10个隔离DB invariants全PASS；R1专项3/0/0；V3.11 76/0/0。
+- 预算86/96（Deep48/48、Qwen38/48），已知636141、未知预留672900，费用UNKNOWN；剩余10仅Qwen，无自动重试。
+- 未完成：完整A-F双模型、拒绝/幂等/故障、浏览器、旧回归、5587全量保护、独立审查。V311-R1 PARTIAL。
+- 证据 artifacts/runtime/v310-v311-r1-20261110/，报告 docs/reviews/V311-R1-IMPLEMENTATION-STATUS.md。未提交推送。

@@ -1,0 +1,965 @@
+[
+  {
+    "id": "AI-GEN-98dfd6d5ea9e457a",
+    "revision": 1,
+    "status": "PENDING",
+    "body": {
+      "assertions": {
+        "finish_reason": "stop",
+        "reply_contains": [
+          "没有软卧",
+          "二等座",
+          "一等座",
+          "商务座"
+        ],
+        "reply_not_contains": [
+          "G7301有软卧",
+          "已为您查询软卧"
+        ],
+        "require_citation": false
+      },
+      "case_id": "AI-GEN-98dfd6d5ea9e457a",
+      "category": "工具调用",
+      "conversation": [
+        "帮我查一下明天上海到杭州的高铁，要软卧"
+      ],
+      "created_at": "2026-11-09T14:06:17.539683+00:00",
+      "difficulty": "medium",
+      "dimension": "工具调用",
+      "expect": {
+        "finish_reason": "stop",
+        "reply_contains": [
+          "没有软卧",
+          "二等座",
+          "一等座",
+          "商务座"
+        ],
+        "reply_not_contains": [
+          "G7301有软卧",
+          "已为您查询软卧"
+        ],
+        "require_citation": false
+      },
+      "expected_behavior": "clarify",
+      "expected_behavior_details": [
+        "clarify"
+      ],
+      "expected_call_order": [],
+      "expected_doc_ids": [],
+      "expected_state_changes": [],
+      "expected_tool_calls": [],
+      "forbidden_claims": [
+        "高铁提供软卧席位",
+        "已调用工具查询软卧余票"
+      ],
+      "generation_model": "qwen3.8-flash",
+      "needs_manual_review": false,
+      "normalized_hash": "217f67e93c4dba64431a0eb98a04e1d0433783eec61f0700d98622d2798b7b46",
+      "objective": "高铁查询非法席别参数边界",
+      "packet_id": "ev-p02-5486",
+      "preconditions": [],
+      "prompt_version": "140932e41933d15ba9c02fe062a88aa82ebf92821534acce7badde1804ba6d60",
+      "provenance": {
+        "batch_id": null,
+        "generated_utc": null,
+        "model": "qwen3.8-flash",
+        "origin": "ai_generated",
+        "prompt_sha256": "140932e41933d15ba9c02fe062a88aa82ebf92821534acce7badde1804ba6d60",
+        "provider": "qwen3.8-flash",
+        "request_id": null,
+        "response_sha256": "0bcde250872e14954881c341e0f94cecbcd8049a91302eeb59a64c8f5c803b94",
+        "review_status": "candidate"
+      },
+      "required_evidence": [],
+      "review_status": "PENDING",
+      "risk_level": "medium",
+      "schema": "ticket-p2-scenario/1",
+      "schema_version": "ticket-ai-scenario/1",
+      "source_references": [
+        "target/tools.py",
+        "target/v39/tool-schemas.json",
+        "target/v39/policy.py",
+        "target/v39/lifecycle.py",
+        "target/agent.py",
+        "data/policies.md",
+        "web/datasets/b_v32_20261020/case_catalog.json",
+        "docs/reviews/Ticket-Agent-V3.10-Passenger-Proposal-Fix.md"
+      ],
+      "title": "高铁查询非法席别参数边界",
+      "turns": [
+        "帮我查一下明天上海到杭州的高铁，要软卧"
+      ]
+    },
+    "updated": "2026-11-09T14:06:17.541421+00:00"
+  },
+  {
+    "id": "AI-GEN-df3fef14dd8a4a07",
+    "revision": 1,
+    "status": "PENDING",
+    "body": {
+      "assertions": {
+        "finish_reason": "stop",
+        "reply_contains": [
+          "机票没有一等座",
+          "经济舱",
+          "公务舱"
+        ],
+        "reply_not_contains": [
+          "已查询一等座机票"
+        ],
+        "require_citation": false
+      },
+      "case_id": "AI-GEN-df3fef14dd8a4a07",
+      "category": "工具调用",
+      "conversation": [
+        "查明天北京到上海的机票，座位类型选一等座"
+      ],
+      "created_at": "2026-11-09T14:06:17.539683+00:00",
+      "difficulty": "medium",
+      "dimension": "工具调用",
+      "expect": {
+        "finish_reason": "stop",
+        "reply_contains": [
+          "机票没有一等座",
+          "经济舱",
+          "公务舱"
+        ],
+        "reply_not_contains": [
+          "已查询一等座机票"
+        ],
+        "require_citation": false
+      },
+      "expected_behavior": "clarify",
+      "expected_behavior_details": [
+        "clarify"
+      ],
+      "expected_call_order": [],
+      "expected_doc_ids": [],
+      "expected_state_changes": [],
+      "expected_tool_calls": [],
+      "forbidden_claims": [
+        "机票有一等座",
+        "已调用query_tickets查询一等座机票"
+      ],
+      "generation_model": "qwen3.8-flash",
+      "needs_manual_review": false,
+      "normalized_hash": "0ace8585b2b1e7f9f5942c2251adcff4cf1ade6610e2ecfcf78b20581bbaa57f",
+      "objective": "机票查询混用高铁席别",
+      "packet_id": "ev-p02-5486",
+      "preconditions": [],
+      "prompt_version": "140932e41933d15ba9c02fe062a88aa82ebf92821534acce7badde1804ba6d60",
+      "provenance": {
+        "batch_id": null,
+        "generated_utc": null,
+        "model": "qwen3.8-flash",
+        "origin": "ai_generated",
+        "prompt_sha256": "140932e41933d15ba9c02fe062a88aa82ebf92821534acce7badde1804ba6d60",
+        "provider": "qwen3.8-flash",
+        "request_id": null,
+        "response_sha256": "9205214d46262fdb48627955ef5018f5f9b0ddbe90117e365a6724b77578247a",
+        "review_status": "candidate"
+      },
+      "required_evidence": [],
+      "review_status": "PENDING",
+      "risk_level": "medium",
+      "schema": "ticket-p2-scenario/1",
+      "schema_version": "ticket-ai-scenario/1",
+      "source_references": [
+        "target/tools.py",
+        "target/v39/tool-schemas.json",
+        "target/v39/policy.py",
+        "target/v39/lifecycle.py",
+        "target/agent.py",
+        "data/policies.md",
+        "web/datasets/b_v32_20261020/case_catalog.json",
+        "docs/reviews/Ticket-Agent-V3.10-Passenger-Proposal-Fix.md"
+      ],
+      "title": "机票查询混用高铁席别",
+      "turns": [
+        "查明天北京到上海的机票，座位类型选一等座"
+      ]
+    },
+    "updated": "2026-11-09T14:06:17.541421+00:00"
+  },
+  {
+    "id": "AI-GEN-6c0ddedeb1c543d4",
+    "revision": 1,
+    "status": "PENDING",
+    "body": {
+      "assertions": {
+        "finish_reason": "stop",
+        "reply_contains": [
+          "请问您想查询哪一天的车票？",
+          "具体日期"
+        ],
+        "reply_not_contains": [
+          "已查询明天车票",
+          "默认查询今天"
+        ],
+        "require_citation": false
+      },
+      "case_id": "AI-GEN-6c0ddedeb1c543d4",
+      "category": "工具调用",
+      "conversation": [
+        "查一下上海到杭州的高铁"
+      ],
+      "created_at": "2026-11-09T14:06:17.539683+00:00",
+      "difficulty": "easy",
+      "dimension": "工具调用",
+      "expect": {
+        "finish_reason": "stop",
+        "reply_contains": [
+          "请问您想查询哪一天的车票？",
+          "具体日期"
+        ],
+        "reply_not_contains": [
+          "已查询明天车票",
+          "默认查询今天"
+        ],
+        "require_citation": false
+      },
+      "expected_behavior": "clarify",
+      "expected_behavior_details": [
+        "clarify"
+      ],
+      "expected_call_order": [],
+      "expected_doc_ids": [],
+      "expected_state_changes": [],
+      "expected_tool_calls": [],
+      "forbidden_claims": [
+        "未指定日期时默认查询当天或次日",
+        "直接调用query_tickets而不澄清"
+      ],
+      "generation_model": "qwen3.8-flash",
+      "needs_manual_review": false,
+      "normalized_hash": "801e78a88b644d7ce5a50704e6d1e142454308113fc0d1b742a3f9e6e90b26da",
+      "objective": "缺少日期参数的追问",
+      "packet_id": "ev-p02-5486",
+      "preconditions": [],
+      "prompt_version": "140932e41933d15ba9c02fe062a88aa82ebf92821534acce7badde1804ba6d60",
+      "provenance": {
+        "batch_id": null,
+        "generated_utc": null,
+        "model": "qwen3.8-flash",
+        "origin": "ai_generated",
+        "prompt_sha256": "140932e41933d15ba9c02fe062a88aa82ebf92821534acce7badde1804ba6d60",
+        "provider": "qwen3.8-flash",
+        "request_id": null,
+        "response_sha256": "3e18240c8ef4e15127a4647c8b57db7df2ace9014ae7599b389a9414be8f7a30",
+        "review_status": "candidate"
+      },
+      "required_evidence": [],
+      "review_status": "PENDING",
+      "risk_level": "medium",
+      "schema": "ticket-p2-scenario/1",
+      "schema_version": "ticket-ai-scenario/1",
+      "source_references": [
+        "target/tools.py",
+        "target/v39/tool-schemas.json",
+        "target/v39/policy.py",
+        "target/v39/lifecycle.py",
+        "target/agent.py",
+        "data/policies.md",
+        "web/datasets/b_v32_20261020/case_catalog.json",
+        "docs/reviews/Ticket-Agent-V3.10-Passenger-Proposal-Fix.md"
+      ],
+      "title": "缺少日期参数的追问",
+      "turns": [
+        "查一下上海到杭州的高铁"
+      ]
+    },
+    "updated": "2026-11-09T14:06:17.541421+00:00"
+  },
+  {
+    "id": "AI-GEN-db461ea7707c48ae",
+    "revision": 1,
+    "status": "PENDING",
+    "body": {
+      "assertions": {
+        "args": {
+          "query_tickets": {
+            "date": "<rel_date:+1>",
+            "from_city": "上海",
+            "kind": "高铁",
+            "seat_type": "二等座",
+            "to_city": "杭州"
+          }
+        },
+        "finish_reason": "stop",
+        "must_call": [
+          "query_tickets",
+          "query_tickets"
+        ],
+        "reply_contains": [
+          "G7301",
+          "G7302",
+          "G7303"
+        ],
+        "reply_not_contains": [
+          "无法重复查询",
+          "系统错误"
+        ],
+        "require_citation": false
+      },
+      "case_id": "AI-GEN-db461ea7707c48ae",
+      "category": "工具调用",
+      "conversation": [
+        "查明天上海到杭州的高铁二等座",
+        "再查一遍明天上海到杭州的高铁二等座"
+      ],
+      "created_at": "2026-11-09T14:06:17.539683+00:00",
+      "difficulty": "medium",
+      "dimension": "工具调用",
+      "expect": {
+        "args": {
+          "query_tickets": {
+            "date": "<rel_date:+1>",
+            "from_city": "上海",
+            "kind": "高铁",
+            "seat_type": "二等座",
+            "to_city": "杭州"
+          }
+        },
+        "finish_reason": "stop",
+        "must_call": [
+          "query_tickets",
+          "query_tickets"
+        ],
+        "reply_contains": [
+          "G7301",
+          "G7302",
+          "G7303"
+        ],
+        "reply_not_contains": [
+          "无法重复查询",
+          "系统错误"
+        ],
+        "require_citation": false
+      },
+      "expected_behavior": "answer",
+      "expected_behavior_details": [
+        "answer"
+      ],
+      "expected_call_order": [],
+      "expected_doc_ids": [],
+      "expected_state_changes": [],
+      "expected_tool_calls": [
+        "query_tickets",
+        "query_tickets"
+      ],
+      "forbidden_claims": [
+        "禁止用户重复查询同一车次信息",
+        "第二次查询返回不同结果"
+      ],
+      "generation_model": "qwen3.8-flash",
+      "needs_manual_review": false,
+      "normalized_hash": "9fb1bcbd5f4ac4821313b5ea42c24d5a82318eccdc83179546e2b235cef4d121",
+      "objective": "重复调用相同查询工具",
+      "packet_id": "ev-p02-5486",
+      "preconditions": [],
+      "prompt_version": "140932e41933d15ba9c02fe062a88aa82ebf92821534acce7badde1804ba6d60",
+      "provenance": {
+        "batch_id": null,
+        "generated_utc": null,
+        "model": "qwen3.8-flash",
+        "origin": "ai_generated",
+        "prompt_sha256": "140932e41933d15ba9c02fe062a88aa82ebf92821534acce7badde1804ba6d60",
+        "provider": "qwen3.8-flash",
+        "request_id": null,
+        "response_sha256": "d6a5c0fdc131923acfefe25c0028e024ef2b53ae831e86c36c3e71f3c605681a",
+        "review_status": "candidate"
+      },
+      "required_evidence": [],
+      "review_status": "PENDING",
+      "risk_level": "medium",
+      "schema": "ticket-p2-scenario/1",
+      "schema_version": "ticket-ai-scenario/1",
+      "source_references": [
+        "target/tools.py",
+        "target/v39/tool-schemas.json",
+        "target/v39/policy.py",
+        "target/v39/lifecycle.py",
+        "target/agent.py",
+        "data/policies.md",
+        "web/datasets/b_v32_20261020/case_catalog.json",
+        "docs/reviews/Ticket-Agent-V3.10-Passenger-Proposal-Fix.md"
+      ],
+      "title": "重复调用相同查询工具",
+      "turns": [
+        "查明天上海到杭州的高铁二等座",
+        "再查一遍明天上海到杭州的高铁二等座"
+      ]
+    },
+    "updated": "2026-11-09T14:06:17.541421+00:00"
+  },
+  {
+    "id": "AI-GEN-4c0da6e72ace4357",
+    "revision": 1,
+    "status": "PENDING",
+    "body": {
+      "assertions": {
+        "args": {
+          "query_tickets": {
+            "date": "<rel_date:+0>",
+            "from_city": "北京",
+            "kind": "高铁",
+            "to_city": "上海"
+          }
+        },
+        "finish_reason": "stop",
+        "must_call": [
+          "query_tickets"
+        ],
+        "require_citation": false
+      },
+      "case_id": "AI-GEN-4c0da6e72ace4357",
+      "category": "工具调用",
+      "conversation": [
+        "查北京到上海的高铁经济舱"
+      ],
+      "created_at": "2026-11-09T14:06:03.773209+00:00",
+      "difficulty": "medium",
+      "dimension": "工具调用",
+      "expect": {
+        "args": {
+          "query_tickets": {
+            "date": "<rel_date:+0>",
+            "from_city": "北京",
+            "kind": "高铁",
+            "to_city": "上海"
+          }
+        },
+        "finish_reason": "stop",
+        "must_call": [
+          "query_tickets"
+        ],
+        "require_citation": false
+      },
+      "expected_behavior": "clarify",
+      "expected_behavior_details": [
+        "clarify"
+      ],
+      "expected_call_order": [],
+      "expected_doc_ids": [],
+      "expected_state_changes": [],
+      "expected_tool_calls": [
+        "query_tickets"
+      ],
+      "forbidden_claims": [
+        "断言北京-上海二等座有票"
+      ],
+      "generation_model": "deepseek-flash",
+      "needs_manual_review": false,
+      "normalized_hash": "de426e6e27dcfdf0006b00e50a3bd1dc1bd982f8bd639f26c850c16e04c9e55c",
+      "objective": "验证高铁与机票席别不兼容时澄清而非传非法参数",
+      "packet_id": "ev-p02-5486",
+      "preconditions": [],
+      "prompt_version": "140932e41933d15ba9c02fe062a88aa82ebf92821534acce7badde1804ba6d60",
+      "provenance": {
+        "batch_id": null,
+        "generated_utc": null,
+        "model": "deepseek-flash",
+        "origin": "ai_generated",
+        "prompt_sha256": "140932e41933d15ba9c02fe062a88aa82ebf92821534acce7badde1804ba6d60",
+        "provider": "deepseek-flash",
+        "request_id": null,
+        "response_sha256": "1c96d6e6508d29cb08deb597f3a1581607e6ba88193851e4e128772a591b9162",
+        "review_status": "candidate"
+      },
+      "required_evidence": [],
+      "review_status": "PENDING",
+      "risk_level": "medium",
+      "schema": "ticket-p2-scenario/1",
+      "schema_version": "ticket-ai-scenario/1",
+      "source_references": [
+        "target/tools.py",
+        "target/v39/tool-schemas.json",
+        "target/v39/policy.py",
+        "target/v39/lifecycle.py",
+        "target/agent.py",
+        "data/policies.md",
+        "web/datasets/b_v32_20261020/case_catalog.json",
+        "docs/reviews/Ticket-Agent-V3.10-Passenger-Proposal-Fix.md"
+      ],
+      "title": "高铁查询指定机票席别参数非法",
+      "turns": [
+        "查北京到上海的高铁经济舱"
+      ]
+    },
+    "updated": "2026-11-09T14:06:03.777374+00:00"
+  },
+  {
+    "id": "AI-GEN-c9f2e91ce69b45fa",
+    "revision": 1,
+    "status": "PENDING",
+    "body": {
+      "assertions": {
+        "finish_reason": "stop",
+        "require_citation": false
+      },
+      "case_id": "AI-GEN-c9f2e91ce69b45fa",
+      "category": "工具调用",
+      "conversation": [
+        "帮我查一下高铁余票"
+      ],
+      "created_at": "2026-11-09T14:06:03.773209+00:00",
+      "difficulty": "medium",
+      "dimension": "工具调用",
+      "expect": {
+        "finish_reason": "stop",
+        "require_citation": false
+      },
+      "expected_behavior": "clarify",
+      "expected_behavior_details": [
+        "clarify"
+      ],
+      "expected_call_order": [],
+      "expected_doc_ids": [],
+      "expected_state_changes": [],
+      "expected_tool_calls": [],
+      "forbidden_claims": [
+        "虚构车次号或余票数量"
+      ],
+      "generation_model": "deepseek-flash",
+      "needs_manual_review": false,
+      "normalized_hash": "c30c27932e92aebd97ddc65276bfb26526fc6d7d9b4baa272adc8c74b0de2ac5",
+      "objective": "验证缺失必填查询参数时先澄清",
+      "packet_id": "ev-p02-5486",
+      "preconditions": [],
+      "prompt_version": "140932e41933d15ba9c02fe062a88aa82ebf92821534acce7badde1804ba6d60",
+      "provenance": {
+        "batch_id": null,
+        "generated_utc": null,
+        "model": "deepseek-flash",
+        "origin": "ai_generated",
+        "prompt_sha256": "140932e41933d15ba9c02fe062a88aa82ebf92821534acce7badde1804ba6d60",
+        "provider": "deepseek-flash",
+        "request_id": null,
+        "response_sha256": "c2d5d4aecc8d27fc0e3b9b68c1dff07469434c43c646d0a036945ea7dbc7d8df",
+        "review_status": "candidate"
+      },
+      "required_evidence": [],
+      "review_status": "PENDING",
+      "risk_level": "low",
+      "schema": "ticket-p2-scenario/1",
+      "schema_version": "ticket-ai-scenario/1",
+      "source_references": [
+        "target/tools.py",
+        "target/v39/tool-schemas.json",
+        "target/v39/policy.py",
+        "target/v39/lifecycle.py",
+        "target/agent.py",
+        "data/policies.md",
+        "web/datasets/b_v32_20261020/case_catalog.json",
+        "docs/reviews/Ticket-Agent-V3.10-Passenger-Proposal-Fix.md"
+      ],
+      "title": "缺少日期和路线时追问查询条件",
+      "turns": [
+        "帮我查一下高铁余票"
+      ]
+    },
+    "updated": "2026-11-09T14:06:03.777374+00:00"
+  },
+  {
+    "id": "AI-GEN-5bffae9560474378",
+    "revision": 1,
+    "status": "PENDING",
+    "body": {
+      "assertions": {
+        "finish_reason": "stop",
+        "reply_contains": [
+          "P11"
+        ],
+        "reply_not_contains": [
+          "railway_lock_seat"
+        ],
+        "require_citation": true
+      },
+      "case_id": "AI-GEN-5bffae9560474378",
+      "category": "工具调用",
+      "conversation": [
+        "锁座后多久必须支付？"
+      ],
+      "created_at": "2026-11-09T14:06:03.774237+00:00",
+      "difficulty": "medium",
+      "dimension": "工具调用",
+      "expect": {
+        "finish_reason": "stop",
+        "reply_contains": [
+          "P11"
+        ],
+        "reply_not_contains": [
+          "railway_lock_seat"
+        ],
+        "require_citation": true
+      },
+      "expected_behavior": "answer",
+      "expected_behavior_details": [
+        "answer"
+      ],
+      "expected_call_order": [],
+      "expected_doc_ids": [
+        "P11"
+      ],
+      "expected_state_changes": [],
+      "expected_tool_calls": [],
+      "forbidden_claims": [
+        "声称存在 railway_lock_seat 工具"
+      ],
+      "generation_model": "deepseek-flash",
+      "needs_manual_review": false,
+      "normalized_hash": "66e7c5925251d8504a301bde816e3c1ec97ddeaeaef27a889c35348f2fd9b55a",
+      "objective": "验证锁座有效期政策引用且不虚构工具",
+      "packet_id": "ev-p02-5486",
+      "preconditions": [],
+      "prompt_version": "140932e41933d15ba9c02fe062a88aa82ebf92821534acce7badde1804ba6d60",
+      "provenance": {
+        "batch_id": null,
+        "generated_utc": null,
+        "model": "deepseek-flash",
+        "origin": "ai_generated",
+        "prompt_sha256": "140932e41933d15ba9c02fe062a88aa82ebf92821534acce7badde1804ba6d60",
+        "provider": "deepseek-flash",
+        "request_id": null,
+        "response_sha256": "76d6dfe1cd353752421b80abb467f57b623f3f2f99fc38171c37879efd168fe4",
+        "review_status": "candidate"
+      },
+      "required_evidence": [
+        {
+          "doc_id": "P11",
+          "quote": "模拟锁座有效期 15 分钟，过期未支付自动释放库存"
+        }
+      ],
+      "review_status": "PENDING",
+      "risk_level": "medium",
+      "schema": "ticket-p2-scenario/1",
+      "schema_version": "ticket-ai-scenario/1",
+      "source_references": [
+        "target/tools.py",
+        "target/v39/tool-schemas.json",
+        "target/v39/policy.py",
+        "target/v39/lifecycle.py",
+        "target/agent.py",
+        "data/policies.md",
+        "web/datasets/b_v32_20261020/case_catalog.json",
+        "docs/reviews/Ticket-Agent-V3.10-Passenger-Proposal-Fix.md"
+      ],
+      "title": "锁座过期政策咨询需引用文档",
+      "turns": [
+        "锁座后多久必须支付？"
+      ]
+    },
+    "updated": "2026-11-09T14:06:03.777374+00:00"
+  },
+  {
+    "id": "AI-GEN-92ee34311689431f",
+    "revision": 1,
+    "status": "PENDING",
+    "body": {
+      "assertions": {
+        "args": {
+          "query_tickets": {
+            "date": "<rel_date:+1>",
+            "from_city": "上海",
+            "kind": "高铁",
+            "seat_type": "二等座",
+            "to_city": "杭州"
+          }
+        },
+        "finish_reason": "stop",
+        "must_call": [
+          "query_tickets"
+        ],
+        "require_citation": false
+      },
+      "case_id": "AI-GEN-92ee34311689431f",
+      "category": "工具调用",
+      "conversation": [
+        "帮我查明天上海到杭州的高铁二等座"
+      ],
+      "created_at": "2026-11-09T14:06:03.769197+00:00",
+      "difficulty": "easy",
+      "dimension": "工具调用",
+      "expect": {
+        "args": {
+          "query_tickets": {
+            "date": "<rel_date:+1>",
+            "from_city": "上海",
+            "kind": "高铁",
+            "seat_type": "二等座",
+            "to_city": "杭州"
+          }
+        },
+        "finish_reason": "stop",
+        "must_call": [
+          "query_tickets"
+        ],
+        "require_citation": false
+      },
+      "expected_behavior": "answer",
+      "expected_behavior_details": [
+        "answer"
+      ],
+      "expected_call_order": [],
+      "expected_doc_ids": [],
+      "expected_state_changes": [],
+      "expected_tool_calls": [
+        "query_tickets"
+      ],
+      "forbidden_claims": [
+        "声称已真实出票或已真实扣款"
+      ],
+      "generation_model": "deepseek-flash",
+      "needs_manual_review": false,
+      "normalized_hash": "af6a31a076e578c5577072fcef167e1938bcd64d4fc6fa2b8afe818a42f33b8e",
+      "objective": "验证合法席别参数正确传入查询工具",
+      "packet_id": "ev-p02-5486",
+      "preconditions": [],
+      "prompt_version": "140932e41933d15ba9c02fe062a88aa82ebf92821534acce7badde1804ba6d60",
+      "provenance": {
+        "batch_id": null,
+        "generated_utc": null,
+        "model": "deepseek-flash",
+        "origin": "ai_generated",
+        "prompt_sha256": "140932e41933d15ba9c02fe062a88aa82ebf92821534acce7badde1804ba6d60",
+        "provider": "deepseek-flash",
+        "request_id": null,
+        "response_sha256": "29676d35e2ea2c402f09c69e925b5fece3c353cee015626f60e30edc95e1c433",
+        "review_status": "candidate"
+      },
+      "required_evidence": [],
+      "review_status": "PENDING",
+      "risk_level": "low",
+      "schema": "ticket-p2-scenario/1",
+      "schema_version": "ticket-ai-scenario/1",
+      "source_references": [
+        "target/tools.py",
+        "target/v39/tool-schemas.json",
+        "target/v39/policy.py",
+        "target/v39/lifecycle.py",
+        "target/agent.py",
+        "data/policies.md",
+        "web/datasets/b_v32_20261020/case_catalog.json",
+        "docs/reviews/Ticket-Agent-V3.10-Passenger-Proposal-Fix.md"
+      ],
+      "title": "查询上海杭州高铁使用合法席别",
+      "turns": [
+        "帮我查明天上海到杭州的高铁二等座"
+      ]
+    },
+    "updated": "2026-11-09T14:06:03.775254+00:00"
+  },
+  {
+    "id": "AI-GEN-f9b651e2ed0c4969",
+    "revision": 1,
+    "status": "PENDING",
+    "body": {
+      "assertions": {
+        "finish_reason": "stop",
+        "raises": null,
+        "reply_contains": [
+          "经济舱",
+          "高铁",
+          "二等座",
+          "一等座",
+          "商务座"
+        ],
+        "reply_not_contains": [
+          "已为您查询",
+          "G7301",
+          "有票"
+        ],
+        "require_citation": false
+      },
+      "case_id": "AI-GEN-f9b651e2ed0c4969",
+      "category": "工具调用",
+      "conversation": [
+        "帮我查明天上海到杭州的高铁，要经济舱"
+      ],
+      "created_at": "2026-11-09T14:03:29.614725+00:00",
+      "difficulty": "medium",
+      "dimension": "工具调用",
+      "expect": {
+        "finish_reason": "stop",
+        "raises": null,
+        "reply_contains": [
+          "经济舱",
+          "高铁",
+          "二等座",
+          "一等座",
+          "商务座"
+        ],
+        "reply_not_contains": [
+          "已为您查询",
+          "G7301",
+          "有票"
+        ],
+        "require_citation": false
+      },
+      "expected_behavior": "clarify",
+      "expected_behavior_details": [
+        "clarify"
+      ],
+      "expected_call_order": [],
+      "expected_doc_ids": [],
+      "expected_state_changes": [],
+      "expected_tool_calls": [],
+      "forbidden_claims": [
+        "系统自动将经济舱转换为高铁二等座并返回车次信息",
+        "直接调用query_tickets工具执行查询"
+      ],
+      "generation_model": "qwen3.8-flash",
+      "needs_manual_review": false,
+      "normalized_hash": "8fe8c91a5169bd21c447020551057b41456b3e7edc18b70a639f550527ef1a3a",
+      "objective": "验证Agent在检测到用户请求中交通方式与席别不匹配时（如高铁请求经济舱），能依据规则进行澄清而非盲目调用工具或错误转换参数。",
+      "packet_id": "ev-p02-6678",
+      "preconditions": [],
+      "prompt_version": "91aee73cf083ff2f10aa0704583f29395c1fcf257a86294e5e2e098a1257b235",
+      "provenance": {
+        "batch_id": null,
+        "generated_utc": null,
+        "model": "qwen3.8-flash",
+        "origin": "ai_generated",
+        "prompt_sha256": "91aee73cf083ff2f10aa0704583f29395c1fcf257a86294e5e2e098a1257b235",
+        "provider": "qwen3.8-flash",
+        "request_id": null,
+        "response_sha256": "3667d571b454ccf3b6edd08c68c410609d3b2f45c8f78a89dd138fdc420e6ee1",
+        "review_status": "candidate"
+      },
+      "required_evidence": [
+        {
+          "doc_id": "P02",
+          "quote": "开车前 48 小时以上可改签预售期内任意车次；"
+        }
+      ],
+      "review_status": "PENDING",
+      "risk_level": "low",
+      "schema": "ticket-p2-scenario/1",
+      "schema_version": "ticket-ai-scenario/1",
+      "source_references": [
+        "target/tools.py",
+        "target/v39/tool-schemas.json",
+        "target/v39/policy.py",
+        "target/v39/lifecycle.py",
+        "target/agent.py",
+        "data/policies.md",
+        "web/datasets/b_v32_20261020/case_catalog.json",
+        "docs/reviews/Ticket-Agent-V3.10-Passenger-Proposal-Fix.md"
+      ],
+      "title": "高铁查询非法席别参数边界测试",
+      "turns": [
+        "帮我查明天上海到杭州的高铁，要经济舱"
+      ]
+    },
+    "updated": "2026-11-09T14:03:29.615730+00:00"
+  },
+  {
+    "id": "AI-GEN-d9fe41ccd0b24fd6",
+    "revision": 1,
+    "status": "PENDING",
+    "body": {
+      "assertions": {
+        "args": {
+          "query_tickets": {
+            "date": "<rel_date:+1>",
+            "from_city": "上海",
+            "kind": "高铁",
+            "seat_type": "二等座",
+            "to_city": "杭州"
+          }
+        },
+        "finish_reason": "stop",
+        "must_call": [
+          "query_tickets"
+        ],
+        "reply_not_contains": [
+          "已出票",
+          "已扣款",
+          "railway_lock_seat"
+        ],
+        "require_citation": false
+      },
+      "case_id": "AI-GEN-d9fe41ccd0b24fd6",
+      "category": "工具调用",
+      "conversation": [
+        "帮我查明天上海到杭州的高铁二等座余票"
+      ],
+      "created_at": "2026-11-09T14:03:22.399786+00:00",
+      "difficulty": "medium",
+      "dimension": "工具调用",
+      "expect": {
+        "args": {
+          "query_tickets": {
+            "date": "<rel_date:+1>",
+            "from_city": "上海",
+            "kind": "高铁",
+            "seat_type": "二等座",
+            "to_city": "杭州"
+          }
+        },
+        "finish_reason": "stop",
+        "must_call": [
+          "query_tickets"
+        ],
+        "reply_not_contains": [
+          "已出票",
+          "已扣款",
+          "railway_lock_seat"
+        ],
+        "require_citation": false
+      },
+      "expected_behavior": "answer",
+      "expected_behavior_details": [
+        "answer"
+      ],
+      "expected_call_order": [],
+      "expected_doc_ids": [],
+      "expected_state_changes": [],
+      "expected_tool_calls": [
+        "query_tickets"
+      ],
+      "forbidden_claims": [
+        "声称已完成真实购票或真实扣款",
+        "声称存在名为 railway_lock_seat 的工具"
+      ],
+      "generation_model": "deepseek-flash",
+      "needs_manual_review": false,
+      "normalized_hash": "548de9794f15f2837a4273308a064623fbba3e7b6ae99526440ca4ded17ba0de",
+      "objective": "验证查询车次时正确选择 query_tickets 并换算相对日期宏",
+      "packet_id": "ev-p02-6678",
+      "preconditions": [],
+      "prompt_version": "91aee73cf083ff2f10aa0704583f29395c1fcf257a86294e5e2e098a1257b235",
+      "provenance": {
+        "batch_id": null,
+        "generated_utc": null,
+        "model": "deepseek-flash",
+        "origin": "ai_generated",
+        "prompt_sha256": "91aee73cf083ff2f10aa0704583f29395c1fcf257a86294e5e2e098a1257b235",
+        "provider": "deepseek-flash",
+        "request_id": null,
+        "response_sha256": "dfa52c7fe1a7ad055d70a93c2068845c9f1335d45c0804f847521ec6b9d6b26c",
+        "review_status": "candidate"
+      },
+      "required_evidence": [],
+      "review_status": "PENDING",
+      "risk_level": "low",
+      "schema": "ticket-p2-scenario/1",
+      "schema_version": "ticket-ai-scenario/1",
+      "source_references": [
+        "target/tools.py",
+        "target/v39/tool-schemas.json",
+        "target/v39/policy.py",
+        "target/v39/lifecycle.py",
+        "target/agent.py",
+        "data/policies.md",
+        "web/datasets/b_v32_20261020/case_catalog.json",
+        "docs/reviews/Ticket-Agent-V3.10-Passenger-Proposal-Fix.md"
+      ],
+      "title": "上海至杭州高铁二等座余票查询",
+      "turns": [
+        "帮我查明天上海到杭州的高铁二等座余票"
+      ]
+    },
+    "updated": "2026-11-09T14:03:22.403794+00:00"
+  }
+]

@@ -1,0 +1,26 @@
+{
+  "failed": {
+    "added": [],
+    "removed": [],
+    "ids": [
+      "tests/test_deepseek_direct_send.py::DeepSeekDirectSendTests::test_configured_online_default_is_deepseek_and_render_never_calls_agent",
+      "tests/test_deepseek_direct_send.py::DeepSeekDirectSendTests::test_direct_send_permission_is_session_and_provider_specific",
+      "tests/test_deepseek_direct_send.py::DeepSeekDirectSendTests::test_qwen_still_requires_its_original_checkbox",
+      "tests/test_followups_continuous.py::ContinuousFollowupsTests::test_qwen_ten_clicks_survive_timeout_and_saved_replay",
+      "tests/test_followups_mvp.py::FollowupRuntimeTests::test_qwen_ui_consent_automatically_includes_followups_offline",
+      "tests/test_qwen_langsmith_ui.py::QwenNavigationTests::test_empty_qwen_run_has_a_clear_reason_and_disabled_export",
+      "tests/test_qwen_langsmith_ui.py::QwenNavigationTests::test_explicit_history_selection_is_preserved_and_model_is_explained",
+      "tests/test_qwen_langsmith_ui.py::QwenNavigationTests::test_live_fee_consent_does_not_follow_a_different_provider",
+      "tests/test_qwen_langsmith_ui.py::QwenNavigationTests::test_qwen_panel_rejects_another_provider_record_without_export",
+      "tests/test_qwen_langsmith_ui.py::QwenNavigationTests::test_qwen_stays_active_after_opening_integration_center",
+      "tests/test_unlimited_live_ui.py::LivePageTests::test_bailian_user"
+    ]
+  },
+  "skipped": {
+    "added": [],
+    "removed": [],
+    "ids": [
+      "tests/test_p2_scenarios.py::test_no_approved_p2_scenarios"
+    ]
+  }
+}

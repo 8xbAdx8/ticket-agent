@@ -1,0 +1,2629 @@
+{
+  "reference_plan": "proposal_expired",
+  "case_id": "V310-INTEGRATION-proposal_expired",
+  "execution_id": "3c2ed16fe0784144b115a0552dd3a6bb",
+  "status": "passed",
+  "mode": "deterministic_v310_integration",
+  "model_requests": 0,
+  "fault": null,
+  "steps": [
+    {
+      "index": 0,
+      "kind": "tool",
+      "tool": "railway_query_trips",
+      "args": {
+        "service_date": "2026-11-05",
+        "origin_stop_id": "AOH",
+        "destination_stop_id": "HGH",
+        "limit": 5
+      },
+      "output": {
+        "status": "FOUND",
+        "data": [
+          {
+            "route_id": "G7541",
+            "service_id": "S93",
+            "trip_id": "5l000G75410A",
+            "trip_short_name": "G7541",
+            "trip_headsign": "台州西",
+            "shape_id": "shape-2122",
+            "raw_json": "{\"route_id\": \"G7541\", \"service_id\": \"S93\", \"trip_id\": \"5l000G75410A\", \"trip_short_name\": \"G7541\", \"trip_headsign\": \"台州西\", \"shape_id\": \"shape-2122\"}",
+            "origin_arrival": "05:52:00",
+            "origin_departure": "05:52:00",
+            "destination_arrival": "06:51:00",
+            "destination_departure": "06:55:00",
+            "origin_sequence": 1,
+            "destination_sequence": 4,
+            "shape_status": "AVAILABLE",
+            "departure_at": "2026-11-05T05:52:00+08:00",
+            "arrival_at": "2026-11-05T06:51:00+08:00"
+          },
+          {
+            "route_id": "G1321",
+            "service_id": "S93",
+            "trip_id": "5l000G132108",
+            "trip_short_name": "G1321",
+            "trip_headsign": "六盘水",
+            "shape_id": "shape-2034",
+            "raw_json": "{\"route_id\": \"G1321\", \"service_id\": \"S93\", \"trip_id\": \"5l000G132108\", \"trip_short_name\": \"G1321\", \"trip_headsign\": \"六盘水\", \"shape_id\": \"shape-2034\"}",
+            "origin_arrival": "06:07:00",
+            "origin_departure": "06:07:00",
+            "destination_arrival": "06:56:00",
+            "destination_departure": "07:00:00",
+            "origin_sequence": 1,
+            "destination_sequence": 2,
+            "shape_status": "AVAILABLE",
+            "departure_at": "2026-11-05T06:07:00+08:00",
+            "arrival_at": "2026-11-05T06:56:00+08:00"
+          },
+          {
+            "route_id": "G7331",
+            "service_id": "S93",
+            "trip_id": "5l000G733102",
+            "trip_short_name": "G7331",
+            "trip_headsign": "瑞安",
+            "shape_id": "shape-2110",
+            "raw_json": "{\"route_id\": \"G7331\", \"service_id\": \"S93\", \"trip_id\": \"5l000G733102\", \"trip_short_name\": \"G7331\", \"trip_headsign\": \"瑞安\", \"shape_id\": \"shape-2110\"}",
+            "origin_arrival": "06:13:00",
+            "origin_departure": "06:13:00",
+            "destination_arrival": "07:07:00",
+            "destination_departure": "07:11:00",
+            "origin_sequence": 1,
+            "destination_sequence": 3,
+            "shape_status": "AVAILABLE",
+            "departure_at": "2026-11-05T06:13:00+08:00",
+            "arrival_at": "2026-11-05T07:07:00+08:00"
+          },
+          {
+            "route_id": "G7333",
+            "service_id": "S93",
+            "trip_id": "5l000G733303",
+            "trip_short_name": "G7333",
+            "trip_headsign": "温州南",
+            "shape_id": "shape-2105",
+            "raw_json": "{\"route_id\": \"G7333\", \"service_id\": \"S93\", \"trip_id\": \"5l000G733303\", \"trip_short_name\": \"G7333\", \"trip_headsign\": \"温州南\", \"shape_id\": \"shape-2105\"}",
+            "origin_arrival": "06:20:00",
+            "origin_departure": "06:20:00",
+            "destination_arrival": "07:21:00",
+            "destination_departure": "07:23:00",
+            "origin_sequence": 1,
+            "destination_sequence": 4,
+            "shape_status": "AVAILABLE",
+            "departure_at": "2026-11-05T06:20:00+08:00",
+            "arrival_at": "2026-11-05T07:21:00+08:00"
+          },
+          {
+            "route_id": "G7363",
+            "service_id": "S93",
+            "trip_id": "5l000G736302",
+            "trip_short_name": "G7363",
+            "trip_headsign": "温岭",
+            "shape_id": "",
+            "raw_json": "{\"route_id\": \"G7363\", \"service_id\": \"S93\", \"trip_id\": \"5l000G736302\", \"trip_short_name\": \"G7363\", \"trip_headsign\": \"温岭\", \"shape_id\": \"\"}",
+            "origin_arrival": "06:24:00",
+            "origin_departure": "06:24:00",
+            "destination_arrival": "07:26:00",
+            "destination_departure": "07:33:00",
+            "origin_sequence": 1,
+            "destination_sequence": 4,
+            "shape_status": "SHAPE_UNAVAILABLE",
+            "departure_at": "2026-11-05T06:24:00+08:00",
+            "arrival_at": "2026-11-05T07:26:00+08:00"
+          }
+        ],
+        "data_source": "CHINESE_RAILWAY_GTFS",
+        "data_type": "STATIC_SCHEDULE",
+        "real_time": false,
+        "availability_available": false,
+        "fare_available": false,
+        "booking_available": false,
+        "availability": "UNKNOWN",
+        "fare": null,
+        "data_version": "20261101",
+        "source_sha256": "3877dbc0ebc0392afef4b111dd9ba837c97eb4aa45788542919be53d52a12030",
+        "rights_status": "RIGHTS_REVIEW_PENDING",
+        "usage_scope": "LOCAL_DEMO_ONLY",
+        "service_date": "20261105",
+        "next_cursor": "5",
+        "source": "GTFS_SQLITE",
+        "total_count": 109,
+        "returned_count": 5,
+        "limit": 5,
+        "has_more": true,
+        "query_parameters": {
+          "service_date": "2026-11-05",
+          "origin_stop_id": "AOH",
+          "destination_stop_id": "HGH",
+          "train_no": null,
+          "cursor": null
+        },
+        "dataset_version": "gtfs-20261101-063437",
+        "database_sha256": "e32f0cd41b45532ea7aedf4c72a6ffc24f6eaa23c042ee8f35cb02aa50735c69",
+        "simulation_clock": {
+          "clock_id": "3c2fc438934c45f8820a77b60d3aa347",
+          "mode": "PAUSED",
+          "simulation": true,
+          "timezone": "Asia/Shanghai",
+          "now": "2026-10-17T00:00:00+08:00",
+          "anchor": "2026-10-16T16:00:00+00:00",
+          "revision": 0,
+          "dataset_version": "gtfs-20261101-063437"
+        }
+      },
+      "error": null,
+      "checks": [
+        {
+          "path": "result.returned_count",
+          "op": "ge",
+          "expected": 2,
+          "actual": 5,
+          "ok": true
+        },
+        {
+          "path": "metrics.foreign_keys_ok",
+          "ok": true,
+          "actual": true
+        },
+        {
+          "path": "metrics.inventory_conserved",
+          "ok": true,
+          "actual": true
+        },
+        {
+          "path": "metrics.money_conserved",
+          "ok": true,
+          "actual": true
+        },
+        {
+          "path": "metrics.ui_consistent",
+          "ok": true,
+          "actual": true
+        }
+      ],
+      "snapshot": {
+        "state": {
+          "schema": "ticket-business-read-model/1",
+          "session_id": "web-20ff441656b1",
+          "source": "LOCAL_SQLITE_COMMITTED",
+          "scenario_id": "railway-demo",
+          "orders": [],
+          "quotes": [],
+          "pending_proposals": [],
+          "proposals": [],
+          "operations": [],
+          "operation_events": [
+            {
+              "event_id": "c31f4d02a64843a88fb382d33b5016c7",
+              "aggregate_type": "page",
+              "aggregate_id": "web-20ff441656b1",
+              "event_type": "railway_query_trips",
+              "from_state": null,
+              "to_state": null,
+              "detail_json": "{\"source\": \"page_operation\", \"ok\": true, \"elapsed_ms\": 19, \"args\": {\"tool_arguments\": {\"service_date\": \"2026-11-05\", \"origin_stop_id\": \"AOH\", \"destination_stop_id\": \"HGH\", \"limit\": 5}, \"tool_call_id\": \"page-call-1df8212f16a74ceeab254d0555a44e91\", \"operation_id\": \"page-5c80e88cf6b4473da00f898d279da8ef\", \"scenario_id\": \"railway-demo\"}, \"result\": {\"status\": \"FOUND\", \"data\": [{\"route_id\": \"G7541\", \"service_id\": \"S93\", \"trip_id\": \"5l000G75410A\", \"trip_short_name\": \"G7541\", \"trip_headsign\": \"台州西\", \"shape_id\": \"shape-2122\", \"raw_json\": \"{\\\"route_id\\\": \\\"G7541\\\", \\\"service_id\\\": \\\"S93\\\", \\\"trip_id\\\": \\\"5l000G75410A\\\", \\\"trip_short_name\\\": \\\"G7541\\\", \\\"trip_headsign\\\": \\\"台州西\\\", \\\"shape_id\\\": \\\"shape-2122\\\"}\", \"origin_arrival\": \"05:52:00\", \"origin_departure\": \"05:52:00\", \"destination_arrival\": \"06:51:00\", \"destination_departure\": \"06:55:00\", \"origin_sequence\": 1, \"destination_sequence\": 4, \"shape_status\": \"AVAILABLE\", \"departure_at\": \"2026-11-05T05:52:00+08:00\", \"arrival_at\": \"2026-11-05T06:51:00+08:00\"}, {\"route_id\": \"G1321\", \"service_id\": \"S93\", \"trip_id\": \"5l000G132108\", \"trip_short_name\": \"G1321\", \"trip_headsign\": \"六盘水\", \"shape_id\": \"shape-2034\", \"raw_json\": \"{\\\"route_id\\\": \\\"G1321\\\", \\\"service_id\\\": \\\"S93\\\", \\\"trip_id\\\": \\\"5l000G132108\\\", \\\"trip_short_name\\\": \\\"G1321\\\", \\\"trip_headsign\\\": \\\"六盘水\\\", \\\"shape_id\\\": \\\"shape-2034\\\"}\", \"origin_arrival\": \"06:07:00\", \"origin_departure\": \"06:07:00\", \"destination_arrival\": \"06:56:00\", \"destination_departure\": \"07:00:00\", \"origin_sequence\": 1, \"destination_sequence\": 2, \"shape_status\": \"AVAILABLE\", \"departure_at\": \"2026-11-05T06:07:00+08:00\", \"arrival_at\": \"2026-11-05T06:56:00+08:00\"}, {\"route_id\": \"G7331\", \"service_id\": \"S93\", \"trip_id\": \"5l000G733102\", \"trip_short_name\": \"G7331\", \"trip_headsign\": \"瑞安\", \"shape_id\": \"shape-2110\", \"raw_json\": \"{\\\"route_id\\\": \\\"G7331\\\", \\\"service_id\\\": \\\"S93\\\", \\\"trip_id\\\": \\\"5l000G733102\\\", \\\"trip_short_name\\\": \\\"G7331\\\", \\\"trip_headsign\\\": \\\"瑞安\\\", \\\"shape_id\\\": \\\"shape-2110\\\"}\", \"origin_arrival\": \"06:13:00\", \"origin_departure\": \"06:13:00\", \"destination_arrival\": \"07:07:00\", \"destination_departure\": \"07:11:00\", \"origin_sequence\": 1, \"destination_sequence\": 3, \"shape_status\": \"AVAILABLE\", \"departure_at\": \"2026-11-05T06:13:00+08:00\", \"arrival_at\": \"2026-11-05T07:07:00+08:00\"}, {\"route_id\": \"G7333\", \"service_id\": \"S93\", \"trip_id\": \"5l000G733303\", \"trip_short_name\": \"G7333\", \"trip_headsign\": \"温州南\", \"shape_id\": \"shape-2105\", \"raw_json\": \"{\\\"route_id\\\": \\\"G7333\\\", \\\"service_id\\\": \\\"S93\\\", \\\"trip_id\\\": \\\"5l000G733303\\\", \\\"trip_short_name\\\": \\\"G7333\\\", \\\"trip_headsign\\\": \\\"温州南\\\", \\\"shape_id\\\": \\\"shape-2105\\\"}\", \"origin_arrival\": \"06:20:00\", \"origin_departure\": \"06:20:00\", \"destination_arrival\": \"07:21:00\", \"destination_departure\": \"07:23:00\", \"origin_sequence\": 1, \"destination_sequence\": 4, \"shape_status\": \"AVAILABLE\", \"departure_at\": \"2026-11-05T06:20:00+08:00\", \"arrival_at\": \"2026-11-05T07:21:00+08:00\"}, {\"route_id\": \"G7363\", \"service_id\": \"S93\", \"trip_id\": \"5l000G736302\", \"trip_short_name\": \"G7363\", \"trip_headsign\": \"温岭\", \"shape_id\": \"\", \"raw_json\": \"{\\\"route_id\\\": \\\"G7363\\\", \\\"service_id\\\": \\\"S93\\\", \\\"trip_id\\\": \\\"5l000G736302\\\", \\\"trip_short_name\\\": \\\"G7363\\\", \\\"trip_headsign\\\": \\\"温岭\\\", \\\"shape_id\\\": \\\"\\\"}\", \"origin_arrival\": \"06:24:00\", \"origin_departure\": \"06:24:00\", \"destination_arrival\": \"07:26:00\", \"destination_departure\": \"07:33:00\", \"origin_sequence\": 1, \"destination_sequence\": 4, \"shape_status\": \"SHAPE_UNAVAILABLE\", \"departure_at\": \"2026-11-05T06:24:00+08:00\", \"arrival_at\": \"2026-11-05T07:26:00+08:00\"}], \"data_source\": \"CHINESE_RAILWAY_GTFS\", \"data_type\": \"STATIC_SCHEDULE\", \"real_time\": false, \"availability_available\": false, \"fare_available\": false, \"booking_available\": false, \"availability\": \"UNKNOWN\", \"fare\": null, \"data_version\": \"20261101\", \"source_sha256\": \"3877dbc0ebc0392afef4b111dd9ba837c97eb4aa45788542919be53d52a12030\", \"rights_status\": \"RIGHTS_REVIEW_PENDING\", \"usage_scope\": \"LOCAL_DEMO_ONLY\", \"service_date\": \"20261105\", \"next_cursor\": \"5\", \"source\": \"GTFS_SQLITE\", \"total_count\": 109, \"returned_count\": 5, \"limit\": 5, \"has_more\": true, \"query_parameters\": {\"service_date\": \"2026-11-05\", \"origin_stop_id\": \"AOH\", \"destination_stop_id\": \"HGH\", \"train_no\": null, \"cursor\": null}, \"dataset_version\": \"gtfs-20261101-063437\", \"database_sha256\": \"e32f0cd41b45532ea7aedf4c72a6ffc24f6eaa23c042ee8f35cb02aa50735c69\", \"simulation_clock\": {\"clock_id\": \"3c2fc438934c45f8820a77b60d3aa347\", \"mode\": \"PAUSED\", \"simulation\": true, \"timezone\": \"Asia/Shanghai\", \"now\": \"2026-10-17T00:00:00+08:00\", \"anchor\": \"2026-10-16T16:00:00+00:00\", \"revision\": 0, \"dataset_version\": \"gtfs-20261101-063437\"}}}",
+              "request_id": null,
+              "created_at": "2026-10-16T16:00:00+00:00"
+            }
+          ],
+          "updated_at": "2026-10-16T16:00:00+00:00",
+          "state_sha256": "8bd1f3b9173068f9a64bed4eddd318600248e7b373c03cc2b4549c1487bb8a15"
+        },
+        "ui": {
+          "schema": "ticket-business-read-model/1",
+          "session_id": "web-20ff441656b1",
+          "source": "LOCAL_SQLITE_COMMITTED",
+          "scenario_id": "railway-demo",
+          "orders": [],
+          "quotes": [],
+          "pending_proposals": [],
+          "proposals": [],
+          "operations": [],
+          "operation_events": [
+            {
+              "event_id": "c31f4d02a64843a88fb382d33b5016c7",
+              "aggregate_type": "page",
+              "aggregate_id": "web-20ff441656b1",
+              "event_type": "railway_query_trips",
+              "from_state": null,
+              "to_state": null,
+              "detail_json": "{\"source\": \"page_operation\", \"ok\": true, \"elapsed_ms\": 19, \"args\": {\"tool_arguments\": {\"service_date\": \"2026-11-05\", \"origin_stop_id\": \"AOH\", \"destination_stop_id\": \"HGH\", \"limit\": 5}, \"tool_call_id\": \"page-call-1df8212f16a74ceeab254d0555a44e91\", \"operation_id\": \"page-5c80e88cf6b4473da00f898d279da8ef\", \"scenario_id\": \"railway-demo\"}, \"result\": {\"status\": \"FOUND\", \"data\": [{\"route_id\": \"G7541\", \"service_id\": \"S93\", \"trip_id\": \"5l000G75410A\", \"trip_short_name\": \"G7541\", \"trip_headsign\": \"台州西\", \"shape_id\": \"shape-2122\", \"raw_json\": \"{\\\"route_id\\\": \\\"G7541\\\", \\\"service_id\\\": \\\"S93\\\", \\\"trip_id\\\": \\\"5l000G75410A\\\", \\\"trip_short_name\\\": \\\"G7541\\\", \\\"trip_headsign\\\": \\\"台州西\\\", \\\"shape_id\\\": \\\"shape-2122\\\"}\", \"origin_arrival\": \"05:52:00\", \"origin_departure\": \"05:52:00\", \"destination_arrival\": \"06:51:00\", \"destination_departure\": \"06:55:00\", \"origin_sequence\": 1, \"destination_sequence\": 4, \"shape_status\": \"AVAILABLE\", \"departure_at\": \"2026-11-05T05:52:00+08:00\", \"arrival_at\": \"2026-11-05T06:51:00+08:00\"}, {\"route_id\": \"G1321\", \"service_id\": \"S93\", \"trip_id\": \"5l000G132108\", \"trip_short_name\": \"G1321\", \"trip_headsign\": \"六盘水\", \"shape_id\": \"shape-2034\", \"raw_json\": \"{\\\"route_id\\\": \\\"G1321\\\", \\\"service_id\\\": \\\"S93\\\", \\\"trip_id\\\": \\\"5l000G132108\\\", \\\"trip_short_name\\\": \\\"G1321\\\", \\\"trip_headsign\\\": \\\"六盘水\\\", \\\"shape_id\\\": \\\"shape-2034\\\"}\", \"origin_arrival\": \"06:07:00\", \"origin_departure\": \"06:07:00\", \"destination_arrival\": \"06:56:00\", \"destination_departure\": \"07:00:00\", \"origin_sequence\": 1, \"destination_sequence\": 2, \"shape_status\": \"AVAILABLE\", \"departure_at\": \"2026-11-05T06:07:00+08:00\", \"arrival_at\": \"2026-11-05T06:56:00+08:00\"}, {\"route_id\": \"G7331\", \"service_id\": \"S93\", \"trip_id\": \"5l000G733102\", \"trip_short_name\": \"G7331\", \"trip_headsign\": \"瑞安\", \"shape_id\": \"shape-2110\", \"raw_json\": \"{\\\"route_id\\\": \\\"G7331\\\", \\\"service_id\\\": \\\"S93\\\", \\\"trip_id\\\": \\\"5l000G733102\\\", \\\"trip_short_name\\\": \\\"G7331\\\", \\\"trip_headsign\\\": \\\"瑞安\\\", \\\"shape_id\\\": \\\"shape-2110\\\"}\", \"origin_arrival\": \"06:13:00\", \"origin_departure\": \"06:13:00\", \"destination_arrival\": \"07:07:00\", \"destination_departure\": \"07:11:00\", \"origin_sequence\": 1, \"destination_sequence\": 3, \"shape_status\": \"AVAILABLE\", \"departure_at\": \"2026-11-05T06:13:00+08:00\", \"arrival_at\": \"2026-11-05T07:07:00+08:00\"}, {\"route_id\": \"G7333\", \"service_id\": \"S93\", \"trip_id\": \"5l000G733303\", \"trip_short_name\": \"G7333\", \"trip_headsign\": \"温州南\", \"shape_id\": \"shape-2105\", \"raw_json\": \"{\\\"route_id\\\": \\\"G7333\\\", \\\"service_id\\\": \\\"S93\\\", \\\"trip_id\\\": \\\"5l000G733303\\\", \\\"trip_short_name\\\": \\\"G7333\\\", \\\"trip_headsign\\\": \\\"温州南\\\", \\\"shape_id\\\": \\\"shape-2105\\\"}\", \"origin_arrival\": \"06:20:00\", \"origin_departure\": \"06:20:00\", \"destination_arrival\": \"07:21:00\", \"destination_departure\": \"07:23:00\", \"origin_sequence\": 1, \"destination_sequence\": 4, \"shape_status\": \"AVAILABLE\", \"departure_at\": \"2026-11-05T06:20:00+08:00\", \"arrival_at\": \"2026-11-05T07:21:00+08:00\"}, {\"route_id\": \"G7363\", \"service_id\": \"S93\", \"trip_id\": \"5l000G736302\", \"trip_short_name\": \"G7363\", \"trip_headsign\": \"温岭\", \"shape_id\": \"\", \"raw_json\": \"{\\\"route_id\\\": \\\"G7363\\\", \\\"service_id\\\": \\\"S93\\\", \\\"trip_id\\\": \\\"5l000G736302\\\", \\\"trip_short_name\\\": \\\"G7363\\\", \\\"trip_headsign\\\": \\\"温岭\\\", \\\"shape_id\\\": \\\"\\\"}\", \"origin_arrival\": \"06:24:00\", \"origin_departure\": \"06:24:00\", \"destination_arrival\": \"07:26:00\", \"destination_departure\": \"07:33:00\", \"origin_sequence\": 1, \"destination_sequence\": 4, \"shape_status\": \"SHAPE_UNAVAILABLE\", \"departure_at\": \"2026-11-05T06:24:00+08:00\", \"arrival_at\": \"2026-11-05T07:26:00+08:00\"}], \"data_source\": \"CHINESE_RAILWAY_GTFS\", \"data_type\": \"STATIC_SCHEDULE\", \"real_time\": false, \"availability_available\": false, \"fare_available\": false, \"booking_available\": false, \"availability\": \"UNKNOWN\", \"fare\": null, \"data_version\": \"20261101\", \"source_sha256\": \"3877dbc0ebc0392afef4b111dd9ba837c97eb4aa45788542919be53d52a12030\", \"rights_status\": \"RIGHTS_REVIEW_PENDING\", \"usage_scope\": \"LOCAL_DEMO_ONLY\", \"service_date\": \"20261105\", \"next_cursor\": \"5\", \"source\": \"GTFS_SQLITE\", \"total_count\": 109, \"returned_count\": 5, \"limit\": 5, \"has_more\": true, \"query_parameters\": {\"service_date\": \"2026-11-05\", \"origin_stop_id\": \"AOH\", \"destination_stop_id\": \"HGH\", \"train_no\": null, \"cursor\": null}, \"dataset_version\": \"gtfs-20261101-063437\", \"database_sha256\": \"e32f0cd41b45532ea7aedf4c72a6ffc24f6eaa23c042ee8f35cb02aa50735c69\", \"simulation_clock\": {\"clock_id\": \"3c2fc438934c45f8820a77b60d3aa347\", \"mode\": \"PAUSED\", \"simulation\": true, \"timezone\": \"Asia/Shanghai\", \"now\": \"2026-10-17T00:00:00+08:00\", \"anchor\": \"2026-10-16T16:00:00+00:00\", \"revision\": 0, \"dataset_version\": \"gtfs-20261101-063437\"}}}",
+              "request_id": null,
+              "created_at": "2026-10-16T16:00:00+00:00"
+            }
+          ],
+          "updated_at": "2026-10-16T16:00:00+00:00",
+          "state_sha256": "8bd1f3b9173068f9a64bed4eddd318600248e7b373c03cc2b4549c1487bb8a15"
+        },
+        "db": {
+          "v39_orders": [],
+          "v39_order_items": [],
+          "v39_holds": [],
+          "v39_transactions": [],
+          "v39_inventory_segments": [],
+          "v39_inventory_events": [],
+          "v39_refund_requests": [],
+          "v39_change_requests": [],
+          "v39_proposals": [],
+          "v39_idempotency": [],
+          "v39_refund_items": [],
+          "v39_hold_segments": [],
+          "v39_transaction_allocations": []
+        },
+        "metrics": {
+          "order_count": 0,
+          "hold_count": 0,
+          "transaction_count": 0,
+          "held": 0,
+          "sold": 0,
+          "foreign_keys_ok": true,
+          "inventory_conserved": true,
+          "money_conserved": true,
+          "ui_consistent": true
+        },
+        "result": {
+          "status": "FOUND",
+          "data": [
+            {
+              "route_id": "G7541",
+              "service_id": "S93",
+              "trip_id": "5l000G75410A",
+              "trip_short_name": "G7541",
+              "trip_headsign": "台州西",
+              "shape_id": "shape-2122",
+              "raw_json": "{\"route_id\": \"G7541\", \"service_id\": \"S93\", \"trip_id\": \"5l000G75410A\", \"trip_short_name\": \"G7541\", \"trip_headsign\": \"台州西\", \"shape_id\": \"shape-2122\"}",
+              "origin_arrival": "05:52:00",
+              "origin_departure": "05:52:00",
+              "destination_arrival": "06:51:00",
+              "destination_departure": "06:55:00",
+              "origin_sequence": 1,
+              "destination_sequence": 4,
+              "shape_status": "AVAILABLE",
+              "departure_at": "2026-11-05T05:52:00+08:00",
+              "arrival_at": "2026-11-05T06:51:00+08:00"
+            },
+            {
+              "route_id": "G1321",
+              "service_id": "S93",
+              "trip_id": "5l000G132108",
+              "trip_short_name": "G1321",
+              "trip_headsign": "六盘水",
+              "shape_id": "shape-2034",
+              "raw_json": "{\"route_id\": \"G1321\", \"service_id\": \"S93\", \"trip_id\": \"5l000G132108\", \"trip_short_name\": \"G1321\", \"trip_headsign\": \"六盘水\", \"shape_id\": \"shape-2034\"}",
+              "origin_arrival": "06:07:00",
+              "origin_departure": "06:07:00",
+              "destination_arrival": "06:56:00",
+              "destination_departure": "07:00:00",
+              "origin_sequence": 1,
+              "destination_sequence": 2,
+              "shape_status": "AVAILABLE",
+              "departure_at": "2026-11-05T06:07:00+08:00",
+              "arrival_at": "2026-11-05T06:56:00+08:00"
+            },
+            {
+              "route_id": "G7331",
+              "service_id": "S93",
+              "trip_id": "5l000G733102",
+              "trip_short_name": "G7331",
+              "trip_headsign": "瑞安",
+              "shape_id": "shape-2110",
+              "raw_json": "{\"route_id\": \"G7331\", \"service_id\": \"S93\", \"trip_id\": \"5l000G733102\", \"trip_short_name\": \"G7331\", \"trip_headsign\": \"瑞安\", \"shape_id\": \"shape-2110\"}",
+              "origin_arrival": "06:13:00",
+              "origin_departure": "06:13:00",
+              "destination_arrival": "07:07:00",
+              "destination_departure": "07:11:00",
+              "origin_sequence": 1,
+              "destination_sequence": 3,
+              "shape_status": "AVAILABLE",
+              "departure_at": "2026-11-05T06:13:00+08:00",
+              "arrival_at": "2026-11-05T07:07:00+08:00"
+            },
+            {
+              "route_id": "G7333",
+              "service_id": "S93",
+              "trip_id": "5l000G733303",
+              "trip_short_name": "G7333",
+              "trip_headsign": "温州南",
+              "shape_id": "shape-2105",
+              "raw_json": "{\"route_id\": \"G7333\", \"service_id\": \"S93\", \"trip_id\": \"5l000G733303\", \"trip_short_name\": \"G7333\", \"trip_headsign\": \"温州南\", \"shape_id\": \"shape-2105\"}",
+              "origin_arrival": "06:20:00",
+              "origin_departure": "06:20:00",
+              "destination_arrival": "07:21:00",
+              "destination_departure": "07:23:00",
+              "origin_sequence": 1,
+              "destination_sequence": 4,
+              "shape_status": "AVAILABLE",
+              "departure_at": "2026-11-05T06:20:00+08:00",
+              "arrival_at": "2026-11-05T07:21:00+08:00"
+            },
+            {
+              "route_id": "G7363",
+              "service_id": "S93",
+              "trip_id": "5l000G736302",
+              "trip_short_name": "G7363",
+              "trip_headsign": "温岭",
+              "shape_id": "",
+              "raw_json": "{\"route_id\": \"G7363\", \"service_id\": \"S93\", \"trip_id\": \"5l000G736302\", \"trip_short_name\": \"G7363\", \"trip_headsign\": \"温岭\", \"shape_id\": \"\"}",
+              "origin_arrival": "06:24:00",
+              "origin_departure": "06:24:00",
+              "destination_arrival": "07:26:00",
+              "destination_departure": "07:33:00",
+              "origin_sequence": 1,
+              "destination_sequence": 4,
+              "shape_status": "SHAPE_UNAVAILABLE",
+              "departure_at": "2026-11-05T06:24:00+08:00",
+              "arrival_at": "2026-11-05T07:26:00+08:00"
+            }
+          ],
+          "data_source": "CHINESE_RAILWAY_GTFS",
+          "data_type": "STATIC_SCHEDULE",
+          "real_time": false,
+          "availability_available": false,
+          "fare_available": false,
+          "booking_available": false,
+          "availability": "UNKNOWN",
+          "fare": null,
+          "data_version": "20261101",
+          "source_sha256": "3877dbc0ebc0392afef4b111dd9ba837c97eb4aa45788542919be53d52a12030",
+          "rights_status": "RIGHTS_REVIEW_PENDING",
+          "usage_scope": "LOCAL_DEMO_ONLY",
+          "service_date": "20261105",
+          "next_cursor": "5",
+          "source": "GTFS_SQLITE",
+          "total_count": 109,
+          "returned_count": 5,
+          "limit": 5,
+          "has_more": true,
+          "query_parameters": {
+            "service_date": "2026-11-05",
+            "origin_stop_id": "AOH",
+            "destination_stop_id": "HGH",
+            "train_no": null,
+            "cursor": null
+          },
+          "dataset_version": "gtfs-20261101-063437",
+          "database_sha256": "e32f0cd41b45532ea7aedf4c72a6ffc24f6eaa23c042ee8f35cb02aa50735c69",
+          "simulation_clock": {
+            "clock_id": "3c2fc438934c45f8820a77b60d3aa347",
+            "mode": "PAUSED",
+            "simulation": true,
+            "timezone": "Asia/Shanghai",
+            "now": "2026-10-17T00:00:00+08:00",
+            "anchor": "2026-10-16T16:00:00+00:00",
+            "revision": 0,
+            "dataset_version": "gtfs-20261101-063437"
+          }
+        }
+      },
+      "trace_id": "3c2ed16fe0784144b115a0552dd3a6bb-0",
+      "executed_tools": [
+        "railway_query_trips"
+      ],
+      "executed": true,
+      "verified": true
+    },
+    {
+      "index": 1,
+      "kind": "tool",
+      "tool": "railway_check_inventory",
+      "args": {
+        "service_date": "2026-11-05",
+        "origin_stop_id": "AOH",
+        "destination_stop_id": "HGH",
+        "trip_id": "5l000G75410A",
+        "seat_class": "SECOND",
+        "quantity": 3
+      },
+      "output": {
+        "status": "SIMULATED_AVAILABLE",
+        "available": 20,
+        "simulation": true,
+        "dataset_version": "gtfs-20261101-063437",
+        "simulation_clock": {
+          "clock_id": "3c2fc438934c45f8820a77b60d3aa347",
+          "mode": "PAUSED",
+          "simulation": true,
+          "timezone": "Asia/Shanghai",
+          "now": "2026-10-17T00:00:00+08:00",
+          "anchor": "2026-10-16T16:00:00+00:00",
+          "revision": 0,
+          "dataset_version": "gtfs-20261101-063437"
+        }
+      },
+      "error": null,
+      "checks": [
+        {
+          "path": "result.available",
+          "op": "ge",
+          "expected": 3,
+          "actual": 20,
+          "ok": true
+        },
+        {
+          "path": "metrics.foreign_keys_ok",
+          "ok": true,
+          "actual": true
+        },
+        {
+          "path": "metrics.inventory_conserved",
+          "ok": true,
+          "actual": true
+        },
+        {
+          "path": "metrics.money_conserved",
+          "ok": true,
+          "actual": true
+        },
+        {
+          "path": "metrics.ui_consistent",
+          "ok": true,
+          "actual": true
+        }
+      ],
+      "snapshot": {
+        "state": {
+          "schema": "ticket-business-read-model/1",
+          "session_id": "web-20ff441656b1",
+          "source": "LOCAL_SQLITE_COMMITTED",
+          "scenario_id": "railway-demo",
+          "orders": [],
+          "quotes": [],
+          "pending_proposals": [],
+          "proposals": [],
+          "operations": [],
+          "operation_events": [
+            {
+              "event_id": "7ad8bfc5fdc744d3a9a272faf2e54f9c",
+              "aggregate_type": "page",
+              "aggregate_id": "web-20ff441656b1",
+              "event_type": "railway_check_inventory",
+              "from_state": null,
+              "to_state": null,
+              "detail_json": "{\"source\": \"page_operation\", \"ok\": true, \"elapsed_ms\": 24, \"args\": {\"tool_arguments\": {\"service_date\": \"2026-11-05\", \"origin_stop_id\": \"AOH\", \"destination_stop_id\": \"HGH\", \"trip_id\": \"5l000G75410A\", \"seat_class\": \"SECOND\", \"quantity\": 3}, \"tool_call_id\": \"page-call-096a5a7ce38e4a7cba5a5955183b027b\", \"operation_id\": \"page-d564b2ee5679471ead95da509fc12f5b\", \"scenario_id\": \"railway-demo\"}, \"result\": {\"status\": \"SIMULATED_AVAILABLE\", \"available\": 20, \"simulation\": true, \"dataset_version\": \"gtfs-20261101-063437\", \"simulation_clock\": {\"clock_id\": \"3c2fc438934c45f8820a77b60d3aa347\", \"mode\": \"PAUSED\", \"simulation\": true, \"timezone\": \"Asia/Shanghai\", \"now\": \"2026-10-17T00:00:00+08:00\", \"anchor\": \"2026-10-16T16:00:00+00:00\", \"revision\": 0, \"dataset_version\": \"gtfs-20261101-063437\"}}}",
+              "request_id": null,
+              "created_at": "2026-10-16T16:00:00+00:00"
+            },
+            {
+              "event_id": "c31f4d02a64843a88fb382d33b5016c7",
+              "aggregate_type": "page",
+              "aggregate_id": "web-20ff441656b1",
+              "event_type": "railway_query_trips",
+              "from_state": null,
+              "to_state": null,
+              "detail_json": "{\"source\": \"page_operation\", \"ok\": true, \"elapsed_ms\": 19, \"args\": {\"tool_arguments\": {\"service_date\": \"2026-11-05\", \"origin_stop_id\": \"AOH\", \"destination_stop_id\": \"HGH\", \"limit\": 5}, \"tool_call_id\": \"page-call-1df8212f16a74ceeab254d0555a44e91\", \"operation_id\": \"page-5c80e88cf6b4473da00f898d279da8ef\", \"scenario_id\": \"railway-demo\"}, \"result\": {\"status\": \"FOUND\", \"data\": [{\"route_id\": \"G7541\", \"service_id\": \"S93\", \"trip_id\": \"5l000G75410A\", \"trip_short_name\": \"G7541\", \"trip_headsign\": \"台州西\", \"shape_id\": \"shape-2122\", \"raw_json\": \"{\\\"route_id\\\": \\\"G7541\\\", \\\"service_id\\\": \\\"S93\\\", \\\"trip_id\\\": \\\"5l000G75410A\\\", \\\"trip_short_name\\\": \\\"G7541\\\", \\\"trip_headsign\\\": \\\"台州西\\\", \\\"shape_id\\\": \\\"shape-2122\\\"}\", \"origin_arrival\": \"05:52:00\", \"origin_departure\": \"05:52:00\", \"destination_arrival\": \"06:51:00\", \"destination_departure\": \"06:55:00\", \"origin_sequence\": 1, \"destination_sequence\": 4, \"shape_status\": \"AVAILABLE\", \"departure_at\": \"2026-11-05T05:52:00+08:00\", \"arrival_at\": \"2026-11-05T06:51:00+08:00\"}, {\"route_id\": \"G1321\", \"service_id\": \"S93\", \"trip_id\": \"5l000G132108\", \"trip_short_name\": \"G1321\", \"trip_headsign\": \"六盘水\", \"shape_id\": \"shape-2034\", \"raw_json\": \"{\\\"route_id\\\": \\\"G1321\\\", \\\"service_id\\\": \\\"S93\\\", \\\"trip_id\\\": \\\"5l000G132108\\\", \\\"trip_short_name\\\": \\\"G1321\\\", \\\"trip_headsign\\\": \\\"六盘水\\\", \\\"shape_id\\\": \\\"shape-2034\\\"}\", \"origin_arrival\": \"06:07:00\", \"origin_departure\": \"06:07:00\", \"destination_arrival\": \"06:56:00\", \"destination_departure\": \"07:00:00\", \"origin_sequence\": 1, \"destination_sequence\": 2, \"shape_status\": \"AVAILABLE\", \"departure_at\": \"2026-11-05T06:07:00+08:00\", \"arrival_at\": \"2026-11-05T06:56:00+08:00\"}, {\"route_id\": \"G7331\", \"service_id\": \"S93\", \"trip_id\": \"5l000G733102\", \"trip_short_name\": \"G7331\", \"trip_headsign\": \"瑞安\", \"shape_id\": \"shape-2110\", \"raw_json\": \"{\\\"route_id\\\": \\\"G7331\\\", \\\"service_id\\\": \\\"S93\\\", \\\"trip_id\\\": \\\"5l000G733102\\\", \\\"trip_short_name\\\": \\\"G7331\\\", \\\"trip_headsign\\\": \\\"瑞安\\\", \\\"shape_id\\\": \\\"shape-2110\\\"}\", \"origin_arrival\": \"06:13:00\", \"origin_departure\": \"06:13:00\", \"destination_arrival\": \"07:07:00\", \"destination_departure\": \"07:11:00\", \"origin_sequence\": 1, \"destination_sequence\": 3, \"shape_status\": \"AVAILABLE\", \"departure_at\": \"2026-11-05T06:13:00+08:00\", \"arrival_at\": \"2026-11-05T07:07:00+08:00\"}, {\"route_id\": \"G7333\", \"service_id\": \"S93\", \"trip_id\": \"5l000G733303\", \"trip_short_name\": \"G7333\", \"trip_headsign\": \"温州南\", \"shape_id\": \"shape-2105\", \"raw_json\": \"{\\\"route_id\\\": \\\"G7333\\\", \\\"service_id\\\": \\\"S93\\\", \\\"trip_id\\\": \\\"5l000G733303\\\", \\\"trip_short_name\\\": \\\"G7333\\\", \\\"trip_headsign\\\": \\\"温州南\\\", \\\"shape_id\\\": \\\"shape-2105\\\"}\", \"origin_arrival\": \"06:20:00\", \"origin_departure\": \"06:20:00\", \"destination_arrival\": \"07:21:00\", \"destination_departure\": \"07:23:00\", \"origin_sequence\": 1, \"destination_sequence\": 4, \"shape_status\": \"AVAILABLE\", \"departure_at\": \"2026-11-05T06:20:00+08:00\", \"arrival_at\": \"2026-11-05T07:21:00+08:00\"}, {\"route_id\": \"G7363\", \"service_id\": \"S93\", \"trip_id\": \"5l000G736302\", \"trip_short_name\": \"G7363\", \"trip_headsign\": \"温岭\", \"shape_id\": \"\", \"raw_json\": \"{\\\"route_id\\\": \\\"G7363\\\", \\\"service_id\\\": \\\"S93\\\", \\\"trip_id\\\": \\\"5l000G736302\\\", \\\"trip_short_name\\\": \\\"G7363\\\", \\\"trip_headsign\\\": \\\"温岭\\\", \\\"shape_id\\\": \\\"\\\"}\", \"origin_arrival\": \"06:24:00\", \"origin_departure\": \"06:24:00\", \"destination_arrival\": \"07:26:00\", \"destination_departure\": \"07:33:00\", \"origin_sequence\": 1, \"destination_sequence\": 4, \"shape_status\": \"SHAPE_UNAVAILABLE\", \"departure_at\": \"2026-11-05T06:24:00+08:00\", \"arrival_at\": \"2026-11-05T07:26:00+08:00\"}], \"data_source\": \"CHINESE_RAILWAY_GTFS\", \"data_type\": \"STATIC_SCHEDULE\", \"real_time\": false, \"availability_available\": false, \"fare_available\": false, \"booking_available\": false, \"availability\": \"UNKNOWN\", \"fare\": null, \"data_version\": \"20261101\", \"source_sha256\": \"3877dbc0ebc0392afef4b111dd9ba837c97eb4aa45788542919be53d52a12030\", \"rights_status\": \"RIGHTS_REVIEW_PENDING\", \"usage_scope\": \"LOCAL_DEMO_ONLY\", \"service_date\": \"20261105\", \"next_cursor\": \"5\", \"source\": \"GTFS_SQLITE\", \"total_count\": 109, \"returned_count\": 5, \"limit\": 5, \"has_more\": true, \"query_parameters\": {\"service_date\": \"2026-11-05\", \"origin_stop_id\": \"AOH\", \"destination_stop_id\": \"HGH\", \"train_no\": null, \"cursor\": null}, \"dataset_version\": \"gtfs-20261101-063437\", \"database_sha256\": \"e32f0cd41b45532ea7aedf4c72a6ffc24f6eaa23c042ee8f35cb02aa50735c69\", \"simulation_clock\": {\"clock_id\": \"3c2fc438934c45f8820a77b60d3aa347\", \"mode\": \"PAUSED\", \"simulation\": true, \"timezone\": \"Asia/Shanghai\", \"now\": \"2026-10-17T00:00:00+08:00\", \"anchor\": \"2026-10-16T16:00:00+00:00\", \"revision\": 0, \"dataset_version\": \"gtfs-20261101-063437\"}}}",
+              "request_id": null,
+              "created_at": "2026-10-16T16:00:00+00:00"
+            }
+          ],
+          "updated_at": "2026-10-16T16:00:00+00:00",
+          "state_sha256": "d89c3686d603be55ea92e2852fa1327d5723d6d1808e829ccf9cd611fd063fe5"
+        },
+        "ui": {
+          "schema": "ticket-business-read-model/1",
+          "session_id": "web-20ff441656b1",
+          "source": "LOCAL_SQLITE_COMMITTED",
+          "scenario_id": "railway-demo",
+          "orders": [],
+          "quotes": [],
+          "pending_proposals": [],
+          "proposals": [],
+          "operations": [],
+          "operation_events": [
+            {
+              "event_id": "7ad8bfc5fdc744d3a9a272faf2e54f9c",
+              "aggregate_type": "page",
+              "aggregate_id": "web-20ff441656b1",
+              "event_type": "railway_check_inventory",
+              "from_state": null,
+              "to_state": null,
+              "detail_json": "{\"source\": \"page_operation\", \"ok\": true, \"elapsed_ms\": 24, \"args\": {\"tool_arguments\": {\"service_date\": \"2026-11-05\", \"origin_stop_id\": \"AOH\", \"destination_stop_id\": \"HGH\", \"trip_id\": \"5l000G75410A\", \"seat_class\": \"SECOND\", \"quantity\": 3}, \"tool_call_id\": \"page-call-096a5a7ce38e4a7cba5a5955183b027b\", \"operation_id\": \"page-d564b2ee5679471ead95da509fc12f5b\", \"scenario_id\": \"railway-demo\"}, \"result\": {\"status\": \"SIMULATED_AVAILABLE\", \"available\": 20, \"simulation\": true, \"dataset_version\": \"gtfs-20261101-063437\", \"simulation_clock\": {\"clock_id\": \"3c2fc438934c45f8820a77b60d3aa347\", \"mode\": \"PAUSED\", \"simulation\": true, \"timezone\": \"Asia/Shanghai\", \"now\": \"2026-10-17T00:00:00+08:00\", \"anchor\": \"2026-10-16T16:00:00+00:00\", \"revision\": 0, \"dataset_version\": \"gtfs-20261101-063437\"}}}",
+              "request_id": null,
+              "created_at": "2026-10-16T16:00:00+00:00"
+            },
+            {
+              "event_id": "c31f4d02a64843a88fb382d33b5016c7",
+              "aggregate_type": "page",
+              "aggregate_id": "web-20ff441656b1",
+              "event_type": "railway_query_trips",
+              "from_state": null,
+              "to_state": null,
+              "detail_json": "{\"source\": \"page_operation\", \"ok\": true, \"elapsed_ms\": 19, \"args\": {\"tool_arguments\": {\"service_date\": \"2026-11-05\", \"origin_stop_id\": \"AOH\", \"destination_stop_id\": \"HGH\", \"limit\": 5}, \"tool_call_id\": \"page-call-1df8212f16a74ceeab254d0555a44e91\", \"operation_id\": \"page-5c80e88cf6b4473da00f898d279da8ef\", \"scenario_id\": \"railway-demo\"}, \"result\": {\"status\": \"FOUND\", \"data\": [{\"route_id\": \"G7541\", \"service_id\": \"S93\", \"trip_id\": \"5l000G75410A\", \"trip_short_name\": \"G7541\", \"trip_headsign\": \"台州西\", \"shape_id\": \"shape-2122\", \"raw_json\": \"{\\\"route_id\\\": \\\"G7541\\\", \\\"service_id\\\": \\\"S93\\\", \\\"trip_id\\\": \\\"5l000G75410A\\\", \\\"trip_short_name\\\": \\\"G7541\\\", \\\"trip_headsign\\\": \\\"台州西\\\", \\\"shape_id\\\": \\\"shape-2122\\\"}\", \"origin_arrival\": \"05:52:00\", \"origin_departure\": \"05:52:00\", \"destination_arrival\": \"06:51:00\", \"destination_departure\": \"06:55:00\", \"origin_sequence\": 1, \"destination_sequence\": 4, \"shape_status\": \"AVAILABLE\", \"departure_at\": \"2026-11-05T05:52:00+08:00\", \"arrival_at\": \"2026-11-05T06:51:00+08:00\"}, {\"route_id\": \"G1321\", \"service_id\": \"S93\", \"trip_id\": \"5l000G132108\", \"trip_short_name\": \"G1321\", \"trip_headsign\": \"六盘水\", \"shape_id\": \"shape-2034\", \"raw_json\": \"{\\\"route_id\\\": \\\"G1321\\\", \\\"service_id\\\": \\\"S93\\\", \\\"trip_id\\\": \\\"5l000G132108\\\", \\\"trip_short_name\\\": \\\"G1321\\\", \\\"trip_headsign\\\": \\\"六盘水\\\", \\\"shape_id\\\": \\\"shape-2034\\\"}\", \"origin_arrival\": \"06:07:00\", \"origin_departure\": \"06:07:00\", \"destination_arrival\": \"06:56:00\", \"destination_departure\": \"07:00:00\", \"origin_sequence\": 1, \"destination_sequence\": 2, \"shape_status\": \"AVAILABLE\", \"departure_at\": \"2026-11-05T06:07:00+08:00\", \"arrival_at\": \"2026-11-05T06:56:00+08:00\"}, {\"route_id\": \"G7331\", \"service_id\": \"S93\", \"trip_id\": \"5l000G733102\", \"trip_short_name\": \"G7331\", \"trip_headsign\": \"瑞安\", \"shape_id\": \"shape-2110\", \"raw_json\": \"{\\\"route_id\\\": \\\"G7331\\\", \\\"service_id\\\": \\\"S93\\\", \\\"trip_id\\\": \\\"5l000G733102\\\", \\\"trip_short_name\\\": \\\"G7331\\\", \\\"trip_headsign\\\": \\\"瑞安\\\", \\\"shape_id\\\": \\\"shape-2110\\\"}\", \"origin_arrival\": \"06:13:00\", \"origin_departure\": \"06:13:00\", \"destination_arrival\": \"07:07:00\", \"destination_departure\": \"07:11:00\", \"origin_sequence\": 1, \"destination_sequence\": 3, \"shape_status\": \"AVAILABLE\", \"departure_at\": \"2026-11-05T06:13:00+08:00\", \"arrival_at\": \"2026-11-05T07:07:00+08:00\"}, {\"route_id\": \"G7333\", \"service_id\": \"S93\", \"trip_id\": \"5l000G733303\", \"trip_short_name\": \"G7333\", \"trip_headsign\": \"温州南\", \"shape_id\": \"shape-2105\", \"raw_json\": \"{\\\"route_id\\\": \\\"G7333\\\", \\\"service_id\\\": \\\"S93\\\", \\\"trip_id\\\": \\\"5l000G733303\\\", \\\"trip_short_name\\\": \\\"G7333\\\", \\\"trip_headsign\\\": \\\"温州南\\\", \\\"shape_id\\\": \\\"shape-2105\\\"}\", \"origin_arrival\": \"06:20:00\", \"origin_departure\": \"06:20:00\", \"destination_arrival\": \"07:21:00\", \"destination_departure\": \"07:23:00\", \"origin_sequence\": 1, \"destination_sequence\": 4, \"shape_status\": \"AVAILABLE\", \"departure_at\": \"2026-11-05T06:20:00+08:00\", \"arrival_at\": \"2026-11-05T07:21:00+08:00\"}, {\"route_id\": \"G7363\", \"service_id\": \"S93\", \"trip_id\": \"5l000G736302\", \"trip_short_name\": \"G7363\", \"trip_headsign\": \"温岭\", \"shape_id\": \"\", \"raw_json\": \"{\\\"route_id\\\": \\\"G7363\\\", \\\"service_id\\\": \\\"S93\\\", \\\"trip_id\\\": \\\"5l000G736302\\\", \\\"trip_short_name\\\": \\\"G7363\\\", \\\"trip_headsign\\\": \\\"温岭\\\", \\\"shape_id\\\": \\\"\\\"}\", \"origin_arrival\": \"06:24:00\", \"origin_departure\": \"06:24:00\", \"destination_arrival\": \"07:26:00\", \"destination_departure\": \"07:33:00\", \"origin_sequence\": 1, \"destination_sequence\": 4, \"shape_status\": \"SHAPE_UNAVAILABLE\", \"departure_at\": \"2026-11-05T06:24:00+08:00\", \"arrival_at\": \"2026-11-05T07:26:00+08:00\"}], \"data_source\": \"CHINESE_RAILWAY_GTFS\", \"data_type\": \"STATIC_SCHEDULE\", \"real_time\": false, \"availability_available\": false, \"fare_available\": false, \"booking_available\": false, \"availability\": \"UNKNOWN\", \"fare\": null, \"data_version\": \"20261101\", \"source_sha256\": \"3877dbc0ebc0392afef4b111dd9ba837c97eb4aa45788542919be53d52a12030\", \"rights_status\": \"RIGHTS_REVIEW_PENDING\", \"usage_scope\": \"LOCAL_DEMO_ONLY\", \"service_date\": \"20261105\", \"next_cursor\": \"5\", \"source\": \"GTFS_SQLITE\", \"total_count\": 109, \"returned_count\": 5, \"limit\": 5, \"has_more\": true, \"query_parameters\": {\"service_date\": \"2026-11-05\", \"origin_stop_id\": \"AOH\", \"destination_stop_id\": \"HGH\", \"train_no\": null, \"cursor\": null}, \"dataset_version\": \"gtfs-20261101-063437\", \"database_sha256\": \"e32f0cd41b45532ea7aedf4c72a6ffc24f6eaa23c042ee8f35cb02aa50735c69\", \"simulation_clock\": {\"clock_id\": \"3c2fc438934c45f8820a77b60d3aa347\", \"mode\": \"PAUSED\", \"simulation\": true, \"timezone\": \"Asia/Shanghai\", \"now\": \"2026-10-17T00:00:00+08:00\", \"anchor\": \"2026-10-16T16:00:00+00:00\", \"revision\": 0, \"dataset_version\": \"gtfs-20261101-063437\"}}}",
+              "request_id": null,
+              "created_at": "2026-10-16T16:00:00+00:00"
+            }
+          ],
+          "updated_at": "2026-10-16T16:00:00+00:00",
+          "state_sha256": "d89c3686d603be55ea92e2852fa1327d5723d6d1808e829ccf9cd611fd063fe5"
+        },
+        "db": {
+          "v39_orders": [],
+          "v39_order_items": [],
+          "v39_holds": [],
+          "v39_transactions": [],
+          "v39_inventory_segments": [
+            {
+              "scenario_id": "railway-demo",
+              "dataset_version": "gtfs-20261101-063437",
+              "trip_id": "5l000G75410A",
+              "service_date": "2026-11-05",
+              "seat_class": "SECOND",
+              "segment_index": 0,
+              "from_stop_id": "AOH",
+              "from_sequence": 1,
+              "from_position": 0,
+              "to_stop_id": "TCH",
+              "to_sequence": 2,
+              "to_position": 1,
+              "capacity": 20,
+              "held": 0,
+              "sold": 0,
+              "version": 0,
+              "updated_at": "2026-10-16T16:00:00+00:00"
+            },
+            {
+              "scenario_id": "railway-demo",
+              "dataset_version": "gtfs-20261101-063437",
+              "trip_id": "5l000G75410A",
+              "service_date": "2026-11-05",
+              "seat_class": "SECOND",
+              "segment_index": 1,
+              "from_stop_id": "TCH",
+              "from_sequence": 2,
+              "from_position": 1,
+              "to_stop_id": "EVH",
+              "to_sequence": 3,
+              "to_position": 2,
+              "capacity": 20,
+              "held": 0,
+              "sold": 0,
+              "version": 0,
+              "updated_at": "2026-10-16T16:00:00+00:00"
+            },
+            {
+              "scenario_id": "railway-demo",
+              "dataset_version": "gtfs-20261101-063437",
+              "trip_id": "5l000G75410A",
+              "service_date": "2026-11-05",
+              "seat_class": "SECOND",
+              "segment_index": 2,
+              "from_stop_id": "EVH",
+              "from_sequence": 3,
+              "from_position": 2,
+              "to_stop_id": "HGH",
+              "to_sequence": 4,
+              "to_position": 3,
+              "capacity": 20,
+              "held": 0,
+              "sold": 0,
+              "version": 0,
+              "updated_at": "2026-10-16T16:00:00+00:00"
+            }
+          ],
+          "v39_inventory_events": [],
+          "v39_refund_requests": [],
+          "v39_change_requests": [],
+          "v39_proposals": [],
+          "v39_idempotency": [],
+          "v39_refund_items": [],
+          "v39_hold_segments": [],
+          "v39_transaction_allocations": []
+        },
+        "metrics": {
+          "order_count": 0,
+          "hold_count": 0,
+          "transaction_count": 0,
+          "held": 0,
+          "sold": 0,
+          "foreign_keys_ok": true,
+          "inventory_conserved": true,
+          "money_conserved": true,
+          "ui_consistent": true
+        },
+        "result": {
+          "status": "SIMULATED_AVAILABLE",
+          "available": 20,
+          "simulation": true,
+          "dataset_version": "gtfs-20261101-063437",
+          "simulation_clock": {
+            "clock_id": "3c2fc438934c45f8820a77b60d3aa347",
+            "mode": "PAUSED",
+            "simulation": true,
+            "timezone": "Asia/Shanghai",
+            "now": "2026-10-17T00:00:00+08:00",
+            "anchor": "2026-10-16T16:00:00+00:00",
+            "revision": 0,
+            "dataset_version": "gtfs-20261101-063437"
+          }
+        }
+      },
+      "trace_id": "3c2ed16fe0784144b115a0552dd3a6bb-1",
+      "executed_tools": [
+        "railway_check_inventory"
+      ],
+      "executed": true,
+      "verified": true
+    },
+    {
+      "index": 2,
+      "kind": "tool",
+      "tool": "railway_quote_fare",
+      "args": {
+        "service_date": "2026-11-05",
+        "origin_stop_id": "AOH",
+        "destination_stop_id": "HGH",
+        "trip_id": "5l000G75410A",
+        "seat_class": "SECOND",
+        "passenger_count": 3
+      },
+      "output": {
+        "status": "QUOTED",
+        "quote": {
+          "quote_id": "Q4353aa06ee864bb7b3ad3d22b66e7321",
+          "session_id": "web-20ff441656b1",
+          "owner_phone": "13800000001",
+          "scenario_id": "railway-demo",
+          "dataset_version": "gtfs-20261101-063437",
+          "trip_id": "5l000G75410A",
+          "service_date": "2026-11-05",
+          "origin_stop_id": "AOH",
+          "destination_stop_id": "HGH",
+          "origin_sequence": 1,
+          "destination_sequence": 4,
+          "origin_position": 0,
+          "destination_position": 3,
+          "seat_class": "SECOND",
+          "passenger_count": 3,
+          "rule_id": "railway-demo-SECOND",
+          "rule_version": 1,
+          "base_fen_per_segment": 1000,
+          "seat_multiplier_bp": 10000,
+          "fixed_fee_fen": 0,
+          "segment_count": 3,
+          "currency": "CNY",
+          "status": "ACTIVE",
+          "expires_at": "2026-10-16T16:10:00+00:00",
+          "created_at": "2026-10-16T16:00:00+00:00",
+          "single_base_fen": 3000,
+          "single_seat_fen": 3000,
+          "base_total_fen": 9000,
+          "seat_total_fen": 9000,
+          "total_fen": 9000,
+          "quote_hash": "67713c687349f8a166dd07c287d7bc386ccb9a80bfa682867d616316f933fa5f"
+        },
+        "items": [
+          {
+            "base_fen": 3000,
+            "seat_fen": 3000,
+            "fixed_fee_share_fen": 0,
+            "fare_fen": 3000
+          },
+          {
+            "base_fen": 3000,
+            "seat_fen": 3000,
+            "fixed_fee_share_fen": 0,
+            "fare_fen": 3000
+          },
+          {
+            "base_fen": 3000,
+            "seat_fen": 3000,
+            "fixed_fee_share_fen": 0,
+            "fare_fen": 3000
+          }
+        ],
+        "simulation": true,
+        "simulation_clock": {
+          "clock_id": "3c2fc438934c45f8820a77b60d3aa347",
+          "mode": "PAUSED",
+          "simulation": true,
+          "timezone": "Asia/Shanghai",
+          "now": "2026-10-17T00:00:00+08:00",
+          "anchor": "2026-10-16T16:00:00+00:00",
+          "revision": 0,
+          "dataset_version": "gtfs-20261101-063437"
+        }
+      },
+      "error": null,
+      "checks": [
+        {
+          "path": "result.quote.total_fen",
+          "op": "ge",
+          "expected": 1,
+          "actual": 9000,
+          "ok": true
+        },
+        {
+          "path": "metrics.foreign_keys_ok",
+          "ok": true,
+          "actual": true
+        },
+        {
+          "path": "metrics.inventory_conserved",
+          "ok": true,
+          "actual": true
+        },
+        {
+          "path": "metrics.money_conserved",
+          "ok": true,
+          "actual": true
+        },
+        {
+          "path": "metrics.ui_consistent",
+          "ok": true,
+          "actual": true
+        }
+      ],
+      "snapshot": {
+        "state": {
+          "schema": "ticket-business-read-model/1",
+          "session_id": "web-20ff441656b1",
+          "source": "LOCAL_SQLITE_COMMITTED",
+          "scenario_id": "railway-demo",
+          "orders": [],
+          "quotes": [
+            {
+              "quote_id": "Q4353aa06ee864bb7b3ad3d22b66e7321",
+              "session_id": "web-20ff441656b1",
+              "owner_phone": "13800000001",
+              "scenario_id": "railway-demo",
+              "dataset_version": "gtfs-20261101-063437",
+              "trip_id": "5l000G75410A",
+              "service_date": "2026-11-05",
+              "origin_stop_id": "AOH",
+              "destination_stop_id": "HGH",
+              "origin_sequence": 1,
+              "destination_sequence": 4,
+              "origin_position": 0,
+              "destination_position": 3,
+              "seat_class": "SECOND",
+              "passenger_count": 3,
+              "rule_id": "railway-demo-SECOND",
+              "rule_version": 1,
+              "base_fen_per_segment": 1000,
+              "seat_multiplier_bp": 10000,
+              "fixed_fee_fen": 0,
+              "segment_count": 3,
+              "single_base_fen": 3000,
+              "single_seat_fen": 3000,
+              "base_total_fen": 9000,
+              "seat_total_fen": 9000,
+              "total_fen": 9000,
+              "currency": "CNY",
+              "quote_hash": "67713c687349f8a166dd07c287d7bc386ccb9a80bfa682867d616316f933fa5f",
+              "status": "ACTIVE",
+              "expires_at": "2026-10-16T16:10:00+00:00",
+              "created_at": "2026-10-16T16:00:00+00:00"
+            }
+          ],
+          "pending_proposals": [],
+          "proposals": [],
+          "operations": [],
+          "operation_events": [
+            {
+              "event_id": "7ad8bfc5fdc744d3a9a272faf2e54f9c",
+              "aggregate_type": "page",
+              "aggregate_id": "web-20ff441656b1",
+              "event_type": "railway_check_inventory",
+              "from_state": null,
+              "to_state": null,
+              "detail_json": "{\"source\": \"page_operation\", \"ok\": true, \"elapsed_ms\": 24, \"args\": {\"tool_arguments\": {\"service_date\": \"2026-11-05\", \"origin_stop_id\": \"AOH\", \"destination_stop_id\": \"HGH\", \"trip_id\": \"5l000G75410A\", \"seat_class\": \"SECOND\", \"quantity\": 3}, \"tool_call_id\": \"page-call-096a5a7ce38e4a7cba5a5955183b027b\", \"operation_id\": \"page-d564b2ee5679471ead95da509fc12f5b\", \"scenario_id\": \"railway-demo\"}, \"result\": {\"status\": \"SIMULATED_AVAILABLE\", \"available\": 20, \"simulation\": true, \"dataset_version\": \"gtfs-20261101-063437\", \"simulation_clock\": {\"clock_id\": \"3c2fc438934c45f8820a77b60d3aa347\", \"mode\": \"PAUSED\", \"simulation\": true, \"timezone\": \"Asia/Shanghai\", \"now\": \"2026-10-17T00:00:00+08:00\", \"anchor\": \"2026-10-16T16:00:00+00:00\", \"revision\": 0, \"dataset_version\": \"gtfs-20261101-063437\"}}}",
+              "request_id": null,
+              "created_at": "2026-10-16T16:00:00+00:00"
+            },
+            {
+              "event_id": "7bc9ac883fcb48f7bb73cbff7cf0e8dc",
+              "aggregate_type": "page",
+              "aggregate_id": "web-20ff441656b1",
+              "event_type": "railway_quote_fare",
+              "from_state": null,
+              "to_state": null,
+              "detail_json": "{\"source\": \"page_operation\", \"ok\": true, \"elapsed_ms\": 30, \"args\": {\"tool_arguments\": {\"service_date\": \"2026-11-05\", \"origin_stop_id\": \"AOH\", \"destination_stop_id\": \"HGH\", \"trip_id\": \"5l000G75410A\", \"seat_class\": \"SECOND\", \"passenger_count\": 3}, \"tool_call_id\": \"page-call-cd50b398223a49a08c141abda341484c\", \"operation_id\": \"page-70c643bdcead48ffb5182d5c2625b72a\", \"scenario_id\": \"railway-demo\"}, \"result\": {\"status\": \"QUOTED\", \"quote\": {\"quote_id\": \"Q4353aa06ee864bb7b3ad3d22b66e7321\", \"session_id\": \"web-20ff441656b1\", \"owner_phone\": \"13800000001\", \"scenario_id\": \"railway-demo\", \"dataset_version\": \"gtfs-20261101-063437\", \"trip_id\": \"5l000G75410A\", \"service_date\": \"2026-11-05\", \"origin_stop_id\": \"AOH\", \"destination_stop_id\": \"HGH\", \"origin_sequence\": 1, \"destination_sequence\": 4, \"origin_position\": 0, \"destination_position\": 3, \"seat_class\": \"SECOND\", \"passenger_count\": 3, \"rule_id\": \"railway-demo-SECOND\", \"rule_version\": 1, \"base_fen_per_segment\": 1000, \"seat_multiplier_bp\": 10000, \"fixed_fee_fen\": 0, \"segment_count\": 3, \"currency\": \"CNY\", \"status\": \"ACTIVE\", \"expires_at\": \"2026-10-16T16:10:00+00:00\", \"created_at\": \"2026-10-16T16:00:00+00:00\", \"single_base_fen\": 3000, \"single_seat_fen\": 3000, \"base_total_fen\": 9000, \"seat_total_fen\": 9000, \"total_fen\": 9000, \"quote_hash\": \"67713c687349f8a166dd07c287d7bc386ccb9a80bfa682867d616316f933fa5f\"}, \"items\": [{\"base_fen\": 3000, \"seat_fen\": 3000, \"fixed_fee_share_fen\": 0, \"fare_fen\": 3000}, {\"base_fen\": 3000, \"seat_fen\": 3000, \"fixed_fee_share_fen\": 0, \"fare_fen\": 3000}, {\"base_fen\": 3000, \"seat_fen\": 3000, \"fixed_fee_share_fen\": 0, \"fare_fen\": 3000}], \"simulation\": true, \"simulation_clock\": {\"clock_id\": \"3c2fc438934c45f8820a77b60d3aa347\", \"mode\": \"PAUSED\", \"simulation\": true, \"timezone\": \"Asia/Shanghai\", \"now\": \"2026-10-17T00:00:00+08:00\", \"anchor\": \"2026-10-16T16:00:00+00:00\", \"revision\": 0, \"dataset_version\": \"gtfs-20261101-063437\"}}}",
+              "request_id": null,
+              "created_at": "2026-10-16T16:00:00+00:00"
+            },
+            {
+              "event_id": "c31f4d02a64843a88fb382d33b5016c7",
+              "aggregate_type": "page",
+              "aggregate_id": "web-20ff441656b1",
+              "event_type": "railway_query_trips",
+              "from_state": null,
+              "to_state": null,
+              "detail_json": "{\"source\": \"page_operation\", \"ok\": true, \"elapsed_ms\": 19, \"args\": {\"tool_arguments\": {\"service_date\": \"2026-11-05\", \"origin_stop_id\": \"AOH\", \"destination_stop_id\": \"HGH\", \"limit\": 5}, \"tool_call_id\": \"page-call-1df8212f16a74ceeab254d0555a44e91\", \"operation_id\": \"page-5c80e88cf6b4473da00f898d279da8ef\", \"scenario_id\": \"railway-demo\"}, \"result\": {\"status\": \"FOUND\", \"data\": [{\"route_id\": \"G7541\", \"service_id\": \"S93\", \"trip_id\": \"5l000G75410A\", \"trip_short_name\": \"G7541\", \"trip_headsign\": \"台州西\", \"shape_id\": \"shape-2122\", \"raw_json\": \"{\\\"route_id\\\": \\\"G7541\\\", \\\"service_id\\\": \\\"S93\\\", \\\"trip_id\\\": \\\"5l000G75410A\\\", \\\"trip_short_name\\\": \\\"G7541\\\", \\\"trip_headsign\\\": \\\"台州西\\\", \\\"shape_id\\\": \\\"shape-2122\\\"}\", \"origin_arrival\": \"05:52:00\", \"origin_departure\": \"05:52:00\", \"destination_arrival\": \"06:51:00\", \"destination_departure\": \"06:55:00\", \"origin_sequence\": 1, \"destination_sequence\": 4, \"shape_status\": \"AVAILABLE\", \"departure_at\": \"2026-11-05T05:52:00+08:00\", \"arrival_at\": \"2026-11-05T06:51:00+08:00\"}, {\"route_id\": \"G1321\", \"service_id\": \"S93\", \"trip_id\": \"5l000G132108\", \"trip_short_name\": \"G1321\", \"trip_headsign\": \"六盘水\", \"shape_id\": \"shape-2034\", \"raw_json\": \"{\\\"route_id\\\": \\\"G1321\\\", \\\"service_id\\\": \\\"S93\\\", \\\"trip_id\\\": \\\"5l000G132108\\\", \\\"trip_short_name\\\": \\\"G1321\\\", \\\"trip_headsign\\\": \\\"六盘水\\\", \\\"shape_id\\\": \\\"shape-2034\\\"}\", \"origin_arrival\": \"06:07:00\", \"origin_departure\": \"06:07:00\", \"destination_arrival\": \"06:56:00\", \"destination_departure\": \"07:00:00\", \"origin_sequence\": 1, \"destination_sequence\": 2, \"shape_status\": \"AVAILABLE\", \"departure_at\": \"2026-11-05T06:07:00+08:00\", \"arrival_at\": \"2026-11-05T06:56:00+08:00\"}, {\"route_id\": \"G7331\", \"service_id\": \"S93\", \"trip_id\": \"5l000G733102\", \"trip_short_name\": \"G7331\", \"trip_headsign\": \"瑞安\", \"shape_id\": \"shape-2110\", \"raw_json\": \"{\\\"route_id\\\": \\\"G7331\\\", \\\"service_id\\\": \\\"S93\\\", \\\"trip_id\\\": \\\"5l000G733102\\\", \\\"trip_short_name\\\": \\\"G7331\\\", \\\"trip_headsign\\\": \\\"瑞安\\\", \\\"shape_id\\\": \\\"shape-2110\\\"}\", \"origin_arrival\": \"06:13:00\", \"origin_departure\": \"06:13:00\", \"destination_arrival\": \"07:07:00\", \"destination_departure\": \"07:11:00\", \"origin_sequence\": 1, \"destination_sequence\": 3, \"shape_status\": \"AVAILABLE\", \"departure_at\": \"2026-11-05T06:13:00+08:00\", \"arrival_at\": \"2026-11-05T07:07:00+08:00\"}, {\"route_id\": \"G7333\", \"service_id\": \"S93\", \"trip_id\": \"5l000G733303\", \"trip_short_name\": \"G7333\", \"trip_headsign\": \"温州南\", \"shape_id\": \"shape-2105\", \"raw_json\": \"{\\\"route_id\\\": \\\"G7333\\\", \\\"service_id\\\": \\\"S93\\\", \\\"trip_id\\\": \\\"5l000G733303\\\", \\\"trip_short_name\\\": \\\"G7333\\\", \\\"trip_headsign\\\": \\\"温州南\\\", \\\"shape_id\\\": \\\"shape-2105\\\"}\", \"origin_arrival\": \"06:20:00\", \"origin_departure\": \"06:20:00\", \"destination_arrival\": \"07:21:00\", \"destination_departure\": \"07:23:00\", \"origin_sequence\": 1, \"destination_sequence\": 4, \"shape_status\": \"AVAILABLE\", \"departure_at\": \"2026-11-05T06:20:00+08:00\", \"arrival_at\": \"2026-11-05T07:21:00+08:00\"}, {\"route_id\": \"G7363\", \"service_id\": \"S93\", \"trip_id\": \"5l000G736302\", \"trip_short_name\": \"G7363\", \"trip_headsign\": \"温岭\", \"shape_id\": \"\", \"raw_json\": \"{\\\"route_id\\\": \\\"G7363\\\", \\\"service_id\\\": \\\"S93\\\", \\\"trip_id\\\": \\\"5l000G736302\\\", \\\"trip_short_name\\\": \\\"G7363\\\", \\\"trip_headsign\\\": \\\"温岭\\\", \\\"shape_id\\\": \\\"\\\"}\", \"origin_arrival\": \"06:24:00\", \"origin_departure\": \"06:24:00\", \"destination_arrival\": \"07:26:00\", \"destination_departure\": \"07:33:00\", \"origin_sequence\": 1, \"destination_sequence\": 4, \"shape_status\": \"SHAPE_UNAVAILABLE\", \"departure_at\": \"2026-11-05T06:24:00+08:00\", \"arrival_at\": \"2026-11-05T07:26:00+08:00\"}], \"data_source\": \"CHINESE_RAILWAY_GTFS\", \"data_type\": \"STATIC_SCHEDULE\", \"real_time\": false, \"availability_available\": false, \"fare_available\": false, \"booking_available\": false, \"availability\": \"UNKNOWN\", \"fare\": null, \"data_version\": \"20261101\", \"source_sha256\": \"3877dbc0ebc0392afef4b111dd9ba837c97eb4aa45788542919be53d52a12030\", \"rights_status\": \"RIGHTS_REVIEW_PENDING\", \"usage_scope\": \"LOCAL_DEMO_ONLY\", \"service_date\": \"20261105\", \"next_cursor\": \"5\", \"source\": \"GTFS_SQLITE\", \"total_count\": 109, \"returned_count\": 5, \"limit\": 5, \"has_more\": true, \"query_parameters\": {\"service_date\": \"2026-11-05\", \"origin_stop_id\": \"AOH\", \"destination_stop_id\": \"HGH\", \"train_no\": null, \"cursor\": null}, \"dataset_version\": \"gtfs-20261101-063437\", \"database_sha256\": \"e32f0cd41b45532ea7aedf4c72a6ffc24f6eaa23c042ee8f35cb02aa50735c69\", \"simulation_clock\": {\"clock_id\": \"3c2fc438934c45f8820a77b60d3aa347\", \"mode\": \"PAUSED\", \"simulation\": true, \"timezone\": \"Asia/Shanghai\", \"now\": \"2026-10-17T00:00:00+08:00\", \"anchor\": \"2026-10-16T16:00:00+00:00\", \"revision\": 0, \"dataset_version\": \"gtfs-20261101-063437\"}}}",
+              "request_id": null,
+              "created_at": "2026-10-16T16:00:00+00:00"
+            }
+          ],
+          "updated_at": "2026-10-16T16:00:00+00:00",
+          "state_sha256": "70db4d2d392f4c97797af9fd523a0150e2a2fe67f8784e57b4a2a64b1b6046bd"
+        },
+        "ui": {
+          "schema": "ticket-business-read-model/1",
+          "session_id": "web-20ff441656b1",
+          "source": "LOCAL_SQLITE_COMMITTED",
+          "scenario_id": "railway-demo",
+          "orders": [],
+          "quotes": [
+            {
+              "quote_id": "Q4353aa06ee864bb7b3ad3d22b66e7321",
+              "session_id": "web-20ff441656b1",
+              "owner_phone": "13800000001",
+              "scenario_id": "railway-demo",
+              "dataset_version": "gtfs-20261101-063437",
+              "trip_id": "5l000G75410A",
+              "service_date": "2026-11-05",
+              "origin_stop_id": "AOH",
+              "destination_stop_id": "HGH",
+              "origin_sequence": 1,
+              "destination_sequence": 4,
+              "origin_position": 0,
+              "destination_position": 3,
+              "seat_class": "SECOND",
+              "passenger_count": 3,
+              "rule_id": "railway-demo-SECOND",
+              "rule_version": 1,
+              "base_fen_per_segment": 1000,
+              "seat_multiplier_bp": 10000,
+              "fixed_fee_fen": 0,
+              "segment_count": 3,
+              "single_base_fen": 3000,
+              "single_seat_fen": 3000,
+              "base_total_fen": 9000,
+              "seat_total_fen": 9000,
+              "total_fen": 9000,
+              "currency": "CNY",
+              "quote_hash": "67713c687349f8a166dd07c287d7bc386ccb9a80bfa682867d616316f933fa5f",
+              "status": "ACTIVE",
+              "expires_at": "2026-10-16T16:10:00+00:00",
+              "created_at": "2026-10-16T16:00:00+00:00"
+            }
+          ],
+          "pending_proposals": [],
+          "proposals": [],
+          "operations": [],
+          "operation_events": [
+            {
+              "event_id": "7ad8bfc5fdc744d3a9a272faf2e54f9c",
+              "aggregate_type": "page",
+              "aggregate_id": "web-20ff441656b1",
+              "event_type": "railway_check_inventory",
+              "from_state": null,
+              "to_state": null,
+              "detail_json": "{\"source\": \"page_operation\", \"ok\": true, \"elapsed_ms\": 24, \"args\": {\"tool_arguments\": {\"service_date\": \"2026-11-05\", \"origin_stop_id\": \"AOH\", \"destination_stop_id\": \"HGH\", \"trip_id\": \"5l000G75410A\", \"seat_class\": \"SECOND\", \"quantity\": 3}, \"tool_call_id\": \"page-call-096a5a7ce38e4a7cba5a5955183b027b\", \"operation_id\": \"page-d564b2ee5679471ead95da509fc12f5b\", \"scenario_id\": \"railway-demo\"}, \"result\": {\"status\": \"SIMULATED_AVAILABLE\", \"available\": 20, \"simulation\": true, \"dataset_version\": \"gtfs-20261101-063437\", \"simulation_clock\": {\"clock_id\": \"3c2fc438934c45f8820a77b60d3aa347\", \"mode\": \"PAUSED\", \"simulation\": true, \"timezone\": \"Asia/Shanghai\", \"now\": \"2026-10-17T00:00:00+08:00\", \"anchor\": \"2026-10-16T16:00:00+00:00\", \"revision\": 0, \"dataset_version\": \"gtfs-20261101-063437\"}}}",
+              "request_id": null,
+              "created_at": "2026-10-16T16:00:00+00:00"
+            },
+            {
+              "event_id": "7bc9ac883fcb48f7bb73cbff7cf0e8dc",
+              "aggregate_type": "page",
+              "aggregate_id": "web-20ff441656b1",
+              "event_type": "railway_quote_fare",
+              "from_state": null,
+              "to_state": null,
+              "detail_json": "{\"source\": \"page_operation\", \"ok\": true, \"elapsed_ms\": 30, \"args\": {\"tool_arguments\": {\"service_date\": \"2026-11-05\", \"origin_stop_id\": \"AOH\", \"destination_stop_id\": \"HGH\", \"trip_id\": \"5l000G75410A\", \"seat_class\": \"SECOND\", \"passenger_count\": 3}, \"tool_call_id\": \"page-call-cd50b398223a49a08c141abda341484c\", \"operation_id\": \"page-70c643bdcead48ffb5182d5c2625b72a\", \"scenario_id\": \"railway-demo\"}, \"result\": {\"status\": \"QUOTED\", \"quote\": {\"quote_id\": \"Q4353aa06ee864bb7b3ad3d22b66e7321\", \"session_id\": \"web-20ff441656b1\", \"owner_phone\": \"13800000001\", \"scenario_id\": \"railway-demo\", \"dataset_version\": \"gtfs-20261101-063437\", \"trip_id\": \"5l000G75410A\", \"service_date\": \"2026-11-05\", \"origin_stop_id\": \"AOH\", \"destination_stop_id\": \"HGH\", \"origin_sequence\": 1, \"destination_sequence\": 4, \"origin_position\": 0, \"destination_position\": 3, \"seat_class\": \"SECOND\", \"passenger_count\": 3, \"rule_id\": \"railway-demo-SECOND\", \"rule_version\": 1, \"base_fen_per_segment\": 1000, \"seat_multiplier_bp\": 10000, \"fixed_fee_fen\": 0, \"segment_count\": 3, \"currency\": \"CNY\", \"status\": \"ACTIVE\", \"expires_at\": \"2026-10-16T16:10:00+00:00\", \"created_at\": \"2026-10-16T16:00:00+00:00\", \"single_base_fen\": 3000, \"single_seat_fen\": 3000, \"base_total_fen\": 9000, \"seat_total_fen\": 9000, \"total_fen\": 9000, \"quote_hash\": \"67713c687349f8a166dd07c287d7bc386ccb9a80bfa682867d616316f933fa5f\"}, \"items\": [{\"base_fen\": 3000, \"seat_fen\": 3000, \"fixed_fee_share_fen\": 0, \"fare_fen\": 3000}, {\"base_fen\": 3000, \"seat_fen\": 3000, \"fixed_fee_share_fen\": 0, \"fare_fen\": 3000}, {\"base_fen\": 3000, \"seat_fen\": 3000, \"fixed_fee_share_fen\": 0, \"fare_fen\": 3000}], \"simulation\": true, \"simulation_clock\": {\"clock_id\": \"3c2fc438934c45f8820a77b60d3aa347\", \"mode\": \"PAUSED\", \"simulation\": true, \"timezone\": \"Asia/Shanghai\", \"now\": \"2026-10-17T00:00:00+08:00\", \"anchor\": \"2026-10-16T16:00:00+00:00\", \"revision\": 0, \"dataset_version\": \"gtfs-20261101-063437\"}}}",
+              "request_id": null,
+              "created_at": "2026-10-16T16:00:00+00:00"
+            },
+            {
+              "event_id": "c31f4d02a64843a88fb382d33b5016c7",
+              "aggregate_type": "page",
+              "aggregate_id": "web-20ff441656b1",
+              "event_type": "railway_query_trips",
+              "from_state": null,
+              "to_state": null,
+              "detail_json": "{\"source\": \"page_operation\", \"ok\": true, \"elapsed_ms\": 19, \"args\": {\"tool_arguments\": {\"service_date\": \"2026-11-05\", \"origin_stop_id\": \"AOH\", \"destination_stop_id\": \"HGH\", \"limit\": 5}, \"tool_call_id\": \"page-call-1df8212f16a74ceeab254d0555a44e91\", \"operation_id\": \"page-5c80e88cf6b4473da00f898d279da8ef\", \"scenario_id\": \"railway-demo\"}, \"result\": {\"status\": \"FOUND\", \"data\": [{\"route_id\": \"G7541\", \"service_id\": \"S93\", \"trip_id\": \"5l000G75410A\", \"trip_short_name\": \"G7541\", \"trip_headsign\": \"台州西\", \"shape_id\": \"shape-2122\", \"raw_json\": \"{\\\"route_id\\\": \\\"G7541\\\", \\\"service_id\\\": \\\"S93\\\", \\\"trip_id\\\": \\\"5l000G75410A\\\", \\\"trip_short_name\\\": \\\"G7541\\\", \\\"trip_headsign\\\": \\\"台州西\\\", \\\"shape_id\\\": \\\"shape-2122\\\"}\", \"origin_arrival\": \"05:52:00\", \"origin_departure\": \"05:52:00\", \"destination_arrival\": \"06:51:00\", \"destination_departure\": \"06:55:00\", \"origin_sequence\": 1, \"destination_sequence\": 4, \"shape_status\": \"AVAILABLE\", \"departure_at\": \"2026-11-05T05:52:00+08:00\", \"arrival_at\": \"2026-11-05T06:51:00+08:00\"}, {\"route_id\": \"G1321\", \"service_id\": \"S93\", \"trip_id\": \"5l000G132108\", \"trip_short_name\": \"G1321\", \"trip_headsign\": \"六盘水\", \"shape_id\": \"shape-2034\", \"raw_json\": \"{\\\"route_id\\\": \\\"G1321\\\", \\\"service_id\\\": \\\"S93\\\", \\\"trip_id\\\": \\\"5l000G132108\\\", \\\"trip_short_name\\\": \\\"G1321\\\", \\\"trip_headsign\\\": \\\"六盘水\\\", \\\"shape_id\\\": \\\"shape-2034\\\"}\", \"origin_arrival\": \"06:07:00\", \"origin_departure\": \"06:07:00\", \"destination_arrival\": \"06:56:00\", \"destination_departure\": \"07:00:00\", \"origin_sequence\": 1, \"destination_sequence\": 2, \"shape_status\": \"AVAILABLE\", \"departure_at\": \"2026-11-05T06:07:00+08:00\", \"arrival_at\": \"2026-11-05T06:56:00+08:00\"}, {\"route_id\": \"G7331\", \"service_id\": \"S93\", \"trip_id\": \"5l000G733102\", \"trip_short_name\": \"G7331\", \"trip_headsign\": \"瑞安\", \"shape_id\": \"shape-2110\", \"raw_json\": \"{\\\"route_id\\\": \\\"G7331\\\", \\\"service_id\\\": \\\"S93\\\", \\\"trip_id\\\": \\\"5l000G733102\\\", \\\"trip_short_name\\\": \\\"G7331\\\", \\\"trip_headsign\\\": \\\"瑞安\\\", \\\"shape_id\\\": \\\"shape-2110\\\"}\", \"origin_arrival\": \"06:13:00\", \"origin_departure\": \"06:13:00\", \"destination_arrival\": \"07:07:00\", \"destination_departure\": \"07:11:00\", \"origin_sequence\": 1, \"destination_sequence\": 3, \"shape_status\": \"AVAILABLE\", \"departure_at\": \"2026-11-05T06:13:00+08:00\", \"arrival_at\": \"2026-11-05T07:07:00+08:00\"}, {\"route_id\": \"G7333\", \"service_id\": \"S93\", \"trip_id\": \"5l000G733303\", \"trip_short_name\": \"G7333\", \"trip_headsign\": \"温州南\", \"shape_id\": \"shape-2105\", \"raw_json\": \"{\\\"route_id\\\": \\\"G7333\\\", \\\"service_id\\\": \\\"S93\\\", \\\"trip_id\\\": \\\"5l000G733303\\\", \\\"trip_short_name\\\": \\\"G7333\\\", \\\"trip_headsign\\\": \\\"温州南\\\", \\\"shape_id\\\": \\\"shape-2105\\\"}\", \"origin_arrival\": \"06:20:00\", \"origin_departure\": \"06:20:00\", \"destination_arrival\": \"07:21:00\", \"destination_departure\": \"07:23:00\", \"origin_sequence\": 1, \"destination_sequence\": 4, \"shape_status\": \"AVAILABLE\", \"departure_at\": \"2026-11-05T06:20:00+08:00\", \"arrival_at\": \"2026-11-05T07:21:00+08:00\"}, {\"route_id\": \"G7363\", \"service_id\": \"S93\", \"trip_id\": \"5l000G736302\", \"trip_short_name\": \"G7363\", \"trip_headsign\": \"温岭\", \"shape_id\": \"\", \"raw_json\": \"{\\\"route_id\\\": \\\"G7363\\\", \\\"service_id\\\": \\\"S93\\\", \\\"trip_id\\\": \\\"5l000G736302\\\", \\\"trip_short_name\\\": \\\"G7363\\\", \\\"trip_headsign\\\": \\\"温岭\\\", \\\"shape_id\\\": \\\"\\\"}\", \"origin_arrival\": \"06:24:00\", \"origin_departure\": \"06:24:00\", \"destination_arrival\": \"07:26:00\", \"destination_departure\": \"07:33:00\", \"origin_sequence\": 1, \"destination_sequence\": 4, \"shape_status\": \"SHAPE_UNAVAILABLE\", \"departure_at\": \"2026-11-05T06:24:00+08:00\", \"arrival_at\": \"2026-11-05T07:26:00+08:00\"}], \"data_source\": \"CHINESE_RAILWAY_GTFS\", \"data_type\": \"STATIC_SCHEDULE\", \"real_time\": false, \"availability_available\": false, \"fare_available\": false, \"booking_available\": false, \"availability\": \"UNKNOWN\", \"fare\": null, \"data_version\": \"20261101\", \"source_sha256\": \"3877dbc0ebc0392afef4b111dd9ba837c97eb4aa45788542919be53d52a12030\", \"rights_status\": \"RIGHTS_REVIEW_PENDING\", \"usage_scope\": \"LOCAL_DEMO_ONLY\", \"service_date\": \"20261105\", \"next_cursor\": \"5\", \"source\": \"GTFS_SQLITE\", \"total_count\": 109, \"returned_count\": 5, \"limit\": 5, \"has_more\": true, \"query_parameters\": {\"service_date\": \"2026-11-05\", \"origin_stop_id\": \"AOH\", \"destination_stop_id\": \"HGH\", \"train_no\": null, \"cursor\": null}, \"dataset_version\": \"gtfs-20261101-063437\", \"database_sha256\": \"e32f0cd41b45532ea7aedf4c72a6ffc24f6eaa23c042ee8f35cb02aa50735c69\", \"simulation_clock\": {\"clock_id\": \"3c2fc438934c45f8820a77b60d3aa347\", \"mode\": \"PAUSED\", \"simulation\": true, \"timezone\": \"Asia/Shanghai\", \"now\": \"2026-10-17T00:00:00+08:00\", \"anchor\": \"2026-10-16T16:00:00+00:00\", \"revision\": 0, \"dataset_version\": \"gtfs-20261101-063437\"}}}",
+              "request_id": null,
+              "created_at": "2026-10-16T16:00:00+00:00"
+            }
+          ],
+          "updated_at": "2026-10-16T16:00:00+00:00",
+          "state_sha256": "70db4d2d392f4c97797af9fd523a0150e2a2fe67f8784e57b4a2a64b1b6046bd"
+        },
+        "db": {
+          "v39_orders": [],
+          "v39_order_items": [],
+          "v39_holds": [],
+          "v39_transactions": [],
+          "v39_inventory_segments": [
+            {
+              "scenario_id": "railway-demo",
+              "dataset_version": "gtfs-20261101-063437",
+              "trip_id": "5l000G75410A",
+              "service_date": "2026-11-05",
+              "seat_class": "SECOND",
+              "segment_index": 0,
+              "from_stop_id": "AOH",
+              "from_sequence": 1,
+              "from_position": 0,
+              "to_stop_id": "TCH",
+              "to_sequence": 2,
+              "to_position": 1,
+              "capacity": 20,
+              "held": 0,
+              "sold": 0,
+              "version": 0,
+              "updated_at": "2026-10-16T16:00:00+00:00"
+            },
+            {
+              "scenario_id": "railway-demo",
+              "dataset_version": "gtfs-20261101-063437",
+              "trip_id": "5l000G75410A",
+              "service_date": "2026-11-05",
+              "seat_class": "SECOND",
+              "segment_index": 1,
+              "from_stop_id": "TCH",
+              "from_sequence": 2,
+              "from_position": 1,
+              "to_stop_id": "EVH",
+              "to_sequence": 3,
+              "to_position": 2,
+              "capacity": 20,
+              "held": 0,
+              "sold": 0,
+              "version": 0,
+              "updated_at": "2026-10-16T16:00:00+00:00"
+            },
+            {
+              "scenario_id": "railway-demo",
+              "dataset_version": "gtfs-20261101-063437",
+              "trip_id": "5l000G75410A",
+              "service_date": "2026-11-05",
+              "seat_class": "SECOND",
+              "segment_index": 2,
+              "from_stop_id": "EVH",
+              "from_sequence": 3,
+              "from_position": 2,
+              "to_stop_id": "HGH",
+              "to_sequence": 4,
+              "to_position": 3,
+              "capacity": 20,
+              "held": 0,
+              "sold": 0,
+              "version": 0,
+              "updated_at": "2026-10-16T16:00:00+00:00"
+            }
+          ],
+          "v39_inventory_events": [],
+          "v39_refund_requests": [],
+          "v39_change_requests": [],
+          "v39_proposals": [],
+          "v39_idempotency": [],
+          "v39_refund_items": [],
+          "v39_hold_segments": [],
+          "v39_transaction_allocations": []
+        },
+        "metrics": {
+          "order_count": 0,
+          "hold_count": 0,
+          "transaction_count": 0,
+          "held": 0,
+          "sold": 0,
+          "foreign_keys_ok": true,
+          "inventory_conserved": true,
+          "money_conserved": true,
+          "ui_consistent": true
+        },
+        "result": {
+          "status": "QUOTED",
+          "quote": {
+            "quote_id": "Q4353aa06ee864bb7b3ad3d22b66e7321",
+            "session_id": "web-20ff441656b1",
+            "owner_phone": "13800000001",
+            "scenario_id": "railway-demo",
+            "dataset_version": "gtfs-20261101-063437",
+            "trip_id": "5l000G75410A",
+            "service_date": "2026-11-05",
+            "origin_stop_id": "AOH",
+            "destination_stop_id": "HGH",
+            "origin_sequence": 1,
+            "destination_sequence": 4,
+            "origin_position": 0,
+            "destination_position": 3,
+            "seat_class": "SECOND",
+            "passenger_count": 3,
+            "rule_id": "railway-demo-SECOND",
+            "rule_version": 1,
+            "base_fen_per_segment": 1000,
+            "seat_multiplier_bp": 10000,
+            "fixed_fee_fen": 0,
+            "segment_count": 3,
+            "currency": "CNY",
+            "status": "ACTIVE",
+            "expires_at": "2026-10-16T16:10:00+00:00",
+            "created_at": "2026-10-16T16:00:00+00:00",
+            "single_base_fen": 3000,
+            "single_seat_fen": 3000,
+            "base_total_fen": 9000,
+            "seat_total_fen": 9000,
+            "total_fen": 9000,
+            "quote_hash": "67713c687349f8a166dd07c287d7bc386ccb9a80bfa682867d616316f933fa5f"
+          },
+          "items": [
+            {
+              "base_fen": 3000,
+              "seat_fen": 3000,
+              "fixed_fee_share_fen": 0,
+              "fare_fen": 3000
+            },
+            {
+              "base_fen": 3000,
+              "seat_fen": 3000,
+              "fixed_fee_share_fen": 0,
+              "fare_fen": 3000
+            },
+            {
+              "base_fen": 3000,
+              "seat_fen": 3000,
+              "fixed_fee_share_fen": 0,
+              "fare_fen": 3000
+            }
+          ],
+          "simulation": true,
+          "simulation_clock": {
+            "clock_id": "3c2fc438934c45f8820a77b60d3aa347",
+            "mode": "PAUSED",
+            "simulation": true,
+            "timezone": "Asia/Shanghai",
+            "now": "2026-10-17T00:00:00+08:00",
+            "anchor": "2026-10-16T16:00:00+00:00",
+            "revision": 0,
+            "dataset_version": "gtfs-20261101-063437"
+          }
+        }
+      },
+      "trace_id": "3c2ed16fe0784144b115a0552dd3a6bb-2",
+      "executed_tools": [
+        "railway_quote_fare"
+      ],
+      "executed": true,
+      "verified": true
+    },
+    {
+      "index": 3,
+      "kind": "tool",
+      "tool": "railway_create_order",
+      "args": {
+        "quote_id": "Q4353aa06ee864bb7b3ad3d22b66e7321",
+        "passengers": [
+          "合成甲",
+          "合成乙",
+          "合成丙"
+        ],
+        "contact": "13800000001"
+      },
+      "output": {
+        "proposal_id": "P61f11cfeeca24f219e4b8cabac7b3db3",
+        "status": "CONFIRMATION_REQUIRED",
+        "expires_at": "2026-10-16T16:05:00+00:00",
+        "simulation": true,
+        "preview": {
+          "total_fen": 9000,
+          "passengers": 3
+        },
+        "simulation_clock": {
+          "clock_id": "3c2fc438934c45f8820a77b60d3aa347",
+          "mode": "PAUSED",
+          "simulation": true,
+          "timezone": "Asia/Shanghai",
+          "now": "2026-10-17T00:00:00+08:00",
+          "anchor": "2026-10-16T16:00:00+00:00",
+          "revision": 0,
+          "dataset_version": "gtfs-20261101-063437"
+        }
+      },
+      "error": null,
+      "checks": [
+        {
+          "path": "result.status",
+          "op": "eq",
+          "expected": "CONFIRMATION_REQUIRED",
+          "actual": "CONFIRMATION_REQUIRED",
+          "ok": true
+        },
+        {
+          "path": "metrics.order_count",
+          "op": "eq",
+          "expected": 0,
+          "actual": 0,
+          "ok": true
+        },
+        {
+          "path": "metrics.hold_count",
+          "op": "eq",
+          "expected": 0,
+          "actual": 0,
+          "ok": true
+        },
+        {
+          "path": "metrics.foreign_keys_ok",
+          "ok": true,
+          "actual": true
+        },
+        {
+          "path": "metrics.inventory_conserved",
+          "ok": true,
+          "actual": true
+        },
+        {
+          "path": "metrics.money_conserved",
+          "ok": true,
+          "actual": true
+        },
+        {
+          "path": "metrics.ui_consistent",
+          "ok": true,
+          "actual": true
+        }
+      ],
+      "snapshot": {
+        "state": {
+          "schema": "ticket-business-read-model/1",
+          "session_id": "web-20ff441656b1",
+          "source": "LOCAL_SQLITE_COMMITTED",
+          "scenario_id": "railway-demo",
+          "orders": [],
+          "quotes": [
+            {
+              "quote_id": "Q4353aa06ee864bb7b3ad3d22b66e7321",
+              "session_id": "web-20ff441656b1",
+              "owner_phone": "13800000001",
+              "scenario_id": "railway-demo",
+              "dataset_version": "gtfs-20261101-063437",
+              "trip_id": "5l000G75410A",
+              "service_date": "2026-11-05",
+              "origin_stop_id": "AOH",
+              "destination_stop_id": "HGH",
+              "origin_sequence": 1,
+              "destination_sequence": 4,
+              "origin_position": 0,
+              "destination_position": 3,
+              "seat_class": "SECOND",
+              "passenger_count": 3,
+              "rule_id": "railway-demo-SECOND",
+              "rule_version": 1,
+              "base_fen_per_segment": 1000,
+              "seat_multiplier_bp": 10000,
+              "fixed_fee_fen": 0,
+              "segment_count": 3,
+              "single_base_fen": 3000,
+              "single_seat_fen": 3000,
+              "base_total_fen": 9000,
+              "seat_total_fen": 9000,
+              "total_fen": 9000,
+              "currency": "CNY",
+              "quote_hash": "67713c687349f8a166dd07c287d7bc386ccb9a80bfa682867d616316f933fa5f",
+              "status": "ACTIVE",
+              "expires_at": "2026-10-16T16:10:00+00:00",
+              "created_at": "2026-10-16T16:00:00+00:00"
+            }
+          ],
+          "pending_proposals": [
+            {
+              "proposal_id": "P61f11cfeeca24f219e4b8cabac7b3db3",
+              "session_id": "web-20ff441656b1",
+              "owner_phone": "13800000001",
+              "action": "CREATE_ORDER",
+              "aggregate_id": "Q4353aa06ee864bb7b3ad3d22b66e7321",
+              "quote_id": "Q4353aa06ee864bb7b3ad3d22b66e7321",
+              "order_id": null,
+              "scenario_id": "railway-demo",
+              "execution_mode": "developer_custom",
+              "config_hash": "1756a931fe3987bfade919b0f7f413809303ac31a4c63bdd02d467955c39dddc",
+              "write_policy_hash": "0e5bb2d30cc05b6a13f772307e807f82766892b7435b29849ee84557bb10d1b9",
+              "feature_flag": "1",
+              "baseline_id": "ticket-agent-v37-baseline-1",
+              "provider": "mock",
+              "tool_whitelist_hash": "b66a0a3c9203dcbf5a47d7599a5eaa57b79a5dd19458a57f5f50c5c5f1a0f5f9",
+              "config_revision": 0,
+              "confirmation_owner_worker": "confirmation",
+              "confirmation_boot_epoch": "8c3d1cf744004c578cb31e4ccb03dd97",
+              "idempotency_key": "P61f11cfeeca24f219e4b8cabac7b3db3",
+              "request_hash": "01b2dcd9adaf1138c134f805721497c6c8c6ecd17ed82431e01b4825dfa165e3",
+              "payload_json": "{\"quote_id\": \"Q4353aa06ee864bb7b3ad3d22b66e7321\", \"passengers\": [\"合成甲\", \"合成乙\", \"合成丙\"], \"contact\": \"13800000001\", \"_display_preview\": {\"total_fen\": 9000, \"passengers\": 3}}",
+              "state": "PENDING",
+              "expires_at": "2026-10-16T16:05:00+00:00",
+              "created_at": "2026-10-16T16:00:00+00:00",
+              "consumed_at": null,
+              "payload": {
+                "quote_id": "Q4353aa06ee864bb7b3ad3d22b66e7321",
+                "passengers": [
+                  "合成甲",
+                  "合成乙",
+                  "合成丙"
+                ],
+                "contact": "13800000001",
+                "_display_preview": {
+                  "total_fen": 9000,
+                  "passengers": 3
+                }
+              }
+            }
+          ],
+          "proposals": [
+            {
+              "proposal_id": "P61f11cfeeca24f219e4b8cabac7b3db3",
+              "session_id": "web-20ff441656b1",
+              "owner_phone": "13800000001",
+              "action": "CREATE_ORDER",
+              "aggregate_id": "Q4353aa06ee864bb7b3ad3d22b66e7321",
+              "quote_id": "Q4353aa06ee864bb7b3ad3d22b66e7321",
+              "order_id": null,
+              "scenario_id": "railway-demo",
+              "execution_mode": "developer_custom",
+              "config_hash": "1756a931fe3987bfade919b0f7f413809303ac31a4c63bdd02d467955c39dddc",
+              "write_policy_hash": "0e5bb2d30cc05b6a13f772307e807f82766892b7435b29849ee84557bb10d1b9",
+              "feature_flag": "1",
+              "baseline_id": "ticket-agent-v37-baseline-1",
+              "provider": "mock",
+              "tool_whitelist_hash": "b66a0a3c9203dcbf5a47d7599a5eaa57b79a5dd19458a57f5f50c5c5f1a0f5f9",
+              "config_revision": 0,
+              "confirmation_owner_worker": "confirmation",
+              "confirmation_boot_epoch": "8c3d1cf744004c578cb31e4ccb03dd97",
+              "idempotency_key": "P61f11cfeeca24f219e4b8cabac7b3db3",
+              "request_hash": "01b2dcd9adaf1138c134f805721497c6c8c6ecd17ed82431e01b4825dfa165e3",
+              "payload_json": "{\"quote_id\": \"Q4353aa06ee864bb7b3ad3d22b66e7321\", \"passengers\": [\"合成甲\", \"合成乙\", \"合成丙\"], \"contact\": \"13800000001\", \"_display_preview\": {\"total_fen\": 9000, \"passengers\": 3}}",
+              "state": "PENDING",
+              "expires_at": "2026-10-16T16:05:00+00:00",
+              "created_at": "2026-10-16T16:00:00+00:00",
+              "consumed_at": null,
+              "payload": {
+                "quote_id": "Q4353aa06ee864bb7b3ad3d22b66e7321",
+                "passengers": [
+                  "合成甲",
+                  "合成乙",
+                  "合成丙"
+                ],
+                "contact": "13800000001",
+                "_display_preview": {
+                  "total_fen": 9000,
+                  "passengers": 3
+                }
+              }
+            }
+          ],
+          "operations": [
+            {
+              "operation_id": "confirm:web-20ff441656b1:P61f11cfeeca24f219e4b8cabac7b3db3:CREATE_ORDER",
+              "proposal_id": "P61f11cfeeca24f219e4b8cabac7b3db3",
+              "order_id": null,
+              "action": "CREATE_ORDER",
+              "status": "PENDING_CONFIRMATION",
+              "tool_call_id": null,
+              "actual_result": null,
+              "database_verified": false,
+              "before": null,
+              "after": null,
+              "created_at": "2026-10-16T16:00:00+00:00",
+              "finished_at": null
+            }
+          ],
+          "operation_events": [
+            {
+              "event_id": "7ad8bfc5fdc744d3a9a272faf2e54f9c",
+              "aggregate_type": "page",
+              "aggregate_id": "web-20ff441656b1",
+              "event_type": "railway_check_inventory",
+              "from_state": null,
+              "to_state": null,
+              "detail_json": "{\"source\": \"page_operation\", \"ok\": true, \"elapsed_ms\": 24, \"args\": {\"tool_arguments\": {\"service_date\": \"2026-11-05\", \"origin_stop_id\": \"AOH\", \"destination_stop_id\": \"HGH\", \"trip_id\": \"5l000G75410A\", \"seat_class\": \"SECOND\", \"quantity\": 3}, \"tool_call_id\": \"page-call-096a5a7ce38e4a7cba5a5955183b027b\", \"operation_id\": \"page-d564b2ee5679471ead95da509fc12f5b\", \"scenario_id\": \"railway-demo\"}, \"result\": {\"status\": \"SIMULATED_AVAILABLE\", \"available\": 20, \"simulation\": true, \"dataset_version\": \"gtfs-20261101-063437\", \"simulation_clock\": {\"clock_id\": \"3c2fc438934c45f8820a77b60d3aa347\", \"mode\": \"PAUSED\", \"simulation\": true, \"timezone\": \"Asia/Shanghai\", \"now\": \"2026-10-17T00:00:00+08:00\", \"anchor\": \"2026-10-16T16:00:00+00:00\", \"revision\": 0, \"dataset_version\": \"gtfs-20261101-063437\"}}}",
+              "request_id": null,
+              "created_at": "2026-10-16T16:00:00+00:00"
+            },
+            {
+              "event_id": "7bc9ac883fcb48f7bb73cbff7cf0e8dc",
+              "aggregate_type": "page",
+              "aggregate_id": "web-20ff441656b1",
+              "event_type": "railway_quote_fare",
+              "from_state": null,
+              "to_state": null,
+              "detail_json": "{\"source\": \"page_operation\", \"ok\": true, \"elapsed_ms\": 30, \"args\": {\"tool_arguments\": {\"service_date\": \"2026-11-05\", \"origin_stop_id\": \"AOH\", \"destination_stop_id\": \"HGH\", \"trip_id\": \"5l000G75410A\", \"seat_class\": \"SECOND\", \"passenger_count\": 3}, \"tool_call_id\": \"page-call-cd50b398223a49a08c141abda341484c\", \"operation_id\": \"page-70c643bdcead48ffb5182d5c2625b72a\", \"scenario_id\": \"railway-demo\"}, \"result\": {\"status\": \"QUOTED\", \"quote\": {\"quote_id\": \"Q4353aa06ee864bb7b3ad3d22b66e7321\", \"session_id\": \"web-20ff441656b1\", \"owner_phone\": \"13800000001\", \"scenario_id\": \"railway-demo\", \"dataset_version\": \"gtfs-20261101-063437\", \"trip_id\": \"5l000G75410A\", \"service_date\": \"2026-11-05\", \"origin_stop_id\": \"AOH\", \"destination_stop_id\": \"HGH\", \"origin_sequence\": 1, \"destination_sequence\": 4, \"origin_position\": 0, \"destination_position\": 3, \"seat_class\": \"SECOND\", \"passenger_count\": 3, \"rule_id\": \"railway-demo-SECOND\", \"rule_version\": 1, \"base_fen_per_segment\": 1000, \"seat_multiplier_bp\": 10000, \"fixed_fee_fen\": 0, \"segment_count\": 3, \"currency\": \"CNY\", \"status\": \"ACTIVE\", \"expires_at\": \"2026-10-16T16:10:00+00:00\", \"created_at\": \"2026-10-16T16:00:00+00:00\", \"single_base_fen\": 3000, \"single_seat_fen\": 3000, \"base_total_fen\": 9000, \"seat_total_fen\": 9000, \"total_fen\": 9000, \"quote_hash\": \"67713c687349f8a166dd07c287d7bc386ccb9a80bfa682867d616316f933fa5f\"}, \"items\": [{\"base_fen\": 3000, \"seat_fen\": 3000, \"fixed_fee_share_fen\": 0, \"fare_fen\": 3000}, {\"base_fen\": 3000, \"seat_fen\": 3000, \"fixed_fee_share_fen\": 0, \"fare_fen\": 3000}, {\"base_fen\": 3000, \"seat_fen\": 3000, \"fixed_fee_share_fen\": 0, \"fare_fen\": 3000}], \"simulation\": true, \"simulation_clock\": {\"clock_id\": \"3c2fc438934c45f8820a77b60d3aa347\", \"mode\": \"PAUSED\", \"simulation\": true, \"timezone\": \"Asia/Shanghai\", \"now\": \"2026-10-17T00:00:00+08:00\", \"anchor\": \"2026-10-16T16:00:00+00:00\", \"revision\": 0, \"dataset_version\": \"gtfs-20261101-063437\"}}}",
+              "request_id": null,
+              "created_at": "2026-10-16T16:00:00+00:00"
+            },
+            {
+              "event_id": "c31f4d02a64843a88fb382d33b5016c7",
+              "aggregate_type": "page",
+              "aggregate_id": "web-20ff441656b1",
+              "event_type": "railway_query_trips",
+              "from_state": null,
+              "to_state": null,
+              "detail_json": "{\"source\": \"page_operation\", \"ok\": true, \"elapsed_ms\": 19, \"args\": {\"tool_arguments\": {\"service_date\": \"2026-11-05\", \"origin_stop_id\": \"AOH\", \"destination_stop_id\": \"HGH\", \"limit\": 5}, \"tool_call_id\": \"page-call-1df8212f16a74ceeab254d0555a44e91\", \"operation_id\": \"page-5c80e88cf6b4473da00f898d279da8ef\", \"scenario_id\": \"railway-demo\"}, \"result\": {\"status\": \"FOUND\", \"data\": [{\"route_id\": \"G7541\", \"service_id\": \"S93\", \"trip_id\": \"5l000G75410A\", \"trip_short_name\": \"G7541\", \"trip_headsign\": \"台州西\", \"shape_id\": \"shape-2122\", \"raw_json\": \"{\\\"route_id\\\": \\\"G7541\\\", \\\"service_id\\\": \\\"S93\\\", \\\"trip_id\\\": \\\"5l000G75410A\\\", \\\"trip_short_name\\\": \\\"G7541\\\", \\\"trip_headsign\\\": \\\"台州西\\\", \\\"shape_id\\\": \\\"shape-2122\\\"}\", \"origin_arrival\": \"05:52:00\", \"origin_departure\": \"05:52:00\", \"destination_arrival\": \"06:51:00\", \"destination_departure\": \"06:55:00\", \"origin_sequence\": 1, \"destination_sequence\": 4, \"shape_status\": \"AVAILABLE\", \"departure_at\": \"2026-11-05T05:52:00+08:00\", \"arrival_at\": \"2026-11-05T06:51:00+08:00\"}, {\"route_id\": \"G1321\", \"service_id\": \"S93\", \"trip_id\": \"5l000G132108\", \"trip_short_name\": \"G1321\", \"trip_headsign\": \"六盘水\", \"shape_id\": \"shape-2034\", \"raw_json\": \"{\\\"route_id\\\": \\\"G1321\\\", \\\"service_id\\\": \\\"S93\\\", \\\"trip_id\\\": \\\"5l000G132108\\\", \\\"trip_short_name\\\": \\\"G1321\\\", \\\"trip_headsign\\\": \\\"六盘水\\\", \\\"shape_id\\\": \\\"shape-2034\\\"}\", \"origin_arrival\": \"06:07:00\", \"origin_departure\": \"06:07:00\", \"destination_arrival\": \"06:56:00\", \"destination_departure\": \"07:00:00\", \"origin_sequence\": 1, \"destination_sequence\": 2, \"shape_status\": \"AVAILABLE\", \"departure_at\": \"2026-11-05T06:07:00+08:00\", \"arrival_at\": \"2026-11-05T06:56:00+08:00\"}, {\"route_id\": \"G7331\", \"service_id\": \"S93\", \"trip_id\": \"5l000G733102\", \"trip_short_name\": \"G7331\", \"trip_headsign\": \"瑞安\", \"shape_id\": \"shape-2110\", \"raw_json\": \"{\\\"route_id\\\": \\\"G7331\\\", \\\"service_id\\\": \\\"S93\\\", \\\"trip_id\\\": \\\"5l000G733102\\\", \\\"trip_short_name\\\": \\\"G7331\\\", \\\"trip_headsign\\\": \\\"瑞安\\\", \\\"shape_id\\\": \\\"shape-2110\\\"}\", \"origin_arrival\": \"06:13:00\", \"origin_departure\": \"06:13:00\", \"destination_arrival\": \"07:07:00\", \"destination_departure\": \"07:11:00\", \"origin_sequence\": 1, \"destination_sequence\": 3, \"shape_status\": \"AVAILABLE\", \"departure_at\": \"2026-11-05T06:13:00+08:00\", \"arrival_at\": \"2026-11-05T07:07:00+08:00\"}, {\"route_id\": \"G7333\", \"service_id\": \"S93\", \"trip_id\": \"5l000G733303\", \"trip_short_name\": \"G7333\", \"trip_headsign\": \"温州南\", \"shape_id\": \"shape-2105\", \"raw_json\": \"{\\\"route_id\\\": \\\"G7333\\\", \\\"service_id\\\": \\\"S93\\\", \\\"trip_id\\\": \\\"5l000G733303\\\", \\\"trip_short_name\\\": \\\"G7333\\\", \\\"trip_headsign\\\": \\\"温州南\\\", \\\"shape_id\\\": \\\"shape-2105\\\"}\", \"origin_arrival\": \"06:20:00\", \"origin_departure\": \"06:20:00\", \"destination_arrival\": \"07:21:00\", \"destination_departure\": \"07:23:00\", \"origin_sequence\": 1, \"destination_sequence\": 4, \"shape_status\": \"AVAILABLE\", \"departure_at\": \"2026-11-05T06:20:00+08:00\", \"arrival_at\": \"2026-11-05T07:21:00+08:00\"}, {\"route_id\": \"G7363\", \"service_id\": \"S93\", \"trip_id\": \"5l000G736302\", \"trip_short_name\": \"G7363\", \"trip_headsign\": \"温岭\", \"shape_id\": \"\", \"raw_json\": \"{\\\"route_id\\\": \\\"G7363\\\", \\\"service_id\\\": \\\"S93\\\", \\\"trip_id\\\": \\\"5l000G736302\\\", \\\"trip_short_name\\\": \\\"G7363\\\", \\\"trip_headsign\\\": \\\"温岭\\\", \\\"shape_id\\\": \\\"\\\"}\", \"origin_arrival\": \"06:24:00\", \"origin_departure\": \"06:24:00\", \"destination_arrival\": \"07:26:00\", \"destination_departure\": \"07:33:00\", \"origin_sequence\": 1, \"destination_sequence\": 4, \"shape_status\": \"SHAPE_UNAVAILABLE\", \"departure_at\": \"2026-11-05T06:24:00+08:00\", \"arrival_at\": \"2026-11-05T07:26:00+08:00\"}], \"data_source\": \"CHINESE_RAILWAY_GTFS\", \"data_type\": \"STATIC_SCHEDULE\", \"real_time\": false, \"availability_available\": false, \"fare_available\": false, \"booking_available\": false, \"availability\": \"UNKNOWN\", \"fare\": null, \"data_version\": \"20261101\", \"source_sha256\": \"3877dbc0ebc0392afef4b111dd9ba837c97eb4aa45788542919be53d52a12030\", \"rights_status\": \"RIGHTS_REVIEW_PENDING\", \"usage_scope\": \"LOCAL_DEMO_ONLY\", \"service_date\": \"20261105\", \"next_cursor\": \"5\", \"source\": \"GTFS_SQLITE\", \"total_count\": 109, \"returned_count\": 5, \"limit\": 5, \"has_more\": true, \"query_parameters\": {\"service_date\": \"2026-11-05\", \"origin_stop_id\": \"AOH\", \"destination_stop_id\": \"HGH\", \"train_no\": null, \"cursor\": null}, \"dataset_version\": \"gtfs-20261101-063437\", \"database_sha256\": \"e32f0cd41b45532ea7aedf4c72a6ffc24f6eaa23c042ee8f35cb02aa50735c69\", \"simulation_clock\": {\"clock_id\": \"3c2fc438934c45f8820a77b60d3aa347\", \"mode\": \"PAUSED\", \"simulation\": true, \"timezone\": \"Asia/Shanghai\", \"now\": \"2026-10-17T00:00:00+08:00\", \"anchor\": \"2026-10-16T16:00:00+00:00\", \"revision\": 0, \"dataset_version\": \"gtfs-20261101-063437\"}}}",
+              "request_id": null,
+              "created_at": "2026-10-16T16:00:00+00:00"
+            },
+            {
+              "event_id": "d2917036307f4d6fb63c1d7350c334f2",
+              "aggregate_type": "page",
+              "aggregate_id": "web-20ff441656b1",
+              "event_type": "railway_create_order",
+              "from_state": null,
+              "to_state": null,
+              "detail_json": "{\"source\": \"page_operation\", \"ok\": true, \"elapsed_ms\": 35, \"args\": {\"tool_arguments\": {\"quote_id\": \"Q4353aa06ee864bb7b3ad3d22b66e7321\", \"passengers\": [\"合成甲\", \"合成乙\", \"合成丙\"], \"contact\": \"13800000001\"}, \"tool_call_id\": \"page-call-e3e0d30497b04e9aad643f9ddb10cc4d\", \"operation_id\": \"page-b77abd4772d0411e8fb967239f926924\", \"scenario_id\": \"railway-demo\"}, \"result\": {\"proposal_id\": \"P61f11cfeeca24f219e4b8cabac7b3db3\", \"status\": \"CONFIRMATION_REQUIRED\", \"expires_at\": \"2026-10-16T16:05:00+00:00\", \"simulation\": true, \"preview\": {\"total_fen\": 9000, \"passengers\": 3}, \"simulation_clock\": {\"clock_id\": \"3c2fc438934c45f8820a77b60d3aa347\", \"mode\": \"PAUSED\", \"simulation\": true, \"timezone\": \"Asia/Shanghai\", \"now\": \"2026-10-17T00:00:00+08:00\", \"anchor\": \"2026-10-16T16:00:00+00:00\", \"revision\": 0, \"dataset_version\": \"gtfs-20261101-063437\"}}}",
+              "request_id": null,
+              "created_at": "2026-10-16T16:00:00+00:00"
+            }
+          ],
+          "updated_at": "2026-10-16T16:00:00+00:00",
+          "state_sha256": "2af4f1e93466e67c974b60d151c72e078727eb7d12649c21993394f753b76d28"
+        },
+        "ui": {
+          "schema": "ticket-business-read-model/1",
+          "session_id": "web-20ff441656b1",
+          "source": "LOCAL_SQLITE_COMMITTED",
+          "scenario_id": "railway-demo",
+          "orders": [],
+          "quotes": [
+            {
+              "quote_id": "Q4353aa06ee864bb7b3ad3d22b66e7321",
+              "session_id": "web-20ff441656b1",
+              "owner_phone": "13800000001",
+              "scenario_id": "railway-demo",
+              "dataset_version": "gtfs-20261101-063437",
+              "trip_id": "5l000G75410A",
+              "service_date": "2026-11-05",
+              "origin_stop_id": "AOH",
+              "destination_stop_id": "HGH",
+              "origin_sequence": 1,
+              "destination_sequence": 4,
+              "origin_position": 0,
+              "destination_position": 3,
+              "seat_class": "SECOND",
+              "passenger_count": 3,
+              "rule_id": "railway-demo-SECOND",
+              "rule_version": 1,
+              "base_fen_per_segment": 1000,
+              "seat_multiplier_bp": 10000,
+              "fixed_fee_fen": 0,
+              "segment_count": 3,
+              "single_base_fen": 3000,
+              "single_seat_fen": 3000,
+              "base_total_fen": 9000,
+              "seat_total_fen": 9000,
+              "total_fen": 9000,
+              "currency": "CNY",
+              "quote_hash": "67713c687349f8a166dd07c287d7bc386ccb9a80bfa682867d616316f933fa5f",
+              "status": "ACTIVE",
+              "expires_at": "2026-10-16T16:10:00+00:00",
+              "created_at": "2026-10-16T16:00:00+00:00"
+            }
+          ],
+          "pending_proposals": [
+            {
+              "proposal_id": "P61f11cfeeca24f219e4b8cabac7b3db3",
+              "session_id": "web-20ff441656b1",
+              "owner_phone": "13800000001",
+              "action": "CREATE_ORDER",
+              "aggregate_id": "Q4353aa06ee864bb7b3ad3d22b66e7321",
+              "quote_id": "Q4353aa06ee864bb7b3ad3d22b66e7321",
+              "order_id": null,
+              "scenario_id": "railway-demo",
+              "execution_mode": "developer_custom",
+              "config_hash": "1756a931fe3987bfade919b0f7f413809303ac31a4c63bdd02d467955c39dddc",
+              "write_policy_hash": "0e5bb2d30cc05b6a13f772307e807f82766892b7435b29849ee84557bb10d1b9",
+              "feature_flag": "1",
+              "baseline_id": "ticket-agent-v37-baseline-1",
+              "provider": "mock",
+              "tool_whitelist_hash": "b66a0a3c9203dcbf5a47d7599a5eaa57b79a5dd19458a57f5f50c5c5f1a0f5f9",
+              "config_revision": 0,
+              "confirmation_owner_worker": "confirmation",
+              "confirmation_boot_epoch": "8c3d1cf744004c578cb31e4ccb03dd97",
+              "idempotency_key": "P61f11cfeeca24f219e4b8cabac7b3db3",
+              "request_hash": "01b2dcd9adaf1138c134f805721497c6c8c6ecd17ed82431e01b4825dfa165e3",
+              "payload_json": "{\"quote_id\": \"Q4353aa06ee864bb7b3ad3d22b66e7321\", \"passengers\": [\"合成甲\", \"合成乙\", \"合成丙\"], \"contact\": \"13800000001\", \"_display_preview\": {\"total_fen\": 9000, \"passengers\": 3}}",
+              "state": "PENDING",
+              "expires_at": "2026-10-16T16:05:00+00:00",
+              "created_at": "2026-10-16T16:00:00+00:00",
+              "consumed_at": null,
+              "payload": {
+                "quote_id": "Q4353aa06ee864bb7b3ad3d22b66e7321",
+                "passengers": [
+                  "合成甲",
+                  "合成乙",
+                  "合成丙"
+                ],
+                "contact": "13800000001",
+                "_display_preview": {
+                  "total_fen": 9000,
+                  "passengers": 3
+                }
+              }
+            }
+          ],
+          "proposals": [
+            {
+              "proposal_id": "P61f11cfeeca24f219e4b8cabac7b3db3",
+              "session_id": "web-20ff441656b1",
+              "owner_phone": "13800000001",
+              "action": "CREATE_ORDER",
+              "aggregate_id": "Q4353aa06ee864bb7b3ad3d22b66e7321",
+              "quote_id": "Q4353aa06ee864bb7b3ad3d22b66e7321",
+              "order_id": null,
+              "scenario_id": "railway-demo",
+              "execution_mode": "developer_custom",
+              "config_hash": "1756a931fe3987bfade919b0f7f413809303ac31a4c63bdd02d467955c39dddc",
+              "write_policy_hash": "0e5bb2d30cc05b6a13f772307e807f82766892b7435b29849ee84557bb10d1b9",
+              "feature_flag": "1",
+              "baseline_id": "ticket-agent-v37-baseline-1",
+              "provider": "mock",
+              "tool_whitelist_hash": "b66a0a3c9203dcbf5a47d7599a5eaa57b79a5dd19458a57f5f50c5c5f1a0f5f9",
+              "config_revision": 0,
+              "confirmation_owner_worker": "confirmation",
+              "confirmation_boot_epoch": "8c3d1cf744004c578cb31e4ccb03dd97",
+              "idempotency_key": "P61f11cfeeca24f219e4b8cabac7b3db3",
+              "request_hash": "01b2dcd9adaf1138c134f805721497c6c8c6ecd17ed82431e01b4825dfa165e3",
+              "payload_json": "{\"quote_id\": \"Q4353aa06ee864bb7b3ad3d22b66e7321\", \"passengers\": [\"合成甲\", \"合成乙\", \"合成丙\"], \"contact\": \"13800000001\", \"_display_preview\": {\"total_fen\": 9000, \"passengers\": 3}}",
+              "state": "PENDING",
+              "expires_at": "2026-10-16T16:05:00+00:00",
+              "created_at": "2026-10-16T16:00:00+00:00",
+              "consumed_at": null,
+              "payload": {
+                "quote_id": "Q4353aa06ee864bb7b3ad3d22b66e7321",
+                "passengers": [
+                  "合成甲",
+                  "合成乙",
+                  "合成丙"
+                ],
+                "contact": "13800000001",
+                "_display_preview": {
+                  "total_fen": 9000,
+                  "passengers": 3
+                }
+              }
+            }
+          ],
+          "operations": [
+            {
+              "operation_id": "confirm:web-20ff441656b1:P61f11cfeeca24f219e4b8cabac7b3db3:CREATE_ORDER",
+              "proposal_id": "P61f11cfeeca24f219e4b8cabac7b3db3",
+              "order_id": null,
+              "action": "CREATE_ORDER",
+              "status": "PENDING_CONFIRMATION",
+              "tool_call_id": null,
+              "actual_result": null,
+              "database_verified": false,
+              "before": null,
+              "after": null,
+              "created_at": "2026-10-16T16:00:00+00:00",
+              "finished_at": null
+            }
+          ],
+          "operation_events": [
+            {
+              "event_id": "7ad8bfc5fdc744d3a9a272faf2e54f9c",
+              "aggregate_type": "page",
+              "aggregate_id": "web-20ff441656b1",
+              "event_type": "railway_check_inventory",
+              "from_state": null,
+              "to_state": null,
+              "detail_json": "{\"source\": \"page_operation\", \"ok\": true, \"elapsed_ms\": 24, \"args\": {\"tool_arguments\": {\"service_date\": \"2026-11-05\", \"origin_stop_id\": \"AOH\", \"destination_stop_id\": \"HGH\", \"trip_id\": \"5l000G75410A\", \"seat_class\": \"SECOND\", \"quantity\": 3}, \"tool_call_id\": \"page-call-096a5a7ce38e4a7cba5a5955183b027b\", \"operation_id\": \"page-d564b2ee5679471ead95da509fc12f5b\", \"scenario_id\": \"railway-demo\"}, \"result\": {\"status\": \"SIMULATED_AVAILABLE\", \"available\": 20, \"simulation\": true, \"dataset_version\": \"gtfs-20261101-063437\", \"simulation_clock\": {\"clock_id\": \"3c2fc438934c45f8820a77b60d3aa347\", \"mode\": \"PAUSED\", \"simulation\": true, \"timezone\": \"Asia/Shanghai\", \"now\": \"2026-10-17T00:00:00+08:00\", \"anchor\": \"2026-10-16T16:00:00+00:00\", \"revision\": 0, \"dataset_version\": \"gtfs-20261101-063437\"}}}",
+              "request_id": null,
+              "created_at": "2026-10-16T16:00:00+00:00"
+            },
+            {
+              "event_id": "7bc9ac883fcb48f7bb73cbff7cf0e8dc",
+              "aggregate_type": "page",
+              "aggregate_id": "web-20ff441656b1",
+              "event_type": "railway_quote_fare",
+              "from_state": null,
+              "to_state": null,
+              "detail_json": "{\"source\": \"page_operation\", \"ok\": true, \"elapsed_ms\": 30, \"args\": {\"tool_arguments\": {\"service_date\": \"2026-11-05\", \"origin_stop_id\": \"AOH\", \"destination_stop_id\": \"HGH\", \"trip_id\": \"5l000G75410A\", \"seat_class\": \"SECOND\", \"passenger_count\": 3}, \"tool_call_id\": \"page-call-cd50b398223a49a08c141abda341484c\", \"operation_id\": \"page-70c643bdcead48ffb5182d5c2625b72a\", \"scenario_id\": \"railway-demo\"}, \"result\": {\"status\": \"QUOTED\", \"quote\": {\"quote_id\": \"Q4353aa06ee864bb7b3ad3d22b66e7321\", \"session_id\": \"web-20ff441656b1\", \"owner_phone\": \"13800000001\", \"scenario_id\": \"railway-demo\", \"dataset_version\": \"gtfs-20261101-063437\", \"trip_id\": \"5l000G75410A\", \"service_date\": \"2026-11-05\", \"origin_stop_id\": \"AOH\", \"destination_stop_id\": \"HGH\", \"origin_sequence\": 1, \"destination_sequence\": 4, \"origin_position\": 0, \"destination_position\": 3, \"seat_class\": \"SECOND\", \"passenger_count\": 3, \"rule_id\": \"railway-demo-SECOND\", \"rule_version\": 1, \"base_fen_per_segment\": 1000, \"seat_multiplier_bp\": 10000, \"fixed_fee_fen\": 0, \"segment_count\": 3, \"currency\": \"CNY\", \"status\": \"ACTIVE\", \"expires_at\": \"2026-10-16T16:10:00+00:00\", \"created_at\": \"2026-10-16T16:00:00+00:00\", \"single_base_fen\": 3000, \"single_seat_fen\": 3000, \"base_total_fen\": 9000, \"seat_total_fen\": 9000, \"total_fen\": 9000, \"quote_hash\": \"67713c687349f8a166dd07c287d7bc386ccb9a80bfa682867d616316f933fa5f\"}, \"items\": [{\"base_fen\": 3000, \"seat_fen\": 3000, \"fixed_fee_share_fen\": 0, \"fare_fen\": 3000}, {\"base_fen\": 3000, \"seat_fen\": 3000, \"fixed_fee_share_fen\": 0, \"fare_fen\": 3000}, {\"base_fen\": 3000, \"seat_fen\": 3000, \"fixed_fee_share_fen\": 0, \"fare_fen\": 3000}], \"simulation\": true, \"simulation_clock\": {\"clock_id\": \"3c2fc438934c45f8820a77b60d3aa347\", \"mode\": \"PAUSED\", \"simulation\": true, \"timezone\": \"Asia/Shanghai\", \"now\": \"2026-10-17T00:00:00+08:00\", \"anchor\": \"2026-10-16T16:00:00+00:00\", \"revision\": 0, \"dataset_version\": \"gtfs-20261101-063437\"}}}",
+              "request_id": null,
+              "created_at": "2026-10-16T16:00:00+00:00"
+            },
+            {
+              "event_id": "c31f4d02a64843a88fb382d33b5016c7",
+              "aggregate_type": "page",
+              "aggregate_id": "web-20ff441656b1",
+              "event_type": "railway_query_trips",
+              "from_state": null,
+              "to_state": null,
+              "detail_json": "{\"source\": \"page_operation\", \"ok\": true, \"elapsed_ms\": 19, \"args\": {\"tool_arguments\": {\"service_date\": \"2026-11-05\", \"origin_stop_id\": \"AOH\", \"destination_stop_id\": \"HGH\", \"limit\": 5}, \"tool_call_id\": \"page-call-1df8212f16a74ceeab254d0555a44e91\", \"operation_id\": \"page-5c80e88cf6b4473da00f898d279da8ef\", \"scenario_id\": \"railway-demo\"}, \"result\": {\"status\": \"FOUND\", \"data\": [{\"route_id\": \"G7541\", \"service_id\": \"S93\", \"trip_id\": \"5l000G75410A\", \"trip_short_name\": \"G7541\", \"trip_headsign\": \"台州西\", \"shape_id\": \"shape-2122\", \"raw_json\": \"{\\\"route_id\\\": \\\"G7541\\\", \\\"service_id\\\": \\\"S93\\\", \\\"trip_id\\\": \\\"5l000G75410A\\\", \\\"trip_short_name\\\": \\\"G7541\\\", \\\"trip_headsign\\\": \\\"台州西\\\", \\\"shape_id\\\": \\\"shape-2122\\\"}\", \"origin_arrival\": \"05:52:00\", \"origin_departure\": \"05:52:00\", \"destination_arrival\": \"06:51:00\", \"destination_departure\": \"06:55:00\", \"origin_sequence\": 1, \"destination_sequence\": 4, \"shape_status\": \"AVAILABLE\", \"departure_at\": \"2026-11-05T05:52:00+08:00\", \"arrival_at\": \"2026-11-05T06:51:00+08:00\"}, {\"route_id\": \"G1321\", \"service_id\": \"S93\", \"trip_id\": \"5l000G132108\", \"trip_short_name\": \"G1321\", \"trip_headsign\": \"六盘水\", \"shape_id\": \"shape-2034\", \"raw_json\": \"{\\\"route_id\\\": \\\"G1321\\\", \\\"service_id\\\": \\\"S93\\\", \\\"trip_id\\\": \\\"5l000G132108\\\", \\\"trip_short_name\\\": \\\"G1321\\\", \\\"trip_headsign\\\": \\\"六盘水\\\", \\\"shape_id\\\": \\\"shape-2034\\\"}\", \"origin_arrival\": \"06:07:00\", \"origin_departure\": \"06:07:00\", \"destination_arrival\": \"06:56:00\", \"destination_departure\": \"07:00:00\", \"origin_sequence\": 1, \"destination_sequence\": 2, \"shape_status\": \"AVAILABLE\", \"departure_at\": \"2026-11-05T06:07:00+08:00\", \"arrival_at\": \"2026-11-05T06:56:00+08:00\"}, {\"route_id\": \"G7331\", \"service_id\": \"S93\", \"trip_id\": \"5l000G733102\", \"trip_short_name\": \"G7331\", \"trip_headsign\": \"瑞安\", \"shape_id\": \"shape-2110\", \"raw_json\": \"{\\\"route_id\\\": \\\"G7331\\\", \\\"service_id\\\": \\\"S93\\\", \\\"trip_id\\\": \\\"5l000G733102\\\", \\\"trip_short_name\\\": \\\"G7331\\\", \\\"trip_headsign\\\": \\\"瑞安\\\", \\\"shape_id\\\": \\\"shape-2110\\\"}\", \"origin_arrival\": \"06:13:00\", \"origin_departure\": \"06:13:00\", \"destination_arrival\": \"07:07:00\", \"destination_departure\": \"07:11:00\", \"origin_sequence\": 1, \"destination_sequence\": 3, \"shape_status\": \"AVAILABLE\", \"departure_at\": \"2026-11-05T06:13:00+08:00\", \"arrival_at\": \"2026-11-05T07:07:00+08:00\"}, {\"route_id\": \"G7333\", \"service_id\": \"S93\", \"trip_id\": \"5l000G733303\", \"trip_short_name\": \"G7333\", \"trip_headsign\": \"温州南\", \"shape_id\": \"shape-2105\", \"raw_json\": \"{\\\"route_id\\\": \\\"G7333\\\", \\\"service_id\\\": \\\"S93\\\", \\\"trip_id\\\": \\\"5l000G733303\\\", \\\"trip_short_name\\\": \\\"G7333\\\", \\\"trip_headsign\\\": \\\"温州南\\\", \\\"shape_id\\\": \\\"shape-2105\\\"}\", \"origin_arrival\": \"06:20:00\", \"origin_departure\": \"06:20:00\", \"destination_arrival\": \"07:21:00\", \"destination_departure\": \"07:23:00\", \"origin_sequence\": 1, \"destination_sequence\": 4, \"shape_status\": \"AVAILABLE\", \"departure_at\": \"2026-11-05T06:20:00+08:00\", \"arrival_at\": \"2026-11-05T07:21:00+08:00\"}, {\"route_id\": \"G7363\", \"service_id\": \"S93\", \"trip_id\": \"5l000G736302\", \"trip_short_name\": \"G7363\", \"trip_headsign\": \"温岭\", \"shape_id\": \"\", \"raw_json\": \"{\\\"route_id\\\": \\\"G7363\\\", \\\"service_id\\\": \\\"S93\\\", \\\"trip_id\\\": \\\"5l000G736302\\\", \\\"trip_short_name\\\": \\\"G7363\\\", \\\"trip_headsign\\\": \\\"温岭\\\", \\\"shape_id\\\": \\\"\\\"}\", \"origin_arrival\": \"06:24:00\", \"origin_departure\": \"06:24:00\", \"destination_arrival\": \"07:26:00\", \"destination_departure\": \"07:33:00\", \"origin_sequence\": 1, \"destination_sequence\": 4, \"shape_status\": \"SHAPE_UNAVAILABLE\", \"departure_at\": \"2026-11-05T06:24:00+08:00\", \"arrival_at\": \"2026-11-05T07:26:00+08:00\"}], \"data_source\": \"CHINESE_RAILWAY_GTFS\", \"data_type\": \"STATIC_SCHEDULE\", \"real_time\": false, \"availability_available\": false, \"fare_available\": false, \"booking_available\": false, \"availability\": \"UNKNOWN\", \"fare\": null, \"data_version\": \"20261101\", \"source_sha256\": \"3877dbc0ebc0392afef4b111dd9ba837c97eb4aa45788542919be53d52a12030\", \"rights_status\": \"RIGHTS_REVIEW_PENDING\", \"usage_scope\": \"LOCAL_DEMO_ONLY\", \"service_date\": \"20261105\", \"next_cursor\": \"5\", \"source\": \"GTFS_SQLITE\", \"total_count\": 109, \"returned_count\": 5, \"limit\": 5, \"has_more\": true, \"query_parameters\": {\"service_date\": \"2026-11-05\", \"origin_stop_id\": \"AOH\", \"destination_stop_id\": \"HGH\", \"train_no\": null, \"cursor\": null}, \"dataset_version\": \"gtfs-20261101-063437\", \"database_sha256\": \"e32f0cd41b45532ea7aedf4c72a6ffc24f6eaa23c042ee8f35cb02aa50735c69\", \"simulation_clock\": {\"clock_id\": \"3c2fc438934c45f8820a77b60d3aa347\", \"mode\": \"PAUSED\", \"simulation\": true, \"timezone\": \"Asia/Shanghai\", \"now\": \"2026-10-17T00:00:00+08:00\", \"anchor\": \"2026-10-16T16:00:00+00:00\", \"revision\": 0, \"dataset_version\": \"gtfs-20261101-063437\"}}}",
+              "request_id": null,
+              "created_at": "2026-10-16T16:00:00+00:00"
+            },
+            {
+              "event_id": "d2917036307f4d6fb63c1d7350c334f2",
+              "aggregate_type": "page",
+              "aggregate_id": "web-20ff441656b1",
+              "event_type": "railway_create_order",
+              "from_state": null,
+              "to_state": null,
+              "detail_json": "{\"source\": \"page_operation\", \"ok\": true, \"elapsed_ms\": 35, \"args\": {\"tool_arguments\": {\"quote_id\": \"Q4353aa06ee864bb7b3ad3d22b66e7321\", \"passengers\": [\"合成甲\", \"合成乙\", \"合成丙\"], \"contact\": \"13800000001\"}, \"tool_call_id\": \"page-call-e3e0d30497b04e9aad643f9ddb10cc4d\", \"operation_id\": \"page-b77abd4772d0411e8fb967239f926924\", \"scenario_id\": \"railway-demo\"}, \"result\": {\"proposal_id\": \"P61f11cfeeca24f219e4b8cabac7b3db3\", \"status\": \"CONFIRMATION_REQUIRED\", \"expires_at\": \"2026-10-16T16:05:00+00:00\", \"simulation\": true, \"preview\": {\"total_fen\": 9000, \"passengers\": 3}, \"simulation_clock\": {\"clock_id\": \"3c2fc438934c45f8820a77b60d3aa347\", \"mode\": \"PAUSED\", \"simulation\": true, \"timezone\": \"Asia/Shanghai\", \"now\": \"2026-10-17T00:00:00+08:00\", \"anchor\": \"2026-10-16T16:00:00+00:00\", \"revision\": 0, \"dataset_version\": \"gtfs-20261101-063437\"}}}",
+              "request_id": null,
+              "created_at": "2026-10-16T16:00:00+00:00"
+            }
+          ],
+          "updated_at": "2026-10-16T16:00:00+00:00",
+          "state_sha256": "2af4f1e93466e67c974b60d151c72e078727eb7d12649c21993394f753b76d28"
+        },
+        "db": {
+          "v39_orders": [],
+          "v39_order_items": [],
+          "v39_holds": [],
+          "v39_transactions": [],
+          "v39_inventory_segments": [
+            {
+              "scenario_id": "railway-demo",
+              "dataset_version": "gtfs-20261101-063437",
+              "trip_id": "5l000G75410A",
+              "service_date": "2026-11-05",
+              "seat_class": "SECOND",
+              "segment_index": 0,
+              "from_stop_id": "AOH",
+              "from_sequence": 1,
+              "from_position": 0,
+              "to_stop_id": "TCH",
+              "to_sequence": 2,
+              "to_position": 1,
+              "capacity": 20,
+              "held": 0,
+              "sold": 0,
+              "version": 0,
+              "updated_at": "2026-10-16T16:00:00+00:00"
+            },
+            {
+              "scenario_id": "railway-demo",
+              "dataset_version": "gtfs-20261101-063437",
+              "trip_id": "5l000G75410A",
+              "service_date": "2026-11-05",
+              "seat_class": "SECOND",
+              "segment_index": 1,
+              "from_stop_id": "TCH",
+              "from_sequence": 2,
+              "from_position": 1,
+              "to_stop_id": "EVH",
+              "to_sequence": 3,
+              "to_position": 2,
+              "capacity": 20,
+              "held": 0,
+              "sold": 0,
+              "version": 0,
+              "updated_at": "2026-10-16T16:00:00+00:00"
+            },
+            {
+              "scenario_id": "railway-demo",
+              "dataset_version": "gtfs-20261101-063437",
+              "trip_id": "5l000G75410A",
+              "service_date": "2026-11-05",
+              "seat_class": "SECOND",
+              "segment_index": 2,
+              "from_stop_id": "EVH",
+              "from_sequence": 3,
+              "from_position": 2,
+              "to_stop_id": "HGH",
+              "to_sequence": 4,
+              "to_position": 3,
+              "capacity": 20,
+              "held": 0,
+              "sold": 0,
+              "version": 0,
+              "updated_at": "2026-10-16T16:00:00+00:00"
+            }
+          ],
+          "v39_inventory_events": [],
+          "v39_refund_requests": [],
+          "v39_change_requests": [],
+          "v39_proposals": [
+            {
+              "proposal_id": "P61f11cfeeca24f219e4b8cabac7b3db3",
+              "session_id": "web-20ff441656b1",
+              "owner_phone": "13800000001",
+              "action": "CREATE_ORDER",
+              "aggregate_id": "Q4353aa06ee864bb7b3ad3d22b66e7321",
+              "quote_id": "Q4353aa06ee864bb7b3ad3d22b66e7321",
+              "order_id": null,
+              "scenario_id": "railway-demo",
+              "execution_mode": "developer_custom",
+              "config_hash": "1756a931fe3987bfade919b0f7f413809303ac31a4c63bdd02d467955c39dddc",
+              "write_policy_hash": "0e5bb2d30cc05b6a13f772307e807f82766892b7435b29849ee84557bb10d1b9",
+              "feature_flag": "1",
+              "baseline_id": "ticket-agent-v37-baseline-1",
+              "provider": "mock",
+              "tool_whitelist_hash": "b66a0a3c9203dcbf5a47d7599a5eaa57b79a5dd19458a57f5f50c5c5f1a0f5f9",
+              "config_revision": 0,
+              "confirmation_owner_worker": "confirmation",
+              "confirmation_boot_epoch": "8c3d1cf744004c578cb31e4ccb03dd97",
+              "idempotency_key": "P61f11cfeeca24f219e4b8cabac7b3db3",
+              "request_hash": "01b2dcd9adaf1138c134f805721497c6c8c6ecd17ed82431e01b4825dfa165e3",
+              "payload_json": "{\"quote_id\": \"Q4353aa06ee864bb7b3ad3d22b66e7321\", \"passengers\": [\"合成甲\", \"合成乙\", \"合成丙\"], \"contact\": \"13800000001\", \"_display_preview\": {\"total_fen\": 9000, \"passengers\": 3}}",
+              "state": "PENDING",
+              "expires_at": "2026-10-16T16:05:00+00:00",
+              "created_at": "2026-10-16T16:00:00+00:00",
+              "consumed_at": null
+            }
+          ],
+          "v39_idempotency": [],
+          "v39_refund_items": [],
+          "v39_hold_segments": [],
+          "v39_transaction_allocations": []
+        },
+        "metrics": {
+          "order_count": 0,
+          "hold_count": 0,
+          "transaction_count": 0,
+          "held": 0,
+          "sold": 0,
+          "foreign_keys_ok": true,
+          "inventory_conserved": true,
+          "money_conserved": true,
+          "ui_consistent": true
+        },
+        "result": {
+          "proposal_id": "P61f11cfeeca24f219e4b8cabac7b3db3",
+          "status": "CONFIRMATION_REQUIRED",
+          "expires_at": "2026-10-16T16:05:00+00:00",
+          "simulation": true,
+          "preview": {
+            "total_fen": 9000,
+            "passengers": 3
+          },
+          "simulation_clock": {
+            "clock_id": "3c2fc438934c45f8820a77b60d3aa347",
+            "mode": "PAUSED",
+            "simulation": true,
+            "timezone": "Asia/Shanghai",
+            "now": "2026-10-17T00:00:00+08:00",
+            "anchor": "2026-10-16T16:00:00+00:00",
+            "revision": 0,
+            "dataset_version": "gtfs-20261101-063437"
+          }
+        }
+      },
+      "trace_id": "3c2ed16fe0784144b115a0552dd3a6bb-3",
+      "executed_tools": [
+        "railway_create_order"
+      ],
+      "executed": true,
+      "verified": true
+    },
+    {
+      "index": 4,
+      "kind": "advance",
+      "tool": null,
+      "args": {},
+      "output": {
+        "advanced": 901
+      },
+      "error": null,
+      "checks": [
+        {
+          "path": "metrics.order_count",
+          "op": "eq",
+          "expected": 0,
+          "actual": 0,
+          "ok": true
+        },
+        {
+          "path": "metrics.foreign_keys_ok",
+          "ok": true,
+          "actual": true
+        },
+        {
+          "path": "metrics.inventory_conserved",
+          "ok": true,
+          "actual": true
+        },
+        {
+          "path": "metrics.money_conserved",
+          "ok": true,
+          "actual": true
+        },
+        {
+          "path": "metrics.ui_consistent",
+          "ok": true,
+          "actual": true
+        }
+      ],
+      "snapshot": {
+        "state": {
+          "schema": "ticket-business-read-model/1",
+          "session_id": "web-20ff441656b1",
+          "source": "LOCAL_SQLITE_COMMITTED",
+          "scenario_id": "railway-demo",
+          "orders": [],
+          "quotes": [
+            {
+              "quote_id": "Q4353aa06ee864bb7b3ad3d22b66e7321",
+              "session_id": "web-20ff441656b1",
+              "owner_phone": "13800000001",
+              "scenario_id": "railway-demo",
+              "dataset_version": "gtfs-20261101-063437",
+              "trip_id": "5l000G75410A",
+              "service_date": "2026-11-05",
+              "origin_stop_id": "AOH",
+              "destination_stop_id": "HGH",
+              "origin_sequence": 1,
+              "destination_sequence": 4,
+              "origin_position": 0,
+              "destination_position": 3,
+              "seat_class": "SECOND",
+              "passenger_count": 3,
+              "rule_id": "railway-demo-SECOND",
+              "rule_version": 1,
+              "base_fen_per_segment": 1000,
+              "seat_multiplier_bp": 10000,
+              "fixed_fee_fen": 0,
+              "segment_count": 3,
+              "single_base_fen": 3000,
+              "single_seat_fen": 3000,
+              "base_total_fen": 9000,
+              "seat_total_fen": 9000,
+              "total_fen": 9000,
+              "currency": "CNY",
+              "quote_hash": "67713c687349f8a166dd07c287d7bc386ccb9a80bfa682867d616316f933fa5f",
+              "status": "ACTIVE",
+              "expires_at": "2026-10-16T16:10:00+00:00",
+              "created_at": "2026-10-16T16:00:00+00:00"
+            }
+          ],
+          "pending_proposals": [],
+          "proposals": [
+            {
+              "proposal_id": "P61f11cfeeca24f219e4b8cabac7b3db3",
+              "session_id": "web-20ff441656b1",
+              "owner_phone": "13800000001",
+              "action": "CREATE_ORDER",
+              "aggregate_id": "Q4353aa06ee864bb7b3ad3d22b66e7321",
+              "quote_id": "Q4353aa06ee864bb7b3ad3d22b66e7321",
+              "order_id": null,
+              "scenario_id": "railway-demo",
+              "execution_mode": "developer_custom",
+              "config_hash": "1756a931fe3987bfade919b0f7f413809303ac31a4c63bdd02d467955c39dddc",
+              "write_policy_hash": "0e5bb2d30cc05b6a13f772307e807f82766892b7435b29849ee84557bb10d1b9",
+              "feature_flag": "1",
+              "baseline_id": "ticket-agent-v37-baseline-1",
+              "provider": "mock",
+              "tool_whitelist_hash": "b66a0a3c9203dcbf5a47d7599a5eaa57b79a5dd19458a57f5f50c5c5f1a0f5f9",
+              "config_revision": 0,
+              "confirmation_owner_worker": "confirmation",
+              "confirmation_boot_epoch": "8c3d1cf744004c578cb31e4ccb03dd97",
+              "idempotency_key": "P61f11cfeeca24f219e4b8cabac7b3db3",
+              "request_hash": "01b2dcd9adaf1138c134f805721497c6c8c6ecd17ed82431e01b4825dfa165e3",
+              "payload_json": "{\"quote_id\": \"Q4353aa06ee864bb7b3ad3d22b66e7321\", \"passengers\": [\"合成甲\", \"合成乙\", \"合成丙\"], \"contact\": \"13800000001\", \"_display_preview\": {\"total_fen\": 9000, \"passengers\": 3}}",
+              "state": "PENDING",
+              "expires_at": "2026-10-16T16:05:00+00:00",
+              "created_at": "2026-10-16T16:00:00+00:00",
+              "consumed_at": null,
+              "payload": {
+                "quote_id": "Q4353aa06ee864bb7b3ad3d22b66e7321",
+                "passengers": [
+                  "合成甲",
+                  "合成乙",
+                  "合成丙"
+                ],
+                "contact": "13800000001",
+                "_display_preview": {
+                  "total_fen": 9000,
+                  "passengers": 3
+                }
+              }
+            }
+          ],
+          "operations": [
+            {
+              "operation_id": "confirm:web-20ff441656b1:P61f11cfeeca24f219e4b8cabac7b3db3:CREATE_ORDER",
+              "proposal_id": "P61f11cfeeca24f219e4b8cabac7b3db3",
+              "order_id": null,
+              "action": "CREATE_ORDER",
+              "status": "FAILED",
+              "tool_call_id": null,
+              "actual_result": null,
+              "database_verified": false,
+              "before": null,
+              "after": null,
+              "created_at": "2026-10-16T16:00:00+00:00",
+              "finished_at": null
+            }
+          ],
+          "operation_events": [
+            {
+              "event_id": "7ad8bfc5fdc744d3a9a272faf2e54f9c",
+              "aggregate_type": "page",
+              "aggregate_id": "web-20ff441656b1",
+              "event_type": "railway_check_inventory",
+              "from_state": null,
+              "to_state": null,
+              "detail_json": "{\"source\": \"page_operation\", \"ok\": true, \"elapsed_ms\": 24, \"args\": {\"tool_arguments\": {\"service_date\": \"2026-11-05\", \"origin_stop_id\": \"AOH\", \"destination_stop_id\": \"HGH\", \"trip_id\": \"5l000G75410A\", \"seat_class\": \"SECOND\", \"quantity\": 3}, \"tool_call_id\": \"page-call-096a5a7ce38e4a7cba5a5955183b027b\", \"operation_id\": \"page-d564b2ee5679471ead95da509fc12f5b\", \"scenario_id\": \"railway-demo\"}, \"result\": {\"status\": \"SIMULATED_AVAILABLE\", \"available\": 20, \"simulation\": true, \"dataset_version\": \"gtfs-20261101-063437\", \"simulation_clock\": {\"clock_id\": \"3c2fc438934c45f8820a77b60d3aa347\", \"mode\": \"PAUSED\", \"simulation\": true, \"timezone\": \"Asia/Shanghai\", \"now\": \"2026-10-17T00:00:00+08:00\", \"anchor\": \"2026-10-16T16:00:00+00:00\", \"revision\": 0, \"dataset_version\": \"gtfs-20261101-063437\"}}}",
+              "request_id": null,
+              "created_at": "2026-10-16T16:00:00+00:00"
+            },
+            {
+              "event_id": "7bc9ac883fcb48f7bb73cbff7cf0e8dc",
+              "aggregate_type": "page",
+              "aggregate_id": "web-20ff441656b1",
+              "event_type": "railway_quote_fare",
+              "from_state": null,
+              "to_state": null,
+              "detail_json": "{\"source\": \"page_operation\", \"ok\": true, \"elapsed_ms\": 30, \"args\": {\"tool_arguments\": {\"service_date\": \"2026-11-05\", \"origin_stop_id\": \"AOH\", \"destination_stop_id\": \"HGH\", \"trip_id\": \"5l000G75410A\", \"seat_class\": \"SECOND\", \"passenger_count\": 3}, \"tool_call_id\": \"page-call-cd50b398223a49a08c141abda341484c\", \"operation_id\": \"page-70c643bdcead48ffb5182d5c2625b72a\", \"scenario_id\": \"railway-demo\"}, \"result\": {\"status\": \"QUOTED\", \"quote\": {\"quote_id\": \"Q4353aa06ee864bb7b3ad3d22b66e7321\", \"session_id\": \"web-20ff441656b1\", \"owner_phone\": \"13800000001\", \"scenario_id\": \"railway-demo\", \"dataset_version\": \"gtfs-20261101-063437\", \"trip_id\": \"5l000G75410A\", \"service_date\": \"2026-11-05\", \"origin_stop_id\": \"AOH\", \"destination_stop_id\": \"HGH\", \"origin_sequence\": 1, \"destination_sequence\": 4, \"origin_position\": 0, \"destination_position\": 3, \"seat_class\": \"SECOND\", \"passenger_count\": 3, \"rule_id\": \"railway-demo-SECOND\", \"rule_version\": 1, \"base_fen_per_segment\": 1000, \"seat_multiplier_bp\": 10000, \"fixed_fee_fen\": 0, \"segment_count\": 3, \"currency\": \"CNY\", \"status\": \"ACTIVE\", \"expires_at\": \"2026-10-16T16:10:00+00:00\", \"created_at\": \"2026-10-16T16:00:00+00:00\", \"single_base_fen\": 3000, \"single_seat_fen\": 3000, \"base_total_fen\": 9000, \"seat_total_fen\": 9000, \"total_fen\": 9000, \"quote_hash\": \"67713c687349f8a166dd07c287d7bc386ccb9a80bfa682867d616316f933fa5f\"}, \"items\": [{\"base_fen\": 3000, \"seat_fen\": 3000, \"fixed_fee_share_fen\": 0, \"fare_fen\": 3000}, {\"base_fen\": 3000, \"seat_fen\": 3000, \"fixed_fee_share_fen\": 0, \"fare_fen\": 3000}, {\"base_fen\": 3000, \"seat_fen\": 3000, \"fixed_fee_share_fen\": 0, \"fare_fen\": 3000}], \"simulation\": true, \"simulation_clock\": {\"clock_id\": \"3c2fc438934c45f8820a77b60d3aa347\", \"mode\": \"PAUSED\", \"simulation\": true, \"timezone\": \"Asia/Shanghai\", \"now\": \"2026-10-17T00:00:00+08:00\", \"anchor\": \"2026-10-16T16:00:00+00:00\", \"revision\": 0, \"dataset_version\": \"gtfs-20261101-063437\"}}}",
+              "request_id": null,
+              "created_at": "2026-10-16T16:00:00+00:00"
+            },
+            {
+              "event_id": "c31f4d02a64843a88fb382d33b5016c7",
+              "aggregate_type": "page",
+              "aggregate_id": "web-20ff441656b1",
+              "event_type": "railway_query_trips",
+              "from_state": null,
+              "to_state": null,
+              "detail_json": "{\"source\": \"page_operation\", \"ok\": true, \"elapsed_ms\": 19, \"args\": {\"tool_arguments\": {\"service_date\": \"2026-11-05\", \"origin_stop_id\": \"AOH\", \"destination_stop_id\": \"HGH\", \"limit\": 5}, \"tool_call_id\": \"page-call-1df8212f16a74ceeab254d0555a44e91\", \"operation_id\": \"page-5c80e88cf6b4473da00f898d279da8ef\", \"scenario_id\": \"railway-demo\"}, \"result\": {\"status\": \"FOUND\", \"data\": [{\"route_id\": \"G7541\", \"service_id\": \"S93\", \"trip_id\": \"5l000G75410A\", \"trip_short_name\": \"G7541\", \"trip_headsign\": \"台州西\", \"shape_id\": \"shape-2122\", \"raw_json\": \"{\\\"route_id\\\": \\\"G7541\\\", \\\"service_id\\\": \\\"S93\\\", \\\"trip_id\\\": \\\"5l000G75410A\\\", \\\"trip_short_name\\\": \\\"G7541\\\", \\\"trip_headsign\\\": \\\"台州西\\\", \\\"shape_id\\\": \\\"shape-2122\\\"}\", \"origin_arrival\": \"05:52:00\", \"origin_departure\": \"05:52:00\", \"destination_arrival\": \"06:51:00\", \"destination_departure\": \"06:55:00\", \"origin_sequence\": 1, \"destination_sequence\": 4, \"shape_status\": \"AVAILABLE\", \"departure_at\": \"2026-11-05T05:52:00+08:00\", \"arrival_at\": \"2026-11-05T06:51:00+08:00\"}, {\"route_id\": \"G1321\", \"service_id\": \"S93\", \"trip_id\": \"5l000G132108\", \"trip_short_name\": \"G1321\", \"trip_headsign\": \"六盘水\", \"shape_id\": \"shape-2034\", \"raw_json\": \"{\\\"route_id\\\": \\\"G1321\\\", \\\"service_id\\\": \\\"S93\\\", \\\"trip_id\\\": \\\"5l000G132108\\\", \\\"trip_short_name\\\": \\\"G1321\\\", \\\"trip_headsign\\\": \\\"六盘水\\\", \\\"shape_id\\\": \\\"shape-2034\\\"}\", \"origin_arrival\": \"06:07:00\", \"origin_departure\": \"06:07:00\", \"destination_arrival\": \"06:56:00\", \"destination_departure\": \"07:00:00\", \"origin_sequence\": 1, \"destination_sequence\": 2, \"shape_status\": \"AVAILABLE\", \"departure_at\": \"2026-11-05T06:07:00+08:00\", \"arrival_at\": \"2026-11-05T06:56:00+08:00\"}, {\"route_id\": \"G7331\", \"service_id\": \"S93\", \"trip_id\": \"5l000G733102\", \"trip_short_name\": \"G7331\", \"trip_headsign\": \"瑞安\", \"shape_id\": \"shape-2110\", \"raw_json\": \"{\\\"route_id\\\": \\\"G7331\\\", \\\"service_id\\\": \\\"S93\\\", \\\"trip_id\\\": \\\"5l000G733102\\\", \\\"trip_short_name\\\": \\\"G7331\\\", \\\"trip_headsign\\\": \\\"瑞安\\\", \\\"shape_id\\\": \\\"shape-2110\\\"}\", \"origin_arrival\": \"06:13:00\", \"origin_departure\": \"06:13:00\", \"destination_arrival\": \"07:07:00\", \"destination_departure\": \"07:11:00\", \"origin_sequence\": 1, \"destination_sequence\": 3, \"shape_status\": \"AVAILABLE\", \"departure_at\": \"2026-11-05T06:13:00+08:00\", \"arrival_at\": \"2026-11-05T07:07:00+08:00\"}, {\"route_id\": \"G7333\", \"service_id\": \"S93\", \"trip_id\": \"5l000G733303\", \"trip_short_name\": \"G7333\", \"trip_headsign\": \"温州南\", \"shape_id\": \"shape-2105\", \"raw_json\": \"{\\\"route_id\\\": \\\"G7333\\\", \\\"service_id\\\": \\\"S93\\\", \\\"trip_id\\\": \\\"5l000G733303\\\", \\\"trip_short_name\\\": \\\"G7333\\\", \\\"trip_headsign\\\": \\\"温州南\\\", \\\"shape_id\\\": \\\"shape-2105\\\"}\", \"origin_arrival\": \"06:20:00\", \"origin_departure\": \"06:20:00\", \"destination_arrival\": \"07:21:00\", \"destination_departure\": \"07:23:00\", \"origin_sequence\": 1, \"destination_sequence\": 4, \"shape_status\": \"AVAILABLE\", \"departure_at\": \"2026-11-05T06:20:00+08:00\", \"arrival_at\": \"2026-11-05T07:21:00+08:00\"}, {\"route_id\": \"G7363\", \"service_id\": \"S93\", \"trip_id\": \"5l000G736302\", \"trip_short_name\": \"G7363\", \"trip_headsign\": \"温岭\", \"shape_id\": \"\", \"raw_json\": \"{\\\"route_id\\\": \\\"G7363\\\", \\\"service_id\\\": \\\"S93\\\", \\\"trip_id\\\": \\\"5l000G736302\\\", \\\"trip_short_name\\\": \\\"G7363\\\", \\\"trip_headsign\\\": \\\"温岭\\\", \\\"shape_id\\\": \\\"\\\"}\", \"origin_arrival\": \"06:24:00\", \"origin_departure\": \"06:24:00\", \"destination_arrival\": \"07:26:00\", \"destination_departure\": \"07:33:00\", \"origin_sequence\": 1, \"destination_sequence\": 4, \"shape_status\": \"SHAPE_UNAVAILABLE\", \"departure_at\": \"2026-11-05T06:24:00+08:00\", \"arrival_at\": \"2026-11-05T07:26:00+08:00\"}], \"data_source\": \"CHINESE_RAILWAY_GTFS\", \"data_type\": \"STATIC_SCHEDULE\", \"real_time\": false, \"availability_available\": false, \"fare_available\": false, \"booking_available\": false, \"availability\": \"UNKNOWN\", \"fare\": null, \"data_version\": \"20261101\", \"source_sha256\": \"3877dbc0ebc0392afef4b111dd9ba837c97eb4aa45788542919be53d52a12030\", \"rights_status\": \"RIGHTS_REVIEW_PENDING\", \"usage_scope\": \"LOCAL_DEMO_ONLY\", \"service_date\": \"20261105\", \"next_cursor\": \"5\", \"source\": \"GTFS_SQLITE\", \"total_count\": 109, \"returned_count\": 5, \"limit\": 5, \"has_more\": true, \"query_parameters\": {\"service_date\": \"2026-11-05\", \"origin_stop_id\": \"AOH\", \"destination_stop_id\": \"HGH\", \"train_no\": null, \"cursor\": null}, \"dataset_version\": \"gtfs-20261101-063437\", \"database_sha256\": \"e32f0cd41b45532ea7aedf4c72a6ffc24f6eaa23c042ee8f35cb02aa50735c69\", \"simulation_clock\": {\"clock_id\": \"3c2fc438934c45f8820a77b60d3aa347\", \"mode\": \"PAUSED\", \"simulation\": true, \"timezone\": \"Asia/Shanghai\", \"now\": \"2026-10-17T00:00:00+08:00\", \"anchor\": \"2026-10-16T16:00:00+00:00\", \"revision\": 0, \"dataset_version\": \"gtfs-20261101-063437\"}}}",
+              "request_id": null,
+              "created_at": "2026-10-16T16:00:00+00:00"
+            },
+            {
+              "event_id": "d2917036307f4d6fb63c1d7350c334f2",
+              "aggregate_type": "page",
+              "aggregate_id": "web-20ff441656b1",
+              "event_type": "railway_create_order",
+              "from_state": null,
+              "to_state": null,
+              "detail_json": "{\"source\": \"page_operation\", \"ok\": true, \"elapsed_ms\": 35, \"args\": {\"tool_arguments\": {\"quote_id\": \"Q4353aa06ee864bb7b3ad3d22b66e7321\", \"passengers\": [\"合成甲\", \"合成乙\", \"合成丙\"], \"contact\": \"13800000001\"}, \"tool_call_id\": \"page-call-e3e0d30497b04e9aad643f9ddb10cc4d\", \"operation_id\": \"page-b77abd4772d0411e8fb967239f926924\", \"scenario_id\": \"railway-demo\"}, \"result\": {\"proposal_id\": \"P61f11cfeeca24f219e4b8cabac7b3db3\", \"status\": \"CONFIRMATION_REQUIRED\", \"expires_at\": \"2026-10-16T16:05:00+00:00\", \"simulation\": true, \"preview\": {\"total_fen\": 9000, \"passengers\": 3}, \"simulation_clock\": {\"clock_id\": \"3c2fc438934c45f8820a77b60d3aa347\", \"mode\": \"PAUSED\", \"simulation\": true, \"timezone\": \"Asia/Shanghai\", \"now\": \"2026-10-17T00:00:00+08:00\", \"anchor\": \"2026-10-16T16:00:00+00:00\", \"revision\": 0, \"dataset_version\": \"gtfs-20261101-063437\"}}}",
+              "request_id": null,
+              "created_at": "2026-10-16T16:00:00+00:00"
+            }
+          ],
+          "updated_at": "2026-10-16T16:15:01+00:00",
+          "state_sha256": "d86ce93344ed89e654523ed0ec5eb004b7dcf89b05ffc0ef8848a6cd82dcf9f7"
+        },
+        "ui": {
+          "schema": "ticket-business-read-model/1",
+          "session_id": "web-20ff441656b1",
+          "source": "LOCAL_SQLITE_COMMITTED",
+          "scenario_id": "railway-demo",
+          "orders": [],
+          "quotes": [
+            {
+              "quote_id": "Q4353aa06ee864bb7b3ad3d22b66e7321",
+              "session_id": "web-20ff441656b1",
+              "owner_phone": "13800000001",
+              "scenario_id": "railway-demo",
+              "dataset_version": "gtfs-20261101-063437",
+              "trip_id": "5l000G75410A",
+              "service_date": "2026-11-05",
+              "origin_stop_id": "AOH",
+              "destination_stop_id": "HGH",
+              "origin_sequence": 1,
+              "destination_sequence": 4,
+              "origin_position": 0,
+              "destination_position": 3,
+              "seat_class": "SECOND",
+              "passenger_count": 3,
+              "rule_id": "railway-demo-SECOND",
+              "rule_version": 1,
+              "base_fen_per_segment": 1000,
+              "seat_multiplier_bp": 10000,
+              "fixed_fee_fen": 0,
+              "segment_count": 3,
+              "single_base_fen": 3000,
+              "single_seat_fen": 3000,
+              "base_total_fen": 9000,
+              "seat_total_fen": 9000,
+              "total_fen": 9000,
+              "currency": "CNY",
+              "quote_hash": "67713c687349f8a166dd07c287d7bc386ccb9a80bfa682867d616316f933fa5f",
+              "status": "ACTIVE",
+              "expires_at": "2026-10-16T16:10:00+00:00",
+              "created_at": "2026-10-16T16:00:00+00:00"
+            }
+          ],
+          "pending_proposals": [],
+          "proposals": [
+            {
+              "proposal_id": "P61f11cfeeca24f219e4b8cabac7b3db3",
+              "session_id": "web-20ff441656b1",
+              "owner_phone": "13800000001",
+              "action": "CREATE_ORDER",
+              "aggregate_id": "Q4353aa06ee864bb7b3ad3d22b66e7321",
+              "quote_id": "Q4353aa06ee864bb7b3ad3d22b66e7321",
+              "order_id": null,
+              "scenario_id": "railway-demo",
+              "execution_mode": "developer_custom",
+              "config_hash": "1756a931fe3987bfade919b0f7f413809303ac31a4c63bdd02d467955c39dddc",
+              "write_policy_hash": "0e5bb2d30cc05b6a13f772307e807f82766892b7435b29849ee84557bb10d1b9",
+              "feature_flag": "1",
+              "baseline_id": "ticket-agent-v37-baseline-1",
+              "provider": "mock",
+              "tool_whitelist_hash": "b66a0a3c9203dcbf5a47d7599a5eaa57b79a5dd19458a57f5f50c5c5f1a0f5f9",
+              "config_revision": 0,
+              "confirmation_owner_worker": "confirmation",
+              "confirmation_boot_epoch": "8c3d1cf744004c578cb31e4ccb03dd97",
+              "idempotency_key": "P61f11cfeeca24f219e4b8cabac7b3db3",
+              "request_hash": "01b2dcd9adaf1138c134f805721497c6c8c6ecd17ed82431e01b4825dfa165e3",
+              "payload_json": "{\"quote_id\": \"Q4353aa06ee864bb7b3ad3d22b66e7321\", \"passengers\": [\"合成甲\", \"合成乙\", \"合成丙\"], \"contact\": \"13800000001\", \"_display_preview\": {\"total_fen\": 9000, \"passengers\": 3}}",
+              "state": "PENDING",
+              "expires_at": "2026-10-16T16:05:00+00:00",
+              "created_at": "2026-10-16T16:00:00+00:00",
+              "consumed_at": null,
+              "payload": {
+                "quote_id": "Q4353aa06ee864bb7b3ad3d22b66e7321",
+                "passengers": [
+                  "合成甲",
+                  "合成乙",
+                  "合成丙"
+                ],
+                "contact": "13800000001",
+                "_display_preview": {
+                  "total_fen": 9000,
+                  "passengers": 3
+                }
+              }
+            }
+          ],
+          "operations": [
+            {
+              "operation_id": "confirm:web-20ff441656b1:P61f11cfeeca24f219e4b8cabac7b3db3:CREATE_ORDER",
+              "proposal_id": "P61f11cfeeca24f219e4b8cabac7b3db3",
+              "order_id": null,
+              "action": "CREATE_ORDER",
+              "status": "FAILED",
+              "tool_call_id": null,
+              "actual_result": null,
+              "database_verified": false,
+              "before": null,
+              "after": null,
+              "created_at": "2026-10-16T16:00:00+00:00",
+              "finished_at": null
+            }
+          ],
+          "operation_events": [
+            {
+              "event_id": "7ad8bfc5fdc744d3a9a272faf2e54f9c",
+              "aggregate_type": "page",
+              "aggregate_id": "web-20ff441656b1",
+              "event_type": "railway_check_inventory",
+              "from_state": null,
+              "to_state": null,
+              "detail_json": "{\"source\": \"page_operation\", \"ok\": true, \"elapsed_ms\": 24, \"args\": {\"tool_arguments\": {\"service_date\": \"2026-11-05\", \"origin_stop_id\": \"AOH\", \"destination_stop_id\": \"HGH\", \"trip_id\": \"5l000G75410A\", \"seat_class\": \"SECOND\", \"quantity\": 3}, \"tool_call_id\": \"page-call-096a5a7ce38e4a7cba5a5955183b027b\", \"operation_id\": \"page-d564b2ee5679471ead95da509fc12f5b\", \"scenario_id\": \"railway-demo\"}, \"result\": {\"status\": \"SIMULATED_AVAILABLE\", \"available\": 20, \"simulation\": true, \"dataset_version\": \"gtfs-20261101-063437\", \"simulation_clock\": {\"clock_id\": \"3c2fc438934c45f8820a77b60d3aa347\", \"mode\": \"PAUSED\", \"simulation\": true, \"timezone\": \"Asia/Shanghai\", \"now\": \"2026-10-17T00:00:00+08:00\", \"anchor\": \"2026-10-16T16:00:00+00:00\", \"revision\": 0, \"dataset_version\": \"gtfs-20261101-063437\"}}}",
+              "request_id": null,
+              "created_at": "2026-10-16T16:00:00+00:00"
+            },
+            {
+              "event_id": "7bc9ac883fcb48f7bb73cbff7cf0e8dc",
+              "aggregate_type": "page",
+              "aggregate_id": "web-20ff441656b1",
+              "event_type": "railway_quote_fare",
+              "from_state": null,
+              "to_state": null,
+              "detail_json": "{\"source\": \"page_operation\", \"ok\": true, \"elapsed_ms\": 30, \"args\": {\"tool_arguments\": {\"service_date\": \"2026-11-05\", \"origin_stop_id\": \"AOH\", \"destination_stop_id\": \"HGH\", \"trip_id\": \"5l000G75410A\", \"seat_class\": \"SECOND\", \"passenger_count\": 3}, \"tool_call_id\": \"page-call-cd50b398223a49a08c141abda341484c\", \"operation_id\": \"page-70c643bdcead48ffb5182d5c2625b72a\", \"scenario_id\": \"railway-demo\"}, \"result\": {\"status\": \"QUOTED\", \"quote\": {\"quote_id\": \"Q4353aa06ee864bb7b3ad3d22b66e7321\", \"session_id\": \"web-20ff441656b1\", \"owner_phone\": \"13800000001\", \"scenario_id\": \"railway-demo\", \"dataset_version\": \"gtfs-20261101-063437\", \"trip_id\": \"5l000G75410A\", \"service_date\": \"2026-11-05\", \"origin_stop_id\": \"AOH\", \"destination_stop_id\": \"HGH\", \"origin_sequence\": 1, \"destination_sequence\": 4, \"origin_position\": 0, \"destination_position\": 3, \"seat_class\": \"SECOND\", \"passenger_count\": 3, \"rule_id\": \"railway-demo-SECOND\", \"rule_version\": 1, \"base_fen_per_segment\": 1000, \"seat_multiplier_bp\": 10000, \"fixed_fee_fen\": 0, \"segment_count\": 3, \"currency\": \"CNY\", \"status\": \"ACTIVE\", \"expires_at\": \"2026-10-16T16:10:00+00:00\", \"created_at\": \"2026-10-16T16:00:00+00:00\", \"single_base_fen\": 3000, \"single_seat_fen\": 3000, \"base_total_fen\": 9000, \"seat_total_fen\": 9000, \"total_fen\": 9000, \"quote_hash\": \"67713c687349f8a166dd07c287d7bc386ccb9a80bfa682867d616316f933fa5f\"}, \"items\": [{\"base_fen\": 3000, \"seat_fen\": 3000, \"fixed_fee_share_fen\": 0, \"fare_fen\": 3000}, {\"base_fen\": 3000, \"seat_fen\": 3000, \"fixed_fee_share_fen\": 0, \"fare_fen\": 3000}, {\"base_fen\": 3000, \"seat_fen\": 3000, \"fixed_fee_share_fen\": 0, \"fare_fen\": 3000}], \"simulation\": true, \"simulation_clock\": {\"clock_id\": \"3c2fc438934c45f8820a77b60d3aa347\", \"mode\": \"PAUSED\", \"simulation\": true, \"timezone\": \"Asia/Shanghai\", \"now\": \"2026-10-17T00:00:00+08:00\", \"anchor\": \"2026-10-16T16:00:00+00:00\", \"revision\": 0, \"dataset_version\": \"gtfs-20261101-063437\"}}}",
+              "request_id": null,
+              "created_at": "2026-10-16T16:00:00+00:00"
+            },
+            {
+              "event_id": "c31f4d02a64843a88fb382d33b5016c7",
+              "aggregate_type": "page",
+              "aggregate_id": "web-20ff441656b1",
+              "event_type": "railway_query_trips",
+              "from_state": null,
+              "to_state": null,
+              "detail_json": "{\"source\": \"page_operation\", \"ok\": true, \"elapsed_ms\": 19, \"args\": {\"tool_arguments\": {\"service_date\": \"2026-11-05\", \"origin_stop_id\": \"AOH\", \"destination_stop_id\": \"HGH\", \"limit\": 5}, \"tool_call_id\": \"page-call-1df8212f16a74ceeab254d0555a44e91\", \"operation_id\": \"page-5c80e88cf6b4473da00f898d279da8ef\", \"scenario_id\": \"railway-demo\"}, \"result\": {\"status\": \"FOUND\", \"data\": [{\"route_id\": \"G7541\", \"service_id\": \"S93\", \"trip_id\": \"5l000G75410A\", \"trip_short_name\": \"G7541\", \"trip_headsign\": \"台州西\", \"shape_id\": \"shape-2122\", \"raw_json\": \"{\\\"route_id\\\": \\\"G7541\\\", \\\"service_id\\\": \\\"S93\\\", \\\"trip_id\\\": \\\"5l000G75410A\\\", \\\"trip_short_name\\\": \\\"G7541\\\", \\\"trip_headsign\\\": \\\"台州西\\\", \\\"shape_id\\\": \\\"shape-2122\\\"}\", \"origin_arrival\": \"05:52:00\", \"origin_departure\": \"05:52:00\", \"destination_arrival\": \"06:51:00\", \"destination_departure\": \"06:55:00\", \"origin_sequence\": 1, \"destination_sequence\": 4, \"shape_status\": \"AVAILABLE\", \"departure_at\": \"2026-11-05T05:52:00+08:00\", \"arrival_at\": \"2026-11-05T06:51:00+08:00\"}, {\"route_id\": \"G1321\", \"service_id\": \"S93\", \"trip_id\": \"5l000G132108\", \"trip_short_name\": \"G1321\", \"trip_headsign\": \"六盘水\", \"shape_id\": \"shape-2034\", \"raw_json\": \"{\\\"route_id\\\": \\\"G1321\\\", \\\"service_id\\\": \\\"S93\\\", \\\"trip_id\\\": \\\"5l000G132108\\\", \\\"trip_short_name\\\": \\\"G1321\\\", \\\"trip_headsign\\\": \\\"六盘水\\\", \\\"shape_id\\\": \\\"shape-2034\\\"}\", \"origin_arrival\": \"06:07:00\", \"origin_departure\": \"06:07:00\", \"destination_arrival\": \"06:56:00\", \"destination_departure\": \"07:00:00\", \"origin_sequence\": 1, \"destination_sequence\": 2, \"shape_status\": \"AVAILABLE\", \"departure_at\": \"2026-11-05T06:07:00+08:00\", \"arrival_at\": \"2026-11-05T06:56:00+08:00\"}, {\"route_id\": \"G7331\", \"service_id\": \"S93\", \"trip_id\": \"5l000G733102\", \"trip_short_name\": \"G7331\", \"trip_headsign\": \"瑞安\", \"shape_id\": \"shape-2110\", \"raw_json\": \"{\\\"route_id\\\": \\\"G7331\\\", \\\"service_id\\\": \\\"S93\\\", \\\"trip_id\\\": \\\"5l000G733102\\\", \\\"trip_short_name\\\": \\\"G7331\\\", \\\"trip_headsign\\\": \\\"瑞安\\\", \\\"shape_id\\\": \\\"shape-2110\\\"}\", \"origin_arrival\": \"06:13:00\", \"origin_departure\": \"06:13:00\", \"destination_arrival\": \"07:07:00\", \"destination_departure\": \"07:11:00\", \"origin_sequence\": 1, \"destination_sequence\": 3, \"shape_status\": \"AVAILABLE\", \"departure_at\": \"2026-11-05T06:13:00+08:00\", \"arrival_at\": \"2026-11-05T07:07:00+08:00\"}, {\"route_id\": \"G7333\", \"service_id\": \"S93\", \"trip_id\": \"5l000G733303\", \"trip_short_name\": \"G7333\", \"trip_headsign\": \"温州南\", \"shape_id\": \"shape-2105\", \"raw_json\": \"{\\\"route_id\\\": \\\"G7333\\\", \\\"service_id\\\": \\\"S93\\\", \\\"trip_id\\\": \\\"5l000G733303\\\", \\\"trip_short_name\\\": \\\"G7333\\\", \\\"trip_headsign\\\": \\\"温州南\\\", \\\"shape_id\\\": \\\"shape-2105\\\"}\", \"origin_arrival\": \"06:20:00\", \"origin_departure\": \"06:20:00\", \"destination_arrival\": \"07:21:00\", \"destination_departure\": \"07:23:00\", \"origin_sequence\": 1, \"destination_sequence\": 4, \"shape_status\": \"AVAILABLE\", \"departure_at\": \"2026-11-05T06:20:00+08:00\", \"arrival_at\": \"2026-11-05T07:21:00+08:00\"}, {\"route_id\": \"G7363\", \"service_id\": \"S93\", \"trip_id\": \"5l000G736302\", \"trip_short_name\": \"G7363\", \"trip_headsign\": \"温岭\", \"shape_id\": \"\", \"raw_json\": \"{\\\"route_id\\\": \\\"G7363\\\", \\\"service_id\\\": \\\"S93\\\", \\\"trip_id\\\": \\\"5l000G736302\\\", \\\"trip_short_name\\\": \\\"G7363\\\", \\\"trip_headsign\\\": \\\"温岭\\\", \\\"shape_id\\\": \\\"\\\"}\", \"origin_arrival\": \"06:24:00\", \"origin_departure\": \"06:24:00\", \"destination_arrival\": \"07:26:00\", \"destination_departure\": \"07:33:00\", \"origin_sequence\": 1, \"destination_sequence\": 4, \"shape_status\": \"SHAPE_UNAVAILABLE\", \"departure_at\": \"2026-11-05T06:24:00+08:00\", \"arrival_at\": \"2026-11-05T07:26:00+08:00\"}], \"data_source\": \"CHINESE_RAILWAY_GTFS\", \"data_type\": \"STATIC_SCHEDULE\", \"real_time\": false, \"availability_available\": false, \"fare_available\": false, \"booking_available\": false, \"availability\": \"UNKNOWN\", \"fare\": null, \"data_version\": \"20261101\", \"source_sha256\": \"3877dbc0ebc0392afef4b111dd9ba837c97eb4aa45788542919be53d52a12030\", \"rights_status\": \"RIGHTS_REVIEW_PENDING\", \"usage_scope\": \"LOCAL_DEMO_ONLY\", \"service_date\": \"20261105\", \"next_cursor\": \"5\", \"source\": \"GTFS_SQLITE\", \"total_count\": 109, \"returned_count\": 5, \"limit\": 5, \"has_more\": true, \"query_parameters\": {\"service_date\": \"2026-11-05\", \"origin_stop_id\": \"AOH\", \"destination_stop_id\": \"HGH\", \"train_no\": null, \"cursor\": null}, \"dataset_version\": \"gtfs-20261101-063437\", \"database_sha256\": \"e32f0cd41b45532ea7aedf4c72a6ffc24f6eaa23c042ee8f35cb02aa50735c69\", \"simulation_clock\": {\"clock_id\": \"3c2fc438934c45f8820a77b60d3aa347\", \"mode\": \"PAUSED\", \"simulation\": true, \"timezone\": \"Asia/Shanghai\", \"now\": \"2026-10-17T00:00:00+08:00\", \"anchor\": \"2026-10-16T16:00:00+00:00\", \"revision\": 0, \"dataset_version\": \"gtfs-20261101-063437\"}}}",
+              "request_id": null,
+              "created_at": "2026-10-16T16:00:00+00:00"
+            },
+            {
+              "event_id": "d2917036307f4d6fb63c1d7350c334f2",
+              "aggregate_type": "page",
+              "aggregate_id": "web-20ff441656b1",
+              "event_type": "railway_create_order",
+              "from_state": null,
+              "to_state": null,
+              "detail_json": "{\"source\": \"page_operation\", \"ok\": true, \"elapsed_ms\": 35, \"args\": {\"tool_arguments\": {\"quote_id\": \"Q4353aa06ee864bb7b3ad3d22b66e7321\", \"passengers\": [\"合成甲\", \"合成乙\", \"合成丙\"], \"contact\": \"13800000001\"}, \"tool_call_id\": \"page-call-e3e0d30497b04e9aad643f9ddb10cc4d\", \"operation_id\": \"page-b77abd4772d0411e8fb967239f926924\", \"scenario_id\": \"railway-demo\"}, \"result\": {\"proposal_id\": \"P61f11cfeeca24f219e4b8cabac7b3db3\", \"status\": \"CONFIRMATION_REQUIRED\", \"expires_at\": \"2026-10-16T16:05:00+00:00\", \"simulation\": true, \"preview\": {\"total_fen\": 9000, \"passengers\": 3}, \"simulation_clock\": {\"clock_id\": \"3c2fc438934c45f8820a77b60d3aa347\", \"mode\": \"PAUSED\", \"simulation\": true, \"timezone\": \"Asia/Shanghai\", \"now\": \"2026-10-17T00:00:00+08:00\", \"anchor\": \"2026-10-16T16:00:00+00:00\", \"revision\": 0, \"dataset_version\": \"gtfs-20261101-063437\"}}}",
+              "request_id": null,
+              "created_at": "2026-10-16T16:00:00+00:00"
+            }
+          ],
+          "updated_at": "2026-10-16T16:15:01+00:00",
+          "state_sha256": "d86ce93344ed89e654523ed0ec5eb004b7dcf89b05ffc0ef8848a6cd82dcf9f7"
+        },
+        "db": {
+          "v39_orders": [],
+          "v39_order_items": [],
+          "v39_holds": [],
+          "v39_transactions": [],
+          "v39_inventory_segments": [
+            {
+              "scenario_id": "railway-demo",
+              "dataset_version": "gtfs-20261101-063437",
+              "trip_id": "5l000G75410A",
+              "service_date": "2026-11-05",
+              "seat_class": "SECOND",
+              "segment_index": 0,
+              "from_stop_id": "AOH",
+              "from_sequence": 1,
+              "from_position": 0,
+              "to_stop_id": "TCH",
+              "to_sequence": 2,
+              "to_position": 1,
+              "capacity": 20,
+              "held": 0,
+              "sold": 0,
+              "version": 0,
+              "updated_at": "2026-10-16T16:00:00+00:00"
+            },
+            {
+              "scenario_id": "railway-demo",
+              "dataset_version": "gtfs-20261101-063437",
+              "trip_id": "5l000G75410A",
+              "service_date": "2026-11-05",
+              "seat_class": "SECOND",
+              "segment_index": 1,
+              "from_stop_id": "TCH",
+              "from_sequence": 2,
+              "from_position": 1,
+              "to_stop_id": "EVH",
+              "to_sequence": 3,
+              "to_position": 2,
+              "capacity": 20,
+              "held": 0,
+              "sold": 0,
+              "version": 0,
+              "updated_at": "2026-10-16T16:00:00+00:00"
+            },
+            {
+              "scenario_id": "railway-demo",
+              "dataset_version": "gtfs-20261101-063437",
+              "trip_id": "5l000G75410A",
+              "service_date": "2026-11-05",
+              "seat_class": "SECOND",
+              "segment_index": 2,
+              "from_stop_id": "EVH",
+              "from_sequence": 3,
+              "from_position": 2,
+              "to_stop_id": "HGH",
+              "to_sequence": 4,
+              "to_position": 3,
+              "capacity": 20,
+              "held": 0,
+              "sold": 0,
+              "version": 0,
+              "updated_at": "2026-10-16T16:00:00+00:00"
+            }
+          ],
+          "v39_inventory_events": [],
+          "v39_refund_requests": [],
+          "v39_change_requests": [],
+          "v39_proposals": [
+            {
+              "proposal_id": "P61f11cfeeca24f219e4b8cabac7b3db3",
+              "session_id": "web-20ff441656b1",
+              "owner_phone": "13800000001",
+              "action": "CREATE_ORDER",
+              "aggregate_id": "Q4353aa06ee864bb7b3ad3d22b66e7321",
+              "quote_id": "Q4353aa06ee864bb7b3ad3d22b66e7321",
+              "order_id": null,
+              "scenario_id": "railway-demo",
+              "execution_mode": "developer_custom",
+              "config_hash": "1756a931fe3987bfade919b0f7f413809303ac31a4c63bdd02d467955c39dddc",
+              "write_policy_hash": "0e5bb2d30cc05b6a13f772307e807f82766892b7435b29849ee84557bb10d1b9",
+              "feature_flag": "1",
+              "baseline_id": "ticket-agent-v37-baseline-1",
+              "provider": "mock",
+              "tool_whitelist_hash": "b66a0a3c9203dcbf5a47d7599a5eaa57b79a5dd19458a57f5f50c5c5f1a0f5f9",
+              "config_revision": 0,
+              "confirmation_owner_worker": "confirmation",
+              "confirmation_boot_epoch": "8c3d1cf744004c578cb31e4ccb03dd97",
+              "idempotency_key": "P61f11cfeeca24f219e4b8cabac7b3db3",
+              "request_hash": "01b2dcd9adaf1138c134f805721497c6c8c6ecd17ed82431e01b4825dfa165e3",
+              "payload_json": "{\"quote_id\": \"Q4353aa06ee864bb7b3ad3d22b66e7321\", \"passengers\": [\"合成甲\", \"合成乙\", \"合成丙\"], \"contact\": \"13800000001\", \"_display_preview\": {\"total_fen\": 9000, \"passengers\": 3}}",
+              "state": "PENDING",
+              "expires_at": "2026-10-16T16:05:00+00:00",
+              "created_at": "2026-10-16T16:00:00+00:00",
+              "consumed_at": null
+            }
+          ],
+          "v39_idempotency": [],
+          "v39_refund_items": [],
+          "v39_hold_segments": [],
+          "v39_transaction_allocations": []
+        },
+        "metrics": {
+          "order_count": 0,
+          "hold_count": 0,
+          "transaction_count": 0,
+          "held": 0,
+          "sold": 0,
+          "foreign_keys_ok": true,
+          "inventory_conserved": true,
+          "money_conserved": true,
+          "ui_consistent": true
+        },
+        "result": {
+          "advanced": 901
+        }
+      },
+      "trace_id": "3c2ed16fe0784144b115a0552dd3a6bb-4",
+      "executed_tools": [],
+      "executed": false,
+      "verified": true
+    },
+    {
+      "index": 5,
+      "kind": "confirm",
+      "tool": null,
+      "args": {},
+      "output": {
+        "status": "PROPOSAL_EXPIRED",
+        "simulation": true,
+        "error": "DATABASE_RECEIPT_NOT_VERIFIED"
+      },
+      "error": null,
+      "checks": [
+        {
+          "path": "metrics.order_count",
+          "op": "eq",
+          "expected": 0,
+          "actual": 0,
+          "ok": true
+        },
+        {
+          "path": "expected_error",
+          "ok": true,
+          "actual": "DATABASE_RECEIPT_NOT_VERIFIED",
+          "expected": "DATABASE_RECEIPT_NOT_VERIFIED"
+        },
+        {
+          "path": "metrics.foreign_keys_ok",
+          "ok": true,
+          "actual": true
+        },
+        {
+          "path": "metrics.inventory_conserved",
+          "ok": true,
+          "actual": true
+        },
+        {
+          "path": "metrics.money_conserved",
+          "ok": true,
+          "actual": true
+        },
+        {
+          "path": "metrics.ui_consistent",
+          "ok": true,
+          "actual": true
+        }
+      ],
+      "snapshot": {
+        "state": {
+          "schema": "ticket-business-read-model/1",
+          "session_id": "web-20ff441656b1",
+          "source": "LOCAL_SQLITE_COMMITTED",
+          "scenario_id": "railway-demo",
+          "orders": [],
+          "quotes": [
+            {
+              "quote_id": "Q4353aa06ee864bb7b3ad3d22b66e7321",
+              "session_id": "web-20ff441656b1",
+              "owner_phone": "13800000001",
+              "scenario_id": "railway-demo",
+              "dataset_version": "gtfs-20261101-063437",
+              "trip_id": "5l000G75410A",
+              "service_date": "2026-11-05",
+              "origin_stop_id": "AOH",
+              "destination_stop_id": "HGH",
+              "origin_sequence": 1,
+              "destination_sequence": 4,
+              "origin_position": 0,
+              "destination_position": 3,
+              "seat_class": "SECOND",
+              "passenger_count": 3,
+              "rule_id": "railway-demo-SECOND",
+              "rule_version": 1,
+              "base_fen_per_segment": 1000,
+              "seat_multiplier_bp": 10000,
+              "fixed_fee_fen": 0,
+              "segment_count": 3,
+              "single_base_fen": 3000,
+              "single_seat_fen": 3000,
+              "base_total_fen": 9000,
+              "seat_total_fen": 9000,
+              "total_fen": 9000,
+              "currency": "CNY",
+              "quote_hash": "67713c687349f8a166dd07c287d7bc386ccb9a80bfa682867d616316f933fa5f",
+              "status": "ACTIVE",
+              "expires_at": "2026-10-16T16:10:00+00:00",
+              "created_at": "2026-10-16T16:00:00+00:00"
+            }
+          ],
+          "pending_proposals": [],
+          "proposals": [
+            {
+              "proposal_id": "P61f11cfeeca24f219e4b8cabac7b3db3",
+              "session_id": "web-20ff441656b1",
+              "owner_phone": "13800000001",
+              "action": "CREATE_ORDER",
+              "aggregate_id": "Q4353aa06ee864bb7b3ad3d22b66e7321",
+              "quote_id": "Q4353aa06ee864bb7b3ad3d22b66e7321",
+              "order_id": null,
+              "scenario_id": "railway-demo",
+              "execution_mode": "developer_custom",
+              "config_hash": "1756a931fe3987bfade919b0f7f413809303ac31a4c63bdd02d467955c39dddc",
+              "write_policy_hash": "0e5bb2d30cc05b6a13f772307e807f82766892b7435b29849ee84557bb10d1b9",
+              "feature_flag": "1",
+              "baseline_id": "ticket-agent-v37-baseline-1",
+              "provider": "mock",
+              "tool_whitelist_hash": "b66a0a3c9203dcbf5a47d7599a5eaa57b79a5dd19458a57f5f50c5c5f1a0f5f9",
+              "config_revision": 0,
+              "confirmation_owner_worker": "confirmation",
+              "confirmation_boot_epoch": "8c3d1cf744004c578cb31e4ccb03dd97",
+              "idempotency_key": "P61f11cfeeca24f219e4b8cabac7b3db3",
+              "request_hash": "01b2dcd9adaf1138c134f805721497c6c8c6ecd17ed82431e01b4825dfa165e3",
+              "payload_json": "{\"quote_id\": \"Q4353aa06ee864bb7b3ad3d22b66e7321\", \"passengers\": [\"合成甲\", \"合成乙\", \"合成丙\"], \"contact\": \"13800000001\", \"_display_preview\": {\"total_fen\": 9000, \"passengers\": 3}}",
+              "state": "EXPIRED",
+              "expires_at": "2026-10-16T16:05:00+00:00",
+              "created_at": "2026-10-16T16:00:00+00:00",
+              "consumed_at": null,
+              "payload": {
+                "quote_id": "Q4353aa06ee864bb7b3ad3d22b66e7321",
+                "passengers": [
+                  "合成甲",
+                  "合成乙",
+                  "合成丙"
+                ],
+                "contact": "13800000001",
+                "_display_preview": {
+                  "total_fen": 9000,
+                  "passengers": 3
+                }
+              }
+            }
+          ],
+          "operations": [
+            {
+              "operation_id": "confirm:web-20ff441656b1:P61f11cfeeca24f219e4b8cabac7b3db3:CREATE_ORDER",
+              "proposal_id": "P61f11cfeeca24f219e4b8cabac7b3db3",
+              "order_id": null,
+              "action": "CREATE_ORDER",
+              "status": "FAILED",
+              "tool_call_id": "page-call-e3e0d30497b04e9aad643f9ddb10cc4d",
+              "actual_result": null,
+              "database_verified": false,
+              "before": null,
+              "after": null,
+              "created_at": "2026-10-16T16:00:00+00:00",
+              "finished_at": null
+            }
+          ],
+          "operation_events": [
+            {
+              "event_id": "7ad8bfc5fdc744d3a9a272faf2e54f9c",
+              "aggregate_type": "page",
+              "aggregate_id": "web-20ff441656b1",
+              "event_type": "railway_check_inventory",
+              "from_state": null,
+              "to_state": null,
+              "detail_json": "{\"source\": \"page_operation\", \"ok\": true, \"elapsed_ms\": 24, \"args\": {\"tool_arguments\": {\"service_date\": \"2026-11-05\", \"origin_stop_id\": \"AOH\", \"destination_stop_id\": \"HGH\", \"trip_id\": \"5l000G75410A\", \"seat_class\": \"SECOND\", \"quantity\": 3}, \"tool_call_id\": \"page-call-096a5a7ce38e4a7cba5a5955183b027b\", \"operation_id\": \"page-d564b2ee5679471ead95da509fc12f5b\", \"scenario_id\": \"railway-demo\"}, \"result\": {\"status\": \"SIMULATED_AVAILABLE\", \"available\": 20, \"simulation\": true, \"dataset_version\": \"gtfs-20261101-063437\", \"simulation_clock\": {\"clock_id\": \"3c2fc438934c45f8820a77b60d3aa347\", \"mode\": \"PAUSED\", \"simulation\": true, \"timezone\": \"Asia/Shanghai\", \"now\": \"2026-10-17T00:00:00+08:00\", \"anchor\": \"2026-10-16T16:00:00+00:00\", \"revision\": 0, \"dataset_version\": \"gtfs-20261101-063437\"}}}",
+              "request_id": null,
+              "created_at": "2026-10-16T16:00:00+00:00"
+            },
+            {
+              "event_id": "7bc9ac883fcb48f7bb73cbff7cf0e8dc",
+              "aggregate_type": "page",
+              "aggregate_id": "web-20ff441656b1",
+              "event_type": "railway_quote_fare",
+              "from_state": null,
+              "to_state": null,
+              "detail_json": "{\"source\": \"page_operation\", \"ok\": true, \"elapsed_ms\": 30, \"args\": {\"tool_arguments\": {\"service_date\": \"2026-11-05\", \"origin_stop_id\": \"AOH\", \"destination_stop_id\": \"HGH\", \"trip_id\": \"5l000G75410A\", \"seat_class\": \"SECOND\", \"passenger_count\": 3}, \"tool_call_id\": \"page-call-cd50b398223a49a08c141abda341484c\", \"operation_id\": \"page-70c643bdcead48ffb5182d5c2625b72a\", \"scenario_id\": \"railway-demo\"}, \"result\": {\"status\": \"QUOTED\", \"quote\": {\"quote_id\": \"Q4353aa06ee864bb7b3ad3d22b66e7321\", \"session_id\": \"web-20ff441656b1\", \"owner_phone\": \"13800000001\", \"scenario_id\": \"railway-demo\", \"dataset_version\": \"gtfs-20261101-063437\", \"trip_id\": \"5l000G75410A\", \"service_date\": \"2026-11-05\", \"origin_stop_id\": \"AOH\", \"destination_stop_id\": \"HGH\", \"origin_sequence\": 1, \"destination_sequence\": 4, \"origin_position\": 0, \"destination_position\": 3, \"seat_class\": \"SECOND\", \"passenger_count\": 3, \"rule_id\": \"railway-demo-SECOND\", \"rule_version\": 1, \"base_fen_per_segment\": 1000, \"seat_multiplier_bp\": 10000, \"fixed_fee_fen\": 0, \"segment_count\": 3, \"currency\": \"CNY\", \"status\": \"ACTIVE\", \"expires_at\": \"2026-10-16T16:10:00+00:00\", \"created_at\": \"2026-10-16T16:00:00+00:00\", \"single_base_fen\": 3000, \"single_seat_fen\": 3000, \"base_total_fen\": 9000, \"seat_total_fen\": 9000, \"total_fen\": 9000, \"quote_hash\": \"67713c687349f8a166dd07c287d7bc386ccb9a80bfa682867d616316f933fa5f\"}, \"items\": [{\"base_fen\": 3000, \"seat_fen\": 3000, \"fixed_fee_share_fen\": 0, \"fare_fen\": 3000}, {\"base_fen\": 3000, \"seat_fen\": 3000, \"fixed_fee_share_fen\": 0, \"fare_fen\": 3000}, {\"base_fen\": 3000, \"seat_fen\": 3000, \"fixed_fee_share_fen\": 0, \"fare_fen\": 3000}], \"simulation\": true, \"simulation_clock\": {\"clock_id\": \"3c2fc438934c45f8820a77b60d3aa347\", \"mode\": \"PAUSED\", \"simulation\": true, \"timezone\": \"Asia/Shanghai\", \"now\": \"2026-10-17T00:00:00+08:00\", \"anchor\": \"2026-10-16T16:00:00+00:00\", \"revision\": 0, \"dataset_version\": \"gtfs-20261101-063437\"}}}",
+              "request_id": null,
+              "created_at": "2026-10-16T16:00:00+00:00"
+            },
+            {
+              "event_id": "c31f4d02a64843a88fb382d33b5016c7",
+              "aggregate_type": "page",
+              "aggregate_id": "web-20ff441656b1",
+              "event_type": "railway_query_trips",
+              "from_state": null,
+              "to_state": null,
+              "detail_json": "{\"source\": \"page_operation\", \"ok\": true, \"elapsed_ms\": 19, \"args\": {\"tool_arguments\": {\"service_date\": \"2026-11-05\", \"origin_stop_id\": \"AOH\", \"destination_stop_id\": \"HGH\", \"limit\": 5}, \"tool_call_id\": \"page-call-1df8212f16a74ceeab254d0555a44e91\", \"operation_id\": \"page-5c80e88cf6b4473da00f898d279da8ef\", \"scenario_id\": \"railway-demo\"}, \"result\": {\"status\": \"FOUND\", \"data\": [{\"route_id\": \"G7541\", \"service_id\": \"S93\", \"trip_id\": \"5l000G75410A\", \"trip_short_name\": \"G7541\", \"trip_headsign\": \"台州西\", \"shape_id\": \"shape-2122\", \"raw_json\": \"{\\\"route_id\\\": \\\"G7541\\\", \\\"service_id\\\": \\\"S93\\\", \\\"trip_id\\\": \\\"5l000G75410A\\\", \\\"trip_short_name\\\": \\\"G7541\\\", \\\"trip_headsign\\\": \\\"台州西\\\", \\\"shape_id\\\": \\\"shape-2122\\\"}\", \"origin_arrival\": \"05:52:00\", \"origin_departure\": \"05:52:00\", \"destination_arrival\": \"06:51:00\", \"destination_departure\": \"06:55:00\", \"origin_sequence\": 1, \"destination_sequence\": 4, \"shape_status\": \"AVAILABLE\", \"departure_at\": \"2026-11-05T05:52:00+08:00\", \"arrival_at\": \"2026-11-05T06:51:00+08:00\"}, {\"route_id\": \"G1321\", \"service_id\": \"S93\", \"trip_id\": \"5l000G132108\", \"trip_short_name\": \"G1321\", \"trip_headsign\": \"六盘水\", \"shape_id\": \"shape-2034\", \"raw_json\": \"{\\\"route_id\\\": \\\"G1321\\\", \\\"service_id\\\": \\\"S93\\\", \\\"trip_id\\\": \\\"5l000G132108\\\", \\\"trip_short_name\\\": \\\"G1321\\\", \\\"trip_headsign\\\": \\\"六盘水\\\", \\\"shape_id\\\": \\\"shape-2034\\\"}\", \"origin_arrival\": \"06:07:00\", \"origin_departure\": \"06:07:00\", \"destination_arrival\": \"06:56:00\", \"destination_departure\": \"07:00:00\", \"origin_sequence\": 1, \"destination_sequence\": 2, \"shape_status\": \"AVAILABLE\", \"departure_at\": \"2026-11-05T06:07:00+08:00\", \"arrival_at\": \"2026-11-05T06:56:00+08:00\"}, {\"route_id\": \"G7331\", \"service_id\": \"S93\", \"trip_id\": \"5l000G733102\", \"trip_short_name\": \"G7331\", \"trip_headsign\": \"瑞安\", \"shape_id\": \"shape-2110\", \"raw_json\": \"{\\\"route_id\\\": \\\"G7331\\\", \\\"service_id\\\": \\\"S93\\\", \\\"trip_id\\\": \\\"5l000G733102\\\", \\\"trip_short_name\\\": \\\"G7331\\\", \\\"trip_headsign\\\": \\\"瑞安\\\", \\\"shape_id\\\": \\\"shape-2110\\\"}\", \"origin_arrival\": \"06:13:00\", \"origin_departure\": \"06:13:00\", \"destination_arrival\": \"07:07:00\", \"destination_departure\": \"07:11:00\", \"origin_sequence\": 1, \"destination_sequence\": 3, \"shape_status\": \"AVAILABLE\", \"departure_at\": \"2026-11-05T06:13:00+08:00\", \"arrival_at\": \"2026-11-05T07:07:00+08:00\"}, {\"route_id\": \"G7333\", \"service_id\": \"S93\", \"trip_id\": \"5l000G733303\", \"trip_short_name\": \"G7333\", \"trip_headsign\": \"温州南\", \"shape_id\": \"shape-2105\", \"raw_json\": \"{\\\"route_id\\\": \\\"G7333\\\", \\\"service_id\\\": \\\"S93\\\", \\\"trip_id\\\": \\\"5l000G733303\\\", \\\"trip_short_name\\\": \\\"G7333\\\", \\\"trip_headsign\\\": \\\"温州南\\\", \\\"shape_id\\\": \\\"shape-2105\\\"}\", \"origin_arrival\": \"06:20:00\", \"origin_departure\": \"06:20:00\", \"destination_arrival\": \"07:21:00\", \"destination_departure\": \"07:23:00\", \"origin_sequence\": 1, \"destination_sequence\": 4, \"shape_status\": \"AVAILABLE\", \"departure_at\": \"2026-11-05T06:20:00+08:00\", \"arrival_at\": \"2026-11-05T07:21:00+08:00\"}, {\"route_id\": \"G7363\", \"service_id\": \"S93\", \"trip_id\": \"5l000G736302\", \"trip_short_name\": \"G7363\", \"trip_headsign\": \"温岭\", \"shape_id\": \"\", \"raw_json\": \"{\\\"route_id\\\": \\\"G7363\\\", \\\"service_id\\\": \\\"S93\\\", \\\"trip_id\\\": \\\"5l000G736302\\\", \\\"trip_short_name\\\": \\\"G7363\\\", \\\"trip_headsign\\\": \\\"温岭\\\", \\\"shape_id\\\": \\\"\\\"}\", \"origin_arrival\": \"06:24:00\", \"origin_departure\": \"06:24:00\", \"destination_arrival\": \"07:26:00\", \"destination_departure\": \"07:33:00\", \"origin_sequence\": 1, \"destination_sequence\": 4, \"shape_status\": \"SHAPE_UNAVAILABLE\", \"departure_at\": \"2026-11-05T06:24:00+08:00\", \"arrival_at\": \"2026-11-05T07:26:00+08:00\"}], \"data_source\": \"CHINESE_RAILWAY_GTFS\", \"data_type\": \"STATIC_SCHEDULE\", \"real_time\": false, \"availability_available\": false, \"fare_available\": false, \"booking_available\": false, \"availability\": \"UNKNOWN\", \"fare\": null, \"data_version\": \"20261101\", \"source_sha256\": \"3877dbc0ebc0392afef4b111dd9ba837c97eb4aa45788542919be53d52a12030\", \"rights_status\": \"RIGHTS_REVIEW_PENDING\", \"usage_scope\": \"LOCAL_DEMO_ONLY\", \"service_date\": \"20261105\", \"next_cursor\": \"5\", \"source\": \"GTFS_SQLITE\", \"total_count\": 109, \"returned_count\": 5, \"limit\": 5, \"has_more\": true, \"query_parameters\": {\"service_date\": \"2026-11-05\", \"origin_stop_id\": \"AOH\", \"destination_stop_id\": \"HGH\", \"train_no\": null, \"cursor\": null}, \"dataset_version\": \"gtfs-20261101-063437\", \"database_sha256\": \"e32f0cd41b45532ea7aedf4c72a6ffc24f6eaa23c042ee8f35cb02aa50735c69\", \"simulation_clock\": {\"clock_id\": \"3c2fc438934c45f8820a77b60d3aa347\", \"mode\": \"PAUSED\", \"simulation\": true, \"timezone\": \"Asia/Shanghai\", \"now\": \"2026-10-17T00:00:00+08:00\", \"anchor\": \"2026-10-16T16:00:00+00:00\", \"revision\": 0, \"dataset_version\": \"gtfs-20261101-063437\"}}}",
+              "request_id": null,
+              "created_at": "2026-10-16T16:00:00+00:00"
+            },
+            {
+              "event_id": "d2917036307f4d6fb63c1d7350c334f2",
+              "aggregate_type": "page",
+              "aggregate_id": "web-20ff441656b1",
+              "event_type": "railway_create_order",
+              "from_state": null,
+              "to_state": null,
+              "detail_json": "{\"source\": \"page_operation\", \"ok\": true, \"elapsed_ms\": 35, \"args\": {\"tool_arguments\": {\"quote_id\": \"Q4353aa06ee864bb7b3ad3d22b66e7321\", \"passengers\": [\"合成甲\", \"合成乙\", \"合成丙\"], \"contact\": \"13800000001\"}, \"tool_call_id\": \"page-call-e3e0d30497b04e9aad643f9ddb10cc4d\", \"operation_id\": \"page-b77abd4772d0411e8fb967239f926924\", \"scenario_id\": \"railway-demo\"}, \"result\": {\"proposal_id\": \"P61f11cfeeca24f219e4b8cabac7b3db3\", \"status\": \"CONFIRMATION_REQUIRED\", \"expires_at\": \"2026-10-16T16:05:00+00:00\", \"simulation\": true, \"preview\": {\"total_fen\": 9000, \"passengers\": 3}, \"simulation_clock\": {\"clock_id\": \"3c2fc438934c45f8820a77b60d3aa347\", \"mode\": \"PAUSED\", \"simulation\": true, \"timezone\": \"Asia/Shanghai\", \"now\": \"2026-10-17T00:00:00+08:00\", \"anchor\": \"2026-10-16T16:00:00+00:00\", \"revision\": 0, \"dataset_version\": \"gtfs-20261101-063437\"}}}",
+              "request_id": null,
+              "created_at": "2026-10-16T16:00:00+00:00"
+            },
+            {
+              "event_id": "02cc95d2eb804a11b0c068ebea4b761a",
+              "aggregate_type": "page",
+              "aggregate_id": "web-20ff441656b1",
+              "event_type": "UI_CONFIRMED_PROPOSAL",
+              "from_state": null,
+              "to_state": null,
+              "detail_json": "{\"source\": \"page_operation\", \"ok\": false, \"elapsed_ms\": 0, \"args\": {\"proposal_id\": \"P61f11cfeeca24f219e4b8cabac7b3db3\", \"operation_id\": \"page-779792282f7247578f18d3dcb7ef7a47\", \"tool_call_id\": \"page-call-e3e0d30497b04e9aad643f9ddb10cc4d\", \"before\": null, \"scenario_id\": \"railway-demo\"}, \"result\": {\"status\": \"PROPOSAL_EXPIRED\", \"simulation\": true, \"after\": null}}",
+              "request_id": null,
+              "created_at": "2026-10-16T16:15:01+00:00"
+            }
+          ],
+          "updated_at": "2026-10-16T16:15:01+00:00",
+          "state_sha256": "ededc5ac02588483de4384f484c1989c44baf234d528aabfbb74307294569883"
+        },
+        "ui": {
+          "schema": "ticket-business-read-model/1",
+          "session_id": "web-20ff441656b1",
+          "source": "LOCAL_SQLITE_COMMITTED",
+          "scenario_id": "railway-demo",
+          "orders": [],
+          "quotes": [
+            {
+              "quote_id": "Q4353aa06ee864bb7b3ad3d22b66e7321",
+              "session_id": "web-20ff441656b1",
+              "owner_phone": "13800000001",
+              "scenario_id": "railway-demo",
+              "dataset_version": "gtfs-20261101-063437",
+              "trip_id": "5l000G75410A",
+              "service_date": "2026-11-05",
+              "origin_stop_id": "AOH",
+              "destination_stop_id": "HGH",
+              "origin_sequence": 1,
+              "destination_sequence": 4,
+              "origin_position": 0,
+              "destination_position": 3,
+              "seat_class": "SECOND",
+              "passenger_count": 3,
+              "rule_id": "railway-demo-SECOND",
+              "rule_version": 1,
+              "base_fen_per_segment": 1000,
+              "seat_multiplier_bp": 10000,
+              "fixed_fee_fen": 0,
+              "segment_count": 3,
+              "single_base_fen": 3000,
+              "single_seat_fen": 3000,
+              "base_total_fen": 9000,
+              "seat_total_fen": 9000,
+              "total_fen": 9000,
+              "currency": "CNY",
+              "quote_hash": "67713c687349f8a166dd07c287d7bc386ccb9a80bfa682867d616316f933fa5f",
+              "status": "ACTIVE",
+              "expires_at": "2026-10-16T16:10:00+00:00",
+              "created_at": "2026-10-16T16:00:00+00:00"
+            }
+          ],
+          "pending_proposals": [],
+          "proposals": [
+            {
+              "proposal_id": "P61f11cfeeca24f219e4b8cabac7b3db3",
+              "session_id": "web-20ff441656b1",
+              "owner_phone": "13800000001",
+              "action": "CREATE_ORDER",
+              "aggregate_id": "Q4353aa06ee864bb7b3ad3d22b66e7321",
+              "quote_id": "Q4353aa06ee864bb7b3ad3d22b66e7321",
+              "order_id": null,
+              "scenario_id": "railway-demo",
+              "execution_mode": "developer_custom",
+              "config_hash": "1756a931fe3987bfade919b0f7f413809303ac31a4c63bdd02d467955c39dddc",
+              "write_policy_hash": "0e5bb2d30cc05b6a13f772307e807f82766892b7435b29849ee84557bb10d1b9",
+              "feature_flag": "1",
+              "baseline_id": "ticket-agent-v37-baseline-1",
+              "provider": "mock",
+              "tool_whitelist_hash": "b66a0a3c9203dcbf5a47d7599a5eaa57b79a5dd19458a57f5f50c5c5f1a0f5f9",
+              "config_revision": 0,
+              "confirmation_owner_worker": "confirmation",
+              "confirmation_boot_epoch": "8c3d1cf744004c578cb31e4ccb03dd97",
+              "idempotency_key": "P61f11cfeeca24f219e4b8cabac7b3db3",
+              "request_hash": "01b2dcd9adaf1138c134f805721497c6c8c6ecd17ed82431e01b4825dfa165e3",
+              "payload_json": "{\"quote_id\": \"Q4353aa06ee864bb7b3ad3d22b66e7321\", \"passengers\": [\"合成甲\", \"合成乙\", \"合成丙\"], \"contact\": \"13800000001\", \"_display_preview\": {\"total_fen\": 9000, \"passengers\": 3}}",
+              "state": "EXPIRED",
+              "expires_at": "2026-10-16T16:05:00+00:00",
+              "created_at": "2026-10-16T16:00:00+00:00",
+              "consumed_at": null,
+              "payload": {
+                "quote_id": "Q4353aa06ee864bb7b3ad3d22b66e7321",
+                "passengers": [
+                  "合成甲",
+                  "合成乙",
+                  "合成丙"
+                ],
+                "contact": "13800000001",
+                "_display_preview": {
+                  "total_fen": 9000,
+                  "passengers": 3
+                }
+              }
+            }
+          ],
+          "operations": [
+            {
+              "operation_id": "confirm:web-20ff441656b1:P61f11cfeeca24f219e4b8cabac7b3db3:CREATE_ORDER",
+              "proposal_id": "P61f11cfeeca24f219e4b8cabac7b3db3",
+              "order_id": null,
+              "action": "CREATE_ORDER",
+              "status": "FAILED",
+              "tool_call_id": "page-call-e3e0d30497b04e9aad643f9ddb10cc4d",
+              "actual_result": null,
+              "database_verified": false,
+              "before": null,
+              "after": null,
+              "created_at": "2026-10-16T16:00:00+00:00",
+              "finished_at": null
+            }
+          ],
+          "operation_events": [
+            {
+              "event_id": "7ad8bfc5fdc744d3a9a272faf2e54f9c",
+              "aggregate_type": "page",
+              "aggregate_id": "web-20ff441656b1",
+              "event_type": "railway_check_inventory",
+              "from_state": null,
+              "to_state": null,
+              "detail_json": "{\"source\": \"page_operation\", \"ok\": true, \"elapsed_ms\": 24, \"args\": {\"tool_arguments\": {\"service_date\": \"2026-11-05\", \"origin_stop_id\": \"AOH\", \"destination_stop_id\": \"HGH\", \"trip_id\": \"5l000G75410A\", \"seat_class\": \"SECOND\", \"quantity\": 3}, \"tool_call_id\": \"page-call-096a5a7ce38e4a7cba5a5955183b027b\", \"operation_id\": \"page-d564b2ee5679471ead95da509fc12f5b\", \"scenario_id\": \"railway-demo\"}, \"result\": {\"status\": \"SIMULATED_AVAILABLE\", \"available\": 20, \"simulation\": true, \"dataset_version\": \"gtfs-20261101-063437\", \"simulation_clock\": {\"clock_id\": \"3c2fc438934c45f8820a77b60d3aa347\", \"mode\": \"PAUSED\", \"simulation\": true, \"timezone\": \"Asia/Shanghai\", \"now\": \"2026-10-17T00:00:00+08:00\", \"anchor\": \"2026-10-16T16:00:00+00:00\", \"revision\": 0, \"dataset_version\": \"gtfs-20261101-063437\"}}}",
+              "request_id": null,
+              "created_at": "2026-10-16T16:00:00+00:00"
+            },
+            {
+              "event_id": "7bc9ac883fcb48f7bb73cbff7cf0e8dc",
+              "aggregate_type": "page",
+              "aggregate_id": "web-20ff441656b1",
+              "event_type": "railway_quote_fare",
+              "from_state": null,
+              "to_state": null,
+              "detail_json": "{\"source\": \"page_operation\", \"ok\": true, \"elapsed_ms\": 30, \"args\": {\"tool_arguments\": {\"service_date\": \"2026-11-05\", \"origin_stop_id\": \"AOH\", \"destination_stop_id\": \"HGH\", \"trip_id\": \"5l000G75410A\", \"seat_class\": \"SECOND\", \"passenger_count\": 3}, \"tool_call_id\": \"page-call-cd50b398223a49a08c141abda341484c\", \"operation_id\": \"page-70c643bdcead48ffb5182d5c2625b72a\", \"scenario_id\": \"railway-demo\"}, \"result\": {\"status\": \"QUOTED\", \"quote\": {\"quote_id\": \"Q4353aa06ee864bb7b3ad3d22b66e7321\", \"session_id\": \"web-20ff441656b1\", \"owner_phone\": \"13800000001\", \"scenario_id\": \"railway-demo\", \"dataset_version\": \"gtfs-20261101-063437\", \"trip_id\": \"5l000G75410A\", \"service_date\": \"2026-11-05\", \"origin_stop_id\": \"AOH\", \"destination_stop_id\": \"HGH\", \"origin_sequence\": 1, \"destination_sequence\": 4, \"origin_position\": 0, \"destination_position\": 3, \"seat_class\": \"SECOND\", \"passenger_count\": 3, \"rule_id\": \"railway-demo-SECOND\", \"rule_version\": 1, \"base_fen_per_segment\": 1000, \"seat_multiplier_bp\": 10000, \"fixed_fee_fen\": 0, \"segment_count\": 3, \"currency\": \"CNY\", \"status\": \"ACTIVE\", \"expires_at\": \"2026-10-16T16:10:00+00:00\", \"created_at\": \"2026-10-16T16:00:00+00:00\", \"single_base_fen\": 3000, \"single_seat_fen\": 3000, \"base_total_fen\": 9000, \"seat_total_fen\": 9000, \"total_fen\": 9000, \"quote_hash\": \"67713c687349f8a166dd07c287d7bc386ccb9a80bfa682867d616316f933fa5f\"}, \"items\": [{\"base_fen\": 3000, \"seat_fen\": 3000, \"fixed_fee_share_fen\": 0, \"fare_fen\": 3000}, {\"base_fen\": 3000, \"seat_fen\": 3000, \"fixed_fee_share_fen\": 0, \"fare_fen\": 3000}, {\"base_fen\": 3000, \"seat_fen\": 3000, \"fixed_fee_share_fen\": 0, \"fare_fen\": 3000}], \"simulation\": true, \"simulation_clock\": {\"clock_id\": \"3c2fc438934c45f8820a77b60d3aa347\", \"mode\": \"PAUSED\", \"simulation\": true, \"timezone\": \"Asia/Shanghai\", \"now\": \"2026-10-17T00:00:00+08:00\", \"anchor\": \"2026-10-16T16:00:00+00:00\", \"revision\": 0, \"dataset_version\": \"gtfs-20261101-063437\"}}}",
+              "request_id": null,
+              "created_at": "2026-10-16T16:00:00+00:00"
+            },
+            {
+              "event_id": "c31f4d02a64843a88fb382d33b5016c7",
+              "aggregate_type": "page",
+              "aggregate_id": "web-20ff441656b1",
+              "event_type": "railway_query_trips",
+              "from_state": null,
+              "to_state": null,
+              "detail_json": "{\"source\": \"page_operation\", \"ok\": true, \"elapsed_ms\": 19, \"args\": {\"tool_arguments\": {\"service_date\": \"2026-11-05\", \"origin_stop_id\": \"AOH\", \"destination_stop_id\": \"HGH\", \"limit\": 5}, \"tool_call_id\": \"page-call-1df8212f16a74ceeab254d0555a44e91\", \"operation_id\": \"page-5c80e88cf6b4473da00f898d279da8ef\", \"scenario_id\": \"railway-demo\"}, \"result\": {\"status\": \"FOUND\", \"data\": [{\"route_id\": \"G7541\", \"service_id\": \"S93\", \"trip_id\": \"5l000G75410A\", \"trip_short_name\": \"G7541\", \"trip_headsign\": \"台州西\", \"shape_id\": \"shape-2122\", \"raw_json\": \"{\\\"route_id\\\": \\\"G7541\\\", \\\"service_id\\\": \\\"S93\\\", \\\"trip_id\\\": \\\"5l000G75410A\\\", \\\"trip_short_name\\\": \\\"G7541\\\", \\\"trip_headsign\\\": \\\"台州西\\\", \\\"shape_id\\\": \\\"shape-2122\\\"}\", \"origin_arrival\": \"05:52:00\", \"origin_departure\": \"05:52:00\", \"destination_arrival\": \"06:51:00\", \"destination_departure\": \"06:55:00\", \"origin_sequence\": 1, \"destination_sequence\": 4, \"shape_status\": \"AVAILABLE\", \"departure_at\": \"2026-11-05T05:52:00+08:00\", \"arrival_at\": \"2026-11-05T06:51:00+08:00\"}, {\"route_id\": \"G1321\", \"service_id\": \"S93\", \"trip_id\": \"5l000G132108\", \"trip_short_name\": \"G1321\", \"trip_headsign\": \"六盘水\", \"shape_id\": \"shape-2034\", \"raw_json\": \"{\\\"route_id\\\": \\\"G1321\\\", \\\"service_id\\\": \\\"S93\\\", \\\"trip_id\\\": \\\"5l000G132108\\\", \\\"trip_short_name\\\": \\\"G1321\\\", \\\"trip_headsign\\\": \\\"六盘水\\\", \\\"shape_id\\\": \\\"shape-2034\\\"}\", \"origin_arrival\": \"06:07:00\", \"origin_departure\": \"06:07:00\", \"destination_arrival\": \"06:56:00\", \"destination_departure\": \"07:00:00\", \"origin_sequence\": 1, \"destination_sequence\": 2, \"shape_status\": \"AVAILABLE\", \"departure_at\": \"2026-11-05T06:07:00+08:00\", \"arrival_at\": \"2026-11-05T06:56:00+08:00\"}, {\"route_id\": \"G7331\", \"service_id\": \"S93\", \"trip_id\": \"5l000G733102\", \"trip_short_name\": \"G7331\", \"trip_headsign\": \"瑞安\", \"shape_id\": \"shape-2110\", \"raw_json\": \"{\\\"route_id\\\": \\\"G7331\\\", \\\"service_id\\\": \\\"S93\\\", \\\"trip_id\\\": \\\"5l000G733102\\\", \\\"trip_short_name\\\": \\\"G7331\\\", \\\"trip_headsign\\\": \\\"瑞安\\\", \\\"shape_id\\\": \\\"shape-2110\\\"}\", \"origin_arrival\": \"06:13:00\", \"origin_departure\": \"06:13:00\", \"destination_arrival\": \"07:07:00\", \"destination_departure\": \"07:11:00\", \"origin_sequence\": 1, \"destination_sequence\": 3, \"shape_status\": \"AVAILABLE\", \"departure_at\": \"2026-11-05T06:13:00+08:00\", \"arrival_at\": \"2026-11-05T07:07:00+08:00\"}, {\"route_id\": \"G7333\", \"service_id\": \"S93\", \"trip_id\": \"5l000G733303\", \"trip_short_name\": \"G7333\", \"trip_headsign\": \"温州南\", \"shape_id\": \"shape-2105\", \"raw_json\": \"{\\\"route_id\\\": \\\"G7333\\\", \\\"service_id\\\": \\\"S93\\\", \\\"trip_id\\\": \\\"5l000G733303\\\", \\\"trip_short_name\\\": \\\"G7333\\\", \\\"trip_headsign\\\": \\\"温州南\\\", \\\"shape_id\\\": \\\"shape-2105\\\"}\", \"origin_arrival\": \"06:20:00\", \"origin_departure\": \"06:20:00\", \"destination_arrival\": \"07:21:00\", \"destination_departure\": \"07:23:00\", \"origin_sequence\": 1, \"destination_sequence\": 4, \"shape_status\": \"AVAILABLE\", \"departure_at\": \"2026-11-05T06:20:00+08:00\", \"arrival_at\": \"2026-11-05T07:21:00+08:00\"}, {\"route_id\": \"G7363\", \"service_id\": \"S93\", \"trip_id\": \"5l000G736302\", \"trip_short_name\": \"G7363\", \"trip_headsign\": \"温岭\", \"shape_id\": \"\", \"raw_json\": \"{\\\"route_id\\\": \\\"G7363\\\", \\\"service_id\\\": \\\"S93\\\", \\\"trip_id\\\": \\\"5l000G736302\\\", \\\"trip_short_name\\\": \\\"G7363\\\", \\\"trip_headsign\\\": \\\"温岭\\\", \\\"shape_id\\\": \\\"\\\"}\", \"origin_arrival\": \"06:24:00\", \"origin_departure\": \"06:24:00\", \"destination_arrival\": \"07:26:00\", \"destination_departure\": \"07:33:00\", \"origin_sequence\": 1, \"destination_sequence\": 4, \"shape_status\": \"SHAPE_UNAVAILABLE\", \"departure_at\": \"2026-11-05T06:24:00+08:00\", \"arrival_at\": \"2026-11-05T07:26:00+08:00\"}], \"data_source\": \"CHINESE_RAILWAY_GTFS\", \"data_type\": \"STATIC_SCHEDULE\", \"real_time\": false, \"availability_available\": false, \"fare_available\": false, \"booking_available\": false, \"availability\": \"UNKNOWN\", \"fare\": null, \"data_version\": \"20261101\", \"source_sha256\": \"3877dbc0ebc0392afef4b111dd9ba837c97eb4aa45788542919be53d52a12030\", \"rights_status\": \"RIGHTS_REVIEW_PENDING\", \"usage_scope\": \"LOCAL_DEMO_ONLY\", \"service_date\": \"20261105\", \"next_cursor\": \"5\", \"source\": \"GTFS_SQLITE\", \"total_count\": 109, \"returned_count\": 5, \"limit\": 5, \"has_more\": true, \"query_parameters\": {\"service_date\": \"2026-11-05\", \"origin_stop_id\": \"AOH\", \"destination_stop_id\": \"HGH\", \"train_no\": null, \"cursor\": null}, \"dataset_version\": \"gtfs-20261101-063437\", \"database_sha256\": \"e32f0cd41b45532ea7aedf4c72a6ffc24f6eaa23c042ee8f35cb02aa50735c69\", \"simulation_clock\": {\"clock_id\": \"3c2fc438934c45f8820a77b60d3aa347\", \"mode\": \"PAUSED\", \"simulation\": true, \"timezone\": \"Asia/Shanghai\", \"now\": \"2026-10-17T00:00:00+08:00\", \"anchor\": \"2026-10-16T16:00:00+00:00\", \"revision\": 0, \"dataset_version\": \"gtfs-20261101-063437\"}}}",
+              "request_id": null,
+              "created_at": "2026-10-16T16:00:00+00:00"
+            },
+            {
+              "event_id": "d2917036307f4d6fb63c1d7350c334f2",
+              "aggregate_type": "page",
+              "aggregate_id": "web-20ff441656b1",
+              "event_type": "railway_create_order",
+              "from_state": null,
+              "to_state": null,
+              "detail_json": "{\"source\": \"page_operation\", \"ok\": true, \"elapsed_ms\": 35, \"args\": {\"tool_arguments\": {\"quote_id\": \"Q4353aa06ee864bb7b3ad3d22b66e7321\", \"passengers\": [\"合成甲\", \"合成乙\", \"合成丙\"], \"contact\": \"13800000001\"}, \"tool_call_id\": \"page-call-e3e0d30497b04e9aad643f9ddb10cc4d\", \"operation_id\": \"page-b77abd4772d0411e8fb967239f926924\", \"scenario_id\": \"railway-demo\"}, \"result\": {\"proposal_id\": \"P61f11cfeeca24f219e4b8cabac7b3db3\", \"status\": \"CONFIRMATION_REQUIRED\", \"expires_at\": \"2026-10-16T16:05:00+00:00\", \"simulation\": true, \"preview\": {\"total_fen\": 9000, \"passengers\": 3}, \"simulation_clock\": {\"clock_id\": \"3c2fc438934c45f8820a77b60d3aa347\", \"mode\": \"PAUSED\", \"simulation\": true, \"timezone\": \"Asia/Shanghai\", \"now\": \"2026-10-17T00:00:00+08:00\", \"anchor\": \"2026-10-16T16:00:00+00:00\", \"revision\": 0, \"dataset_version\": \"gtfs-20261101-063437\"}}}",
+              "request_id": null,
+              "created_at": "2026-10-16T16:00:00+00:00"
+            },
+            {
+              "event_id": "02cc95d2eb804a11b0c068ebea4b761a",
+              "aggregate_type": "page",
+              "aggregate_id": "web-20ff441656b1",
+              "event_type": "UI_CONFIRMED_PROPOSAL",
+              "from_state": null,
+              "to_state": null,
+              "detail_json": "{\"source\": \"page_operation\", \"ok\": false, \"elapsed_ms\": 0, \"args\": {\"proposal_id\": \"P61f11cfeeca24f219e4b8cabac7b3db3\", \"operation_id\": \"page-779792282f7247578f18d3dcb7ef7a47\", \"tool_call_id\": \"page-call-e3e0d30497b04e9aad643f9ddb10cc4d\", \"before\": null, \"scenario_id\": \"railway-demo\"}, \"result\": {\"status\": \"PROPOSAL_EXPIRED\", \"simulation\": true, \"after\": null}}",
+              "request_id": null,
+              "created_at": "2026-10-16T16:15:01+00:00"
+            }
+          ],
+          "updated_at": "2026-10-16T16:15:01+00:00",
+          "state_sha256": "ededc5ac02588483de4384f484c1989c44baf234d528aabfbb74307294569883"
+        },
+        "db": {
+          "v39_orders": [],
+          "v39_order_items": [],
+          "v39_holds": [],
+          "v39_transactions": [],
+          "v39_inventory_segments": [
+            {
+              "scenario_id": "railway-demo",
+              "dataset_version": "gtfs-20261101-063437",
+              "trip_id": "5l000G75410A",
+              "service_date": "2026-11-05",
+              "seat_class": "SECOND",
+              "segment_index": 0,
+              "from_stop_id": "AOH",
+              "from_sequence": 1,
+              "from_position": 0,
+              "to_stop_id": "TCH",
+              "to_sequence": 2,
+              "to_position": 1,
+              "capacity": 20,
+              "held": 0,
+              "sold": 0,
+              "version": 0,
+              "updated_at": "2026-10-16T16:00:00+00:00"
+            },
+            {
+              "scenario_id": "railway-demo",
+              "dataset_version": "gtfs-20261101-063437",
+              "trip_id": "5l000G75410A",
+              "service_date": "2026-11-05",
+              "seat_class": "SECOND",
+              "segment_index": 1,
+              "from_stop_id": "TCH",
+              "from_sequence": 2,
+              "from_position": 1,
+              "to_stop_id": "EVH",
+              "to_sequence": 3,
+              "to_position": 2,
+              "capacity": 20,
+              "held": 0,
+              "sold": 0,
+              "version": 0,
+              "updated_at": "2026-10-16T16:00:00+00:00"
+            },
+            {
+              "scenario_id": "railway-demo",
+              "dataset_version": "gtfs-20261101-063437",
+              "trip_id": "5l000G75410A",
+              "service_date": "2026-11-05",
+              "seat_class": "SECOND",
+              "segment_index": 2,
+              "from_stop_id": "EVH",
+              "from_sequence": 3,
+              "from_position": 2,
+              "to_stop_id": "HGH",
+              "to_sequence": 4,
+              "to_position": 3,
+              "capacity": 20,
+              "held": 0,
+              "sold": 0,
+              "version": 0,
+              "updated_at": "2026-10-16T16:00:00+00:00"
+            }
+          ],
+          "v39_inventory_events": [],
+          "v39_refund_requests": [],
+          "v39_change_requests": [],
+          "v39_proposals": [
+            {
+              "proposal_id": "P61f11cfeeca24f219e4b8cabac7b3db3",
+              "session_id": "web-20ff441656b1",
+              "owner_phone": "13800000001",
+              "action": "CREATE_ORDER",
+              "aggregate_id": "Q4353aa06ee864bb7b3ad3d22b66e7321",
+              "quote_id": "Q4353aa06ee864bb7b3ad3d22b66e7321",
+              "order_id": null,
+              "scenario_id": "railway-demo",
+              "execution_mode": "developer_custom",
+              "config_hash": "1756a931fe3987bfade919b0f7f413809303ac31a4c63bdd02d467955c39dddc",
+              "write_policy_hash": "0e5bb2d30cc05b6a13f772307e807f82766892b7435b29849ee84557bb10d1b9",
+              "feature_flag": "1",
+              "baseline_id": "ticket-agent-v37-baseline-1",
+              "provider": "mock",
+              "tool_whitelist_hash": "b66a0a3c9203dcbf5a47d7599a5eaa57b79a5dd19458a57f5f50c5c5f1a0f5f9",
+              "config_revision": 0,
+              "confirmation_owner_worker": "confirmation",
+              "confirmation_boot_epoch": "8c3d1cf744004c578cb31e4ccb03dd97",
+              "idempotency_key": "P61f11cfeeca24f219e4b8cabac7b3db3",
+              "request_hash": "01b2dcd9adaf1138c134f805721497c6c8c6ecd17ed82431e01b4825dfa165e3",
+              "payload_json": "{\"quote_id\": \"Q4353aa06ee864bb7b3ad3d22b66e7321\", \"passengers\": [\"合成甲\", \"合成乙\", \"合成丙\"], \"contact\": \"13800000001\", \"_display_preview\": {\"total_fen\": 9000, \"passengers\": 3}}",
+              "state": "EXPIRED",
+              "expires_at": "2026-10-16T16:05:00+00:00",
+              "created_at": "2026-10-16T16:00:00+00:00",
+              "consumed_at": null
+            }
+          ],
+          "v39_idempotency": [],
+          "v39_refund_items": [],
+          "v39_hold_segments": [],
+          "v39_transaction_allocations": []
+        },
+        "metrics": {
+          "order_count": 0,
+          "hold_count": 0,
+          "transaction_count": 0,
+          "held": 0,
+          "sold": 0,
+          "foreign_keys_ok": true,
+          "inventory_conserved": true,
+          "money_conserved": true,
+          "ui_consistent": true
+        },
+        "result": {
+          "status": "PROPOSAL_EXPIRED",
+          "simulation": true,
+          "error": "DATABASE_RECEIPT_NOT_VERIFIED"
+        }
+      },
+      "trace_id": "3c2ed16fe0784144b115a0552dd3a6bb-5",
+      "executed_tools": [],
+      "executed": false,
+      "verified": true
+    }
+  ],
+  "started_at": 1794234718.1876864,
+  "evidence_root": "D:\\codexproject\\ticket-agent\\artifacts\\runtime\\v310-ai-executions\\3c2ed16fe0784144b115a0552dd3a6bb",
+  "agent_invoked": false,
+  "finished_at": 1794234719.1839573,
+  "duration_s": 0.9962708950042725
+}

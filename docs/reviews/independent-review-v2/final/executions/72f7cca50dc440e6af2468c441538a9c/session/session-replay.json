@@ -1,0 +1,83 @@
+{
+  "schema": "ticket-session-replay/1",
+  "session_id": "web-2f21f352a7d9",
+  "settings": {
+    "mode": "user",
+    "engine": "legacy",
+    "live": false,
+    "live_provider": "deepseek",
+    "live_model": null,
+    "case_id": null,
+    "rag_mode": null,
+    "interactive": false,
+    "full_tools": true,
+    "mutations": {}
+  },
+  "run_ids": [],
+  "history_run_ids": [],
+  "operations": [
+    {
+      "request_id": "page-365c5a449a454a5f8567f528b7b39671",
+      "input_hash": "eeaf7b020b2d5cbf68c9711afc68e7c56d63bf9a6a10530cb567b28b19bb0e3e",
+      "run_id": "page-365c5a449a454a5f8567f528b7b39671",
+      "session_id": "web-2f21f352a7d9",
+      "operation": "生成本地操作确认卡",
+      "entry": "page_business",
+      "provider": "mock",
+      "model": null,
+      "status": "BLOCKED",
+      "started_at": "2026-11-09T14:31:54.181456+00:00",
+      "ended_at": "2026-11-09T14:31:54.197984+00:00",
+      "tools": [
+        {
+          "tool": "railway_query_trips",
+          "call_id": "page-call-fb67d0aebaa64297b5c78f0b7413ccf1",
+          "status": "failed",
+          "executed": false
+        }
+      ],
+      "error": {
+        "category": "INVALID_RAILWAY_ARGUMENTS"
+      },
+      "agent_started": false,
+      "stage": "本地操作未完成",
+      "tokens": null,
+      "kind": "page_business",
+      "order_id": null,
+      "result_summary": "UNKNOWN",
+      "business_operation_id": "page-365c5a449a454a5f8567f528b7b39671"
+    }
+  ],
+  "railway_state_reference": {
+    "path": "D:\\codexproject\\ticket-agent\\artifacts\\runtime\\v310-ai-executions\\72f7cca50dc440e6af2468c441538a9c\\simulation.sqlite",
+    "scenario_id": "railway-demo",
+    "clock_path": "D:\\codexproject\\ticket-agent\\artifacts\\runtime\\v310-ai-executions\\72f7cca50dc440e6af2468c441538a9c\\simulation-clock.sqlite",
+    "clock_id": "b2f1c8552407469ba28e5f0db60e319a"
+  },
+  "selected_railway_trip": null,
+  "business_receipts": [
+    {
+      "operation_id": "page-365c5a449a454a5f8567f528b7b39671",
+      "session_id": "web-2f21f352a7d9",
+      "order_id": null,
+      "proposal_id": null,
+      "tool_call_id": "page-call-fb67d0aebaa64297b5c78f0b7413ccf1",
+      "status": "BLOCKED",
+      "actual_result": {
+        "error": "INVALID_RAILWAY_ARGUMENTS",
+        "simulation": true
+      },
+      "database_verified": false,
+      "before": null,
+      "after": null,
+      "action": null,
+      "approved": null,
+      "source_run_id": null,
+      "started_at": "2026-11-09T14:31:54.181456+00:00",
+      "finished_at": "2026-11-09T14:31:54.197984+00:00",
+      "source": "trusted_page_operation",
+      "model_called": false
+    }
+  ],
+  "updated_at": "2026-11-09T14:31:54.200049+00:00"
+}

@@ -1,0 +1,91 @@
+{
+  "schema": "ticket-session-replay/1",
+  "session_id": "web-e6426d89b382",
+  "settings": {
+    "mode": "user",
+    "engine": "legacy",
+    "live": false,
+    "live_provider": "deepseek",
+    "live_model": null,
+    "case_id": null,
+    "rag_mode": null,
+    "interactive": false,
+    "full_tools": true,
+    "mutations": {}
+  },
+  "run_ids": [
+    "d13bc377b18d4e3c8a6aea1dd0ccfae2",
+    "b07556a7c9fb4079a59853838edefdeb"
+  ],
+  "history_run_ids": [
+    "d13bc377b18d4e3c8a6aea1dd0ccfae2",
+    "b07556a7c9fb4079a59853838edefdeb"
+  ],
+  "operations": [
+    {
+      "request_id": "4b90a11b1bb4423495978ed6a717bba3",
+      "input_hash": "570bc4809ff759389078bfb4ade13204944196f45d8cc99baef1048b7b97dcd5",
+      "run_id": "d13bc377b18d4e3c8a6aea1dd0ccfae2",
+      "session_id": "web-e6426d89b382",
+      "operation": "查询2026-11-05 上海虹桥到杭州东的铁路车次；出发站编码AOH，到达站编码HGH。",
+      "entry": "chat",
+      "provider": "mock",
+      "model": "mock-offline",
+      "status": "SUCCEEDED",
+      "started_at": "2026-11-09T14:32:05.174038+00:00",
+      "ended_at": "2026-11-09T14:32:05.334838+00:00",
+      "tools": [
+        {
+          "tool": "railway_query_trips",
+          "call_id": null,
+          "status": "succeeded"
+        }
+      ],
+      "error": null,
+      "agent_started": true,
+      "stage": "本轮处理结束",
+      "tokens": {
+        "prompt": 0,
+        "completion": 0
+      },
+      "result_summary": "静态数据查询结果：FOUND，返回 20 条记录。 例如：G7541 2026-11-05T05:52:00+08:00→2026-11-05T06:51:00+08:00；G1321 2026-11-05T06:07:00+08:00→2026-11-05T06:56:00+08:00；G7331 2026-11-05T06:13:00+08:00→2026-11-05T07:07:00+08:00。静态时刻不代表实时开行、余票或官方票价，请在列表核对。"
+    },
+    {
+      "request_id": "e501db732aea4902a0354646d0e6f59d",
+      "input_hash": "0622c7a97cd84b79f348ee2b052f16da711276cddeb981e43e83ddb44320d803",
+      "run_id": "b07556a7c9fb4079a59853838edefdeb",
+      "session_id": "web-e6426d89b382",
+      "operation": "继续查询2026-11-05 上海虹桥到杭州东的铁路车次；出发站编码AOH，到达站编码HGH。",
+      "entry": "chat",
+      "provider": "mock",
+      "model": "mock-offline",
+      "status": "SUCCEEDED",
+      "started_at": "2026-11-09T14:32:05.386535+00:00",
+      "ended_at": "2026-11-09T14:32:05.549996+00:00",
+      "tools": [
+        {
+          "tool": "railway_query_trips",
+          "call_id": null,
+          "status": "succeeded"
+        }
+      ],
+      "error": null,
+      "agent_started": true,
+      "stage": "本轮处理结束",
+      "tokens": {
+        "prompt": 0,
+        "completion": 0
+      },
+      "result_summary": "静态数据查询结果：FOUND，返回 20 条记录。 例如：G7541 2026-11-05T05:52:00+08:00→2026-11-05T06:51:00+08:00；G1321 2026-11-05T06:07:00+08:00→2026-11-05T06:56:00+08:00；G7331 2026-11-05T06:13:00+08:00→2026-11-05T07:07:00+08:00。静态时刻不代表实时开行、余票或官方票价，请在列表核对。"
+    }
+  ],
+  "railway_state_reference": {
+    "path": "D:\\codexproject\\ticket-agent\\artifacts\\runtime\\v310-ai-executions\\5fa066158c50490ca4d42aaf71cd032f\\simulation.sqlite",
+    "scenario_id": "railway-demo",
+    "clock_path": "D:\\codexproject\\ticket-agent\\artifacts\\runtime\\v310-ai-executions\\5fa066158c50490ca4d42aaf71cd032f\\simulation-clock.sqlite",
+    "clock_id": "5b24e0627ab84d7ab548d535772d4bd5"
+  },
+  "selected_railway_trip": null,
+  "business_receipts": [],
+  "updated_at": "2026-11-09T14:32:05.561943+00:00"
+}

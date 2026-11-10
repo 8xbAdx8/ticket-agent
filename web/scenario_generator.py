@@ -33,7 +33,7 @@ def page():
     if budget_path.is_file():
         from target.acceptance_budget import Batch
         budget = Batch(budget_path).snapshot()
-        st.caption(f"生成批次剩余 {budget['remaining_http_requests']} 个请求 / {budget['remaining_tokens']} Token，费用 UNKNOWN")
+        st.caption(f"生成批次剩余 {budget['remaining_http_requests']} 个请求，累计 Token 不设硬上限，费用 UNKNOWN")
         if budget['warning']:
             st.warning('当前生成批次已达到Token预警线。')
     with st.expander('生成测试场景', expanded=True):
@@ -43,9 +43,11 @@ def page():
             difficulty = st.selectbox('测试难度', ['easy', 'medium', 'hard'], index=1)
             count = st.number_input('生成数量', min_value=1, max_value=5, value=1)
             provider = st.selectbox('生成模型', ['Mock', 'deepseek', 'bailian'])
+            adapter_label = st.selectbox('生成目标适配器', ['V3.10 DSL', 'Legacy P2'])
+            adapter = 'v310' if adapter_label == 'V3.10 DSL' else 'p2'
             constraints = st.text_area('高级生成约束', max_chars=2000)
             consent = st.checkbox('授权本次生成调用所选在线模型并产生费用')
-            st.caption('单次最多1个HTTP请求、4096输出Token、零自动重试。在线共享持久生成批次上限50请求/400000Token，320000预警。费用未知时记录UNKNOWN。Mock只验证流程，生成内容是固定示例。')
+            st.caption('V3.10 DSL 生成真实 railway_* 可执行步骤；Legacy P2 保留兼容。单次最多1个HTTP请求、4096输出Token、零自动重试。在线共享持久批次上限50请求，累计Token无硬上限、320000预警。费用未知时记录UNKNOWN。Mock只验证流程，不冒充AI生成。')
             generate = st.form_submit_button('生成候选场景', type='primary')
         if generate:
             if provider != 'Mock' and not consent:
@@ -53,7 +55,7 @@ def page():
             else:
                 try:
                     with st.spinner('正在生成并保存候选'):
-                        result = store.generate(objective, category, difficulty, int(count), provider, constraints)
+                        result = store.generate(objective, category, difficulty, int(count), provider, constraints, adapter=adapter)
                     if result['status'] == 'SUCCEEDED':
                         st.success('候选已保存，请查看校验结果并人工审核。')
                     else:
@@ -111,9 +113,11 @@ def page():
             except (ValueError, TypeError) as exc:
                 st.error(str(exc))
     adapter_name = 'V3.10确定性集成' if case.get('execution_adapter') == 'v310' else 'Legacy Mock'
-    st.caption('执行使用所选适配器的独立沙箱。Live Agent端到端验收尚未启用。')
+    st.caption('以下为确定性适配器执行，与 V3.11 原 Agent 验收分别记录。')
     if st.button(f'独立执行已批准场景（{adapter_name}）', disabled=row['status'] != 'APPROVED'):
         with st.spinner('正在独立沙箱执行'):
             st.json(store.run(identity, row['revision']))
     with st.expander('执行记录与 Trace'):
         st.json([r for r in runs if r['case_id'] == identity])
+    from web.scenario_live_desk import desk
+    desk(store,row,actor)

@@ -1,0 +1,82 @@
+[
+  {
+    "provider": "deepseek",
+    "category": "工具调用",
+    "status": "FAILED",
+    "cases": [],
+    "error": "request_payload_limit",
+    "usage": null
+  },
+  {
+    "provider": "bailian",
+    "category": "工具调用",
+    "status": "FAILED",
+    "cases": [],
+    "error": "request_payload_limit",
+    "usage": null
+  },
+  {
+    "provider": "deepseek",
+    "category": "多轮对话",
+    "status": "FAILED",
+    "cases": [],
+    "error": "request_payload_limit",
+    "usage": null
+  },
+  {
+    "provider": "bailian",
+    "category": "多轮对话",
+    "status": "FAILED",
+    "cases": [],
+    "error": "request_payload_limit",
+    "usage": null
+  },
+  {
+    "provider": "deepseek",
+    "category": "RAG 检索",
+    "status": "FAILED",
+    "cases": [],
+    "error": "request_payload_limit",
+    "usage": null
+  },
+  {
+    "provider": "bailian",
+    "category": "RAG 检索",
+    "status": "FAILED",
+    "cases": [],
+    "error": "request_payload_limit",
+    "usage": null
+  },
+  {
+    "provider": "deepseek",
+    "category": "业务状态一致性",
+    "status": "FAILED",
+    "cases": [],
+    "error": "request_payload_limit",
+    "usage": null
+  },
+  {
+    "provider": "bailian",
+    "category": "业务状态一致性",
+    "status": "FAILED",
+    "cases": [],
+    "error": "request_payload_limit",
+    "usage": null
+  },
+  {
+    "provider": "deepseek",
+    "category": "异常处理",
+    "status": "FAILED",
+    "cases": [],
+    "error": "request_payload_limit",
+    "usage": null
+  },
+  {
+    "provider": "bailian",
+    "category": "异常处理",
+    "status": "FAILED",
+    "cases": [],
+    "error": "request_payload_limit",
+    "usage": null
+  }
+]

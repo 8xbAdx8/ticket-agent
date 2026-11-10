@@ -1,0 +1,34 @@
+[
+  {
+    "provider": "deepseek",
+    "category": "工具调用",
+    "status": "SUCCEEDED",
+    "cases": [
+      "AI-GEN-92ee34311689431f",
+      "AI-GEN-4c0da6e72ace4357",
+      "AI-GEN-c9f2e91ce69b45fa",
+      "AI-GEN-5bffae9560474378"
+    ],
+    "error": null,
+    "usage": {
+      "prompt": 4973,
+      "completion": 675
+    }
+  },
+  {
+    "provider": "bailian",
+    "category": "工具调用",
+    "status": "SUCCEEDED",
+    "cases": [
+      "AI-GEN-98dfd6d5ea9e457a",
+      "AI-GEN-df3fef14dd8a4a07",
+      "AI-GEN-6c0ddedeb1c543d4",
+      "AI-GEN-db461ea7707c48ae"
+    ],
+    "error": null,
+    "usage": {
+      "prompt": 5081,
+      "completion": 547
+    }
+  }
+]

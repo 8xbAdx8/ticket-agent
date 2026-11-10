@@ -27,7 +27,7 @@ def test_fifty_http_across_providers_and_reopen_cannot_reset(batch):
     assert reopened.snapshot()['cost'] is None
 
 
-def test_token_warning_and_hard_reservations(batch):
+def test_token_warning_is_observability_not_a_hard_cap(batch):
     body,raw=payload(30000)
     for n in range(11):
         uid=str(n);batch.reserve(uid,'deepseek',body,raw);batch.settle(uid,dict(prompt_tokens=30000,completion_tokens=500),'response_received')
@@ -35,7 +35,11 @@ def test_token_warning_and_hard_reservations(batch):
     batch.reserve('unknown','bailian',body,raw);batch.settle('unknown',None,'timeout_outcome_unknown')
     state=batch.snapshot();assert state['observed_tokens'] is None and state['unresolved_request_ids']==['unknown']
     assert state['charged_or_reserved_tokens']>335500
-    with pytest.raises(DeepSeekError,match='acceptance_token_budget_exhausted'):batch.reserve('over','bailian',body,raw)
+    # New policy: provider quotas and HTTP admission remain, but project-local
+    # cumulative token accounting must not block a valid request.
+    bound=batch.reserve('over','bailian',body,raw);assert bound>0
+    assert batch.snapshot()['remaining_tokens'] is None
+    assert batch.snapshot()['warning']
 
 
 def test_output_limit_and_unknown_usage_never_zero(batch):

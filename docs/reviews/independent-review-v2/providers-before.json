@@ -1,0 +1,14 @@
+{
+  "deepseek": {
+    "provider": "deepseek",
+    "model": "deepseek-flash",
+    "base_url": "https://api.deepseek.com",
+    "configured": true
+  },
+  "bailian": {
+    "provider": "bailian",
+    "model": "qwen3.8-flash",
+    "base_url": "https://cn-beijing.maas.qwencloudapi.com/compatible-mode/v1",
+    "configured": true
+  }
+}
