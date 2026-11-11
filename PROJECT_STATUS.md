@@ -1,5 +1,14 @@
 ﻿# Ticket Agent 项目状态
 
+> **2026-11-11 产品 QA 真实模型补测**。PARTIAL。独立批次 12/12，DeepSeek 与 Qwen 各 6 次，81,877 Token，费用 UNKNOWN，零自动重试。两家真实 Agent 均由原页面生成建单提案并完成自动定位、用户确认、独立模拟支付和 SQLite Oracle。生成三条候选均保留待审核，最终质量未通过。修复 QA-09 的经停断言路径示例和审核漏检，DeepSeek 复验使用正确路径，因新生成的 flag 参数和站数问题仍不能批准。修复专项 76/0/0，8457 项保护资产零差异。报告 `docs/reviews/Ticket-Agent-Product-QA-Live-20261111.md`，证据 `artifacts/runtime/v310-v311-qa-product-live-20261111/`。
+
+> **2026-11-11 产品实际操作与缺陷检测**。PARTIAL。已修复 8 项缺陷，涵盖候选和执行统计、编辑及审核、DSL 校验、拒绝提案 Oracle、终止订单乘客文案和提案来源 Trace。Edge 实际验证离线 Agent 建单、支付、部分退款、改签及最终退款，SQLite 守恒通过。完整回归 2023/11/1，另 199 个子测试通过，失败及跳过 ID 与历史一致。最后的审计关联改动以最终专项 580/0/0 及浏览器复验。独立真实 API 批次未定额度，本轮 0 请求、0 Token。报告 `docs/reviews/Ticket-Agent-Product-QA-20261111.md`，证据 `artifacts/runtime/v310-v311-qa-product-20261111/`。未提交推送。
+
+> **2026-11-11 建单导航与数据库回执真实诊断**：PARTIAL。历史原件确认根因是CONFIRMATION_SECRET_LOST被通用DATABASE_RECEIPT_NOT_VERIFIED覆盖；历史订单/hold/confirm回执均0，仅提案/token失效标记存在。已补真实提案右栏定位、摘要、FAILED/UNKNOWN/SUCCEEDED/PARTIAL分类、提交后只读核验和不确定结果防重复写，保留失效Secret与只读恢复边界。受影响模块438/0/0另2子测试（新增20）；完整冻结2012/11/1，旧失败/Skip逐ID无增减，随后经停dict防护及UNKNOWN细分以最终专项复验。真实批次UI-RECEIPT-REPRO-20261111已耗尽8/8 HTTP（DS4/Qwen4）、42281Token、费用UNKNOWN；两模型真实建单提案及可信用户建单/支付通过SQLite Oracle，各1订单1PAYMENT。Qwen最终模型文字被额度拦截，支付提案来自原页面；不混入模型成绩。同worker诊断继续不冒充无中断E2E；产品刷新仅只读展示有效提案，不恢复授权。真实浏览器有效检查各13项；最终UI离线四规格24/0，PageError0。5590保护项零差异、旧账本及GTFS不变。报告`docs/reviews/Ticket-Agent-UI-Receipt-Live-Diagnosis-20261111.md`，离线证据`artifacts/runtime/v310-ui-receipt-repro-20261111/`，Live证据`artifacts/runtime/v310-v311-r1-ui-receipt-20261111/`。HEAD8a6ccf36688c9cab803d46ba0bbf652290132e19，未提交推送，正式103/Bridge仍BLOCKED。
+
+
+> **2026-11-11 用户工作空间等待动效增量**：已接入真实模型/工具事件的三点等待、活动步骤/工具状态、完成淡入与忙碌发送按钮，复用原刷新循环，无业务/权限/Trace契约变更。相关前端115/0/0另6子测试；Edge八规格126/0、27截图，PageError0，阻断字体Console24/Network24；减少动态效果、手机、超时、工具失败、确认等待及刷新恢复均由隔离SDK验证。真实API0，完整项目回归NOT_RUN，不替代历史成绩。原百炼账本8397字节外部追加已获用户确认保留；其余开工保护项无新增差异。V3.11-R1整体仍PARTIAL。报告 `docs/reviews/Ticket-Agent-Request-Motion-Report-20261111.md`；HEAD8a6ccf36688c9cab803d46ba0bbf652290132e19，未提交推送。
+
 > **2026-11-10 Git归档与推送**：用户已明确授权提交推送当前V3.11及后续R1源码、测试和报告，整体仍 **PARTIAL**。提交前离线SDK检查90/0/0（R1 3 + V311 76 + V310 4 +预算7），真实API0。原1971/11/1是V311冻结版本的完整回归，不能扩大为当前R1完整回归成绩；R1完整回归/浏览器/完整独立验收仍未完成。运行数据库、原始Trace、artifacts运行证据和大数据留本机，不加入本次Git提交。实际归档Commit及远端同SHA回执索引：`artifacts/runtime/github-push-20261110-v311-r1/push-receipt.json`；历史报告中的“未提交/推送”保留为当时状态。
 
 > **2026-11-10 V3.11 当前有效增量**：整体 **PARTIAL**。原Agent自然语言验收、独立SQL Oracle、批次预算/3、SDK故障及测试控制台实验区已实现；76专项通过，最终完整1971/11/1另199子测试，旧失败/Skip ID不变。Live39HTTP（DS24/Qwen15）、320985Token、费用UNKNOWN；Qwen已模拟支付，DS已支付并部分退款；改签/新建单两轮被原单轮Token保护截断，未确认待办，不放宽限制。SDK工具11/11、状态6/6、转换10/10，不混算Live9/11、2/6、3/10。Edge主批次八规格64/64，PageError0、外链字体阻断Console24/Network24。5587仅用户批准的预算测试例外，其余5586一致；60个新测试DB快照不变量通过。独立只读子Agent限定CONDITIONAL PASS，非用户验收。正式103/Bridge仍BLOCKED。HEAD2bba4caa379b111aadcefd0369e79cf6259e33e7，暂存空，未提交推送。详情 `docs/reviews/V311-IMPLEMENTATION-REPORT.md`、证据 `artifacts/runtime/v310-v311-20261110-implementation/`。下列旧“当前”描述为原时点历史，以上述最新增量为准。
@@ -1199,8 +1208,29 @@ RAG历史：V3.5.2指标重算无数学错误，原值不改；DeepSeek完整回
 ### 2026-11-10：V3.11-R1 多轮生命周期实施（审批后）
 
 - R1独立批次96/48/24；pilot DeepSeek/Qwen均查询→报价→建单→确认，订单PENDING_PAYMENT 6000分/2人。
-- DeepSeek完成支付+部分退款（refunded2850/fee150/active1）；改签轮未调用railway_query_trips，取消未取得proposal。Qwen完成支付、取消PASS；支付提案轮曾因reply_claims未来时态误报FAIL，已修复并保留原FAIL。
-- Oracle 10个隔离DB invariants全PASS；R1专项3/0/0；V3.11 76/0/0。
+- DeepSeek完成支付+部分退款；改签Prompt已加“先query_trips”约束但Live未复验；取消未取得proposal。Qwen完成支付、取消PASS；支付提案误报已修复，原FAIL保留。
 - 预算86/96（Deep48/48、Qwen38/48），已知636141、未知预留672900，费用UNKNOWN；剩余10仅Qwen，无自动重试。
-- 未完成：完整A-F双模型、拒绝/幂等/故障、浏览器、旧回归、5587全量保护、独立审查。V311-R1 PARTIAL。
-- 证据 artifacts/runtime/v310-v311-r1-20261110/，报告 docs/reviews/V311-R1-IMPLEMENTATION-STATUS.md。未提交推送。
+- 合并V3.11+R1测试82/0/0；R1 6/0/0；V3.11 76/0/0；当前完整回归2176/11/1，失败/Skip与基线逐ID相同；浏览器布局8/8；5587检查：5586一致+1已批准预算例外+1 API账本追加（R1新文件未纳入旧基线）；Oracle 10/10。
+- 未完成：双模型完整Live A-F、完整浏览器业务E2E、历史1971对照重跑、独立审查。V311-R1 PARTIAL。
+- 证据 artifacts/runtime/v310-v311-r1-reconciliation-20261110/，报告 docs/reviews/V311-R1-*.md。未提交推送。
+
+### 2026-11-11：V3.11-R1 补充批次真实完整生命周期
+
+- 补充60/30/30：DeepSeek主链+独立取消PASS；Qwen主链PASS。Qwen独立取消随后用旧R1剩余8次PASS（V39-3ac... CANCELLED，active1/paid0）；旧R1变94/96（Qwen46/48）。
+- Oracle补充6/6+旧11/11全PASS；当前完整回归2176/11/1、合并82/0/0、R1 6/0/0；浏览器布局8/8；5587检查：5586一致+1已批准预算例外+1 API账本追加。
+- 浏览器完整E2E在“无已授权V3.11批次”配置处阻塞，不能写PASS；独立只读子审查已派发但未返回，NOT_RUN/PENDING。
+- V311-R1整体PARTIAL；报告 docs/reviews/V311-R1-FINAL-ACCEPTANCE.md，证据 artifacts/runtime/v310-v311-r1-final-delivery/。未提交推送。
+
+
+### 2026-11-11：等待状态与动态交互
+
+- 新增web/request_motion.py/css及tests/test_request_motion.py；改web/conversation.py、user_copy.py、user_layout.py及状态文档。
+- 真实事件驱动；无start不猜测工具执行，无逐Token事件不模拟打字；减少动态效果静态替代。发送key/会话/确认及业务保持原机制。
+- 新16单测、相关前端最终115/0/0另6子测试；Edge最终126/0八规格。原失败运行保留；本轮完整回归/Live为NOT_RUN。
+- 用户确认百炼账本外部追加8397字节保留。其余5590开工保护项对比见verification.json；未提交/推送。
+- 下一步等待用户体验验收；后端逐Token输出或铁路start事件可另行评估，本轮不修改业务后端。
+
+
+### 2026-11-11 建单导航与数据库回执诊断维护
+
+完成提案位置联动、真实报价摘要、回执只读证明、未知结果和业务不一致的独立展示及防重。修改web/business_actions.py、business_panels.py、conversation.py、request_motion.py、session_store.py、v39_bridge.py；新增web/receipt_verification.py、proposal_navigation.py、target/v39/receipt_proof.py及tests/v39/test_ui_receipt_diagnosis.py；更新target/v39/read_model.py、本状态与独立报告。Service/D9/P01/公开工具/Prompt不改。最终专项438通过、完整冻结2012/11/1，保存全部失败批次，原11失败和Skip未删改。DS/Qwen均真实生成提案并在隔离库完成独立建单/支付与Oracle；共8HTTP、42281Token、成本UNKNOWN。下一步由用户验收；如需补足无中断双模型浏览器链路或可写刷新恢复，须单独处理可信会话恢复设计及新Live额度，不扩大本批次、不恢复失效Secret。不提交或推送。

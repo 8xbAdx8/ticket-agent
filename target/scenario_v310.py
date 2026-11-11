@@ -100,6 +100,8 @@ def validate(case):
             errors.append(f'step {index}: invalid registry tool')
         if step.get('kind') == 'confirm' and (step.get('actor') != 'test_user' or type(step.get('approved')) is not bool or (not isinstance(step.get('proposal'), str))):
             errors.append(f'step {index}: explicit trusted test-user decision required')
+        if 'expected_error' in step and (not isinstance(step['expected_error'], str) or not step['expected_error'].strip()):
+            errors.append(f'step {index}: expected error must be a non-empty string')
         if step.get('kind') == 'advance' and (type(step.get('seconds')) is not int or not 1 <= step['seconds'] <= 86400 * 30):
             errors.append(f'step {index}: invalid clock advance')
         if step.get('kind') == 'chat' and (not isinstance(step.get('message'), str) or len(step['message']) > 10000):
@@ -241,7 +243,11 @@ class V310Adapter:
                                         output = service.confirm(foreign, resolve(step['proposal'], variables)) if kind == 'foreign_confirm' else service.order(foreign, resolve(step['order'], variables))
                                 elif kind == 'confirm':
                                     pid = resolve(step['proposal'], variables)
-                                    before_confirmation=snapshot(session,service,context,effective)
+                                    if step['approved']:
+                                        before_confirmation=snapshot(session,service,context,effective)
+                                    else:
+                                        from target.scenario_business_oracle import snapshot as oracle_snapshot, decline_proof
+                                        before_decline=oracle_snapshot(service.store.path)
                                     if fault=='fake_payment_success' and any(p['proposal_id']==pid and p['action']=='PAY' for p in snapshot(session,service,context,effective)['db']['v39_proposals']):
                                         output={'status':'PAID','order_id':variables['created']['order_id'],'simulation':True}
                                     else:
@@ -289,9 +295,14 @@ class V310Adapter:
                             if step.get('as'):
                                 variables[step['as']] = copy.deepcopy(output)
                             checks = [assert_value(check, view, variables) for check in step['checks']]
-                            if kind=='confirm' and not error and not output.get('error') and output.get('status') in ('PENDING_PAYMENT','PAID','CHANGED','CANCELLED'):
-                                previously_confirmed=any(p['proposal_id']==pid and p['state']=='CONFIRMED' for p in before_confirmation['db']['v39_proposals'])
-                                checks.append(dict(path='committed_confirmation_receipt',ok=replay_proof(pid,output,before_confirmation,view) if previously_confirmed else confirmation_proof(pid,output,view),replay=previously_confirmed))
+                            if kind=='confirm' and not error and not output.get('error'):
+                                if not step['approved']:
+                                    declined=(output.get('status')=='CANCELLED' and output.get('proposal_id')==pid
+                                              and decline_proof(before_decline,oracle_snapshot(service.store.path),pid))
+                                    checks.append(dict(path='committed_decline_receipt',ok=declined))
+                                elif output.get('status') in ('PENDING_PAYMENT','PAID','CHANGED','CANCELLED'):
+                                    previously_confirmed=any(p['proposal_id']==pid and p['state']=='CONFIRMED' for p in before_confirmation['db']['v39_proposals'])
+                                    checks.append(dict(path='committed_confirmation_receipt',ok=replay_proof(pid,output,before_confirmation,view) if previously_confirmed else confirmation_proof(pid,output,view),replay=previously_confirmed))
                             if step.get('expected_error'):
                                 checks.append(dict(path='expected_error', ok=(error or output.get('error')) == step['expected_error'], actual=error or output.get('error'), expected=step['expected_error']))
                             elif error or output.get('error'):

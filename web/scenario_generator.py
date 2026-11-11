@@ -1,7 +1,7 @@
 """Project-local candidate desk, deliberately independent of official scores."""
 import json
 import streamlit as st
-from target.scenario_generator import Store, CATEGORIES, review
+from target.scenario_generator import Store, CATEGORIES
 
 
 def page():
@@ -37,6 +37,7 @@ def page():
         if budget['warning']:
             st.warning('当前生成批次已达到Token预警线。')
     with st.expander('生成测试场景', expanded=True):
+        receipt = st.session_state.pop('ai_scenario_generation_receipt', None)
         with st.form('ai_scenario_generate'):
             objective = st.text_area('测试目标', height=120, max_chars=4000)
             category = st.selectbox('测试领域', list(CATEGORIES))
@@ -56,14 +57,17 @@ def page():
                 try:
                     with st.spinner('正在生成并保存候选'):
                         result = store.generate(objective, category, difficulty, int(count), provider, constraints, adapter=adapter)
-                    if result['status'] == 'SUCCEEDED':
-                        st.success('候选已保存，请查看校验结果并人工审核。')
-                    else:
-                        st.error('生成失败，原因 ' + result['error'])
-                    with st.expander("生成回执与用量"):
-                        st.json(result)
+                    st.session_state['ai_scenario_generation_receipt'] = result
+                    st.rerun()
                 except ValueError as exc:
                     st.error(str(exc))
+        if receipt:
+            if receipt['status'] == 'SUCCEEDED':
+                st.success('候选已保存，请查看校验结果并人工审核。')
+            else:
+                st.error('生成失败，原因 ' + receipt['error'])
+            with st.expander('生成回执与用量'):
+                st.json(receipt)
     rows = store.list()
     st.subheader('候选场景管理')
     search = st.text_input('搜索场景')
@@ -97,15 +101,15 @@ def page():
     case = row['body']
     st.write(case['title'])
     st.caption(f"{identity} · {case['category']} · {case['difficulty']} · {case['risk_level']} · {row['status']} · 版本{row['revision']}")
-    peers = [r['body'] for r in rows if r['id'] != identity]
-    quality = review(case, peers)
-    st.json(quality)
+    st.json(store.review_candidate(case))
     st.json(case)
     with st.expander('编辑候选 JSON'):
         text = st.text_area('场景内容', json.dumps(case, ensure_ascii=False, indent=2), height=300, key='ai_edit_' + identity + '_' + str(row['revision']))
         if st.button('保存新版本', disabled=row['status'] != 'PENDING' or not actor.strip()):
             try:
                 edited = json.loads(text)
+                if not isinstance(edited, dict):
+                    raise ValueError('场景内容必须是 JSON 对象')
                 if edited.get('case_id') != identity:
                     raise ValueError('用例ID不能修改')
                 store.save(edited, actor, row['revision'])
@@ -116,8 +120,11 @@ def page():
     st.caption('以下为确定性适配器执行，与 V3.11 原 Agent 验收分别记录。')
     if st.button(f'独立执行已批准场景（{adapter_name}）', disabled=row['status'] != 'APPROVED'):
         with st.spinner('正在独立沙箱执行'):
-            st.json(store.run(identity, row['revision']))
-    with st.expander('执行记录与 Trace'):
+            store.run(identity, row['revision'])
+        st.session_state['ai_scenario_show_run'] = identity
+        st.rerun()
+    show_run = st.session_state.pop('ai_scenario_show_run', None) == identity
+    with st.expander('执行记录与 Trace', expanded=show_run):
         st.json([r for r in runs if r['case_id'] == identity])
     from web.scenario_live_desk import desk
     desk(store,row,actor)

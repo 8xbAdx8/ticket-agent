@@ -22,7 +22,7 @@ tool 步骤必须写真实 railway_* 工具名（只能来自 packet.v310_contra
 confirm 步骤必须写 proposal:"$别名.proposal_id"、approved:true/false、actor:"test_user"、checks；模型绝不能写 confirmation token。
 每个 check 只能包含 path/op/value，op 只能 eq/ne/ge/len/contains/not_contains；path 只能检查 result./state./metrics./db./ui. 的已提交证据。
 建单/支付/退款/改签必须有对应 confirm 和业务证据，不能只写自然语言。不要生成不存在的工具，不要猜测参数，不要写 Lock/confirmation token。
-Use actual values from packet. For the Shanghai-Hongqiao to Hangzhou-East static fixture use service_date \"2026-11-05\", origin_stop_id \"AOH\", destination_stop_id \"HGH\"; never use <rel_date> macros.\n只使用 packet 中的真实工具、状态和值；不确定就不要生成该场景。\n只读工具实际输出路径示例：railway_query_trips -> result.returned_count/result.total_count/result.data.0.trip_short_name；railway_search_stations -> result.returned_count/result.data.0.stop_id；railway_trip_stops -> result.data/result.data.0.stop_id/result.data.0.stop_name；railway_check_inventory -> result.available/result.status。不要使用 result.stops、result.seat_class 或 db.stations。"""
+Use actual values from packet. For the Shanghai-Hongqiao to Hangzhou-East static fixture use service_date \"2026-11-05\", origin_stop_id \"AOH\", destination_stop_id \"HGH\"; never use <rel_date> macros.\n只使用 packet 中的真实工具、状态和值；不确定就不要生成该场景。\n验证特定车次时，在 railway_query_trips 的 args 中传入 train_no；区间首条记录不一定是指定车次。\n只读工具实际输出路径示例：railway_query_trips -> result.returned_count/result.total_count/result.data.0.trip_short_name；railway_search_stations -> result.returned_count/result.data.0.stop_id；railway_trip_stops 的 FOUND 结果中 result.data 是包含 trip 和 stops 的对象，检查站数或站点使用 result.data.stops、result.data.stops.0.stop_id、result.data.stops.0.stop_name；railway_check_inventory -> result.available/result.status。不要使用 result.stops、result.seat_class 或 db.stations。"""
 
 
 
@@ -103,6 +103,42 @@ def v310_evidence(category):
             'references':base.get('references',[]),
             'instruction':'Use only listed tools and route values. Produce one V310 scenario with at least one business check.'}
 
+def _schema_with_references(schema, *, allow_ref=False):
+    """Allow placeholders in value positions, retaining keys and container rules."""
+    result = dict(schema)
+    if 'properties' in schema:
+        result['properties'] = {
+            name: _schema_with_references(spec, allow_ref=True) for name, spec in schema['properties'].items()
+        }
+    if 'items' in schema:
+        result['items'] = _schema_with_references(schema['items'], allow_ref=True)
+    if allow_ref:
+        return {'anyOf': [result, {'type': 'string', 'pattern': r'^\$[^.]+(?:\.[^.]+)*$'}]}
+    return result
+
+
+def _argument_references(value):
+    if isinstance(value, str) and value.startswith('$'):
+        yield value
+    elif isinstance(value, (dict, list)):
+        for item in value.values() if isinstance(value, dict) else value:
+            yield from _argument_references(item)
+
+
+def _confirms_state(step):
+    for check in step['checks']:
+        path = check['path']
+        if path.startswith(('state.', 'db.', 'ui.')) or path in ('metrics.money_conserved', 'metrics.inventory_conserved'):
+            return True
+        if check['op'] == 'eq' and path == 'result.status':
+            expected = check['value']
+            if step['approved'] and expected in ('PENDING_PAYMENT', 'PAID', 'CHANGED', 'CANCELLED'):
+                return True  # The executor verifies the matching committed receipt.
+            if not step['approved'] and expected == 'CANCELLED':
+                return True  # The executor verifies a proposal-only change.
+    return False
+
+
 def review(case, peers=()):
     from jsonschema import Draft202012Validator
     from target.scenario_quality import SCHEMA
@@ -137,47 +173,65 @@ def review(case, peers=()):
         if case.get('needs_manual_review'):warnings.append('uncertain expectation')
         checks=[check for step in case.get('integration_steps',[]) if isinstance(step,dict) for check in step.get('checks',[]) if isinstance(check,dict)]
         paths=[str(c.get('path','')) for c in checks]
-        from target.v39.registry import TOOLS
+        from target.v39.registry import TOOLS, ACTIONS, StrictValidator
         schemas={t['function']['name']:t['function']['parameters'] for t in TOOLS}
-        for i,step in enumerate(case.get('integration_steps',[])):
-            if not isinstance(step,dict) or step.get('kind')!='tool':continue
+        steps = case['integration_steps']
+        aliases = set()
+        for i, step in enumerate(steps):
+            prior_aliases = aliases.copy()
+            aliases.add('state')
+            if step.get('as'):
+                aliases.add(step['as'])
+            if step['kind'] != 'tool':
+                continue
             name=step.get('tool');args=step.get('args');schema=schemas.get(name)
             if not schema or not isinstance(args,dict):
                 errors.append('unknown or non-object tool args at step '+str(i));continue
-            if '$' not in json.dumps(args):
-                if any(k not in schema.get('properties',{}) for k in args):
-                    errors.append('unknown tool argument at step '+str(i)+': '+name)
-                missing=[k for k in schema.get('required',[]) if k not in args]
-                if missing:
-                    errors.append('missing required argument at step '+str(i)+': '+name)
-                from jsonschema import Draft202012Validator
-                if list(Draft202012Validator({'type':'object','properties':schema.get('properties',{}),'additionalProperties':False}).iter_errors(args)):
-                    errors.append('tool argument type/enum mismatch at step '+str(i)+': '+name)
-            result_paths={
-                'railway_search_stations':('result.status','result.returned_count','result.total_count','result.data','result.has_more','result.next_cursor','result.selection_required'),
-                'railway_query_trips':('result.status','result.returned_count','result.total_count','result.data','result.service_date','result.next_cursor','result.has_more'),
-                'railway_trip_stops':('result.status','result.data','result.service_date'),
-                'railway_check_inventory':('result.status','result.available','result.simulation'),
-            }.get(name,('result.status',))
+            for ref in _argument_references(args):
+                parts = ref[1:].split('.')
+                if parts[0] not in prior_aliases or not all(parts):
+                    errors.append(f'unbound argument reference at step {i}: {ref}')
+            if step.get('expected_error') != 'INVALID_RAILWAY_ARGUMENTS':
+                if not StrictValidator(_schema_with_references(schema)).is_valid(args):
+                    errors.append(f'tool argument schema mismatch at step {i}: {name}')
+            result_paths=('result.status','result.error') + {
+                'railway_search_stations':('result.returned_count','result.total_count','result.data','result.has_more','result.next_cursor','result.selection_required'),
+                'railway_query_trips':('result.returned_count','result.total_count','result.data','result.service_date','result.next_cursor','result.has_more'),
+                'railway_trip_stops':('result.data.trip','result.data.stops','result.service_date'),
+                'railway_check_inventory':('result.available','result.simulation'),
+                'railway_quote_fare':('result.quote','result.items','result.simulation'),
+                'railway_get_order':('result.order_id','result.order_status','result.payment_status','result.refund_status','result.change_status',
+                                     'result.active_item_count','result.total_fen','result.net_paid_fen','result.items','result.transactions','result.refunds','result.changes'),
+            }.get(name,())
             for check in step.get('checks',[]):
                 if not isinstance(check,dict):continue
                 path=str(check.get('path',''))
-                if path.startswith('result.') and not any(path==a or path.startswith(a+'.') or path.startswith(a+'[') for a in result_paths):
+                if name=='railway_trip_stops' and path=='result.data':
+                    if check['op']=='len' and check['value']!=0:
+                        errors.append(f'use result.data.stops for stop counts at step {i}')
+                    continue
+                if name=='railway_trip_stops' and path.startswith('result.data.stops.'):
+                    index=path.split('.')[3]
+                    if not (index.isascii() and index.isdigit()):
+                        errors.append(f'expected stop index at step {i}: {path}')
+                        continue
+                if path.startswith('result.') and not any(path==a or path.startswith(a+'.') for a in result_paths):
                     errors.append('unsupported output path at step '+str(i)+': '+path)
         # A V3.10 test must assert a business fact, not only a structural metric.
         substantive_paths=[p for p in paths if p.startswith(('state.','db.','ui.','result.')) or p in ('metrics.money_conserved','metrics.inventory_conserved')]
         if not substantive_paths:
             errors.append('V310 business assertion required (state/db/ui/result)')
-        steps=case.get('integration_steps',[])
-        for i,step in enumerate(steps):
-            if not isinstance(step,dict) or step.get('kind')!='tool':continue
-            tool=step.get('tool')
-            if tool in ('railway_create_order','railway_pay_order','railway_refund_order','railway_change_order','railway_cancel_order'):
-                later=[x for x in steps[i+1:] if isinstance(x,dict)]
-                if not any(x.get('kind')=='confirm' and x.get('actor')=='test_user' for x in later):
-                    errors.append('trusted test_user confirmation required for '+str(tool))
-                if not any(c for x in later for c in x.get('checks',[]) if isinstance(c,dict) and (str(c.get('path','')).startswith(('state.','db.','ui.')) or c.get('path') in ('metrics.money_conserved','metrics.inventory_conserved'))):
-                    errors.append('business state assertion required after '+str(tool))
+        for i, step in enumerate(steps):
+            tool = step.get('tool')
+            if step['kind'] != 'tool' or not ACTIONS.get(tool) or step.get('expected_error'):
+                continue
+            alias = step.get('as')
+            decisions = [later for later in steps[i+1:] if later['kind']=='confirm'
+                         and alias and later['proposal']==f'${alias}.proposal_id']
+            if not decisions:
+                errors.append('trusted test_user confirmation required for proposal from '+tool)
+            elif not any(_confirms_state(decision) for decision in decisions):
+                errors.append('business state assertion required on confirmation for '+tool)
         # Free-text state expectations are audit notes in V310; deterministic
         # business evidence is carried by step checks, not this legacy field.
         duplicates=[p.get('case_id') for p in peers if digest(p.get('integration_steps'))==digest(case.get('integration_steps'))]
@@ -329,19 +383,27 @@ class Store:
                 if action != 'ARCHIVED' and row['status'] != 'PENDING' and not (action == 'DELETED' and row['status'] == 'REJECTED'):
                     raise ValueError('case immutable after review')
                 case = json.loads(row['body'])
-                if action == 'APPROVED':
-                    peers = [json.loads(r[0]) for r in c.execute("SELECT body FROM cases WHERE id!=? AND status NOT IN ('DELETED','REJECTED')", (identity,))]
-                    # Rejected/invalid candidates are audit evidence, not accepted peers;
-                    # do not let them block a new valid candidate as a duplicate.
-                    peers = [p for p in peers if review(p)['quality'] == 'PASS']
-                    formal = json.loads((ROOT / 'web/datasets/b_v32_20261020/case_catalog.json').read_text(encoding='utf-8-sig'))
-                    peers += [dict(case_id=r.get('id'), turns=[r.get('message') or r.get('name') or '']) for r in formal]
-                    if review(case, peers)['quality'] != 'PASS':
-                        raise ValueError('quality gate requires correction before approval')
+                if action == 'APPROVED' and self._review(c, case)['quality'] != 'PASS':
+                    raise ValueError('quality gate requires correction before approval')
                 case['review_status'] = action
                 case['provenance']['review_status'] = action
                 c.execute('UPDATE cases SET status=?,body=?,revision=revision+1,updated=? WHERE id=?', (action,encode(case), now(), identity))
                 c.execute('INSERT INTO history(case_id,revision,action,actor,body,time) VALUES(?,?,?,?,?,?)', (identity, revision + 1, action, actor, encode(case), now()))
+
+    def review_candidate(self, case):
+        with self.connect() as c:
+            return self._review(c, case)
+
+    def _review(self, connection, case):
+        records = connection.execute(
+            "SELECT body FROM cases WHERE id!=? AND status NOT IN ('DELETED','REJECTED')",
+            (case['case_id'],),
+        )
+        peers = [json.loads(row[0]) for row in records]
+        peers = [p for p in peers if review(p)['quality'] == 'PASS']
+        formal = json.loads((ROOT / 'web/datasets/b_v32_20261020/case_catalog.json').read_text(encoding='utf-8-sig'))
+        peers.extend(dict(case_id=r.get('id'), turns=[r.get('message') or r.get('name') or '']) for r in formal)
+        return review(case, peers)
 
     def run(self, identity, revision):
         from web.runtime import CALL_LOCK
