@@ -57,7 +57,9 @@ def read(path, ctx, *, now=None, order_id=None):
             if receipt:
                 proof=False
                 if order:
-                    if p['action']=='CREATE_ORDER':proof=order['proposal_id']==p['proposal_id']
+                    if p['action']=='CREATE_ORDER':
+                        from target.v39.receipt_proof import creation_proof
+                        proof=creation_proof(order,p)
                     elif p['action']=='PAY':proof=any(t['idempotency_key']==p['proposal_id'] and t['transaction_type']=='PAYMENT' and t['status']=='SUCCEEDED' for t in order['transactions'])
                     elif p['action'] in ('REFUND','CANCEL') and (result or {}).get('refund_id'):
                         proof=any(r['refund_id']==result['refund_id'] and r['status']=='SUCCEEDED' for r in order['refunds'])
@@ -86,8 +88,21 @@ def brief(order):
     return {k:order.get(k) for k in keys}
 
 
+def passenger_summary(order):
+    if order['order_status'] in ('CANCELLED','EXPIRED','PAYMENT_FAILED'):
+        return f"原订单乘客 {order.get('initial_passenger_count',order['active_item_count'])} 人"
+    return f"有效乘客 {order['active_item_count']} 人"
+
+
+def passenger_status_text(order, item):
+    status=item['item_status']
+    if status=='ACTIVE':
+        return {'CANCELLED':'订单已取消','EXPIRED':'订单已过期','PAYMENT_FAILED':'支付失败'}.get(order['order_status'],'有效')
+    return {'REFUNDED':'已退款','SUPERSEDED':'历史版本'}.get(status,status)
+
+
 def status_text(order):
-    text=f"订单 {order['order_id']} 当前已提交状态：{order['order_status']}；模拟支付 {order['payment_status']}；有效乘客 {order['active_item_count']} 人。"
+    text=f"订单 {order['order_id']} 当前已提交状态：{order['order_status']}；模拟支付 {order['payment_status']}；{passenger_summary(order)}。"
     if order['hold_status']=='ACTIVE':
         text+=f" 建单流程自动锁定模拟座位，锁定编号 {order['hold_id']}，有效期至 {order['hold']['expires_at']}。"
     if order['payment_status']=='SUCCEEDED':

@@ -99,6 +99,7 @@ def prepare(session, effective=None):
         "铁路静态查询（包括连续补充日期）使用railway_*，不要混用旧query_tickets的演示车次；旧工具保留给明确的旧演示业务和航班等原有功能。"
         "V3.10铁路流程没有独立锁座工具，也不存在railway_lock_seat；此前legacy的lock_seat必须先锁座规则不适用于本会话。"
         "正确流程是：查询库存→生成报价→railway_create_order建单提案→用户界面确认→Service自动创建hold并锁座→PENDING_PAYMENT。"
+        "改签前必须先用railway_query_trips查询目标车次；若用户未提供真实trip_id，禁止复用原车次或从历史自行假定。随后查询目标余票、railway_quote_fare目标报价、railway_change_order改签提案，最后由用户确认；不得直接改签或跳过目标查询。"
         "用户说锁座时，解释建单确认后自动锁座；不得声称已经锁座，除非工具返回的订单和hold已由用户确认并存在。"
         "建单前必须取得用户明确提供的模拟乘客姓名；缺少姓名先追问，不能把‘请提供乘客姓名’等提示语当作姓名调用工具。"
         "工具返回NEEDS_INPUT时，只询问missing_fields对应信息；不得声称已生成提案、已锁座或已建单。"
@@ -195,10 +196,18 @@ def _notice(session, message, kind="success"):
 
 def render(session):
     """Right-rail fragment for the original user workspace."""
-    if not enabled() or session.read_only:
+    if not enabled():
         return
     try:
         if not enabled():
+            return
+        if session.read_only:
+            from web.proposal_navigation import pending
+            for proposal in pending(session):
+                with st.container(border=True,key='railway_proposal_'+proposal['proposal_id']):
+                    st.markdown('### 待确认铁路操作（只读恢复）')
+                    st.caption(proposal['action']+' · '+proposal['proposal_id'])
+                    st.warning('历史恢复仅展示当时仍有效的提案，不恢复操作授权或确认凭据；请在原活动会话确认。服务重启后须重新生成提案。')
             return
         prepared=prepare(session)
         if prepared is None:return
@@ -219,41 +228,69 @@ def render(session):
             labels = {"CREATE_ORDER": "锁定模拟座位并建单", "PAY": "模拟支付", "CANCEL": "取消模拟订单", "REFUND": "模拟退票", "CHANGE": "模拟改签"}
             for proposal in pending:
                 pid = proposal["proposal_id"]
-                st.caption(labels.get(proposal["action"], proposal["action"]) + " · " + pid)
-                payload=proposal.get('payload') or {}
-                preview=payload.get('_refund_preview') or payload.get('_display_preview') or {}
-                if preview:
-                    if 'net_fen' in preview:st.info('本次模拟退款 ¥'+f"{preview['net_fen']/100:.2f}"+'；手续费 ¥'+f"{preview['fee_fen']/100:.2f}")
-                    elif 'difference_fen' in preview:st.info('改签差价 ¥'+f"{preview['difference_fen']/100:.2f}"+'（正数补款，负数退差）')
-                    elif 'total_fen' in preview:st.info('本次模拟金额 ¥'+f"{preview['total_fen']/100:.2f}")
-                if payload.get('passengers'):st.write('乘客：'+'、'.join(payload['passengers']))
-                if payload.get('item_ids') and snapshot:
-                    chosen={i['item_id']:i['passenger_name'] for o in snapshot['orders'] for i in o['items']}
-                    st.write('本次乘客：'+'、'.join(chosen.get(i,'无法核验') for i in payload['item_ids']))
-                if proposal.get('action')=='PAY' and snapshot:
-                    from web.v39_payment import panel as payment_qr
-                    payment_qr(session,snapshot,read_only=False)
-                from target.v39.passengers import has_placeholders
-                invalid_name=proposal['action']=='CREATE_ORDER' and has_placeholders(payload.get('passengers'))
-                if invalid_name:st.warning('这张旧确认卡尚未包含有效乘客姓名，不能确认；请补充姓名重新生成，或撤销此卡。')
-                ack = st.checkbox("我已核对，确认这次本地模拟操作", key="v39_bridge_ack_" + pid)
-                c1, c2 = st.columns(2)
-                if c1.button("确认", key="v39_bridge_yes_" + pid, disabled=not ack or invalid_name, type="primary"):
-                    try:
-                        result = session.confirm_railway_proposal(pid, True)
-                        st.session_state["v39_bridge_notice"] = result
-                        st.rerun()
-                    except Exception as exc:
-                        st.error("确认未完成：" + str(exc))
-                if c2.button("撤销", key="v39_bridge_no_" + pid):
-                    try:
-                        session.confirm_railway_proposal(pid, False); st.rerun()
-                    except Exception as exc:
-                        st.error("撤销未完成：" + str(exc))
+                card=st.container(border=True,key='railway_proposal_'+pid)
+                with card:
+                    _proposal_card(session,service,ctx,effective,snapshot,proposal,labels)
+            from web.proposal_navigation import mount
+            mount(session,pending[-1]['proposal_id'])
         notice = st.session_state.pop("v39_bridge_notice", None)
         if notice:
-            if notice.get('error'):st.error('本地模拟操作未完成：'+str(notice['error']))
-            else:st.success("本地模拟状态：" + str(notice.get("status", "")))
+            _receipt_notice(notice)
         st.caption("铁路静态时刻 + 本地模拟库存/价格/订单；不是官方实时数据。D9 B / P01 已批准。")
     except Exception as exc:
         st.caption("铁路模拟服务暂不可用：" + str(exc))
+
+
+def _receipt_notice(notice):
+    status=notice.get('verification_status')
+    if status=='UNKNOWN':st.warning('操作结果暂无法从数据库核验；可能已提交，请勿重复建单或支付。请核对订单与运行详情。')
+    elif status=='PARTIAL':st.error('订单与库存状态不一致，已停止后续操作，请在开发者端核查。')
+    elif notice.get('error')=='CONFIRMATION_SECRET_LOST':st.error('确认凭据已失效，本次未执行交易；请重新生成提案。不能恢复或自动确认旧提案。')
+    elif notice.get('failure_reason')=='PROPOSAL_EXPIRED' or notice.get('error')=='PROPOSAL_EXPIRED':st.warning('提案已过期，本次未执行业务；请重新生成提案。')
+    elif notice.get('error'):st.error('本地模拟操作未完成：'+str(notice['error']))
+    else:st.success("本地模拟状态："+str(notice.get('status','')))
+
+
+def _proposal_card(session,service,ctx,effective,snapshot,proposal,labels):
+    pid=proposal['proposal_id']
+    st.caption(labels.get(proposal["action"], proposal["action"]) + " · " + pid)
+    from web.proposal_navigation import summary
+    details=summary(session,snapshot,proposal)
+    if details:
+        seat={'SECOND':'二等座','FIRST':'一等座','BUSINESS':'商务座'}.get(details['seat'],details['seat'])
+        st.write(details['train']+' · '+details['date']+' · '+details['origin']+' → '+details['destination']+' · '+seat+' · '+str(details['passengers'])+' 人')
+    if proposal.get('order_id'):st.caption('订单：'+proposal['order_id'])
+    payload=proposal.get('payload') or {}
+    preview=payload.get('_refund_preview') or payload.get('_display_preview') or {}
+    if preview:
+        if 'net_fen' in preview:st.info('本次模拟退款 ¥'+f"{preview['net_fen']/100:.2f}"+'；手续费 ¥'+f"{preview['fee_fen']/100:.2f}")
+        elif 'difference_fen' in preview:st.info('改签差价 ¥'+f"{preview['difference_fen']/100:.2f}"+'（正数补款，负数退差）')
+        elif 'total_fen' in preview:st.info('本次模拟金额 ¥'+f"{preview['total_fen']/100:.2f}")
+    if payload.get('passengers'):st.write('乘客：'+'、'.join(payload['passengers']))
+    if payload.get('item_ids') and snapshot:
+        chosen={i['item_id']:i['passenger_name'] for o in snapshot['orders'] for i in o['items']}
+        st.write('本次乘客：'+'、'.join(chosen.get(i,'无法核验') for i in payload['item_ids']))
+    if proposal.get('action')=='PAY' and snapshot:
+        from web.v39_payment import panel as payment_qr
+        payment_qr(session,snapshot,read_only=False)
+    from target.v39.passengers import has_placeholders
+    invalid_name=proposal['action']=='CREATE_ORDER' and has_placeholders(payload.get('passengers'))
+    if invalid_name:st.warning('这张旧确认卡尚未包含有效乘客姓名，不能确认；请补充姓名重新生成，或撤销此卡。')
+    available=(proposal['confirmation_boot_epoch']==service.epoch and proposal['confirmation_owner_worker']==service.worker and pid in service._secrets)
+    uncertain=any(r.get('proposal_id')==pid and r.get('status') in ('UNKNOWN','PARTIAL') for r in getattr(session,'business_receipts',[]))
+    if not available:st.warning('原确认凭据已失效；不会恢复旧凭据，请撤销并重新生成提案。')
+    if uncertain:st.warning('该提案的数据库结果待核验，禁止重复确认；请先核查订单。')
+    ack = st.checkbox("我已核对，确认这次本地模拟操作", key="v39_bridge_ack_" + pid)
+    c1, c2 = st.columns(2)
+    if c1.button("确认", key="v39_bridge_yes_" + pid, disabled=not ack or invalid_name or not available or uncertain, type="primary"):
+        try:
+            result = session.confirm_railway_proposal(pid, True)
+            st.session_state["v39_bridge_notice"] = result
+            st.rerun()
+        except Exception as exc:
+            st.error("确认未完成：" + str(exc))
+    if c2.button("撤销", key="v39_bridge_no_" + pid):
+        try:
+            session.confirm_railway_proposal(pid, False); st.rerun()
+        except Exception as exc:
+            st.error("撤销未完成：" + str(exc))

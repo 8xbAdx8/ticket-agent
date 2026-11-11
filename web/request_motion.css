@@ -1,0 +1,29 @@
+/* Local to the original user workspace. Only real active states loop. */
+.st-key-user_workspace .st-key-user_compose [data-testid="stFormSubmitButton"] button{padding-inline:6px}
+.st-key-user_workspace .ta-request-feedback{display:flex;align-items:center;gap:10px;min-height:42px;padding:8px 0;color:var(--ta-accent);font-size:14px;line-height:1.6;overflow-wrap:anywhere}
+.st-key-user_workspace .ta-wait-dots{display:inline-flex;flex:0 0 30px;align-items:center;gap:4px;height:18px}
+.st-key-user_workspace .ta-wait-dots i{width:6px;height:6px;border-radius:50%;background:currentColor;animation:ta-wait-dot 1.4s ease-in-out infinite;opacity:.45}
+.st-key-user_workspace .ta-wait-dots i:nth-child(2){animation-delay:.16s}.st-key-user_workspace .ta-wait-dots i:nth-child(3){animation-delay:.32s}
+@keyframes ta-wait-dot{0%,60%,100%{opacity:.4;transform:translateY(0)}30%{opacity:1;transform:translateY(-3px)}}
+.st-key-user_workspace .ta-motion-symbol{width:18px;flex:0 0 18px;text-align:center;font-weight:700}
+.st-key-user_workspace .ta-motion-tools{list-style:none;padding:0;margin:6px 0;font-size:12px}
+.st-key-user_workspace .ta-motion-tools li{display:flex;gap:8px;padding:6px 0;overflow-wrap:anywhere}
+.st-key-user_workspace .ta-motion-tools small{display:block;color:var(--ta-muted)}
+.st-key-user_workspace [data-tool-state="RUNNING"] .ta-motion-symbol{color:var(--ta-accent);animation:ta-wait-dot 1.6s ease-in-out infinite}
+.st-key-user_workspace [data-tool-state="SUCCEEDED"],.st-key-user_workspace .ta-request-feedback.is-succeeded{color:var(--ta-success)}
+.st-key-user_workspace [data-tool-state="FAILED"],.st-key-user_workspace .ta-request-feedback.is-failed{color:var(--ta-danger)}
+.st-key-user_workspace [data-tool-state="BLOCKED"],.st-key-user_workspace .ta-request-feedback.is-blocked,.st-key-user_workspace .ta-request-feedback.is-waiting{color:var(--ta-warning)}
+.st-key-user_workspace .ta-phase .ta-state-icon{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;flex:0 0 16px;margin-top:2px;border-radius:50%;background:transparent!important;animation:none;color:var(--ta-muted)}
+.st-key-user_workspace .ta-phase.is-done .ta-state-icon{color:var(--ta-success)}
+.st-key-user_workspace .ta-phase.is-failed .ta-state-icon{color:var(--ta-danger)}
+.st-key-user_workspace .ta-phase.is-blocked .ta-state-icon,.st-key-user_workspace .ta-phase.is-waiting .ta-state-icon{color:var(--ta-warning)}
+.st-key-user_workspace .ta-phase.ta-motion-active{border-left:2px solid var(--ta-accent)}
+.st-key-user_workspace .ta-phase.ta-motion-active .ta-state-icon{color:var(--ta-accent);animation:ta-wait-dot 1.6s ease-in-out infinite}
+.st-key-user_workspace .ta-phase.ta-motion-active small{animation:ta-request-enter .2s ease-out both}
+@keyframes ta-request-enter{from{opacity:.6;transform:translateY(2px)}to{opacity:1;transform:none}}
+.st-key-user_workspace [data-testid="stChatMessage"]:has(.ta-response-enter){animation:ta-request-enter .24s ease-out both}
+.st-key-user_workspace .ta-terminal-enter{animation:ta-request-enter .22s ease-out both}
+.st-key-user_workspace .ta-terminal-enter .is-succeeded .ta-motion-symbol{animation:ta-complete-mark .22s ease-out both}
+@keyframes ta-complete-mark{from{transform:scale(.9)}to{transform:scale(1)}}
+@media(prefers-reduced-motion:reduce){.st-key-user_workspace .ta-terminal-enter,.st-key-user_workspace .ta-terminal-enter .ta-motion-symbol{animation:none!important;transform:none!important}}
+@media(prefers-reduced-motion:reduce){.st-key-user_workspace .ta-wait-dots i,.st-key-user_workspace [data-tool-state="RUNNING"] .ta-motion-symbol,.st-key-user_workspace .ta-phase.ta-motion-active .ta-state-icon,.st-key-user_workspace .ta-phase.ta-motion-active small,.st-key-user_workspace [data-testid="stChatMessage"]:has(.ta-response-enter){animation:none!important;transform:none!important;transition:none!important}}

@@ -210,7 +210,8 @@ def execute(session, message, request_id, origin=None,confirmation=None,entry='c
         view=policy_view(session.sid,event.get('run_id'),events=seen)
         if view['status']!='not_searched':
             rag_placeholder.markdown(_policy_status_markup(view),unsafe_allow_html=True)
-    placeholder.markdown(PROCESSING,unsafe_allow_html=True)
+    from web.request_motion import markup as waiting_markup
+    placeholder.markdown(waiting_markup(dict(state='RUNNING',text='正在处理请求',moving=True)),unsafe_allow_html=True)
     try:
         consent=_live_request_allowed(session)
         if session.live:
@@ -476,10 +477,19 @@ def _run_rail(session, events):
         if getattr(session,'operations',[]):
             rows=interaction.history(session);index=len(rows)-1
             if len(rows)>1:index=st.selectbox('历史运行',range(len(rows)),index=index,format_func=lambda n:'第'+str(n+1)+'次处理',key='user_run_'+session.sid)
-            row=rows[index];st.markdown(interaction.markup(row),unsafe_allow_html=True)
+            row=rows[index]
+            if row.get('ended_at'):
+                from web.request_motion import state as motion_state,markup as motion_markup
+                terminal=motion_markup(motion_state(row,[],active=False))
+                if index==len(rows)-1 and not session.read_only:
+                    terminal='<div class="ta-terminal-enter">'+terminal+'</div>'
+                st.markdown(terminal,unsafe_allow_html=True)
+            st.markdown(interaction.markup(row),unsafe_allow_html=True)
             if row.get('run_id'):
                 events,_=run_view.load_events(session.trace_dir,row['run_id'],session.sid)
                 st.markdown(user_copy.phase_markup(run_view.phase_states(events)),unsafe_allow_html=True)
+                from web.request_motion import tools as motion_tools,tool_markup
+                st.markdown(tool_markup(motion_tools(events,False)),unsafe_allow_html=True)
                 st.button('在开发者端查看此运行',key='user_to_trace_'+session.sid,on_click=_open_user_run,args=(session.sid,row['run_id']))
             if row.get('ended_at'):st.caption('结束时间：'+row['ended_at'])
             return
@@ -530,7 +540,7 @@ def _summary_markup(summary):
     short = run_id if len(run_id) <= 16 else run_id[:12] + "…"
     status = summary.get("status") or "未记录"
     tone = {"已完成": "ok", "失败": "bad", "等待确认": "wait", "已拦截": "wait",
-            "进行中": "live"}.get(status, "idle")
+            "进行中": "live", "结果待核验":"wait", "业务状态不一致":"bad"}.get(status, "idle")
     return ('<div class="ta-summary">'
             '<div class="ta-summary-top">'
             f'<span class="ta-mode ta-mode-current">{escape(summary.get("mode_label") or "未记录")}</span>'
@@ -544,7 +554,7 @@ def _summary_markup(summary):
 def _run_summary_bar(session, audit, events, mode_badge,operation=None):
     """Always-visible description of the run on screen, plus the two jumps."""
     summary = run_view.run_summary(session, audit, events, mode_badge)
-    if operation:summary['status']={'QUEUED':'进行中','RUNNING':'进行中','SUCCEEDED':'已完成','FAILED':'失败','BLOCKED':'已拦截','CANCELLED':'已取消'}[operation['status']]
+    if operation:summary['status']={'QUEUED':'进行中','RUNNING':'进行中','SUCCEEDED':'已完成','FAILED':'失败','BLOCKED':'已拦截','CANCELLED':'已取消','UNKNOWN':'结果待核验','PARTIAL':'业务状态不一致'}.get(operation['status'],'结果待核验')
     if operation and (operation.get('error') or {}).get('category')=='awaiting_confirmation':summary['status']='等待确认'
     if operation and operation.get('kind')=='page_business':
         summary.update(run_id=operation.get('run_id'),mode_label='本地模拟业务 · 未调用模型')
@@ -593,6 +603,8 @@ def _conversation(session):
                 with st.chat_message("user",avatar=":material/person:"):
                     st.write(previous["user_msg"])
                 with st.chat_message("assistant",avatar=":material/smart_toy:"):
+                    if index==len(session.history)-1 and not session.read_only and not interaction.busy(session):
+                        st.markdown('<span class="ta-response-enter" aria-hidden="true"></span>',unsafe_allow_html=True)
                     show_guarded_reply(session,previous)
                     view=_turn_policy(session,previous)
                     if view.get('has_recorded_retrieval'):
@@ -687,7 +699,7 @@ def _composer(session, live_name):
             input_widget=row[0].text_area if multiline else row[0].text_input
             message=input_widget("输入消息",key="user_message",
                 placeholder="例如：查询 2026-11-05 上海虹桥到杭州东的铁路车次",label_visibility="collapsed",**({'height':72} if multiline else {}))
-            send=row[1].form_submit_button("发送",key='user_send_'+st.session_state['user_submit_nonce'],
+            send=row[1].form_submit_button("处理中" if interaction.busy(session) else "发送",key='user_send_'+st.session_state['user_submit_nonce'],
                 type="primary",disabled=session.read_only or interaction.busy(session) or session.live and not live_ready(session.live_provider))
             st.caption('车次来源见本轮标注；锁座、下单、支付、退票会先请你确认。订单与支付均为演示，不会向12306提交订单或真实锁座，也不会真实扣款。')
     return message, send, allow_live
@@ -744,6 +756,8 @@ def user_page():
     session._unified_interaction=True
     from web.business_state import refresh as refresh_business_state
     refresh_business_state(session)
+    from web.proposal_navigation import prepare as prepare_proposal_navigation
+    prepare_proposal_navigation(session)
     selected_sid=st.session_state.get('scroll_selected_sid')
     if selected_sid!=session.sid:
         scroll_bridge.request('bottom' if session.history else 'top',scope=session.sid)
@@ -785,6 +799,7 @@ def user_page():
         st.session_state['user_compose_session']=session.sid
         st.session_state['user_submit_nonce']=uuid.uuid4().hex
 
+    feedback_slots={}
     def _chat_body():
         displayed_error = session.error
         if session.config_notice:st.warning(session.config_notice)
@@ -815,7 +830,7 @@ def user_page():
         business_receipts(session)
         if interaction.busy(session) and getattr(session,'_queued_submission',None):
             with st.chat_message('user'):st.write(session._queued_submission['message'])
-            st.caption('正在处理这条请求；运行进度见本次处理。')
+            feedback_slots['chat']=st.empty()
         if displayed_error is not None and session.error is displayed_error:
             # Keep the audit/trace, but clear this already-displayed request error
             # only after the conversation has rendered its error state.
@@ -855,7 +870,15 @@ def user_page():
                 @st.fragment(run_every=.35 if interaction.busy(session) else None)
                 def _watch_operation():
                     rows=getattr(session,'operations',[])
-                    if rows and interaction.busy(session):st.markdown(interaction.markup(rows[-1]),unsafe_allow_html=True)
+                    if rows and interaction.busy(session):
+                        from web.request_motion import live,markup,tools,tool_markup
+                        _,live_events,view=live(session)
+                        if 'chat' in feedback_slots:feedback_slots['chat'].markdown(markup(view),unsafe_allow_html=True)
+                        st.markdown(markup(view),unsafe_allow_html=True)
+                        # A model proposal alone is not evidence of execution.
+                        actual=[e for e in live_events if e.get('event_type')!='tool_proposed']
+                        st.markdown(user_copy.phase_markup(run_view.phase_states(actual),animate=True),unsafe_allow_html=True)
+                        st.markdown(tool_markup(tools(live_events,True)),unsafe_allow_html=True)
                     if rows and rows[-1]['status']=='QUEUED' and st.button('取消排队',key='cancel_queued_'+session.sid):
                         if interaction.cancel_queued(session):st.rerun()
                     future=getattr(session,'_chat_future',None)

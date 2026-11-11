@@ -25,7 +25,7 @@ def operation_details(args):
             for key, value in args.items()]
 
 
-def phase_markup(states):
+def phase_markup(states, *, animate=False):
     """复用已判定的阶段状态，只去掉耗时、结束码等诊断字段。"""
     names = {"query": "查询车票", "policy": "查阅政策", "confirm": "确认操作",
              "execute": "处理演示订单", "done": "本轮处理"}
@@ -33,9 +33,10 @@ def phase_markup(states):
               "active": "处理中", "waiting": "请确认", "declined": "已取消",
               "pending": "尚未进行", "unknown": "暂无记录"}
     parts = []
+    icons={'done':'✓','failed':'!','blocked':'⊘','active':'●','waiting':'◉','declined':'–'}
     for n, item in enumerate(states, 1):
-        parts.append('<div class="ta-phase is-' + escape(item['status']) + '">'
-                     '<span class="ta-phase-dot"></span><span class="ta-phase-body"><b>'
+        parts.append('<div role="listitem" class="ta-phase is-' + escape(item['status']) + (' ta-motion-active' if animate and item['status']=='active' else '') + '">'
+                     '<span class="ta-phase-dot ta-state-icon" aria-hidden="true">'+icons.get(item['status'],'○')+'</span><span class="ta-phase-body"><b>'
                      + str(n).zfill(2) + ' ' + names[item['key']] + '</b><small>'
                      + status.get(item['status'], '状态未知') + '</small></span></div>')
     return '<div class="ta-phases" role="list">' + ''.join(parts) + '</div>'
@@ -43,20 +44,11 @@ def phase_markup(states):
 
 def processing_markup(event):
     """仅描述实际收到的事件，不把模型提议说成已经执行成功。"""
-    kind = event.get('event_type', '')
-    if event.get('status') in ('failed', 'blocked'):
-        text = '本次处理遇到问题，正在整理结果…'
-    elif kind == 'confirmation_requested':
-        text = '请确认后再继续操作…'
-    elif kind.startswith('followup_'):
-        text = '正在整理后续问题…'
-    elif kind.startswith('rag_'):
-        text = '正在查阅示例政策…'
-    elif kind in ('tool_start', 'tool_result'):
-        text = '正在处理：' + TOOL_LABELS.get(event.get('tool'), '本次请求') + '…'
-    else:
-        text = '正在处理请求…'
-    return '<div class="ta-processing" role="status" aria-live="polite"><span></span>' + escape(text) + '</div>'
+    from web.request_motion import state,markup
+    view=state({'status':'RUNNING'},[event],active=True)
+    if event.get('status') in ('failed','blocked'):
+        view=dict(state='BLOCKED' if event['status']=='blocked' else 'FAILED',text='本次处理遇到问题，正在整理结果',moving=False)
+    return markup(view)
 
 
 def error_message(category):

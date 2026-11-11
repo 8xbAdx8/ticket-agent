@@ -29,7 +29,8 @@ class RailwayDemoProvider:
         if owned_order and re.match(r'查询(?:本人|我的)?订单',text):
             if not results:return call('railway_get_order',dict(order_id=owned_order[0]))
             if isinstance(payload,dict) and not payload.get('error'):
-                return reply('订单 '+payload['order_id']+' 当前状态 '+payload['order_status']+'；模拟支付 '+payload['payment_status']+'；有效乘客 '+str(payload['active_item_count'])+' 人。此次仅查询，没有再次执行交易。')
+                from target.v39.read_model import passenger_summary
+                return reply('订单 '+payload['order_id']+' 当前状态 '+payload['order_status']+'；模拟支付 '+payload['payment_status']+'；'+passenger_summary(payload)+'。此次仅查询，没有再次执行交易。')
         # UI integration exercises the same tools in offline mode. This is an
         # explicit deterministic planner, never evidence of Live model quality.
         if '订单' in text and re.search('我的|查看|查询',text) and not re.search(r'V39-[a-f0-9]{32}',text):

@@ -16,13 +16,14 @@ def _start(session,label,tool=None,call_id=None):
     return row
 
 
-def _end(session,row,result,*,before=None,after=None,proposal_id=None,call_id=None,error=None,verified=False,cancelled=False):
+def _end(session,row,result,*,before=None,after=None,proposal_id=None,call_id=None,error=None,verified=False,cancelled=False,outcome=None):
     from web.interaction import now
     from target.followups import emit_event
     denied=bool(row.get('tools')) and all(t.get('executed') is False for t in row['tools'])
     status='BLOCKED' if denied and (error or result.get('error')) else 'FAILED' if error or result.get('error') else 'CANCELLED' if cancelled else 'BLOCKED' if result.get('status')=='CONFIRMATION_REQUIRED' else 'SUCCEEDED' if verified else 'BLOCKED'
-    row.update(status=status,ended_at=now(),stage='本地模拟操作已完成' if status=='SUCCEEDED' else '等待用户确认' if status=='BLOCKED' and result.get('status')=='CONFIRMATION_REQUIRED' else '本地操作未完成' if status in ('FAILED','BLOCKED') else '已撤销确认卡',
-        error=dict(category=type(error).__name__ if error else result.get('error') or 'awaiting_confirmation') if status in ('FAILED','BLOCKED') else None,
+    status=outcome or status
+    row.update(status=status,ended_at=now(),stage='本地模拟操作已完成' if status=='SUCCEEDED' else '等待用户确认' if status=='BLOCKED' and result.get('status')=='CONFIRMATION_REQUIRED' else '本地操作未完成' if status in ('FAILED','BLOCKED') else '数据库结果待核验，请勿重复建单或支付' if status=='UNKNOWN' else '订单与库存不一致，已停止后续操作' if status=='PARTIAL' else '已撤销确认卡',
+        error=dict(category=type(error).__name__ if error else result.get('error') or 'awaiting_confirmation') if status in ('FAILED','BLOCKED','UNKNOWN','PARTIAL') else None,
         result_summary=str(result.get('status','UNKNOWN')),tokens=None)
     receipt=dict(operation_id=row['run_id'],session_id=session.sid,order_id=result.get('order_id') or (before or {}).get('order_id') or row.get('order_id'),
         proposal_id=proposal_id or result.get('proposal_id'),tool_call_id=call_id,status=status,actual_result=copy.deepcopy(result),
@@ -75,6 +76,25 @@ def invoke(session,tool,args):
 
 
 
+def _proposal_origin(session, proposal):
+    """Find the executed call that returned this owned proposal."""
+    pid = proposal['proposal_id']
+    for audit in reversed(session.audits):
+        if (audit.get('public_trace') or {}).get('session_id') != session.sid:
+            continue
+        executions = (audit.get('fault_report') or {}).get('executions', [])
+        for entry in (*executions, *audit.get('framework_events', [])):
+            if ACTIONS.get(entry.get('tool')) != proposal['action'] or not entry.get('executed') or not entry.get('ok'):
+                continue
+            result = entry.get('original_result', entry.get('result'))
+            if isinstance(result, dict) and result.get('status') == 'CONFIRMATION_REQUIRED' and result.get('proposal_id') == pid and entry.get('call_id'):
+                return audit['trace_id'], entry['call_id']
+    for receipt in reversed(getattr(session, 'business_receipts', [])):
+        if receipt.get('proposal_id') == pid and (receipt.get('actual_result') or {}).get('status') == 'CONFIRMATION_REQUIRED':
+            return None, receipt.get('tool_call_id')
+    return None, None
+
+
 def confirm(session,proposal_id,approved):
     from web.v39_bridge import prepare
     from target.v39.read_model import read,brief
@@ -90,24 +110,36 @@ def confirm(session,proposal_id,approved):
             if not proposal:raise ValueError('PROPOSAL_NOT_FOUND')
             ctx.require(proposal['action'] if approved else None)
             if approved and proposal['action'] not in ('CREATE_ORDER',) and proposal['order_id'] not in {o['order_id'] for o in state['orders']}:raise ValueError('ORDER_FORBIDDEN')
-            existing=next((r for r in getattr(session,'business_receipts',[]) if r.get('proposal_id')==proposal_id and r['status'] in ('SUCCEEDED','FAILED','CANCELLED')),None)
+            latest_receipts={r.get('proposal_id'):r for r in getattr(session,'business_receipts',[]) if r.get('proposal_id')}
+            for other_pid,receipt in latest_receipts.items():
+                if other_pid==proposal_id or receipt.get('status') not in ('UNKNOWN','PARTIAL'):continue
+                proof=next((o for o in state['operations'] if o['proposal_id']==other_pid),None)
+                if proof and proof['database_verified']:continue
+                if approved and (proposal['action']=='CREATE_ORDER' or receipt.get('order_id')==proposal['order_id']):
+                    raise ValueError('PREVIOUS_BUSINESS_RESULT_UNRESOLVED')
+            existing=next((r for r in getattr(session,'business_receipts',[]) if r.get('proposal_id')==proposal_id and r['status'] in ('SUCCEEDED','FAILED','CANCELLED') and r.get('actual_result',{}).get('error')!='DATABASE_RECEIPT_NOT_VERIFIED'),None)
             if existing:return copy.deepcopy(existing['actual_result'])
-            source=None;call_id=None
-            for audit in reversed(session.audits):
-                match=next((e for e in audit.get('framework_events',[]) if isinstance(e.get('result'),dict) and e['result'].get('proposal_id')==proposal_id),None)
-                if match:source=audit['trace_id'];call_id=match.get('call_id');break
-            if call_id is None:
-                receipt=next((r for r in reversed(getattr(session,'business_receipts',[])) if r.get('proposal_id')==proposal_id),None)
-                call_id=(receipt or {}).get('tool_call_id')
+            source,call_id=_proposal_origin(session,proposal)
             before=brief(next((o for o in state['orders'] if o['order_id']==proposal['order_id']),None))
             row=_start(session,'确认本地模拟操作' if approved else '撤销本地确认卡')
             row.update(source_run_id=source,proposal_id=proposal_id,action=proposal['action'])
             try:
+                uncertain=next((r for r in reversed(getattr(session,'business_receipts',[])) if r.get('proposal_id')==proposal_id and (r.get('status') in ('UNKNOWN','PARTIAL') or r.get('actual_result',{}).get('error')=='DATABASE_RECEIPT_NOT_VERIFIED')),None)
+                if approved and uncertain:
+                    # Re-read only: never repeat a potentially committed write.
+                    from web.receipt_verification import assess
+                    result,outcome,verified=assess(proposal,state,uncertain['actual_result'])
+                    reconciled=brief(next((o for o in state['orders'] if o['order_id']==result.get('order_id')),None))
+                    return _end(session,row,result,before=before,after=reconciled,proposal_id=proposal_id,call_id=call_id,verified=verified,outcome=outcome)
                 if approved:result=service.confirm(ctx,proposal_id)
                 else:
                     if not service.decline(ctx,proposal_id):raise ValueError('PROPOSAL_NOT_PENDING')
                     result=dict(status='CANCELLED',proposal_id=proposal_id,simulation=True)
-                updated=read(service.store.path,ctx,now=service.now())
+                try:updated=read(service.store.path,ctx,now=service.now())
+                except Exception as read_error:
+                    # Service may already have committed. Preserve the native receipt.
+                    result=dict(result,error='DATABASE_RECEIPT_NOT_VERIFIED',verification_status='UNKNOWN',verification_error=type(read_error).__name__)
+                    return _end(session,row,result,before=before,proposal_id=proposal_id,call_id=call_id,outcome='UNKNOWN')
                 operation=next((o for o in updated['operations'] if o['proposal_id']==proposal_id),None)
                 row['business_native_operation_id']=(operation or {}).get('operation_id')
                 verified=bool(operation and operation['database_verified']) if approved else True
@@ -129,8 +161,21 @@ def confirm(session,proposal_id,approved):
                     engine.pending_actions.pop(session.sid,None)
                     engine.pending_deadlines.pop(session.sid,None)
                     engine.pending_sources.pop(session.sid,None)
-                if approved and not result.get('error') and not verified:result=dict(result,error='DATABASE_RECEIPT_NOT_VERIFIED')
-                return _end(session,row,result,before=before,after=after,proposal_id=proposal_id,call_id=call_id,verified=verified,cancelled=not approved)
+                outcome=None
+                if approved:
+                    from web.receipt_verification import assess
+                    result,outcome,verified=assess(proposal,updated,result)
+                return _end(session,row,result,before=before,after=after,proposal_id=proposal_id,call_id=call_id,verified=verified,cancelled=not approved,outcome=outcome)
             except Exception as exc:
-                _end(session,row,dict(status='FAILED',error=str(exc) if isinstance(exc,ValueError) else type(exc).__name__),before=before,proposal_id=proposal_id,call_id=call_id,error=exc)
-                raise
+                # Technical exceptions are not proof that a transaction rolled back.
+                from web.receipt_verification import assess
+                failure=dict(status='FAILED',error=str(exc) if isinstance(exc,ValueError) else type(exc).__name__)
+                try:
+                    latest=read(service.store.path,ctx,now=service.now())
+                    result,outcome,verified=assess(proposal,latest,failure,exception=True,before=state)
+                except Exception as read_error:
+                    result=dict(failure,verification_status='UNKNOWN',verification_error=type(read_error).__name__)
+                    outcome,verified='UNKNOWN',False
+                final=_end(session,row,result,before=before,proposal_id=proposal_id,call_id=call_id,verified=verified,outcome=outcome)
+                if outcome=='FAILED':raise
+                return final

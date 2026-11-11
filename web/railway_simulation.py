@@ -148,7 +148,8 @@ def _orders(s,ctx,snapshot=None,session=None):
         st.markdown('**'+html.escape(train_no)+'　'+html.escape(stops.get(o['origin_stop_id'],o['origin_stop_id']))+' → '+html.escape(stops.get(o['destination_stop_id'],o['destination_stop_id']))+'**')
         st.write(STATES[o['order_status']]+'　'+o['service_date']+'　'+SEATS[o['seat_class']])
         st.write('当前票面 ¥'+f"{o['total_fen']/100:.2f}"+'；累计模拟支付 ¥'+f"{o['paid_total_fen']/100:.2f}"+'；累计模拟退款 ¥'+f"{o['refunded_total_fen']/100:.2f}"+'；手续费 ¥'+f"{o['fee_total_fen']/100:.2f}")
-        st.dataframe([dict(模拟乘客=i['passenger_name'],状态={'ACTIVE':'有效','REFUNDED':'已退款','SUPERSEDED':'历史版本'}.get(i['item_status']),票面元=f"{i['fare_fen']/100:.2f}",明细编号=i['item_id']) for i in o['items']],hide_index=True,width='stretch')
+        from target.v39.read_model import passenger_status_text
+        st.dataframe([dict(模拟乘客=i['passenger_name'],状态=passenger_status_text(o,i),票面元=f"{i['fare_fen']/100:.2f}",明细编号=i['item_id']) for i in o['items']],hide_index=True,width='stretch')
         if o['order_status']=='PENDING_PAYMENT':
             st.caption('支付仅改变本地演示状态，不会真实扣款；锁座截止 '+o['expires_at'])
             a,b=st.columns(2)

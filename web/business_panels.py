@@ -50,12 +50,12 @@ def summary(session):
     if rail.get('orders'):
         st.markdown('### 我的订单')
         if session.read_only:
-            from target.v39.read_model import status_text
+            from target.v39.read_model import passenger_status_text, status_text
             for o in rail['orders']:
                 with st.container(border=True):
                     st.write(status_text(o));st.caption('票面 ¥'+f"{o['total_fen']/100:.2f}"+'；净支付 ¥'+f"{o['net_paid_fen']/100:.2f}")
                     with st.expander('乘客与交易'):
-                        st.dataframe([dict(乘客=i['passenger_name'],状态=i['item_status']) for i in o['items']],hide_index=True)
+                        st.dataframe([dict(乘客=i['passenger_name'],状态=passenger_status_text(o,i)) for i in o['items']],hide_index=True)
                         st.json(o['transactions'],expanded=False)
             st.caption('历史会话只读；不会恢复确认令牌或自动继续旧交易。')
             try:
@@ -67,7 +67,8 @@ def summary(session):
             from web.railway_simulation import _orders
             with scope(session._v39_effective):_orders(session._v39_service,session._v39_context,rail,session)
         else:
-            for o in rail['orders']:st.caption(o['order_id']+' · '+o['order_status']+' · 有效乘客'+str(o['active_item_count'])+'人')
+            from target.v39.read_model import passenger_summary
+            for o in rail['orders']:st.caption(o['order_id']+' · '+o['order_status']+' · '+passenger_summary(o))
     if view.get('legacy'):
         with st.expander('原演示订单',expanded=not bool(rail.get('orders'))):
             for order in view['legacy']:st.caption(order['order_id']+' · '+order['train_no']+' · '+order['display_status'])
@@ -93,7 +94,9 @@ def receipts(session):
         st.markdown('**本地业务操作回执**')
         st.caption('页面操作 · 未因此调用模型 · '+last['status'])
         o=next((o for o in rail.get('orders',[]) if o['order_id']==last.get('order_id')),None)
-        if last['status']=='FAILED':st.error('本次操作未完成：'+str(action.get('error') or '请核对回执'))
+        if last['status']=='UNKNOWN':st.warning('数据库结果暂无法核验；可能已提交，请勿重复建单或支付，请先核对订单。')
+        elif last['status']=='PARTIAL':st.error('订单与库存不一致，已停止后续操作，请在开发者端核查。')
+        elif last['status']=='FAILED':st.error('本次操作未完成：'+str(action.get('error') or '请核对回执'))
         elif last['status']=='BLOCKED':
             if action.get('status')=='CONFIRMATION_REQUIRED':st.info('已生成确认卡；尚未执行交易。')
             else:st.warning('本次操作已拦截，未能完成：'+str(action.get('error') or '请核对权限与参数'))

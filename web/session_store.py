@@ -63,7 +63,7 @@ def restore_session(root, *, expected_sid=None):
     session.selected_railway_trip=saved.get('selected_railway_trip')
     session.business_receipts=[r for r in saved.get('business_receipts',[]) if isinstance(r,dict) and r.get('session_id')==sid]
     session.operations=[row for row in saved.get('operations',[]) if isinstance(row,dict) and row.get('session_id')==sid
-        and row.get('status') in ('QUEUED','RUNNING','SUCCEEDED','FAILED','BLOCKED','CANCELLED')
+        and row.get('status') in ('QUEUED','RUNNING','SUCCEEDED','FAILED','BLOCKED','CANCELLED','UNKNOWN','PARTIAL')
         and isinstance(row.get('request_id'),str) and isinstance(row.get('operation'),str)
         and isinstance(row.get('tools'),list) and all(isinstance(t,dict) and isinstance(t.get('tool'),str) for t in row['tools'])]
     for row in session.operations:

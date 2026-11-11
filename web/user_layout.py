@@ -7,6 +7,7 @@ import streamlit as st
 
 def styles():
     st.html('<style>'+Path(__file__).with_name('user_layout.css').read_text(encoding='utf-8')+'</style>')
+    st.html('<style>'+Path(__file__).with_name('request_motion.css').read_text(encoding='utf-8')+'</style>')
 
 
 def topbar(sessions, new_session, activate,clock=None):
