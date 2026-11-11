@@ -35,9 +35,9 @@ def first_trip(row):
     raise RuntimeError('NO_REAL_TRIP_RETURNED')
 
 
-def run_chain(root: Path, provider: str):
+def run_chain(root: Path, provider: str, batch=None):
     from target.scenario_r1_lifecycle import R1Run
-    run = R1Run(root, provider, scenario='default')
+    run = R1Run(root, provider, scenario='default', batch=batch)
     out = {'provider': provider, 'execution_id': run.execution_id, 'session_id': run.session_id, 'steps': [], 'status': 'RUNNING'}
     try:
         route = '2026-11-05 上海虹桥（AOH）到杭州东（HGH）'
@@ -116,9 +116,9 @@ def run_chain(root: Path, provider: str):
     return out
 
 
-def cancel_chain(root: Path, provider: str):
+def cancel_chain(root: Path, provider: str, batch=None):
     from target.scenario_r1_lifecycle import R1Run
-    run = R1Run(root, provider, scenario='default')
+    run = R1Run(root, provider, scenario='default', batch=batch)
     out = {'provider': provider, 'execution_id': run.execution_id, 'session_id': run.session_id, 'steps': [], 'status': 'RUNNING'}
     try:
         route = '2026-11-05 上海虹桥（AOH）到杭州东（HGH）'
@@ -149,14 +149,14 @@ def main(root: Path):
     from urllib.parse import urlsplit
     bootstrap()
     auth = json.loads((root / 'authorization.json').read_text('utf-8'))
-    batch = R1Batch(root); batch.initialize_authorized(auth)
+    batch = R1Batch(root, http_limit=auth['http_limit'], provider_limit=auth['provider_limits']['deepseek'], pilot_limit=auth['pilot_http_limit']); batch.initialize_authorized(auth)
     if (root / 'lifecycle-start.json').exists():
         raise ValueError('R1_LIFECYCLE_ALREADY_STARTED')
     save(root / 'lifecycle-start.json', {'batch_id': batch.status()['batch_id']})
     results = []
     for provider in ('deepseek', 'bailian'):
-        results.append(run_chain(root, provider))
-        results.append(cancel_chain(root, provider))
+        results.append(run_chain(root, provider, batch=batch))
+        results.append(cancel_chain(root, provider, batch=batch))
     summary = {'results': results, 'budget': batch.status()}
     save(root / 'lifecycle-summary.json', summary)
     print(json.dumps(summary, ensure_ascii=False, indent=2)[:5000], flush=True)

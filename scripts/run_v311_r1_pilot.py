@@ -34,14 +34,14 @@ def run(root: Path):
     # Process-local NO_PROXY only; do not modify system proxy/key/env.
     os.environ['NO_PROXY'] = os.environ['no_proxy'] = ','.join(['localhost', '127.0.0.1', *[urlsplit(c['base_url']).hostname for c in configs]])
     auth = json.loads((root / 'authorization.json').read_text('utf-8'))
-    batch = R1Batch(root)
+    batch = R1Batch(root, http_limit=auth['http_limit'], provider_limit=auth['provider_limits']['deepseek'], pilot_limit=auth['pilot_http_limit'])
     batch.initialize_authorized(auth)
     if (root / 'pilot-start.json').exists():
         raise ValueError('R1_PILOT_ALREADY_STARTED')
     save(root / 'pilot-start.json', {'batch_id': batch.status()['batch_id'], 'prior_http': batch.status()['http_requests']})
     results = []
     for provider in ('deepseek', 'bailian'):
-        run = R1Run(root, provider, scenario='default')
+        run = R1Run(root, provider, scenario='default', batch=batch)
         info = {'provider': provider, 'execution_id': run.execution_id, 'session_id': run.session_id, 'steps': []}
         results.append(info)
         try:

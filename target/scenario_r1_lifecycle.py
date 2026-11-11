@@ -25,9 +25,9 @@ def _sha(value):
 class R1Run:
     """One isolated chain. Same-process continuation only; no secret recovery."""
 
-    def __init__(self, root, provider, *, transport=None, scenario='default'):
+    def __init__(self, root, provider, *, transport=None, scenario='default', batch=None):
         self.root = Path(root).resolve()
-        self.batch = R1Batch(self.root)
+        self.batch = batch if batch is not None else R1Batch(self.root)
         # The caller must initialize_authorized before constructing a run.
         self.provider = provider
         self.run = AgentRun(self.root, provider, transport=transport, scenario=scenario, batch=self.batch)
@@ -110,8 +110,17 @@ class R1Run:
         return self.run.read()
 
     def finalize(self, status='VERIFIED'):
+        # Finalize is idempotent per execution. A second call returns the
+        # original immutable summary; it never appends a checkpoint or
+        # overwrites an existing summary.
+        summary_path = self.checkpoint_dir / 'summary.json'
+        if summary_path.exists():
+            existing = json.loads(summary_path.read_text(encoding='utf-8'))
+            if existing.get('phase') != status:
+                raise ValueError('R1_FINALIZE_STATUS_CONFLICT')
+            return dict(existing, idempotent=True)
         payload = self._checkpoint(status)
-        save(self.checkpoint_dir / 'summary.json', {
+        value = {
             'schema': 'v311-r1-run-summary/1',
             'execution_id': self.execution_id,
             'session_id': self.session_id,
@@ -122,5 +131,12 @@ class R1Run:
             'db_path': payload['db_path'],
             'http_requests': payload['http_requests'],
             'checkpoints': sorted(p.name for p in self.checkpoint_dir.glob('*.json')),
-        })
-        return payload
+        }
+        try:
+            save(summary_path, value)
+            return dict(value, idempotent=False)
+        except FileExistsError:
+            existing = json.loads(summary_path.read_text(encoding='utf-8'))
+            if existing.get('phase') != status:
+                raise ValueError('R1_FINALIZE_STATUS_CONFLICT')
+            return dict(existing, idempotent=True)

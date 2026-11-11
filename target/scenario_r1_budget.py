@@ -24,19 +24,21 @@ def _sha(path):
 
 
 class R1Batch(Batch):
-    def __init__(self, root):
+    def __init__(self, root, *, http_limit=96, provider_limit=48, pilot_limit=24):
         self.root = Path(root).resolve()
+        self.http_limit=int(http_limit);self.provider_limit=int(provider_limit);self.pilot_limit=int(pilot_limit)
         runtime = ROOT / 'artifacts/runtime'
         if not self.root.is_relative_to(runtime) or not self.root.relative_to(runtime).parts[0].startswith('v310-v311-r1-'):
             raise ValueError('R1_ISOLATED_BATCH_REQUIRED')
-        super().__init__(self.root / 'r1-budget.sqlite', max_http=96)
+        super().__init__(self.root / 'r1-budget.sqlite', max_http=self.http_limit)
 
     def connect(self):
         c = super().connect()
         try:
             row = c.execute('SELECT * FROM r1_limits WHERE id=1').fetchone()
             guard = c.execute("SELECT sql FROM sqlite_master WHERE type='trigger' AND name='v311_r1_admission'").fetchone()
-            if not row or tuple(row) not in ((1, 'pilot', 24, 12, 24), (1, 'released', 96, 48, 24)):
+            allowed=((1,'pilot',self.pilot_limit,min(12,self.provider_limit),self.pilot_limit),(1,'released',self.http_limit,self.provider_limit,self.pilot_limit))
+            if not row or tuple(row) not in allowed:
                 raise ValueError('R1_BUDGET_GUARD_INVALID')
             if not guard or ' '.join(guard[0].split()) != ' '.join(GUARD.split()):
                 raise ValueError('R1_BUDGET_GUARD_INVALID')
@@ -46,7 +48,7 @@ class R1Batch(Batch):
         return _Guarded(c)
 
     def initialize_authorized(self, authorization):
-        required = {'approved': True, 'http_limit': 96, 'provider_limits': {'deepseek': 48, 'bailian': 48}, 'pilot_http_limit': 24}
+        required = {'approved': True, 'http_limit': self.http_limit, 'provider_limits': {'deepseek': self.provider_limit, 'bailian': self.provider_limit}, 'pilot_http_limit': self.pilot_limit}
         if not isinstance(authorization, dict) or any(authorization.get(k) != v for k, v in required.items()):
             raise ValueError('R1_AUTHORIZATION_REQUIRED')
         if self.path.exists():
@@ -58,7 +60,7 @@ class R1Batch(Batch):
         with closing(super().connect()) as c:
             c.executescript('BEGIN IMMEDIATE;\n'
                 'CREATE TABLE IF NOT EXISTS r1_limits(id INTEGER PRIMARY KEY CHECK(id=1), phase TEXT NOT NULL, http_limit INTEGER NOT NULL, provider_limit INTEGER NOT NULL, pilot_limit INTEGER NOT NULL);\n'
-                "INSERT OR REPLACE INTO r1_limits VALUES(1,'pilot',24,12,24);\n"
+                f"INSERT OR REPLACE INTO r1_limits VALUES(1,'pilot',{self.pilot_limit},{min(12,self.provider_limit)},{self.pilot_limit});\n"
                 'CREATE VIEW IF NOT EXISTS v311_limits AS SELECT id,phase,http_limit,provider_limit,NULL AS pilot_limit FROM r1_limits;\n'
                 'CREATE TABLE IF NOT EXISTS r1_release_audit(id INTEGER PRIMARY KEY CHECK(id=1), review_json TEXT NOT NULL);\n'
                 + GUARD + ';\nCOMMIT;')
@@ -73,7 +75,7 @@ class R1Batch(Batch):
             if old and old[0] != encoded:
                 raise ValueError('R1_RELEASE_REVIEW_CONFLICT')
             c.execute('INSERT OR IGNORE INTO r1_release_audit VALUES(1,?)', (encoded,))
-            c.execute("UPDATE r1_limits SET phase='released',http_limit=96,provider_limit=48 WHERE id=1")
+            c.execute("UPDATE r1_limits SET phase='released',http_limit=?,provider_limit=? WHERE id=1",(self.http_limit,self.provider_limit))
             c.commit()
         return {'status': 'RELEASED', 'phase': 'released'}
 
