@@ -52,10 +52,12 @@ def retrieve(question,mode=None,*,allow_network=False,k=None,threshold=None):
             if question!=frozen['question']:raise ValueError('paired_policy_query_changed_cache_only')
             if canonical_hash(documents(config.POLICY_PATH))!=frozen['policy_chunks_sha256']:
                 raise ValueError('paired_policy_corpus_changed')
+        policy_documents = []
         if mode=='keyword':
             profile=os.getenv('RAG_QUALITY_PROFILE','v351')
             if profile not in ('v35','v351'):raise ValueError('invalid_quality_profile')
-            hits=keyword(documents(config.POLICY_PATH),question,20 if profile=='v351' else k)
+            policy_documents=documents(config.POLICY_PATH)
+            hits=keyword(policy_documents,question,20 if profile=='v351' else k)
             quality={}
             if profile=='v351':
                 from target.rag_relevance import apply_quality
@@ -66,6 +68,9 @@ def retrieve(question,mode=None,*,allow_network=False,k=None,threshold=None):
         else:
             evidence=configured_index().retrieve(question,mode,k,float(threshold if threshold is not None else os.getenv('RAG_VECTOR_THRESHOLD','0.35')),
                 allow_network=allow_network,require_real=config.PROVIDER in ('deepseek','bailian'),quality_profile=os.getenv('RAG_QUALITY_PROFILE','v351'))
+        from target.railway_policy_evidence import active, select
+        if frozen is None and active():
+            evidence=select(question,evidence,documents=policy_documents,k=k)
         # The immutable corpus remains unchanged; the approved D9 projection is
         # applied only to the runtime view used by this answer (and recorded).
         from target.rag import _approved_policy_projection
@@ -113,7 +118,7 @@ def retrieve(question,mode=None,*,allow_network=False,k=None,threshold=None):
          embedding_receipts=record.get('embedding_receipts'),
          retrieval_origin='frozen_evidence_retrieval' if frozen is not None else 'current_execution',
          documents=record['hits'],hit_count=len(record['hits']),
-         duration_ms=record.get('total_latency_ms'),sufficiency=record.get('sufficiency'),
+         duration_ms=record.get('total_latency_ms'),sufficiency=record.get('answerability',record.get('sufficiency')),
          evidence_location='rag_runs.jsonl:retrieval_id='+identity,
          context_delivery='not_proven_by_retrieval_event',answer_support='not_verified',**event_scope)
     return {'question':question,'hits':record['hits'],'count':len(record['hits'])}

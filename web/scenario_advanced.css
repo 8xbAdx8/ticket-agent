@@ -1,0 +1,65 @@
+.st-key-scenario_advanced .ta-advanced-help {
+    color: var(--ta-text, #162e49);
+    background: color-mix(in srgb, var(--ta-panel, #fff) 94%, var(--ta-text, #162e49));
+    border: 1px solid var(--ta-border, #d6e0ec);
+    overflow-wrap: anywhere;
+}
+
+.st-key-scenario_advanced .ta-advanced-help > summary {
+    padding: 9px 14px;
+    cursor: pointer;
+    font-weight: 600;
+    background: transparent !important;
+}
+
+.st-key-scenario_advanced .ta-advanced-help > summary:focus-visible {
+    outline: 2px solid var(--ta-accent, #1555c4);
+    outline-offset: -3px;
+}
+
+.ta-advanced-help-body {
+    padding: 10px 14px 14px;
+    border-top: 1px solid var(--ta-border, #d6e0ec);
+    font-size: 0.875rem;
+    line-height: 1.6;
+}
+
+.ta-advanced-help-body p { margin: 5px 0; }
+.ta-advanced-help-body ul { margin: 5px 0 10px; padding-inline-start: 1.25rem; }
+.ta-advanced-help-body dl { margin: 0; }
+.ta-advanced-help-body dt { margin-top: 7px; font-weight: 600; }
+.ta-advanced-help-body dd { margin: 0; color: var(--ta-muted, #607188); }
+
+.ta-advanced-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+    gap: 10px;
+}
+
+.ta-advanced-parameters { max-width: 28rem; }
+
+.ta-advanced-metric {
+    min-width: 0;
+    padding: 12px 14px;
+    color: var(--ta-text, #162e49);
+    background: color-mix(in srgb, var(--ta-panel, #fff) 96%, var(--ta-text, #162e49));
+    border: 1px solid var(--ta-border, #d6e0ec);
+    border-radius: 8px;
+    overflow-wrap: anywhere;
+}
+
+.ta-advanced-metric h4 { margin: 0 0 4px; padding: 0; font-size: 0.9375rem; }
+.ta-advanced-metric p { margin: 4px 0 0; color: var(--ta-muted, #607188); font-size: 0.8125rem; line-height: 1.5; }
+.ta-advanced-metric .ta-advanced-status { font-weight: 600; color: var(--ta-text, #162e49); }
+
+.ta-advanced-count {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 6px 10px;
+    font-variant-numeric: tabular-nums;
+}
+
+.ta-advanced-count strong { font-size: 1.375rem; }
+.ta-advanced-count span { color: var(--ta-muted, #607188); font-size: 0.8125rem; }
+.ta-advanced-metric progress { display: block; width: 100%; height: 6px; margin: 5px 0; accent-color: var(--ta-accent, #1555c4); }

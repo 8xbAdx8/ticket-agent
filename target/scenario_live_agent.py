@@ -25,17 +25,22 @@ def deny_network(*args,**kwargs):
 
 class AgentRun:
     """Retained in the owner process across turns and trusted UI decisions."""
-    def __init__(self,batch_root,provider,*,transport=None,scenario='default',batch=None):
+    def __init__(self,batch_root,provider,*,transport=None,scenario='default',batch=None,evidence_root=None):
         if provider not in ('deepseek','bailian') or scenario not in ('default','sold_out','payment_fail'):
             raise ValueError('INVALID_TEST_CONFIGURATION')
         self.batch=batch if batch is not None else LiveBatch(batch_root)
         # No automatic authorization or recreation of a lost budget.
+        from target.scenario_abc_budget import IntegrationBatch, R2_ROOT
         with closing(self.batch.connect()) as connection:
-            if not connection.execute('SELECT * FROM v311_limits WHERE id=1').fetchone():
+            if not isinstance(self.batch, IntegrationBatch) and not connection.execute('SELECT * FROM v311_limits WHERE id=1').fetchone():
                 raise ValueError('V311_AUTHORIZED_BUDGET_REQUIRED')
         self.id=uuid.uuid4().hex;self.provider=provider;self.transport=transport
         self.mode='sdk_stub_agent' if transport is not None else 'live_agent'
-        self.root=self.batch.root/'cases'/self.id;self.root.mkdir(parents=True,exist_ok=False)
+        self.evidence_root = Path(evidence_root).resolve() if evidence_root is not None else self.batch.root
+        if self.evidence_root != self.batch.root and (not isinstance(self.batch, IntegrationBatch) or self.evidence_root != R2_ROOT):
+            raise ValueError('V311_INVALID_EXECUTION_NAMESPACE')
+        area = 'cases' if self.evidence_root == self.batch.root else 'agent-executions'
+        self.root=self.evidence_root/area/self.id;self.root.mkdir(parents=True,exist_ok=False)
         self.rows=[];self.halted=False
         from web.runtime import Conversation
         self.session=Conversation('user',engine='langchain',live=True,live_provider=provider,full_tools=True,root=self.root/'conversation')
@@ -61,7 +66,7 @@ class AgentRun:
         env=dict(RAILWAY_SIMULATION_ENABLED='1',RAILWAY_SIM_CLOCK_MODE='demo',
                  RAILWAY_SIM_DB_PATH=str(self.root/'simulation.sqlite'),
                  TICKET_TEST_MODE='1',TICKET_DATA_MODE='fixture',TICKET_RAILWAY_QUERY_ENABLED='0',
-                 TICKET_ACCEPTANCE_BATCH=str(self.batch.path),TICKET_API_USAGE_DIR=str(self.batch.root/'api-usage'),
+                 TICKET_ACCEPTANCE_BATCH=str(self.batch.path),TICKET_API_USAGE_DIR=str(self.evidence_root/'api-usage'),
                  TICKET_DISABLE_LOCAL_SECRETS='1',TICKET_WEB_OFFLINE_ONLY='0',
                  LANGSMITH_TRACING='false',LANGCHAIN_TRACING_V2='false',RAG_ALLOW_NETWORK='0',
                  DEEPSEEK_MAX_OUTPUT_TOKENS='2048',DASHSCOPE_MAX_OUTPUT_TOKENS='2048')

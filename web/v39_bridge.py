@@ -232,7 +232,8 @@ def render(session):
                 with card:
                     _proposal_card(session,service,ctx,effective,snapshot,proposal,labels)
             from web.proposal_navigation import mount
-            mount(session,pending[-1]['proposal_id'])
+            if not st.session_state.get('railway_order_focus_'+session.sid):
+                mount(session,pending[-1]['proposal_id'])
         notice = st.session_state.pop("v39_bridge_notice", None)
         if notice:
             _receipt_notice(notice)

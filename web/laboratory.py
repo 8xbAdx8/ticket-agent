@@ -26,6 +26,10 @@ def live_unavailable_reason(provider):
 
 def lab_page():
     header("智能体测试实验室", "显式选择场景与变异，在独立模拟环境中观察执行事实。", "A 实验 · 非 B 正式成绩")
+    render_experiment()
+
+
+def render_experiment():
     config_col, run_col = st.columns([1, 2.35], gap="large")
     with config_col, st.container(border=True):
         st.markdown("### 实验配置")
@@ -75,7 +79,7 @@ def lab_page():
             'M1 日期偏移': ('date_offset', '查明天上海到杭州的高铁二等座', '需要实际调用查票，比较用户日期与工具执行日期。'),
             'M2 跳过锁座': ('skip_lock', '帮我订明天上海到杭州G7301二等座，乘客张三', '需要模型尝试锁座；余票与模型行为会影响是否触发。'),
             'M3 重复调用': ('repeat_call', '查明天上海到杭州的高铁二等座', '需要实际调用查票，检查同一调用是否重复执行。'),
-            'M4 监控重入': ('infinite_loop', '候补明天北京到上海G101二等座，监控30分钟', '目标班次须存在且无票；受单轮步骤和工具调用上限约束。'),
+            'M4 监控重入': ('infinite_loop', '抢明天北京到上海的票', '目标班次须存在且无票；受单轮步骤和工具调用上限约束。'),
             'M5 政策误路由': ('route_error', '锁座后多久必须完成支付？', '需要模型请求政策检索，检查实际执行的工具。'),
             'M6 缺少引用': ('no_citation', '锁座后多久必须完成支付？请注明政策来源。', '政策检索需要有命中文档。'),
             'M7 假车次': ('hallucinated_train', '查明天上海到杭州的高铁二等座', '需要查到可用结果；检查工具返回与数据库的差异。'),
@@ -115,7 +119,9 @@ def lab_page():
                 # A deliberately new click after rerender gets the next nonce.
                 request_id=st.session_state['lab_submit_nonce']
                 st.session_state['lab_submit_nonce']=uuid.uuid4().hex
-                with scoped({"MAX_STEPS": int(max_steps)} if not live else {}):
+                # The original mutation suite targets the eight-tool Agent.
+                # The user's railway switch must not replace that lab provider.
+                with scoped({"MAX_STEPS": int(max_steps)} if not live else {}, {"RAILWAY_SIMULATION_ENABLED": "0"}):
                     execute(session, text, request_id)
                 st.rerun()
         if enabled.get("concurrent_duplicate_order"):

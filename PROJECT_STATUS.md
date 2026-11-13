@@ -1,5 +1,13 @@
 ﻿# Ticket Agent 项目状态
 
+> **2026-11-11 队长成果选择性整合**。七维度总览展示 B 方历史 Mock 和正式 103 BLOCKED，以适用用例为覆盖分母，分别保留跳过、未执行、未知和缺失。缺陷注入分组计数，额外探测 14/16 条原始记录、适用项 14/15，T04 漏检、R01 不适用，M8 独立下钻。专项 124/0/0（33 子测试），完整回归 2098 / 11 / 1（199 子测试），历史失败与跳过 ID 无变化；Edge 四规格 20/20，独立只读复核通过，真实 API 0。证据 artifacts/runtime/team-selective-integration-20261111-215054-b7f3db/。仅吸收总览与变异分析。四层审计及评委打包仍需单独整改；本轮无提交、推送或合并。
+
+> **2026-11-11 AI 场景生成高级工具易用性**。顶部两个技术区归入「高级测试工具」，默认折叠。16 条预设提供通俗名称、检查内容和使用提示。载入沿用待审核入口。覆盖报告将执行证据与候选参数检查分开展示，保留原始三组 JSON 和统计定义。专项 126 通过。Edge 桌面和手机深浅主题、预设载入及隔离离线统计对照通过。真实模型请求 0。证据 `artifacts/runtime/scenario-advanced-20261111-175402-023485/`。未提交、推送、合并或打 Tag。
+
+> **2026-11-11 AI 测试场景生成新手引导**。测试目标和高级生成约束新增空值提示、可展开的灰色示例卡及各自的填入和清空按钮。两个文本草稿在同一浏览器标签页刷新后恢复，原有生成提交、在线授权、预算和人工审核流程沿用。隔离专项 74 通过，Edge 四规格和键盘、刷新交互通过。真实模型请求 0，Mock 验证生成 1 条 PENDING、执行 0 条。证据 `artifacts/runtime/scenario-guidance-20261111-172231-459509/`。未提交或推送。
+
+> **2026-11-11 QA-09 场景质量门整改**。PASS。创建和人工审核使用同一规则，校验实际经停路径、G7331 精确车次及 trip_id、日期和区间、全程站数及顶层 flag.enabled。三条历史候选原件及 PENDING 保留。新专项 53/0/0，相关专项 222/0/0，完整 2079/11/1，另 199 子测试通过，历史失败和跳过 ID 逐项一致。DeepSeek/Qwen 各 2 次真实生成，17,604/17,918 Token，合计 35,522，费用 UNKNOWN。两家复验各 1 条通过最终质量门，4 条新候选均 PENDING。Edge、隔离 SQLite、独立审查已验证。HEAD `68f6a5c80ab6fadde3815d0e6e1a0371392d81c9`，暂存空，未提交推送。报告 `docs/reviews/Ticket-Agent-QA09-Fix-Report-20261111.md`，证据 `artifacts/runtime/qa09-fix-live-20261111/run-20261111-160800-054851/`。下一步为用户验收及候选人工审核，正式 103 条继续 BLOCKED。百炼原账本外部追加经用户确认，开工前缀完整，追加与独立请求已对账。
+
 > **2026-11-11 产品 QA 真实模型补测**。PARTIAL。独立批次 12/12，DeepSeek 与 Qwen 各 6 次，81,877 Token，费用 UNKNOWN，零自动重试。两家真实 Agent 均由原页面生成建单提案并完成自动定位、用户确认、独立模拟支付和 SQLite Oracle。生成三条候选均保留待审核，最终质量未通过。修复 QA-09 的经停断言路径示例和审核漏检，DeepSeek 复验使用正确路径，因新生成的 flag 参数和站数问题仍不能批准。修复专项 76/0/0，8457 项保护资产零差异。报告 `docs/reviews/Ticket-Agent-Product-QA-Live-20261111.md`，证据 `artifacts/runtime/v310-v311-qa-product-live-20261111/`。
 
 > **2026-11-11 产品实际操作与缺陷检测**。PARTIAL。已修复 8 项缺陷，涵盖候选和执行统计、编辑及审核、DSL 校验、拒绝提案 Oracle、终止订单乘客文案和提案来源 Trace。Edge 实际验证离线 Agent 建单、支付、部分退款、改签及最终退款，SQLite 守恒通过。完整回归 2023/11/1，另 199 个子测试通过，失败及跳过 ID 与历史一致。最后的审计关联改动以最终专项 580/0/0 及浏览器复验。独立真实 API 批次未定额度，本轮 0 请求、0 Token。报告 `docs/reviews/Ticket-Agent-Product-QA-20261111.md`，证据 `artifacts/runtime/v310-v311-qa-product-20261111/`。未提交推送。
@@ -1234,3 +1242,85 @@ RAG历史：V3.5.2指标重算无数学错误，原值不改；DeepSeek完整回
 ### 2026-11-11 建单导航与数据库回执诊断维护
 
 完成提案位置联动、真实报价摘要、回执只读证明、未知结果和业务不一致的独立展示及防重。修改web/business_actions.py、business_panels.py、conversation.py、request_motion.py、session_store.py、v39_bridge.py；新增web/receipt_verification.py、proposal_navigation.py、target/v39/receipt_proof.py及tests/v39/test_ui_receipt_diagnosis.py；更新target/v39/read_model.py、本状态与独立报告。Service/D9/P01/公开工具/Prompt不改。最终专项438通过、完整冻结2012/11/1，保存全部失败批次，原11失败和Skip未删改。DS/Qwen均真实生成提案并在隔离库完成独立建单/支付与Oracle；共8HTTP、42281Token、成本UNKNOWN。下一步由用户验收；如需补足无中断双模型浏览器链路或可写刷新恢复，须单独处理可信会话恢复设计及新Live额度，不扩大本批次、不恢复失效Secret。不提交或推送。
+
+### 2026-11-12：测试工作台五板块 UI 收敛
+
+- 测试工作台导航由旧九入口混合状态收敛为五项：AI 场景总测试、质量分析、RAG / 多轮 / 安全、边界与异常测试、性能测试；顺序固定。
+- 删除旧导航：测试总览、测试实验室、AI 测试场景生成、Trace 分析、模型对比、RAG 知识库、集成中心、V3.7 离线验收、历史质量分析。底层文件保留，A/B 顶层工作空间保留。
+- 页面 1 主按钮统一为「开始本轮测试」；页 2 统一为「质量分析」；页 2–5 只读同一 `run_id`，未开始时显示引导。
+- 新增 `tests/test_workbench_five_nav.py`；相关 UI/工作台测试 12 passed；浏览器桌面/手机五入口、旧入口消失、无溢出、无 Console/PageError。
+- 新增/更新 `现阶段总结.md`、`评审预览.html`、`README.md`、`00_总体契约.md`、`03_测试控制台.md`。历史证据未改。
+
+### 2026-11-12：V3.11-R2 五板块验收（PARTIAL）
+
+- 单一配置源 `web/workbench_config.py`；app/view/tests 读取同一五入口。
+- 原始 134 失败逐项分类：33 旧导航（A）、86 环境/Provider（C）、2 夹具（E）；原始 results/JUnit/pytest.log 与 CSV 见 `artifacts/runtime/workbench-r2-20261112/`。
+- 定向 12/0/0；完整回归仍 FAIL（旧 A 类未全部迁移、C/E 环境夹具未修），未新增 skip/xfail、未删测试。
+- 浏览器五入口/响应式/主题通过；完整“开始本轮测试→执行→五页”NOT_RUN。
+- 保护 5587 检查：5584 unchanged + 3 历史差异（1 已批准预算例外 + 2 API 账本追加），0 missing。
+- 独立 UI 审查 CONDITIONAL_PASS；R2 全量独立审查 NOT_RUN；整体 PARTIAL。
+- HEAD 68f6a5c80ab6fadde3815d0e6e1a0371392d81c9，未 commit/push。
+
+### 2026-11-12：V3.11-R2 QA-09 与真实模型闭环（PARTIAL）
+
+- 新增原始 DSL 结构校验、Provider 专属完整示例、审批前哈希门禁、原 Agent 隔离执行与交叉 Judge。两家真实候选各一条通过 QA-09，经用户授权代点进入原工作台。首条 DeepSeek R2 候选拒绝记录保留。
+- DeepSeek 完成模拟建单，SQLite 核验为 `PENDING_PAYMENT / UNPAID`，两人、6000 分、有效占座、0 交易。Qwen 完成查询及报价。交叉 Judge 为 DeepSeek 对 Qwen 通过、Qwen 对 DeepSeek 无法判定。两轮均 8/8 HTTP，支付、退改及完整四层一致性待验。
+- 本轮真实 17 HTTP、119,669 Token，共用批次累计 19 HTTP、129,251 Token，费用 UNKNOWN。R2 定稿专项 159 通过、46 子测试通过，V3.9 业务 403/4/0 且历史失败 ID 不变。Edge 同一运行 ID 五面板、Trace、Judge 及刷新恢复通过。
+- DeepSeek 并行五入口改动已保留。合并现场离线专项 154 通过、32 子测试通过、19 条旧测试总览导航失败记录（含 14 条子测试）。独立审查 CONDITIONAL PASS，正式 103 仍 BLOCKED。HEAD `68f6a5c80ab6fadde3815d0e6e1a0371392d81c9`，暂存空，未提交推送。
+- 报告 `docs/reviews/Ticket-Agent-V3.11-R2-QA09-Live-Report-20261112.md`，证据 `artifacts/runtime/v311-r2-qa09-live-20261112/`。下一步需确认旧测试总览入口的产品归属，并安排可覆盖完整模拟交易链与四层证据的验收。
+
+### 2026-11-12：V3.11-R2.1 第 04 页异常注入恢复
+
+- 「边界与异常测试」接回原 M1–M8 实验配置、执行、按实验会话 ID 回放、历史缺陷统计和 M8 并发证据。五个一级板块保持。M1 原开关 `date_offset=1`，沿用原执行器和独立判定。
+- Edge 实测 M1 偏移日期后平台检出，刷新回放 Trace SHA 一致，变异前后日期正常展示。M8 正常库 1 单、影子库 2 单，平台检出。专项 57/0/0，16 个子测试通过；桌面浅色、手机深色验证通过。真实模型请求 0，整仓回归未运行。
+- 文件 `web/consistency_audit_view.py`、`web/laboratory.py`、`web/quality.py`、`web/trace_view.py`、`tests/test_fault_workbench_restore.py`。报告 `docs/reviews/V311-R2.1-FAULT-INJECTION-RESTORATION.md`，证据 `artifacts/runtime/v311-r21-fault-restoration-20261112-155412/`。HEAD `68f6a5c80ab6fadde3815d0e6e1a0371392d81c9`，暂存为空，本轮提交数 0。
+
+### 2026-11-13：V3.11 全产品验收（PARTIAL）
+
+- 清单 510 行，实测 168 行，166 PASS、2 FAIL、3 BLOCKED、339 NOT_RUN。三工作空间及五板完成 Edge 四规格验证。桌面三人模拟建单、支付、部分退款、改签和最终退款，手机取消与刷新，M1–M8 平台检出均有原始证据。
+- 修复开发者配置 revision、原实验室铁路隔离、M4 预设、开发者 JSON 空状态、D9 政策投影、Oracle 政策条件误报和同句漏判、费率查询误进退票确认、P03 发车后规则。最终专项 153 通过，独立审查 CONDITIONAL_PASS。正式 103 条继续 BLOCKED。
+- DeepSeek/Qwen 各 6 次真实 HTTP，合计 56,921 Token，费用 UNKNOWN，零重试。两条真实候选按用户授权实际代点批准，原离线执行器和交叉 Judge 通过。两家 Live 政策保留 FAIL，修后离线复验通过，多轮与修后真实政策待复测。
+- 整仓 2115 passed、51 failed、1 skipped、17 setup errors，另 185 个子测试通过。最后两次完整回归失败和 Skip ID 一致。原 QA-09 的 11 个失败 ID 均仍存在。
+- 证据 `artifacts/runtime/v311-full-product-qa-20261112/`。HEAD `68f6a5c80ab6fadde3815d0e6e1a0371392d81c9`，暂存为空，未提交、推送或合并。整仓原始日志和独立审查在同目录。
+
+### V3.11.1 建单导航与 Judge 恢复
+
+- 建单核验成功后自动定位右栏「我的订单」并选择本次新单。Edge 桌面和手机复验通过，验证双击、会话隔离、刷新回读、后续提案及失败不跳转。
+- 历史运行 `3e3c6c6a83064b50834852d9800b8120` 的 Judge 原请求体复现为 162,036 字节，在本地 64,000 字节保护处拒绝，未发送评判 HTTP。已压缩重复证据并加入脱敏诊断和仅恢复评判，历史原件保留。隔离副本两条 Mock HTTP 复验通过，真实请求 0，待 Live 复验。
+- 相关回归 178 通过、3 失败、0 跳过，前后失败 ID 一致。新增专项 15 通过。报告 `artifacts/runtime/v3111-gap-closure/`。本轮未提交或推送。
+
+### V3.11.2 动态 AI 测试用例生成
+
+- 普通工作台修正 V3.10 生成提示中旧 `expect` 与步骤 `checks` 的冲突，增加动态流程、逐条拒绝原因及人工审核内容。历史两次 DeepSeek 请求均为 200，失败批次 7 条全部卡在非空 `expect`。
+- DeepSeek 真实生成 2 次，共 8,282 Token，费用 UNKNOWN，零重试。铁路 2 条、退改政策 3 条均进入待人工审核。Edge 桌面和手机刷新同一运行通过。候选批准、执行和 Judge 均未发生。
+- 新增专项 11 通过，相关回归 116 通过、2 个历史导航断言失败、0 跳过。完整经停和严格政策引用断言仍有覆盖缺口。报告 `artifacts/runtime/v3112-dynamic-generation/REPORT.md`，本轮未提交或推送。
+
+### V3.12 智能测试闭环（PARTIAL）
+
+- 修复离线铁路首屏计数说明和同会话翻页。Legacy、LangChain 均实测查车次、翻页、经停、双车比较；第二轮使用实际游标，四轮无写交易。原 c7698389… Judge 和客观断言成绩保留。当前版本的 Judge 未使用真实模型复测。
+- 质量分析增加基于已封存证据的缺口识别、同会话历史和下一轮计划。补充生成复用现有质量门，关联来源运行、缺口和 Trace，等待人工审核。评判费用需另行授权。Edge 四规格 33 项通过，生成与 Judge 使用确定性替身；一条经测试人员明确批准并完成原离线执行，另三条保持待审。
+- 冻结 RAG 1000 条 Keyword 全部运行。Recall@5 85.98%，Precision@5 24.35%，MRR 0.7818；无答案误召回仍为 121/150。铁路 P01、D9、P03 各有产品离线证据，组合问法漏 P03，无答案探针拒答失败。M1–M8 实际注入并被平台检出，模型自主识别和恢复缺证据。静态和同锁并发各完成 1/4/10/20 客户端本地压测。
+- 最终专项 87 通过及 14 子测试。整仓快照 2148 通过、54 失败（含 14 子测试）、1 Skip、17 setup errors，另 185 子测试通过；与本轮开工完整批次逐 ID 无增减。最终 UI 费用授权及性能表的追加变动由最终专项和 Edge 覆盖。
+- 本轮 0 真实 HTTP、0 Token、0 实际模型费用。正式 103 条仍 BLOCKED。HEAD `68f6a5c80ab6fadde3815d0e6e1a0371392d81c9`。证据 `artifacts/runtime/v312-intelligent-testing-closure-20261113/FULL-REPORT.md`。下一轮优先补 RAG 无答案和组合政策核验、可生成的经停 DSL 覆盖及真实模型授权后复测。
+
+### V3.12 测试工作台五板块引导
+
+- 质量分析改为横向显示实际判定计数。RAG／多轮／安全、边界与异常、性能页展示当前用例状态、触发条件和操作入口。边界区分未计划、待执行、未触发、漏检和检出。原 M1–M8、历史回放及五页导航保留。
+- 补充生成按缺口维度引导，维度不匹配的候选被拒绝。实际查询的分页摘要可供生成使用，独立并发负载和 Live Agent 验收继续作为独立项目。五类确定性候选经过质量门、人工审核并进入离线执行。
+- 定向 38 通过、2 项历史 UI 断言失败。真实 API 0。截图、Edge 结果及保护核验见 `artifacts/runtime/v312-workbench-guidance-20261113/REPORT.md`。正式成绩及已封存运行保留，本轮未提交或推送。
+
+### V3.13 真实 AI 生成与 RAG 整改（PARTIAL，2026-11-13）
+
+- 铁路产品的政策证据选择与双引擎回答校验已实现。Legacy、LangChain 各 13 条离线产品探针由 10/13 提升到 13/13。各引擎无答案拒答 7/7、有答案正确 6/6、P01/P03 组合 2/2。冻结 Keyword 千题前后 Recall@5 均为 85.98%，无答案误召回仍为 121/150。真实 Vector、Hybrid、回答及独立语义评估待验证。
+- 修复质量分析补充生成入口漏传人工审核标志，继续使用原质量门。通过原页面逐维发起 5 次 DeepSeek 请求，4 个 HTTP 200，RAG 连接失败 1 次，零重试。返回 7 条，其中 5 条待人工审核、2 条由质量门拒绝。候选未审批、未执行、未 Judge。实际观测 18,612 Token，失败请求用量和实际费用 UNKNOWN。
+- 新增两份测试文件，共 8 项通过。定向 88 通过、2 个历史 UI 失败。前后整仓 2,154→2,162 通过，54 失败、1 跳过、17 setup errors 的 ID 不变。隔离库无订单、Hold、交易或提案。正式 103 仍 BLOCKED。
+- 源码增量位于 `target/railway_policy_evidence.py`、`target/rag.py`、`target/rag_service.py`、`target/agent.py`、`target/langchain_agent.py`、`target/scenario_workbench.py` 和 `web/consistency_audit_view.py`。HEAD `68f6a5c80ab6fadde3815d0e6e1a0371392d81c9`。未暂存、提交或推送。
+- 报告与原始证据见 `artifacts/runtime/v313-ai-generation-rag-closure/REPORT.md`。下一步优先审核五条候选，另行授权后补测 RAG 真实生成，并补充可执行异常注入和独立负载证据。
+
+### V3.14 RAG 故障诊断与候选审核准备（PARTIAL，2026-11-14）
+
+- V3.13 RAG 生成失败定位到工作台向 Provider 发起请求后的连接层。Edge 到本地工作台正常，约 2.05 秒后发生 `OpenAIConnectionError`，无 HTTP 回执。底层 DNS、TCP、TLS、代理或沙箱原因仍为 `UNKNOWN`。
+- 五条待审候选通过静态契约复核，审核资料为 `REVIEW_READY`。建议修改 3 条、拒绝 1 条当前支付防护计划、接受 1 条仅作顺序性能烟雾测试。安全来源 Trace 显示订单工具回执为空，LangChain 离线回复却称 1 笔。已登记证据，源码未变。候选状态保持待审。
+- 冻结 Keyword 千题逐条离线重放及指标复算完成，Recall@5 85.98%、Precision@5 24.35%、MRR 0.7818、nDCG@5 0.7651。无答案仍有召回 121/150，含 4 条可能有语义争议。结构复核 430 verified、570 待 B 语义审核。42 份政策正文一致但两种版本 ID 不同，影响 291 条 verified 的潜在版本比对，已登记。
+- 本轮真实 API、Embedding、候选审批、执行与 Judge 均 0。未运行 pytest；复算与历史证据 SHA 核验已完成。正式 103 条仍 `BLOCKED`。单次 RAG 生成预算仅备案，状态 `WAITING_FOR_AUTHORIZATION`。
+- Git HEAD `68f6a5c80ab6fadde3815d0e6e1a0371392d81c9`，未提交或推送，原 8502 服务保留。报告位于 `artifacts/runtime/v314-rag-live-closure/REPORT.md`。

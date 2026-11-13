@@ -3,6 +3,7 @@ import altair as alt
 import pandas as pd
 import streamlit as st
 from web.design import COLORS, LABELS
+from web.evidence import MUTATIONS, STATUS_LABELS
 
 
 def finish(chart,height=245):
@@ -21,11 +22,12 @@ def dimensions(rows):
 
 
 def statuses(counts,outcomes=("通过","失败")):
-    labels=dict(LABELS,passed=outcomes[0],failed=outcomes[1])
-    frame=pd.DataFrame([{"status":labels[s],"count":counts[s],"code":s} for s in LABELS])
+    labels=dict(LABELS,passed=outcomes[0],failed=outcomes[1],not_run="未执行",unknown="未知")
+    colors=dict(COLORS,not_run=COLORS["not_verified"],unknown=COLORS["indeterminate"])
+    frame=pd.DataFrame([{"status":label,"count":counts.get(key,0),"code":key} for key,label in labels.items()])
     return finish(alt.Chart(frame).mark_bar(cornerRadiusEnd=4,size=20).encode(
         y=alt.Y("status:N",sort=None,title=None),x=alt.X("count:Q",title="用例数"),
-        color=alt.Color("code:N",scale=alt.Scale(domain=list(COLORS),range=list(COLORS.values())),legend=None),tooltip=["status:N","count:Q"]))
+        color=alt.Color("code:N",scale=alt.Scale(domain=list(colors),range=list(colors.values())),legend=None),tooltip=["status:N","count:Q"]))
 
 
 def latency(rows):
@@ -40,10 +42,17 @@ def mutation_distribution(rows):
 
 
 def heatmap(rows):
-    palette={"detected":"#438e7d","missed":"#ce6375","not_triggered":"#8878b1","not_applicable":"#67768c","not_verified":"#303b50","indeterminate":"#b39353"}
+    palette={"detected":"#438e7d","missed":"#ce6375","not_triggered":"#8878b1","not_applicable":"#67768c",
+             "not_run":"#657ca2","skipped":"#596979","not_verified":"#303b50","indeterminate":"#b39353","unknown":"#826983","missing":"#a3663f"}
+    frame=pd.DataFrame([{
+        "mutation": row["mutation"], "case_id": row["case_id"], "c5": row.get("c5"),
+        "kind": f"M{MUTATIONS.index(row['mutation']) + 1}", "result_label": STATUS_LABELS[row["status"]],
+    } for row in rows], columns=["mutation","case_id","c5","kind","result_label"])
     point=alt.selection_point(name="cell",fields=["mutation","case_id"],on="click",empty=False)
-    chart=alt.Chart(pd.DataFrame(rows)).mark_rect(cornerRadius=2,strokeWidth=2,stroke="#161c27").encode(
-        x=alt.X("case_id:N",sort=None,title="宿主用例",axis=alt.Axis(labelAngle=-40)),y=alt.Y("mutation:N",sort=None,title=None,axis=alt.Axis(labelLimit=220,labelOverlap=False,labelFontSize=11)),
-        color=alt.Color("status:N",scale=alt.Scale(domain=list(palette),range=list(palette.values())),legend=alt.Legend(title="单元格状态",orient="bottom")),
-        opacity=alt.condition(point,alt.value(1),alt.value(.8)),tooltip=["mutation:N","case_id:N","status:N","c5:N"]).add_params(point)
+    chart=alt.Chart(frame).mark_rect(cornerRadius=2,strokeWidth=2,stroke="#161c27").encode(
+        x=alt.X("case_id:N",sort=None,title="宿主用例",axis=alt.Axis(labelAngle=-40)),y=alt.Y("kind:N",sort=None,title=None),
+        color=alt.Color("result_label:N",scale=alt.Scale(domain=[STATUS_LABELS[key] for key in palette],range=list(palette.values())),legend=alt.Legend(title="单元格状态",orient="bottom",columns=3)),
+        opacity=alt.condition(point,alt.value(1),alt.value(.8)),tooltip=[
+            alt.Tooltip("kind:N",title="变异类型"),alt.Tooltip("case_id:N",title="宿主用例"),
+            alt.Tooltip("result_label:N",title="判定"),alt.Tooltip("c5:N",title="C5 命中")]).add_params(point)
     return finish(chart,310)

@@ -127,14 +127,20 @@ def _search(s,ctx):
     if st.button('生成建单确认卡',key='v39_create_proposal',disabled=inv['available'] is None or inv['available']<len(names)):
         _call(s,ctx,'railway_create_order',dict(quote_id=fare['quote_id'],passengers=names,contact=ctx.owner_phone));st.rerun()
 
-def _orders(s,ctx,snapshot=None,session=None):
+def _orders(s,ctx,snapshot=None,session=None,*,view_only=False):
     if session is None:st.subheader('我的铁路模拟订单')
     if 'railway_get_order' not in ctx.tool_whitelist:st.info('当前会话配置未开放订单查询。');return
     rows=snapshot['orders'] if snapshot is not None else s.order(ctx)
     if not rows:st.info('还没有铁路模拟订单。查询行程并确认建单后，订单会出现在这里。');return
     options=[r['order_id'] for r in rows]
-    if st.session_state.get('v39_order') not in options:st.session_state['v39_order']=options[0]
-    oid=st.selectbox('选择本人订单',options,key='v39_order')
+    key='railway_order_widget_'+session.sid if session else 'v39_order'
+    choice='railway_order_choice_'+session.sid if session else key
+    if st.session_state.get(key) not in options:
+        selected=st.session_state.get(choice)
+        st.session_state[key]=selected if selected in options else options[0]
+    def remember():
+        st.session_state[choice]=st.session_state[key]
+    oid=st.selectbox('选择本人订单',options,key=key,on_change=remember)
     o=next(r for r in rows if r['order_id']==oid) if snapshot is not None else s.order(ctx,oid)
     marker=(ctx.session_id,oid,o['version'])
     if st.session_state.get('v39_order_items_context')!=marker:
@@ -150,6 +156,9 @@ def _orders(s,ctx,snapshot=None,session=None):
         st.write('当前票面 ¥'+f"{o['total_fen']/100:.2f}"+'；累计模拟支付 ¥'+f"{o['paid_total_fen']/100:.2f}"+'；累计模拟退款 ¥'+f"{o['refunded_total_fen']/100:.2f}"+'；手续费 ¥'+f"{o['fee_total_fen']/100:.2f}")
         from target.v39.read_model import passenger_status_text
         st.dataframe([dict(模拟乘客=i['passenger_name'],状态=passenger_status_text(o,i),票面元=f"{i['fare_fen']/100:.2f}",明细编号=i['item_id']) for i in o['items']],hide_index=True,width='stretch')
+        if view_only:
+            st.caption('另有待确认操作，请先处理原确认卡。')
+            return
         if o['order_status']=='PENDING_PAYMENT':
             st.caption('支付仅改变本地演示状态，不会真实扣款；锁座截止 '+o['expires_at'])
             a,b=st.columns(2)

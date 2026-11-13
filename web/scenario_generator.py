@@ -2,6 +2,9 @@
 import json
 import streamlit as st
 from target.scenario_generator import Store, CATEGORIES
+from web.scenario_advanced import advanced_tools
+from web.scenario_drafts import mount_drafts
+from web.scenario_examples import constraints_input, objective_input, style_examples
 
 
 def page():
@@ -10,22 +13,7 @@ def page():
     store = Store()
     rows = store.list()
     runs = store.runs()
-    with st.expander('V3.10 确定性集成计划'):
-        from target.scenario_plans import plans, candidate
-        references = {p['title']: p for p in plans()}
-        selected_plan = st.selectbox('参考计划', list(references))
-        st.caption('参考计划来自版本化确定性夹具。载入后仍需人工审核，执行时使用新数据库和真实Registry/Service。')
-        if st.button('载入参考计划为待审核候选'):
-            store.save(candidate(references[selected_plan]), 'reference-plan-import')
-            st.rerun()
-    with st.expander('质量与覆盖率（实际执行证据）'):
-        from target.scenario_quality import quality, coverage, model_comparison
-        metrics = quality(rows, runs)
-        measured = coverage([r['body'] for r in runs])
-        st.caption('每项包含分子、分母和定义。无数据为N/A。确定性集成与Live Agent分别记录。')
-        st.json(metrics)
-        st.json(measured)
-        st.json(model_comparison(store.original_candidates(), store.generations()))
+    advanced_tools(store, rows, runs)
     st.write(f"候选 {len(rows)} · 待审核 {sum(r['status']=='PENDING' for r in rows)} · 已批准 {sum(r['status']=='APPROVED' for r in rows)} · 已执行 {len({r['case_id'] for r in runs})}")
     if rows:
         st.caption('最近一次生成 ' + max(r['body']['created_at'] for r in rows))
@@ -33,23 +21,27 @@ def page():
     if budget_path.is_file():
         from target.acceptance_budget import Batch
         budget = Batch(budget_path).snapshot()
-        st.caption(f"生成批次剩余 {budget['remaining_http_requests']} 个请求，累计 Token 不设硬上限，费用 UNKNOWN")
+        remaining_tokens = budget.get('remaining_tokens')
+        token_message = '累计 Token 不设硬上限' if remaining_tokens is None else f'剩余 {remaining_tokens:,} Token'
+        st.caption(f"生成批次剩余 {budget['remaining_http_requests']} 个请求，{token_message}，费用 UNKNOWN")
         if budget['warning']:
             st.warning('当前生成批次已达到Token预警线。')
     with st.expander('生成测试场景', expanded=True):
         receipt = st.session_state.pop('ai_scenario_generation_receipt', None)
         with st.form('ai_scenario_generate'):
-            objective = st.text_area('测试目标', height=120, max_chars=4000)
+            objective = objective_input()
             category = st.selectbox('测试领域', list(CATEGORIES))
             difficulty = st.selectbox('测试难度', ['easy', 'medium', 'hard'], index=1)
             count = st.number_input('生成数量', min_value=1, max_value=5, value=1)
             provider = st.selectbox('生成模型', ['Mock', 'deepseek', 'bailian'])
             adapter_label = st.selectbox('生成目标适配器', ['V3.10 DSL', 'Legacy P2'])
             adapter = 'v310' if adapter_label == 'V3.10 DSL' else 'p2'
-            constraints = st.text_area('高级生成约束', max_chars=2000)
+            constraints = constraints_input()
             consent = st.checkbox('授权本次生成调用所选在线模型并产生费用')
-            st.caption('V3.10 DSL 生成真实 railway_* 可执行步骤；Legacy P2 保留兼容。单次最多1个HTTP请求、4096输出Token、零自动重试。在线共享持久批次上限50请求，累计Token无硬上限、320000预警。费用未知时记录UNKNOWN。Mock只验证流程，不冒充AI生成。')
+            st.caption('V3.10 DSL 生成真实 railway_* 可执行步骤；Legacy P2 保留兼容。单次最多1个HTTP请求、4096输出Token、零自动重试。在线生成受当前持久化批次限制。费用未知时记录UNKNOWN。Mock只验证流程，不冒充AI生成。')
             generate = st.form_submit_button('生成候选场景', type='primary')
+        style_examples()
+        mount_drafts()
         if generate:
             if provider != 'Mock' and not consent:
                 st.warning('请先授权本次在线生成。')

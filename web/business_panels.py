@@ -48,27 +48,12 @@ def summary(session):
                         from web.railway_simulation import _call
                         _call(session._v39_service,session._v39_context,'railway_create_order',dict(quote_id=q['quote_id'],passengers=passengers,contact=session._v39_context.owner_phone),session);st.rerun()
     if rail.get('orders'):
-        st.markdown('### 我的订单')
-        if session.read_only:
-            from target.v39.read_model import passenger_status_text, status_text
-            for o in rail['orders']:
-                with st.container(border=True):
-                    st.write(status_text(o));st.caption('票面 ¥'+f"{o['total_fen']/100:.2f}"+'；净支付 ¥'+f"{o['net_paid_fen']/100:.2f}")
-                    with st.expander('乘客与交易'):
-                        st.dataframe([dict(乘客=i['passenger_name'],状态=passenger_status_text(o,i)) for i in o['items']],hide_index=True)
-                        st.json(o['transactions'],expanded=False)
-            st.caption('历史会话只读；不会恢复确认令牌或自动继续旧交易。')
-            try:
-                from web.v39_payment import panel as payment_qr
-                payment_qr(session,rail,read_only=True)
-            except (ValueError,TypeError):
-                st.caption('支付二维码状态暂不可读取；未执行支付。')
-        elif not rail.get('pending_proposals'):
-            from web.railway_simulation import _orders
-            with scope(session._v39_effective):_orders(session._v39_service,session._v39_context,rail,session)
-        else:
-            from target.v39.read_model import passenger_summary
-            for o in rail['orders']:st.caption(o['order_id']+' · '+o['order_status']+' · '+passenger_summary(o))
+        with st.container(key='railway_my_orders'):
+            _railway_orders(session, rail)
+        order_focus=st.session_state.get('railway_order_focus_'+session.sid)
+        if order_focus:
+            from web.proposal_navigation import mount_order
+            mount_order(session,order_focus)
     if view.get('legacy'):
         with st.expander('原演示订单',expanded=not bool(rail.get('orders'))):
             for order in view['legacy']:st.caption(order['order_id']+' · '+order['train_no']+' · '+order['display_status'])
@@ -80,6 +65,31 @@ def summary(session):
         st.caption('来自本会话原演示查询，不是真实余票。' if legacy else '来自本会话已完成的静态查询，不表示实时余票。')
         for train in view['recommendations']:
             st.caption(str(train.get('trip_short_name') or train.get('trip_id') or train.get('train_no'))+' · '+str(train.get('departure_at') or train.get('depart') or '时刻未提供')+' → '+str(train.get('arrival_at') or train.get('arrive') or '时刻未提供'))
+
+
+def _railway_orders(session, rail):
+    st.markdown('### 我的订单')
+    if session.read_only:
+        from target.v39.read_model import passenger_status_text, status_text
+        for o in rail['orders']:
+            with st.container(border=True):
+                st.write(status_text(o));st.caption('票面 ¥'+f"{o['total_fen']/100:.2f}"+'；净支付 ¥'+f"{o['net_paid_fen']/100:.2f}")
+                with st.expander('乘客与交易'):
+                    st.dataframe([dict(乘客=i['passenger_name'],状态=passenger_status_text(o,i)) for i in o['items']],hide_index=True)
+                    st.json(o['transactions'],expanded=False)
+        st.caption('历史会话只读；不会恢复确认令牌或自动继续旧交易。')
+        try:
+            from web.v39_payment import panel as payment_qr
+            payment_qr(session,rail,read_only=True)
+        except (ValueError,TypeError):
+            st.caption('支付二维码状态暂不可读取；未执行支付。')
+    elif not rail.get('pending_proposals') or st.session_state.get('railway_order_focus_'+session.sid):
+        from web.railway_simulation import _orders
+        with scope(session._v39_effective):
+            _orders(session._v39_service,session._v39_context,rail,session,view_only=bool(rail.get('pending_proposals')))
+    else:
+        from target.v39.read_model import passenger_summary
+        for o in rail['orders']:st.caption(o['order_id']+' · '+o['order_status']+' · '+passenger_summary(o))
 
 
 def receipts(session):

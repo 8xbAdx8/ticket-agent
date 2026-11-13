@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ticket Agent · 测试工作台五板块预览</title>
+<style>
+--bg:#f3f6fa; --panel:#fff; --text:#162e49; --muted:#607188; --line:#d6e0ec; --accent:#1555c4; --soft:#e8f0fd;
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:14px/1.6 "Microsoft YaHei",system-ui,sans-serif}
+.wrap{max-width:1100px;margin:0 auto;padding:32px 20px}h1{font-size:24px;margin:0 0 8px}p{color:var(--muted);margin:0 0 22px}
+.nav{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:8px;margin-bottom:22px}
+.nav a{display:block;text-align:center;text-decoration:none;color:var(--text);padding:10px 6px;border-radius:8px;font-weight:600}
+.nav a.active{background:var(--soft);color:var(--accent)}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px;margin:14px 0}
+.card h2{font-size:18px;margin:0 0 6px}.card .note{color:var(--muted);margin:0 0 14px}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.kpi{border:1px solid var(--line);border-radius:10px;padding:12px;background:#fbfcfe}
+.kpi b{display:block;font-size:18px;color:var(--accent)}.kpi span{font-size:12px;color:var(--muted)}
+.tag{display:inline-block;background:var(--soft);color:var(--accent);border-radius:999px;padding:2px 10px;font-size:12px}
+.warn{border-left:3px solid #8c5b0a;background:#fffaf0;padding:10px 14px;color:#5d4308;border-radius:6px}
+@media(max-width:760px){.nav{grid-template-columns:1fr 1fr}.grid{grid-template-columns:1fr 1fr}}
+@media(max-width:420px){.grid{grid-template-columns:1fr}.nav{grid-template-columns:1fr}}
+</style></head><body><div class="wrap">
+<h1>Ticket Agent · 测试工作台</h1>
+<p>五板块静态预览。真实数据只在运行 <b>AI 场景总测试</b> 后显示；本页不展示虚构 0/0、100% 或历史成绩。</p>
+<nav class="nav">
+<a class="active" href="#p1">01 AI 场景总测试</a><a href="#p2">02 质量分析</a><a href="#p3">03 RAG / 多轮 / 安全</a><a href="#p4">04 边界与异常测试</a><a href="#p5">05 性能测试</a>
+</nav>
+<section class="card" id="p1"><h2>01 · AI 场景总测试</h2><p class="note">读取本轮对话，生成用例、执行并判定；唯一启动入口。</p>
+<span class="tag">主按钮：开始本轮测试</span>
+<div class="grid" style="margin-top:14px"><div class="kpi"><span>本轮对话轮次</span><b>—</b></div><div class="kpi"><span>生成 / 校验 / 执行</span><b>—</b></div><div class="kpi"><span>客观断言</span><b>—</b></div><div class="kpi"><span>AI Judge</span><b>—</b></div></div>
+<p class="warn">尚未开始本轮测试时，不显示任何数字。</p></section>
+<section class="card" id="p2"><h2>02 · 质量分析</h2><p class="note">客观断言与 AI 评判分列，回答“理解、工具、时机、返回值、状态、幻觉”。</p>
+<div class="grid"><div class="kpi"><span>客观测试通过率</span><b>—</b></div><div class="kpi"><span>AI Judge 通过率</span><b>—</b></div><div class="kpi"><span>业务链路覆盖率</span><b>—</b></div><div class="kpi"><span>证据完整率</span><b>—</b></div></div>
+<p class="warn">数据来源必须与 01 的 run_id 相同。</p></section>
+<section class="card" id="p3"><h2>03 · RAG / 多轮 / 安全</h2><p class="note">三个方向共用本轮维度切片，不各建测试任务。</p>
+<div class="grid"><div class="kpi"><span>召回准确率</span><b>—</b></div><div class="kpi"><span>回答忠实度</span><b>—</b></div><div class="kpi"><span>跨轮记忆</span><b>—</b></div><div class="kpi"><span>安全拦截</span><b>—</b></div></div>
+<p class="warn">未覆盖的维度明确显示“本轮未覆盖”。</p></section>
+<section class="card" id="p4"><h2>04 · 边界与异常测试</h2><p class="note">输入不完整、超长上下文、工具异常、并发重复、业务冲突五类。</p>
+<div class="grid"><div class="kpi"><span>注入数量</span><b>—</b></div><div class="kpi"><span>检出数量</span><b>—</b></div><div class="kpi"><span>典型缺陷</span><b>—</b></div><div class="kpi"><span>处理结果</span><b>—</b></div></div>
+<p class="warn">没有注入记录时不填“未知”或“N/A”冒充结论。</p></section>
+<section class="card" id="p5"><h2>05 · 性能测试</h2><p class="note">并发、P50/P95、工具耗时和本轮结论。</p>
+<div class="grid"><div class="kpi"><span>并发请求</span><b>—</b></div><div class="kpi"><span>P50</span><b>—</b></div><div class="kpi"><span>P95</span><b>—</b></div><div class="kpi"><span>资源消耗</span><b>—</b></div></div>
+<p class="warn">本轮未执行并发场景时明确显示“本轮未执行并发场景”，不借用历史数据。</p></section>
+<p style="margin-top:20px;color:#607188;font-size:12px">本文件是评审预览，不是测试执行证据；真实结果以页面与原始证据为准。</p>
+</div></body></html>

@@ -264,11 +264,19 @@ class Agent:
             trace.abort(reply, "max_steps_exceeded")
 
         from target.v39.completion import resolve
-        reply,derived=resolve(trace.reply,message,[dict(e,event='tool_end') for e in run.executions])
+        events = [dict(e,event='tool_end') for e in run.executions]
+        reply,derived=resolve(trace.reply,message,events)
         if derived:emit('deterministic_duration_answer',**{k:v for k,v in derived.items() if k!='event'})
+        from target.railway_policy_evidence import public_answer
+        scoped_answer = public_answer(message, events)
+        if scoped_answer and scoped_answer != reply:
+            emit('railway_policy_answer','recorded',original_model_reply=reply,public_reply=scoped_answer)
+            reply = scoped_answer
+            if messages[-1].get('role') == 'assistant':
+                messages[-1] = dict(messages[-1], content=reply)
         from target.v39.business_claim_guard import apply as guard_business
         original=reply
-        reply,guard=guard_business(reply,[dict(e,event='tool_end') for e in run.executions],message)
+        reply,guard=guard_business(reply,events,message)
         if guard and guard['status']=='blocked':emit('business_claim_guard','blocked',original_model_reply=original,public_reply=reply,assessment=guard)
         trace.reply=reply
         out = trace.to_dict()

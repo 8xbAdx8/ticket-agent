@@ -3,6 +3,7 @@ import copy
 import io
 import json
 import os
+import re
 import time
 import uuid
 from contextlib import ExitStack
@@ -11,8 +12,13 @@ from unittest.mock import patch
 import config
 from target.v39.registry import NAMES, TOOLS
 ROOT = Path(__file__).resolve().parents[1]
+WORKBENCH_RUN_ROOT = ROOT / 'artifacts/runtime/v310-c-workbench-runs'
 KINDS = ('tool', 'confirm', 'advance', 'chat', 'qr', 'history', 'flag', 'foreign_confirm', 'foreign_order')
 OPS = ('eq', 'ne', 'ge', 'len', 'contains', 'not_contains')
+FLAG_SCHEMA = {'type': 'object', 'required': ['enabled'], 'properties': {'enabled': {'type': 'boolean'}}}
+PATH_MAX_LENGTH = 512
+PATH_PATTERN = r'[A-Za-z0-9_]+(?:\.[A-Za-z0-9_]+)*'
+CHAT_REFERENCE = re.compile(r'\{\{([A-Za-z0-9_.]+)\}\}')
 TABLES = ('v39_orders', 'v39_order_items', 'v39_holds', 'v39_transactions', 'v39_inventory_segments', 'v39_inventory_events', 'v39_refund_requests', 'v39_change_requests', 'v39_proposals', 'v39_idempotency', 'v39_refund_items', 'v39_hold_segments', 'v39_transaction_allocations')
 
 def confirmation_proof(pid, output, view):
@@ -67,6 +73,10 @@ def replay_proof(pid, output, before, after):
     receipt=next((r for r in before['db']['v39_idempotency'] if r['scope']=='confirm' and r['key']==key and r['status']=='SUCCEEDED'),None)
     return bool(receipt and json.loads(receipt['response_json'])==output and before['db']==after['db'])
 
+def valid_path(path):
+    return isinstance(path, str) and len(path) <= PATH_MAX_LENGTH and re.fullmatch(PATH_PATTERN, path) is not None
+
+
 def lookup(value, path):
     for part in path.split('.'):
         value = value[int(part)] if isinstance(value, list) else value[part]
@@ -81,48 +91,67 @@ def resolve(value, variables):
         return [resolve(item, variables) for item in value]
     return value
 
-def validate(case):
+def validate(case, diagnostics=None):
     errors = []
+
+    def report(code, message, step=None, path=None):
+        errors.append(f'step {step}: {message}' if step is not None else message)
+        if diagnostics is not None:
+            diagnostic = dict(code=code, step=step, message=errors[-1])
+            if path is not None:
+                diagnostic['path'] = path
+            diagnostics.append(diagnostic)
+
     steps = case.get('integration_steps')
-    if case.get('execution_adapter') != 'v310' or not isinstance(steps, list) or (not 1 <= len(steps) <= 40):
-        return ['v310 plan requires 1 to 40 steps']
+    if case.get('execution_adapter') != 'v310' or not isinstance(steps, list) or not 1 <= len(steps) <= 40:
+        report('PLAN_SIZE_INVALID', 'v310 plan requires 1 to 40 steps')
+        return errors
     if case.get('fixture_scenario', 'default') not in ('default', 'sold_out', 'payment_fail'):
-        errors.append('unknown fixture scenario')
+        report('FIXTURE_INVALID', 'unknown fixture scenario')
     aliases = {'state', 'metrics', 'ui'}
     for index, step in enumerate(steps):
         if not isinstance(step, dict) or step.get('kind') not in KINDS:
-            errors.append(f'step {index}: unknown operation')
+            report('STEP_KIND_INVALID', 'unknown operation', index, 'kind')
             continue
+        kind = step['kind']
         allowed = {'kind', 'as', 'args', 'tool', 'checks', 'expected_error', 'proposal', 'approved', 'actor', 'seconds', 'message', 'enabled', 'order'}
         if set(step) - allowed:
-            errors.append(f'step {index}: unknown fields')
-        if step.get('kind') == 'tool' and (step.get('tool') not in NAMES or not isinstance(step.get('args'), dict)):
-            errors.append(f'step {index}: invalid registry tool')
-        if step.get('kind') == 'confirm' and (step.get('actor') != 'test_user' or type(step.get('approved')) is not bool or (not isinstance(step.get('proposal'), str))):
-            errors.append(f'step {index}: explicit trusted test-user decision required')
+            report('STEP_FIELDS_INVALID', 'unknown fields', index)
+        if kind == 'tool' and (step.get('tool') not in NAMES or not isinstance(step.get('args'), dict)):
+            report('TOOL_STEP_INVALID', 'invalid registry tool', index)
+        if kind == 'confirm' and (step.get('actor') != 'test_user' or type(step.get('approved')) is not bool or not isinstance(step.get('proposal'), str)):
+            report('CONFIRMATION_INVALID', 'explicit trusted test-user decision required', index)
+        if kind in ('foreign_confirm', 'foreign_order'):
+            field = 'proposal' if kind == 'foreign_confirm' else 'order'
+            if not isinstance(step.get(field), str) or not step[field].strip():
+                report('FOREIGN_REFERENCE_REQUIRED', f'{field} must be provided', index, field)
         if 'expected_error' in step and (not isinstance(step['expected_error'], str) or not step['expected_error'].strip()):
-            errors.append(f'step {index}: expected error must be a non-empty string')
-        if step.get('kind') == 'advance' and (type(step.get('seconds')) is not int or not 1 <= step['seconds'] <= 86400 * 30):
-            errors.append(f'step {index}: invalid clock advance')
-        if step.get('kind') == 'chat' and (not isinstance(step.get('message'), str) or len(step['message']) > 10000):
-            errors.append(f'step {index}: invalid user message')
-        if step.get('kind') == 'history' and type(step.get('enabled')) is not bool:
-            errors.append('invalid read-only toggle')
-        if step.get('kind') == 'flag' and type(step.get('enabled')) is not bool:
-            errors.append('invalid feature flag')
-        alias = step.get('as')
-        if alias:
-            if not isinstance(alias, str) or not alias.isidentifier() or alias in aliases:
-                errors.append('invalid or duplicate alias')
-            if isinstance(alias,str):aliases.add(alias)
+            report('EXPECTED_ERROR_INVALID', 'expected error must be a non-empty string', index, 'expected_error')
+        if kind == 'advance' and (type(step.get('seconds')) is not int or not 1 <= step['seconds'] <= 86400 * 30):
+            report('CLOCK_ADVANCE_INVALID', 'invalid clock advance', index, 'seconds')
+        if kind == 'chat' and (not isinstance(step.get('message'), str) or not step['message'].strip() or len(step['message']) > 10000):
+            report('MESSAGE_INVALID', 'invalid user message', index, 'message')
+        if kind == 'history' and type(step.get('enabled')) is not bool:
+            report('HISTORY_ENABLED_REQUIRED', 'invalid read-only toggle', index, 'enabled')
+        if kind == 'flag' and ('args' in step or any(type(step.get(field)) is not bool for field in FLAG_SCHEMA['required'])):
+            report('FLAG_ENABLED_REQUIRED', 'invalid feature flag, enabled must be an explicit top-level boolean and flag does not accept args', index, 'enabled')
+        if 'as' in step:
+            alias = step['as']
+            if not isinstance(alias, str) or not alias.isidentifier() or not valid_path(alias) or alias in aliases:
+                report('ALIAS_INVALID', 'invalid or duplicate alias', index, 'as')
+            else:
+                aliases.add(alias)
         checks = step.get('checks')
         if not isinstance(checks, list) or not checks:
-            errors.append(f'step {index}: deterministic checks required')
+            report('CHECKS_REQUIRED', 'deterministic checks required', index, 'checks')
         else:
             for check in checks:
-                if not isinstance(check, dict) or set(check) != {'path', 'op', 'value'} or check.get('op') not in OPS or (not isinstance(check.get('path'), str)):
-                    errors.append(f'step {index}: invalid assertion')
+                if not isinstance(check, dict) or set(check) != {'path', 'op', 'value'} or check.get('op') not in OPS:
+                    report('ASSERTION_INVALID', 'invalid assertion', index, 'checks')
+                elif not valid_path(check['path']):
+                    report('ASSERTION_PATH_INVALID', 'assertion requires a dot-separated path', index, 'checks.path')
     return errors
+
 
 def assert_value(check, view, variables):
     expected = resolve(check['value'], variables)
@@ -178,6 +207,21 @@ class V310Adapter:
     mode = 'deterministic_v310_integration'
 
     def run(self, case, *, fault=None):
+        return self._run(case, fault=fault)
+
+    def run_workbench(self, case, *, directory, engine, mutation=None):
+        from target.diagnostics import IDS
+        directory = Path(directory).resolve()
+        if (directory.parent.name != 'executions' or directory.parents[2] != WORKBENCH_RUN_ROOT
+                or not re.fullmatch(r'[0-9a-f]{32}', directory.parents[1].name)
+                or not re.fullmatch(r'case-[0-9]{3}', directory.name)):
+            raise ValueError('C_WORKBENCH_ISOLATED_EXECUTION_REQUIRED')
+        if engine not in ('legacy', 'langchain') or mutation not in (None, *tuple(IDS)[:-1]):
+            raise ValueError('C_WORKBENCH_INVALID_ENGINE_OR_MUTATION')
+        return self._run(case, root=directory, engine=engine, mutation=mutation)
+
+    def _run(self, case, *, fault=None, root=None, engine='legacy', mutation=None):
+        workbench = root is not None
         errors = validate(case)
         if errors:
             return dict(status='NOT_EXECUTABLE', mode=self.mode, errors=errors, steps=[], model_requests=0)
@@ -190,7 +234,7 @@ class V310Adapter:
         from target.execution_config import scope as effective_scope
         from target.v39.context import scope
         run_id = uuid.uuid4().hex
-        root = ROOT / 'artifacts/runtime/v310-ai-executions' / run_id
+        root = root if root is not None else ROOT / 'artifacts/runtime/v310-ai-executions' / run_id
         root.mkdir(parents=True, exist_ok=False)
         variables = {}
         rows = []
@@ -200,7 +244,11 @@ class V310Adapter:
         result = dict(reference_plan=reference, case_id=case.get('case_id'), execution_id=run_id, status='error', mode=self.mode, model_requests=0, fault=fault, steps=rows, started_at=started, evidence_root=str(root), agent_invoked=False)
         environment = dict(RAILWAY_SIMULATION_ENABLED='1', RAILWAY_SIM_CLOCK_MODE='demo', RAILWAY_SIM_DB_PATH=str(root / 'simulation.sqlite'), TICKET_DISABLE_LOCAL_SECRETS='1', TICKET_WEB_OFFLINE_ONLY='1', RAG_ALLOW_NETWORK='0', TICKET_API_USAGE_DIR=str(root / 'api-usage'), TICKET_TEST_MODE='1', TICKET_DATA_MODE='fixture', TICKET_RAILWAY_QUERY_ENABLED='0')
         with CALL_LOCK, patch.dict(os.environ, environment), patch('socket.socket.connect',deny_network), patch('socket.socket.connect_ex',deny_network), patch('socket.create_connection',deny_network), patch('socket.getaddrinfo',deny_network):
-            session = Conversation('user', engine='legacy', live=False, full_tools=True, root=root / 'session')
+            if mutation:
+                session = Conversation('lab', engine=engine, live=False, full_tools=True,
+                                       mutations={mutation: 1 if mutation == 'date_offset' else True}, root=root / 'session')
+            else:
+                session = Conversation('user', engine=engine, live=False, full_tools=True, root=root / 'session')
             session._unified_interaction = True
             from target.v39.service import Service
             original_scenario = Service.scenario
@@ -230,6 +278,7 @@ class V310Adapter:
                         with capture(root / 'run_events.jsonl', callback=events.append) as trace:
                             trace.update(run_id=run_id + '-' + str(index), session_id=session.sid, provider='deterministic_integration')
                             emit('scenario_step_started', operation_kind=kind, case_id=case.get('case_id'), execution_id=run_id)
+                            audit_count = len(session.audits) if workbench and kind == 'chat' else None
                             try:
                                 if kind == 'tool':
                                     args = resolve(step['args'], variables)
@@ -259,10 +308,17 @@ class V310Adapter:
                                         service.expire(context)
                                     output = {'advanced': step['seconds']}
                                 elif kind == 'chat':
-                                    import re
-                                    message = re.sub('\\{\\{([A-Za-z0-9_.]+)\\}\\}', lambda match: str(lookup(variables, match.group(1))), step['message'])
+                                    message = CHAT_REFERENCE.sub(lambda match: str(lookup(variables, match.group(1))), step['message'])
                                     public = session.send(message, uuid.uuid4().hex, defer_followups=True)
                                     output = {'public_result': copy.deepcopy(public), 'reply': public.get('reply', ''), 'queries': [copy.deepcopy(call) for turn in public.get('steps', []) for call in turn.get('calls', []) if call.get('tool', '').startswith('railway_')]}
+                                    if workbench:
+                                        from target.diagnostics import digest
+                                        audit = next((item for item in reversed(session.audits)
+                                                      if item.get('public_trace_sha256') == digest(public)
+                                                      or item.get('public_trace') == public), {})
+                                        output['agent_trace_id'] = audit.get('trace_id')
+                                        output['agent_audit'] = {key: audit[key] for key in ('mutation_events', 'judgement')
+                                                                 if key in audit}
                                     result['agent_invoked'] = True
                                 elif kind == 'history':
                                     session.read_only = step['enabled']
@@ -288,6 +344,11 @@ class V310Adapter:
                             except Exception as exc:
                                 error = str(exc) if isinstance(exc, ValueError) else type(exc).__name__
                                 output = {'error': error}
+                                if audit_count is not None and len(session.audits) > audit_count:
+                                    audit = session.audits[-1]
+                                    output['agent_trace_id'] = audit.get('trace_id')
+                                    output['agent_audit'] = {key: audit[key] for key in ('mutation_events', 'judgement')
+                                                             if key in audit}
                             with patch.dict(os.environ, {'RAILWAY_SIMULATION_ENABLED': '1'}):
                                 view = snapshot(session, service, context, effective)
                             variables['state'] = copy.deepcopy(view['state'])
@@ -312,6 +373,8 @@ class V310Adapter:
                             executed_tools = [e['tool'] for e in events if e.get('event_type') == 'railway_tool_result' and e.get('executed')]
                             executed = any((e.get('event_type') == 'railway_tool_result' and e.get('executed') for e in events))
                             row = dict(index=index, kind=kind, tool=step.get('tool'), args=resolve(step.get('args', {}), variables), output=output, error=error, checks=checks, snapshot=view, trace_id=trace['run_id'], executed_tools=executed_tools, executed=executed, verified=all((c['ok'] for c in checks)))
+                            if workbench and kind == 'chat' and 'agent_trace_id' in output:
+                                row['input_message'] = message
                             rows.append(row)
                             emit('scenario_step_finished', 'succeeded' if row['verified'] else 'failed', assertions=checks, execution_id=run_id)
                         if not row['verified']:
@@ -324,5 +387,9 @@ class V310Adapter:
                 finally:
                     result['finished_at'] = time.time()
                     result['duration_s'] = result['finished_at'] - started
-                    (root / 'result.json').write_text(json.dumps(result, ensure_ascii=False, indent=2), encoding='utf8')
+                    saved = result
+                    if workbench:
+                        from target.scenario_workbench_evidence import private_evidence
+                        saved = private_evidence(result)
+                    (root / 'result.json').write_text(json.dumps(saved, ensure_ascii=False, indent=2), encoding='utf8')
         return result

@@ -75,6 +75,7 @@ def editor(session):
         try:
             record=store.save(sid,dict(system_prompt_suffix=suffix,provider=provider,model=model,temperature=temperature,tool_whitelist=whitelist,
                 write_policy=policy,rag_mode=rag,allow_embedding=embedding),owner=sid,expected_revision=revision)
+            revision=record['revision']
             session.allow_rag_network=embedding
             st.success('已保存 revision '+str(record['revision'])+'；下一轮生效，当前运行不变。')
         except (ValueError,OSError) as e:st.error(str(e))

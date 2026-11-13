@@ -11,18 +11,26 @@ import uuid
 from unittest.mock import patch
 import config
 from target import p2_case, p2_packets, p2_generator, p2_executor
+from target.scenario_generation_contract import generation_issues, provider_contract
 ROOT = Path(__file__).resolve().parents[1]
 CATEGORIES = {'功能正确性': '功能准确性', '工具调用': '工具调用', '多轮对话': '多轮', 'RAG 检索': 'RAG', '安全与权限': '安全', '异常处理': '边界', '边界条件': '边界', '业务状态一致性': '功能准确性', 'Agent 上下文管理': '多轮', '性能与稳定性': '性能'}
 VERSION = 'ticket-ai-scenario/1'
+QUALITY_RULE_VERSION = 'ticket-ai-scenario-quality/4'
 
 V310_SYSTEM = """你是 Ticket Agent V3.10 的测试架构师。只输出 JSON 对象 {"scenarios":[...]}，不要 Markdown 或解释。
+turns 是独立的非空字符串数组。每个 chat 都有自己的 message 字符串和 checks 非空数组。
 每个场景必须包含：title, objective, risk_level(low/medium/high), turns(1-2条合成用户消息), difficulty(easy/medium/hard), execution_adapter:"v310", fixture_scenario:"default"|"sold_out"|"payment_fail", integration_steps, expected_tool_calls, expected_state_changes, expect:{}。
 integration_steps 是真实可执行步骤数组，最多40步，kind 只能是 tool/confirm/advance/chat/qr/history/flag/foreign_confirm/foreign_order。
 tool 步骤必须写真实 railway_* 工具名（只能来自 packet.v310_contract.tools）、args 对象、as 别名、checks 非空。
 confirm 步骤必须写 proposal:"$别名.proposal_id"、approved:true/false、actor:"test_user"、checks；模型绝不能写 confirmation token。
 每个 check 只能包含 path/op/value，op 只能 eq/ne/ge/len/contains/not_contains；path 只能检查 result./state./metrics./db./ui. 的已提交证据。
 建单/支付/退款/改签必须有对应 confirm 和业务证据，不能只写自然语言。不要生成不存在的工具，不要猜测参数，不要写 Lock/confirmation token。
-Use actual values from packet. For the Shanghai-Hongqiao to Hangzhou-East static fixture use service_date \"2026-11-05\", origin_stop_id \"AOH\", destination_stop_id \"HGH\"; never use <rel_date> macros.\n只使用 packet 中的真实工具、状态和值；不确定就不要生成该场景。\n验证特定车次时，在 railway_query_trips 的 args 中传入 train_no；区间首条记录不一定是指定车次。\n只读工具实际输出路径示例：railway_query_trips -> result.returned_count/result.total_count/result.data.0.trip_short_name；railway_search_stations -> result.returned_count/result.data.0.stop_id；railway_trip_stops 的 FOUND 结果中 result.data 是包含 trip 和 stops 的对象，检查站数或站点使用 result.data.stops、result.data.stops.0.stop_id、result.data.stops.0.stop_name；railway_check_inventory -> result.available/result.status。不要使用 result.stops、result.seat_class 或 db.stations。"""
+使用 packet 中真实参数和数据。不要使用 <rel_date>。path 和 $alias 引用只能使用点号及数字数组下标，禁止括号下标、星号和通配符。
+指定车次时，railway_query_trips.args 必须传入精确 train_no。用 result.data.0.trip_short_name 等断言验证选中行的车次号，再从同一行引用 $trips.data.0.trip_id。不要使用未经验证的首条记录。
+railway_trip_stops 返回对象 result.data，使用 result.data.trip 检查车次，result.data.stops 检查全程经停数组，result.data.stops.0.stop_id 检查首站。result.data.0.stop_id 和对 result.data 使用 len 都不合法。
+区间的出发站和到达站不等于全程经停站数。只在 packet.static_output_sample 提供同车次、同日期的完整实际站数时写 len 精确断言。样本中的 stops 只展示首站，actual_full_stop_count 才是完整站数。
+flag 的 enabled 必须是步骤顶层字段，flag 没有 args。合法：{"kind":"flag","enabled":true,"checks":[{"path":"result.enabled","op":"eq","value":true}]}。非法：{"kind":"flag","args":{"enabled":true},"checks":[...]}。禁用使用顶层 "enabled":false。只读验证可在查询前启用 flag；禁用后不得预期工具成功。
+提交前检查步骤和字段。按测试目标完成要求的全部工具和断言，不可用 flag 或通用检查替代查询。"""
 
 
 
@@ -85,11 +93,11 @@ def specs():
 
 def v310_contract():
     """Small grammar/evidence block; the executable schema remains in scenario_v310."""
+    from target.scenario_v310 import FLAG_SCHEMA, KINDS, OPS, PATH_MAX_LENGTH, PATH_PATTERN
     from target.v39.registry import NAMES
     return dict(tools=list(NAMES), states=['PENDING_PAYMENT','PAID','PAYMENT_FAILED','EXPIRED','CHANGED','CANCELLED'],
-        step_kinds=['tool','confirm','advance','chat','qr','history','flag','foreign_confirm','foreign_order'],
-        check_ops=['eq','ne','ge','len','contains','not_contains'],
-        check_paths=['result.*','state.*','metrics.*','db.*','ui.*'],
+        step_kinds=list(KINDS), flag_schema=FLAG_SCHEMA, check_ops=list(OPS),
+        check_path_roots=['result','state','metrics','db','ui'], dot_path_pattern=PATH_PATTERN, max_path_length=PATH_MAX_LENGTH,
         confirmation='actor=test_user; proposal=$alias.proposal_id; no tokens',
         note='create_order auto-creates Hold after explicit confirm. No railway_lock_seat tool exists.')
 
@@ -117,14 +125,6 @@ def _schema_with_references(schema, *, allow_ref=False):
     return result
 
 
-def _argument_references(value):
-    if isinstance(value, str) and value.startswith('$'):
-        yield value
-    elif isinstance(value, (dict, list)):
-        for item in value.values() if isinstance(value, dict) else value:
-            yield from _argument_references(item)
-
-
 def _confirms_state(step):
     for check in step['checks']:
         path = check['path']
@@ -140,13 +140,38 @@ def _confirms_state(step):
 
 
 def review(case, peers=()):
+    result = _review_rules(case, peers)
+    result['rule_version'] = QUALITY_RULE_VERSION
+    if 'diagnostics' not in result:
+        result['diagnostics'] = [dict(code='SCENARIO_RULE_VIOLATION', step=None, message=message)
+                                 for message in result['errors']]
+    return result
+
+
+def _review_rules(case, peers):
     from jsonschema import Draft202012Validator
     from target.scenario_quality import SCHEMA
     if not isinstance(case,dict) or list(Draft202012Validator(SCHEMA).iter_errors(case)):
         return {'quality':'REJECTED','errors':['invalid scenario metadata schema'],'warnings':[],'duplicates':[]}
-    if isinstance(case,dict) and case.get('execution_adapter') == 'v310':
+    requirements = case.get('generation_requirements', {})
+    selected = requirements.get('adapter') if isinstance(requirements, dict) else None
+    supplied = case.get('execution_adapter', 'p2')
+    if selected is not None and selected != supplied:
+        message = f'generated scenario adapter {supplied!r} does not match {selected!r}'
+        return dict(quality='REJECTED', errors=[message], warnings=[], duplicates=[],
+                    diagnostics=[dict(code='GENERATION_ADAPTER_MISMATCH', step=None, path='execution_adapter', message=message)])
+    structure_issues = case.get('generation_structure_issues')
+    if structure_issues:
+        return dict(quality='REJECTED', errors=structure_issues, warnings=[], duplicates=[],
+                    diagnostics=[dict(code='V310_MODEL_STRUCTURE_REJECTED', step=None, message=issue) for issue in structure_issues])
+    if supplied == 'v310':
         from target.scenario_v310 import validate
-        errors=validate(case)
+        from target.scenario_static_review import issue, validate_evidence
+        diagnostics = []
+        errors = validate(case, diagnostics)
+        if any(d['code'] != 'FLAG_ENABLED_REQUIRED' for d in diagnostics):
+            return dict(quality='REJECTED', errors=errors, warnings=[], duplicates=[], diagnostics=diagnostics)
+        syntax_errors = len(errors)
         if case.get('schema_version')!=VERSION:errors.append('unsupported schema version')
         if not isinstance(case.get('expect'),dict) or not isinstance(case.get('assertions'),dict):
             errors.append('integration legacy expectations must be objects')
@@ -154,7 +179,9 @@ def review(case, peers=()):
             value=case.get(field,[])
             if not isinstance(value,list) or (field!='expected_state_changes' and field!='turn_expects' and any(not isinstance(v,str) for v in value)):
                 errors.append('invalid integration declaration: '+field)
-        if errors:return {'quality':'REJECTED','errors':errors,'warnings':[],'duplicates':[]}
+        if len(errors) > syntax_errors:
+            diagnostics.extend(issue('PLAN_METADATA_INVALID', None, message) for message in errors[syntax_errors:])
+            return dict(quality='REJECTED', errors=errors, warnings=[], duplicates=[], diagnostics=diagnostics)
         warnings=[]
         planned=[step.get('tool') for step in case.get('integration_steps',[]) if isinstance(step,dict) and step.get('kind')=='tool']
         declared=case.get('expected_tool_calls',[])
@@ -176,47 +203,16 @@ def review(case, peers=()):
         from target.v39.registry import TOOLS, ACTIONS, StrictValidator
         schemas={t['function']['name']:t['function']['parameters'] for t in TOOLS}
         steps = case['integration_steps']
-        aliases = set()
-        for i, step in enumerate(steps):
-            prior_aliases = aliases.copy()
-            aliases.add('state')
-            if step.get('as'):
-                aliases.add(step['as'])
+        for index, step in enumerate(steps):
             if step['kind'] != 'tool':
                 continue
-            name=step.get('tool');args=step.get('args');schema=schemas.get(name)
-            if not schema or not isinstance(args,dict):
-                errors.append('unknown or non-object tool args at step '+str(i));continue
-            for ref in _argument_references(args):
-                parts = ref[1:].split('.')
-                if parts[0] not in prior_aliases or not all(parts):
-                    errors.append(f'unbound argument reference at step {i}: {ref}')
+            name, args = step['tool'], step['args']
             if step.get('expected_error') != 'INVALID_RAILWAY_ARGUMENTS':
-                if not StrictValidator(_schema_with_references(schema)).is_valid(args):
-                    errors.append(f'tool argument schema mismatch at step {i}: {name}')
-            result_paths=('result.status','result.error') + {
-                'railway_search_stations':('result.returned_count','result.total_count','result.data','result.has_more','result.next_cursor','result.selection_required'),
-                'railway_query_trips':('result.returned_count','result.total_count','result.data','result.service_date','result.next_cursor','result.has_more'),
-                'railway_trip_stops':('result.data.trip','result.data.stops','result.service_date'),
-                'railway_check_inventory':('result.available','result.simulation'),
-                'railway_quote_fare':('result.quote','result.items','result.simulation'),
-                'railway_get_order':('result.order_id','result.order_status','result.payment_status','result.refund_status','result.change_status',
-                                     'result.active_item_count','result.total_fen','result.net_paid_fen','result.items','result.transactions','result.refunds','result.changes'),
-            }.get(name,())
-            for check in step.get('checks',[]):
-                if not isinstance(check,dict):continue
-                path=str(check.get('path',''))
-                if name=='railway_trip_stops' and path=='result.data':
-                    if check['op']=='len' and check['value']!=0:
-                        errors.append(f'use result.data.stops for stop counts at step {i}')
-                    continue
-                if name=='railway_trip_stops' and path.startswith('result.data.stops.'):
-                    index=path.split('.')[3]
-                    if not (index.isascii() and index.isdigit()):
-                        errors.append(f'expected stop index at step {i}: {path}')
-                        continue
-                if path.startswith('result.') and not any(path==a or path.startswith(a+'.') for a in result_paths):
-                    errors.append('unsupported output path at step '+str(i)+': '+path)
+                if not StrictValidator(_schema_with_references(schemas[name])).is_valid(args):
+                    diagnostics.append(issue('TOOL_ARGUMENTS_INVALID', index, f'tool argument schema mismatch at step {index}: {name}', 'args'))
+        evidence_issues, evidence_warnings, static_checks = validate_evidence(case, schemas, StrictValidator)
+        diagnostics.extend(evidence_issues)
+        warnings.extend(evidence_warnings)
         # A V3.10 test must assert a business fact, not only a structural metric.
         substantive_paths=[p for p in paths if p.startswith(('state.','db.','ui.','result.')) or p in ('metrics.money_conserved','metrics.inventory_conserved')]
         if not substantive_paths:
@@ -229,14 +225,17 @@ def review(case, peers=()):
             decisions = [later for later in steps[i+1:] if later['kind']=='confirm'
                          and alias and later['proposal']==f'${alias}.proposal_id']
             if not decisions:
-                errors.append('trusted test_user confirmation required for proposal from '+tool)
+                diagnostics.append(issue('TRUSTED_CONFIRMATION_REQUIRED', i, 'trusted test_user confirmation required for proposal from '+tool))
             elif not any(_confirms_state(decision) for decision in decisions):
-                errors.append('business state assertion required on confirmation for '+tool)
+                diagnostics.append(issue('BUSINESS_STATE_CHECK_REQUIRED', i, 'business state assertion required on confirmation for '+tool))
         # Free-text state expectations are audit notes in V310; deterministic
         # business evidence is carried by step checks, not this legacy field.
         duplicates=[p.get('case_id') for p in peers if digest(p.get('integration_steps'))==digest(case.get('integration_steps'))]
         if duplicates:warnings.append('duplicate integration plan')
-        return {'quality':'REJECTED' if errors else 'NEEDS_REVIEW' if warnings else 'PASS','errors':errors,'warnings':warnings,'duplicates':duplicates}
+        diagnostics.extend(issue('PLAN_RULE_VIOLATION', None, message) for message in errors[syntax_errors:])
+        return dict(quality='REJECTED' if diagnostics else 'NEEDS_REVIEW' if warnings else 'PASS',
+                    errors=[d['message'] for d in diagnostics], warnings=warnings, duplicates=duplicates,
+                    diagnostics=diagnostics, evidence=static_checks)
     errors, warnings = ([], [])
     if not isinstance(case, dict):
         return {'quality': 'REJECTED', 'errors': ['case must be an object'], 'warnings': [], 'duplicates': []}
@@ -321,6 +320,8 @@ def normalize(items, category, model, prompt_hash, references):
             case['expect']={};case['assertions']={};case['turn_expects']=[]
             case['integration_steps']=copy.deepcopy(item.get('integration_steps',[]))
             case['fixture_scenario']=item.get('fixture_scenario','default')
+        if 'execution_adapter' in item and item['execution_adapter'] not in ('p2', 'v310'):
+            case['execution_adapter'] = item['execution_adapter']
         case['normalized_hash'] = digest({'turns':[p2_case.normalize(t) for t in case['turns']], 'expect':case['expect']})
         case['packet_id'] = item.get('packet_id', packet.get('packet_id', ''))
         result.append(case)
@@ -336,6 +337,7 @@ class Store:
         self.path = self.root / 'candidates.sqlite'
         with self.connect() as c:
             c.executescript('CREATE TABLE IF NOT EXISTS cases(id TEXT PRIMARY KEY,revision INTEGER NOT NULL,status TEXT NOT NULL,body TEXT NOT NULL,updated TEXT NOT NULL); CREATE TABLE IF NOT EXISTS history(id INTEGER PRIMARY KEY,case_id TEXT,revision INTEGER,action TEXT,actor TEXT,body TEXT,time TEXT); CREATE TABLE IF NOT EXISTS runs(id TEXT PRIMARY KEY,case_id TEXT,revision INTEGER,status TEXT,body TEXT,time TEXT); CREATE TABLE IF NOT EXISTS generations(id TEXT PRIMARY KEY,status TEXT,body TEXT,time TEXT);')
+            c.execute('CREATE TABLE IF NOT EXISTS quality_reviews (id INTEGER PRIMARY KEY, case_id TEXT NOT NULL, revision INTEGER NOT NULL, stage TEXT NOT NULL, actor TEXT NOT NULL, body TEXT NOT NULL, time TEXT NOT NULL)')
 
     def connect(self):
         c = sqlite3.connect(self.path, timeout=20)
@@ -367,28 +369,51 @@ class Store:
             old = c.execute('SELECT * FROM cases WHERE id=?', (body['case_id'],)).fetchone()
             if old and (old['status'] != 'PENDING' or old['revision'] != revision):
                 raise ValueError('immutable case or stale revision')
+            if old:
+                original = json.loads(old['body'])
+                if 'generation_requirements' in original:
+                    body['generation_requirements'] = original['generation_requirements']
+                if 'generation_structure_issues' in original:
+                    body['generation_structure_issues'] = original['generation_structure_issues']
             rev = old['revision'] + 1 if old else 1
             c.execute('INSERT OR REPLACE INTO cases VALUES(?,?,?,?,?)', (body['case_id'], rev, 'PENDING', encode(body), now()))
             c.execute('INSERT INTO history(case_id,revision,action,actor,body,time) VALUES(?,?,?,?,?,?)', (body['case_id'], rev, 'EDIT' if old else 'CREATE', actor, encode(body), now()))
+            self._record_quality(c, body, rev, 'EDIT' if old else 'CREATE', actor)
 
     def decide(self, selections, action, actor):
         if action not in ('APPROVED', 'REJECTED', 'DELETED', 'ARCHIVED') or not actor.strip():
             raise ValueError('invalid review action')
+        blocked = False
         with self.connect() as c:
             c.execute('BEGIN IMMEDIATE')
+            selected = []
             for identity, revision in selections:
                 row = c.execute('SELECT * FROM cases WHERE id=?', (identity,)).fetchone()
-                if not row or row['revision'] != revision:
+                if not row or row['revision'] != revision or any(item[0] == identity for item in selected):
                     raise ValueError('stale revision')
                 if action != 'ARCHIVED' and row['status'] != 'PENDING' and not (action == 'DELETED' and row['status'] == 'REJECTED'):
                     raise ValueError('case immutable after review')
                 case = json.loads(row['body'])
-                if action == 'APPROVED' and self._review(c, case)['quality'] != 'PASS':
-                    raise ValueError('quality gate requires correction before approval')
-                case['review_status'] = action
-                case['provenance']['review_status'] = action
-                c.execute('UPDATE cases SET status=?,body=?,revision=revision+1,updated=? WHERE id=?', (action,encode(case), now(), identity))
-                c.execute('INSERT INTO history(case_id,revision,action,actor,body,time) VALUES(?,?,?,?,?,?)', (identity, revision + 1, action, actor, encode(case), now()))
+                if action == 'APPROVED':
+                    result = self._record_quality(c, case, revision, 'APPROVAL', actor)
+                    blocked |= result['quality'] != 'PASS'
+                selected.append((identity, revision, case))
+            if not blocked:
+                for identity, revision, case in selected:
+                    case['review_status'] = action
+                    case['provenance']['review_status'] = action
+                    c.execute('UPDATE cases SET status=?,body=?,revision=revision+1,updated=? WHERE id=?', (action,encode(case), now(), identity))
+                    c.execute('INSERT INTO history(case_id,revision,action,actor,body,time) VALUES(?,?,?,?,?,?)', (identity, revision + 1, action, actor, encode(case), now()))
+        if blocked:
+            raise ValueError('quality gate requires correction before approval')
+
+    def _record_quality(self, connection, case, revision, stage, actor):
+        result = self._review(connection, case)
+        connection.execute(
+            'INSERT INTO quality_reviews(case_id,revision,stage,actor,body,time) VALUES(?,?,?,?,?,?)',
+            (case['case_id'], revision, stage, actor, encode(result), now()),
+        )
+        return result
 
     def review_candidate(self, case):
         with self.connect() as c:
@@ -400,6 +425,9 @@ class Store:
             (case['case_id'],),
         )
         peers = [json.loads(row[0]) for row in records]
+        if case.get('execution_adapter') == 'v310':
+            plan_hash = digest(case.get('integration_steps'))
+            peers = [p for p in peers if digest(p.get('integration_steps')) == plan_hash]
         peers = [p for p in peers if review(p)['quality'] == 'PASS']
         formal = json.loads((ROOT / 'web/datasets/b_v32_20261020/case_catalog.json').read_text(encoding='utf-8-sig'))
         peers.extend(dict(case_id=r.get('id'), turns=[r.get('message') or r.get('name') or '']) for r in formal)
@@ -456,9 +484,11 @@ class Store:
         if category not in CATEGORIES or difficulty not in ('easy', 'medium', 'hard') or type(count) is not int or (not 1 <= count <= 5) or (not objective.strip()) or (len(objective) + len(constraints) > 6000):
             raise ValueError('invalid generation requirements')
         if adapter not in ('p2','v310'):raise ValueError('unknown scenario adapter')
-        packet = evidence(category) if adapter=='v310' else evidence(category)
+        packet = evidence(category)
         if adapter=='v310':
-            system=V310_SYSTEM
+            system=V310_SYSTEM + '\n' + provider_contract(provider)
+            from target.scenario_static_review import prompt_sample
+            packet['static_output_sample'] = prompt_sample()
             from target.scenario_plans import plans
             packet['v310_examples']=[{'title':p['title'],'integration_steps':p['integration_steps']} for p in plans() if p['title'] in ('railway_queries','lifecycle','full_refund')]
         else:
@@ -514,12 +544,25 @@ class Store:
             receipt['raw'] = raw
             if len(items) != count:
                 raise ValueError('model returned wrong candidate count')
+            if adapter == 'v310' and provider != 'Mock':
+                from target.diagnostics import redact_credentials
+                receipt['parsed_candidates'] = redact_credentials(items)
+                issues = [generation_issues(item) for item in items]
+                if any(issues):
+                    receipt['structure_issues'] = issues
             cases = normalize(items, category, model_name, prompt_hash, list(packet['references']))
+            quality_results = {}
             with self.connect() as c:
                 c.execute('BEGIN IMMEDIATE')
-                for case in cases:
+                for index, case in enumerate(cases):
+                    case['generation_requirements'] = dict(objective=objective, constraints=constraints, adapter=adapter)
+                    if receipt.get('structure_issues') and receipt['structure_issues'][index]:
+                        case['generation_structure_issues'] = receipt['structure_issues'][index]
                     c.execute('INSERT INTO cases VALUES(?,?,?,?,?)', (case['case_id'], 1, 'PENDING', encode(case), now()))
                     c.execute('INSERT INTO history(case_id,revision,action,actor,body,time) VALUES(?,?,?,?,?,?)', (case['case_id'], 1, 'CREATE', 'generator', encode(case), now()))
+                for case in cases:
+                    quality_results[case['case_id']] = self._record_quality(c, case, 1, 'CREATE', 'generator')
+            receipt['quality_reviews'] = quality_results
             receipt['cases'] = [c['case_id'] for c in cases]
             status = 'SUCCEEDED'
         except Exception as exc:

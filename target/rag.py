@@ -85,10 +85,13 @@ def _approved_policy_projection(question,hits):
     current answer is corrected, and every changed hit records why.
     """
     import re
+    from target.railway_policy_evidence import active
     from target.v39.policy import Policy
     policy=Policy()
     if not policy.approved or policy.profile!='CHANGED_REFUND_P01':return hits
-    if not (re.search(r'改签',question) and re.search(r'退票|退款',question)):return hits
+    railway_policy = active()
+    if not railway_policy and not (re.search(r'改签',question) and re.search(r'退票|退款',question)):
+        return hits
     out=[]
     for hit in hits:
         row=dict(hit)
@@ -97,11 +100,18 @@ def _approved_policy_projection(question,hits):
         if doc=='P01' and '已改签的车票不退' in content:
             row['content']=content.replace('已取报销凭证或已改签的车票不退。',
                 '已取报销凭证需先交回；按已批准 D9 CHANGED_REFUND_P01，改签后的车票仍可申请退票；每乘客最多一次退款。')
+            if railway_policy:
+                row['content']=row['content'].replace('开车前 48 小时以上退票', '距发车超过 48 小时退票')
             row['policy_projection']='D9_CHANGED_REFUND_P01'
         elif doc=='P02' and '改签后不退' in content:
             row['content']=content.replace('每张票仅可改签一次，改签后不退。',
                 '每张票仅可改签一次；按已批准 D9 CHANGED_REFUND_P01，改签后仍可申请退票；每乘客最多一次退款。')
             row['policy_projection']='D9_CHANGED_REFUND_P01'
+        elif doc=='P03' and railway_policy:
+            row['content']='本地铁路模拟业务在原行程发车后不办理退票或改签。发车前的操作按本地模拟退改规则办理。'
+            row['policy_projection']='D9_CHANGED_REFUND_P01'
+            row['original_policy_content']=content
+            row['policy_scope']='railway_simulation'
         elif doc=='P03' and '不退票' in content:
             row['content']=content.replace('不退票。',
                 '按已批准 D9 CHANGED_REFUND_P01，改签后仍可申请退票，手续费按办理时距发车时间计算。')
@@ -113,9 +123,13 @@ def _approved_policy_projection(question,hits):
 def search_policy(question):
     """统一入口：返回带 doc_id 的政策片段，回答时必须引用 doc_id。"""
     import os
+    from target.railway_policy_evidence import active
     if os.getenv("AGENT_RAG_MODE"):
         from target.rag_service import retrieve
         return retrieve(question,allow_network=os.getenv("RAG_ALLOW_NETWORK")=="1")
+    if active():
+        from target.rag_service import retrieve
+        return retrieve(question,mode='vector' if config.USE_VECTOR_RAG else 'keyword',allow_network=False)
     from target.run_events import emit
     import uuid
     retrieval_id=uuid.uuid4().hex

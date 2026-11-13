@@ -89,14 +89,15 @@ def parse_json(text):
         raise
 
 
-def call(provider, settings, system, user, *, run_id, model_step):
+def call(provider, settings, system, user, *, run_id, model_step, events=None):
     """One real request. Returns (text, usage, request_ids, http_events)."""
     from langchain_core.messages import SystemMessage, HumanMessage
     from langsmith import tracing_context
     from target.request_accounting import capture
     module = __import__(f"target.{provider}_runtime", fromlist=["make_model"])
     model = module.make_model(settings)
-    events = []
+    if events is None:
+        events = []
     with tracing_context(enabled=False), capture(events, run_id, model_step):
         response = model.bind(response_format={"type": "json_object"},
                               max_tokens=settings.max_output_tokens).invoke(
@@ -104,6 +105,9 @@ def call(provider, settings, system, user, *, run_id, model_step):
     usage_meta = getattr(response, "usage_metadata", None) or {}
     usage = {"prompt": usage_meta.get("input_tokens"), "completion": usage_meta.get("output_tokens")}
     request_ids = [e["request_id"] for e in events if e.get("event") == "http_request"]
+    if model_step == 'generate':
+        metadata = getattr(response, 'response_metadata', None) or {}
+        events.append(dict(event='model_output', finish_reason=metadata.get('finish_reason')))
     return response.content, usage, request_ids, events
 
 

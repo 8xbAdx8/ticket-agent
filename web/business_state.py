@@ -93,10 +93,13 @@ def order_for_record(session,record):
 def render_order_status(session,record):
     import streamlit as st
     from target.v39.read_model import status_text
+    from web.order_state_evidence import rendered
     for order in order_for_record(session,record):
         latest=next((r for r in reversed(session.history) if any(o['order_id']==order['order_id'] for o in order_for_record(session,r))),None)
         if latest is not None and latest!=record:continue
-        st.info(status_text(order))
+        text = status_text(order)
+        st.info(text)
+        rendered(session, text, order['order_id'], (session._audit_for(record) or {}).get('trace_id'))
         st.caption('当前已提交状态；上方消息和原始运行记录保留当时结果，不代表本次又执行了交易。')
 
 

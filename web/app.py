@@ -15,10 +15,15 @@ from web.design import theme
 from web.user_copy import workspace_label
 
 from web.runtime import CALL_LOCK,refresh_conversations,render_value,render_environment
+from web.workbench_config import WORKBENCH_PAGES
+
+
+def workbench_page_label(value):
+    return value
 
 
 def main():
-    st.set_page_config(page_title="Ticket Agent · 出行助手", page_icon=":material/travel_explore:", layout="wide", initial_sidebar_state="auto")
+    st.set_page_config(page_title="Ticket Agent · 出行助手", page_icon="🚆", layout="wide", initial_sidebar_state="auto")
     refresh_conversations(st.session_state.get('user_sessions',[])+st.session_state.get('lab_archives',[])
                           +([st.session_state['lab_session']] if 'lab_session' in st.session_state else []))
     st.set_option("client.toolbarMode","minimal")
@@ -36,10 +41,17 @@ def main():
             st.session_state["default_engine"]="legacy" if selection=="Legacy Mock" else "langchain"
             st.session_state["default_provider"]="bailian" if selection=="Qwen3.8-Flash Live" else "deepseek"
             st.session_state["default_live_model"]="qwen3.8-flash" if selection=="Qwen3.8-Flash Live" else None
+        if 'workspace_mode' not in st.session_state and st.query_params.get('abc_run'):
+            st.session_state['workspace_mode'] = '测试工作台'
+            st.session_state['workspace_page'] = WORKBENCH_PAGES[0]
         mode = st.radio("工作空间", ["出行助手", "开发者工作台", "测试工作台"], key="workspace_mode",
                         format_func=workspace_label)
         if mode == "测试工作台":
-            page = st.radio("工作台导航", ["测试总览", "测试实验室", "AI 测试场景生成", "Trace 分析", "质量分析", "模型对比", "RAG 知识库", "集成中心", "V3.7 离线验收"], key="workspace_page",format_func=lambda value:'离线回归中心' if value=='V3.7 离线验收' else value)
+            # Exactly five workbench entries; historical pages remain importable
+            # for evidence/backward compatibility but are not routes.
+            if st.session_state.get('workspace_page') not in WORKBENCH_PAGES:
+                st.session_state['workspace_page'] = WORKBENCH_PAGES[0]
+            page = st.radio("工作台导航", WORKBENCH_PAGES, key="workspace_page", format_func=workbench_page_label)
         elif mode == "开发者工作台":
             page = "开发者工作台"
         else:
@@ -60,38 +72,13 @@ def main():
             if st.session_state.get("lab_session") is not None:
                 sessions=sessions+[st.session_state["lab_session"]]
             developer_page(sessions)
-        elif page == "V3.7 离线验收":
-            from web.v37_console import page as acceptance_page
-            acceptance_page()
-        elif page == "AI 测试场景生成":
-            from web.scenario_generator import page as scenario_page
-            scenario_page()
-        elif page == "测试总览":
-            from web.competition_view import competition_page
-            sessions = st.session_state.get("user_sessions", []) + st.session_state.get("lab_archives", [])
-            competition_page(sessions)
-        elif page == "测试实验室":
-            from web.laboratory import lab_page
-            lab_page()
-        elif page == "Trace 分析":
-            from web.trace_view import trace_page
-            sessions = st.session_state.get("user_sessions", []) + st.session_state.get("lab_archives", [])
-            trace_page([s.trace_dir for s in sessions])
-        elif page == "质量分析":
-            from web.quality import quality_page
-            sessions=st.session_state.get("user_sessions",[])+st.session_state.get("lab_archives",[])
-            quality_page(sessions)
-        elif page == "模型对比":
-            from web.comparison import comparison_page
-            sessions=st.session_state.get("user_sessions",[])+st.session_state.get("lab_archives",[])
-            comparison_page([s.trace_dir for s in sessions])
-        elif page == "集成中心":
-            from web.integrations import integrations_page
-            integrations_page()
-        elif page == "RAG 知识库":
-            from web.rag_page import rag_page
-            sessions=st.session_state.get("user_sessions",[])+st.session_state.get("lab_archives",[])
-            rag_page(sessions)
+        elif page in WORKBENCH_PAGES:
+            from web import consistency_audit_view as workbench
+            sessions = st.session_state.get('user_sessions', [])
+            callbacks = (lambda: workbench.competition_page(sessions), lambda: workbench.quality_page(sessions),
+                         lambda: workbench.rag_page(sessions), workbench.lab_page,
+                         lambda: workbench.trace_page([s.trace_dir for s in sessions]))
+            callbacks[WORKBENCH_PAGES.index(page)]()
         if page != '出行助手':
             st.caption("Ticket Agent 3.7 · 当前使用演示数据，不提供真实出票服务。")
 

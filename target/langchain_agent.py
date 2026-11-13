@@ -499,6 +499,15 @@ class LangChainAgent:
                 context.events.append(derived)
                 from target.run_events import emit
                 emit('deterministic_duration_answer',**{k:v for k,v in derived.items() if k!='event'})
+            if not interrupted:
+                from target.railway_policy_evidence import public_answer
+                scoped_answer = public_answer(message, context.events)
+                if scoped_answer and scoped_answer != reply:
+                    from target.run_events import emit
+                    detail = dict(original_model_reply=reply, public_reply=scoped_answer)
+                    context.events.append(dict(event='railway_policy_answer', **detail))
+                    emit('railway_policy_answer','recorded',**detail)
+                    reply = scoped_answer
             phase="reply_validation"
             if self.deepseek_settings:
                 from target.deepseek_runtime import DeepSeekError, validate_read_only_reply

@@ -1,40 +1,161 @@
 """Mutation and specialist analysis preserve their original denominators."""
 import streamlit as st
 from web.design import header,panel_title,kpis,empty,table
-from web.evidence import MUTATIONS,mutation_rows,read_json,B_SOURCE,AUDIT_SOURCE,export_rows
+from web.evidence import (
+    MUTATIONS, MUTATION_SOURCES, STATUS_LABELS, mutation_group, mutation_summary,
+    read_json, B_SOURCE, AUDIT_SOURCE, export_rows,
+)
 from web import charts
 from web.dashboard import quality_dimensions
 from web.trace_view import show_record
 
 
-def mutation_matrix():
-    population=st.radio("变异数据范围",["选定矩阵（69 组合）","额外假车次探测（16 案例）"],horizontal=True)
-    rows=[r for r in mutation_rows() if r["origin"]==("选定矩阵" if population.startswith("选定") else "额外探测")]
-    case_ids=list(dict.fromkeys(r["case_id"] for r in rows))
-    selected=st.multiselect("显示宿主用例",case_ids,default=case_ids[:18])
-    lookup={(r["mutation"],r["case_id"]):r for r in rows}
-    grid=[dict(lookup.get((m,c),{"mutation":m,"case_id":c,"status":"not_applicable" if m=="concurrent_duplicate_order" else "not_verified","c5":None})) for m in MUTATIONS for c in selected]
-    if not grid:
-        empty("请选择用例","空选择不会自动显示为全部通过。")
+MUTATION_DETAILS = {
+    "date_offset": ("M1 日期偏移", "让查票使用偏移后的日期"),
+    "skip_lock": ("M2 跳过锁座", "跳过订单流程中的锁座步骤"),
+    "repeat_call": ("M3 重复调用", "让同一工具被重复调用"),
+    "infinite_loop": ("M4 无限循环", "让 Agent 反复监控余票，验证工具轮数上限能否拦截"),
+    "route_error": ("M5 线路错误", "把原请求导向错误的查询或线路"),
+    "no_citation": ("M6 缺少政策引用", "去掉回答中的政策依据"),
+    "hallucinated_train": ("M7 虚构车次", "向查票工具结果注入假车次"),
+    "concurrent_duplicate_order": ("M8 并发重复订单", "让并发请求绕过防重复建单检查"),
+}
+
+
+def mutation_metrics_row(label, group, rows=None):
+    whole_group = rows is None
+    if whole_group:
+        rows = group["rows"]
+        absent = group["missing_records"]
+    else:
+        absent = 0
+    counts = mutation_summary(rows, absent)
+    rate_known = absent is not None and (whole_group or group["missing_records"] == 0)
+    return {"范围": label, "记录总数": counts["total"] if absent is not None else "未知",
+            "适用分母": counts["applicable"] if absent is not None else "未知",
+            **{text: counts[key] if absent is not None else "未知" for key, text in STATUS_LABELS.items()},
+            "适用项检出率": f"{counts['rate']:.1%}" if rate_known and counts["rate"] is not None else "—"}
+
+
+def _select_mutation_cell():
+    event = st.session_state.get("mutation_heatmap") or {}
+    selection = event.get("selection", {}).get("cell", [])
+    if selection:
+        cell = selection[0]
+        st.session_state["mutation_case"] = (cell["mutation"], cell["case_id"])
+
+
+def _show_mutation_case(row, source):
+    from target.diagnostics import sanitize
+    label, fault = MUTATION_DETAILS[row["mutation"]]
+    state = row["status"]
+    st.markdown(f"**{label} · {row['case_id']} · {STATUS_LABELS[state]}**")
+    original = row.get("original")
+    if original is None:
+        st.info("该组合没有对应的执行证据。M8 并发幂等使用独立后端证据。")
         return
-    event=st.altair_chart(charts.heatmap(grid),width="stretch",on_select="rerun",key="mutation_heatmap")
-    st.caption("点击热力图可定位记录。detected=任意规则检出；c5=true 才是 C5 命中。未在矩阵内的组合保持未验证；M8 对话单元格不适用。")
-    selection=event.selection.get("cell",[]) if hasattr(event,"selection") else []
-    selected_cell=selection[0] if selection else None
-    defaults=0
-    if selected_cell:
-        defaults=next((i for i,r in enumerate(grid) if r["case_id"]==selected_cell.get("case_id") and r["mutation"]==selected_cell.get("mutation")),0)
-    index=st.selectbox("单元格与原始断言详情",range(len(grid)),index=defaults,format_func=lambda i:grid[i]["mutation"]+" / "+grid[i]["case_id"]+" · "+grid[i]["status"])
-    chosen=grid[index]
-    st.json(chosen)
-    st.info("B 本轮提供的是压缩执行摘要；没有包含对应完整 Trace/临时数据库，不能补造参数与权威快照。请由 B 补充关联证据。")
+    original = sanitize(original)
+    st.write(f"故障注入会{fault}。")
+    st.write("预期是故障触发后由评测断言识别异常。")
+    if original.get("reply_片段"):
+        st.caption("实际回复片段")
+        st.text(original["reply_片段"])
+    else:
+        st.caption("原记录未保存实际回复片段或完整工具轨迹。")
+    if state == "detected":
+        st.success("至少一条评测断言记录了异常。" if row["failed_rules"] else "原记录标记已检出，未提供具体断言。")
+    elif state == "missed":
+        st.warning("原记录明确标记未检出；该项计为漏检。")
+    elif state == "not_applicable":
+        st.info("该场景不适用此类故障注入，未进入适用分母。")
+    else:
+        st.info("现有记录无法确认这项故障是否被检出。")
+    if original.get("G9999_进入回复") is True:
+        st.caption("原记录确认注入的假车次 G9999 进入了回复。")
+    if row["failed_rules"]:
+        st.caption("触发断言：" + "、".join(str(rule) for rule in row["failed_rules"]))
+    st.caption(f"原始证据 · {source} · {row['case_id']}")
+    with st.expander("查看原始变异记录"):
+        st.json(original)
+
+
+def mutation_matrix(*, on_m8=None):
+    groups = {origin: mutation_group(origin) for origin in MUTATION_SOURCES}
+    panel_title("缺陷注入统计", "B 历史 Mock / TEST_ONLY。选定矩阵与额外探测各自统计。")
+    table([mutation_metrics_row(origin, group) for origin, group in groups.items()], "mutation_population", search=False)
+    st.caption("适用项检出率 = 已检出 / 适用分母。仅扣除明确不适用的记录；未执行、未知、缺失保留。B 原始记录未单独标注误报。")
+    origin = st.radio("变异数据范围", list(groups), horizontal=True, key="mutation_population")
+    group = groups[origin]
+    if group["missing_records"] is None:
+        st.warning(f"{origin}的原始证据不可读，记录总数未知。来源 {group['source']}")
+        return
+    if group["missing_records"]:
+        st.warning(f"{origin}有 {group['missing_records']} 条应有记录缺失或不可读，尚无法分配到具体变异类型。")
+    rows = group["rows"]
+    if not rows:
+        empty("暂无可读取的变异记录", f"当前范围 · {group['source']}")
+        return
+
+    panel_title("按变异类型查看", "分布仅涵盖可读记录。缺失项无法归类时，各类型检出率暂不显示。"
+                if group["missing_records"] else None)
+    by_type = {kind: [row for row in rows if row["mutation"] == kind] for kind in MUTATIONS}
+    table([mutation_metrics_row(MUTATION_DETAILS[kind][0], group, subset) for kind, subset in by_type.items()],
+          "mutation_types", search=False)
+    if on_m8 is None:
+        def on_m8():
+            st.session_state["quality_section"] = "并发幂等"
+    st.button("查看 M8 并发幂等原始证据", key="mutation_m8_evidence", on_click=on_m8)
+    mutation = st.selectbox("变异类型", [None, *MUTATIONS], key="mutation_type",
+                            format_func=lambda key: MUTATION_DETAILS[key][0] if key else "全部类型")
+    displayed = by_type[mutation] if mutation else rows
+    if not displayed:
+        detail = "M8 的并发幂等记录在独立证据入口中。" if mutation == MUTATIONS[-1] else "当前范围没有保存该类型的结果。"
+        empty("该类型没有执行记录", detail)
+        return
+
+    case_ids = list(dict.fromkeys(row["case_id"] for row in displayed))
+    selected = st.multiselect("热力图宿主用例", case_ids, default=case_ids[:18],
+                              key=f"mutation_cases_{origin}_{mutation}")
+    lookup = {(row["mutation"], row["case_id"]): row for row in displayed}
+    grid = [lookup.get((kind, case), {"mutation": kind, "case_id": case,
+                                     "status": "not_applicable" if kind == MUTATIONS[-1] else "not_verified", "c5": None})
+            for kind in ([mutation] if mutation else MUTATIONS) for case in selected]
+    if grid:
+        st.altair_chart(charts.heatmap(grid), width="stretch", on_select=_select_mutation_cell, key="mutation_heatmap")
+        st.caption("点击热力图查看对应证据。空白组合仅用于导航，统计来自原始记录。")
+    else:
+        empty("请选择宿主用例", "可继续使用下方选择器查阅原始记录。")
+
+    lookup.update({(row["mutation"], row["case_id"]): row for row in grid})
+    misses = [key for key, row in lookup.items() if row["status"] == "missed"]
+    if misses:
+        st.button("定位首条漏检", key="mutation_first_miss",
+                  on_click=st.session_state.update, args=({"mutation_case": misses[0]},))
+    if st.session_state.get("mutation_case") not in lookup:
+        st.session_state.pop("mutation_case", None)
+    key = st.selectbox("查看变异证据", list(lookup), key="mutation_case",
+                       format_func=lambda pair: f"{MUTATION_DETAILS[pair[0]][0]} / {pair[1]} · "
+                                                f"{STATUS_LABELS[lookup[pair]['status']]}")
+    _show_mutation_case(lookup[key], group["source"])
 
 
 def hallucination_topic():
-    probe=read_json(B_SOURCE/"probe_m6_m8.json")
-    kpis([("选定假车次矩阵","14 / 14","其中 12 条命中 C5"),("额外探测判失败","14 / 16","独立分母；保留原结果"),("真实漏检","T04","G9999 已进入回复"),("不适用","R01","未查票、未触发假车次")])
-    table([{ "用例":r["case_id"],"G9999 进入回复":r["G9999_进入回复"],"任意规则检出":r["killed"],"C5 命中":"C5" in r["failed_rules"],"失败规则":", ".join(r["failed_rules"]),"回复片段":r["reply_片段"]} for r in probe["details"]],"hallucination_probe")
-    st.caption("T04 未配置 C5；R01 不适用。F15/M12 只触发 C1/R1。B 压缩记录未保存数据库权威列表，不能在此复造。")
+    selected = mutation_group("选定矩阵")
+    probe = mutation_group("额外探测")
+    selected_m7 = [row for row in selected["rows"] if row["mutation"] == "hallucinated_train"]
+    if selected["missing_records"] == 0:
+        selected = {"rows": selected_m7, "missing_records": 0}
+        label = "选定假车次矩阵"
+    else:
+        label = "选定假车次矩阵（分母待核对）"
+        selected = {"rows": selected_m7, "missing_records": None}
+    table([mutation_metrics_row(label, selected), mutation_metrics_row("额外探测", probe)],
+          "hallucination_counts", search=False)
+    table([{"用例": row["case_id"], "G9999 进入回复": row["original"].get("G9999_进入回复"),
+            "判定": STATUS_LABELS[row["status"]], "C5 命中": row["c5"],
+            "失败规则": ", ".join(map(str, row["failed_rules"])), "回复片段": row["original"].get("reply_片段")}
+           for row in probe["rows"]], "hallucination_probe")
+    st.caption("任一断言检出与命中 C5 分开统计。B 压缩记录未保存数据库权威列表。")
     panel_title("A 有独立标注的有限规则样本","与上面的 B 正式用例、变异矩阵分别统计；不是通用语义准确率。")
     report=read_json(AUDIT_SOURCE/"report.json")
     samples=report["labelled_samples"]
@@ -44,7 +165,8 @@ def hallucination_topic():
         actual=r["judgement"]["hallucination"].get("hallucination_detected")
         key="无法判定" if expected is None or actual is None else "TP" if expected and actual else "FN" if expected else "FP" if actual else "TN"
         counts[key]+=1
-    kpis([(k,v,"6 个可判样本；2 个含糊样本单列") for k,v in counts.items()])
+    kpis([(k,v,f"{len(samples) - counts['无法判定']} 个可判样本，{counts['无法判定']} 个无法判定")
+          for k,v in counts.items()])
     table([{ "样本":r["case_id"],"回复":r["reply"],"标注":r.get("expected_semantic_outcome"),"检测":r["judgement"]["hallucination"].get("hallucination_detected")} for r in samples],"labelled_detector_samples")
     paths=sorted((AUDIT_SOURCE/"cases").glob("*m7-mutant/audit_runs.jsonl"))
     if paths:
@@ -59,7 +181,7 @@ def hallucination_topic():
 
 def concurrency_topic():
     data=read_json(B_SOURCE/"m8_idempotent.json")
-    st.caption("B 独立后端验证 · 2026-10-20 · Mock · 10 条检查，包含多个断言共享一个场景；不是 10 次模型对话。")
+    st.caption(f"B 独立后端验证 · Mock / TEST_ONLY · {len(data['records'])} 条检查。多个断言可能共享同一场景，按检查计数。")
     import json
     table(data["records"],"b_concurrency")
     st.info("B 本轮 JSON 未保存锁座 ID 和全部请求明细；这些字段显示为未提供。下面可独立查看 A 保存的正常/影子库对照，不能冒充 B 原始证据。")

@@ -26,7 +26,10 @@ def digest(value):
 def snapshot(path):
     path = Path(path).resolve()
     runtime = ROOT / 'artifacts/runtime'
-    if not path.is_relative_to(runtime) or not path.relative_to(runtime).parts[0].startswith(('v310-v311-', 'v310-ai-executions')) or path.name != 'simulation.sqlite':
+    if not path.is_relative_to(runtime) or path.name != 'simulation.sqlite':
+        raise ValueError('ORACLE_TEST_DATABASE_ONLY')
+    namespace = path.relative_to(runtime).parts[0]
+    if namespace not in ('v311-abc-integration-20261112', 'v311-r2-qa09-live-20261112') and not namespace.startswith(('v310-v311-', 'v310-ai-executions')):
         raise ValueError('ORACLE_TEST_DATABASE_ONLY')
     with closing(sqlite3.connect(path.as_uri() + '?mode=ro', uri=True, isolation_level=None)) as c:
         c.row_factory = sqlite3.Row
@@ -203,7 +206,13 @@ def reply_claims(text,view):
                   hold=r'已(?:经)?锁座|锁座成功')
     for clause in re.split(r'[。！!？?；;，,\n]|但是|但|不过',text or ''):
         for kind,pattern in patterns.items():
-            match=re.search(pattern,clause)
+            if kind=='change':
+                # A policy condition does not consume a separate claim in the same clause.
+                match=next((candidate for candidate in re.finditer(pattern,clause)
+                    if not re.match(r'的(?:车票|订单)\s*(?:[”"』」*]*\s*)?(?:仍可申请退票|不予退票|不接受退票|不退)',
+                                    clause[candidate.end():])),None)
+            else:
+                match=re.search(pattern,clause)
             if not match:continue
             prefix=clause[:match.start()]
             if re.search(r'(?:未|尚未|不能|不得|没有|不代表|不应|不表示|并非|不是)[^，,。；;]{0,6}$',prefix):continue

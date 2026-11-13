@@ -8,6 +8,41 @@ from datetime import date,datetime,timedelta,timezone
 from target.v39.context import CURRENT
 
 
+TRAIN_NUMBER = r'(?<![A-Za-z0-9])[GDCZTK]\d{1,6}(?![A-Za-z0-9])'
+NEXT_PAGE = re.compile(r'^(?:请)?(?:帮我)?(?:继续)?(?:查(?:看|询)?|取|翻到|翻)?\s*(?:下一页|剩余车次|剩下的车次|翻页)(?:车次|列车)?[。！!\s]*$')
+ROUTE_KEYS = ('service_date', 'origin_stop_id', 'destination_stop_id', 'train_no', 'seat_class')
+
+
+def _last_route(history):
+    """Use the most recent route attempt, including a failed one, in this thread."""
+    for message in reversed(history):
+        if message.get('role') == 'user' and len(set(re.findall(r'\d{4}-\d{2}-\d{2}', message['content']))) > 1:
+            return {}, {}
+        if message.get('role') != 'tool' or message.get('name') != 'railway_query_trips':
+            continue
+        payload = json.loads(message['content'])
+        query = payload.get('query_parameters') or {}
+        if query.get('origin_stop_id') and query.get('destination_stop_id') and not query.get('train_no'):
+            return payload, {key: query[key] for key in ROUTE_KEYS if query.get(key) is not None}
+        if payload.get('error'):
+            return payload, {}
+    return {}, {}
+
+
+def _page_reply(payload):
+    rows = payload['data']
+    returned = payload['returned_count']
+    total = payload['total_count']
+    detail = '；'.join(
+        f"{row.get('trip_short_name') or row['trip_id']} {row.get('departure_at', '')}→{row.get('arrival_at', '')}"
+        for row in rows[:3]
+    )
+    continuation = ('，还有下一页' if payload['has_more'] else '，已到最后一页') if total else ''
+    examples = f'。例如：{detail}' if detail else ''
+    return (f"静态数据查询结果：{payload['status']}，共 {total} 班，本页返回 {returned} 班{continuation}"
+            f'{examples}。静态时刻不代表实时开行、余票或官方票价。')
+
+
 class RailwayDemoProvider:
     name='mock'
     last_usage={'prompt':0,'completion':0}
@@ -41,20 +76,60 @@ class RailwayDemoProvider:
             from target.providers import MockProvider
             return MockProvider(mutations={}).chat(messages,tools)
         day_match=re.search(r'\d{4}-\d{2}-\d{2}',text)
-        number_match=re.search(r'(?<![A-Za-z0-9])[GDCZTK]\d{1,6}(?![A-Za-z0-9])',text)
+        number_match=re.search(TRAIN_NUMBER,text)
+        history = messages[:index]
+        previous, route = _last_route(history)
+        # A conditional affirmative is still an explicit read-only request.
+        tail = re.split(r'[？?]', text)[-1].strip()
+        next_page = NEXT_PAGE.fullmatch(text) or (
+            tail.startswith('如果还需要，') and NEXT_PAGE.fullmatch(tail.removeprefix('如果还需要，')))
+        if next_page and not results:
+            if not route or previous.get('status') != 'FOUND':
+                return reply('请先成功查询出发站、到达站和日期，再查看下一页。')
+            cursor = previous.get('next_cursor')
+            if previous.get('has_more') is False:
+                return reply('上次车次查询已到最后一页。')
+            if (previous.get('has_more') is not True or not isinstance(cursor, str) or not cursor.isdigit()
+                    or type(previous.get('limit')) is not int):
+                return reply('上次查询没有可验证的下一页，请重新查询该线路。')
+            return call('railway_query_trips', dict(route, cursor=cursor, limit=previous['limit']))
+        origin_code = re.search(r'出发站编码\s*([A-Za-z0-9]+)', text)
+        destination_code = re.search(r'到达站编码\s*([A-Za-z0-9]+)', text)
+        if (not results and (origin_code or destination_code or '经停' in text or '比较' in text)
+                and len(set(re.findall(r'\d{4}-\d{2}-\d{2}', text))) > 1):
+            return reply('请确认一个出行日期，再查询静态车次。')
+        if (day_match and route and previous.get('status') == 'FOUND' and type(previous.get('limit')) is int
+                and re.fullmatch(r'(?:日期)?(?:改|换)(?:成|为|到)?\s*\d{4}-\d{2}-\d{2}[。！!\s]*', text) and not results):
+            return call('railway_query_trips', dict(route, service_date=day_match[0], limit=previous['limit']))
+        names = list(dict.fromkeys(re.findall(TRAIN_NUMBER, text)))
+        comparison = re.match(r'^(?:请)?(?:帮我)?比较', text) and len(names) == 2
+        explicit_day = day_match[0] if day_match else None
+        lookup_day = explicit_day or route.get('service_date')
+        if comparison and lookup_day:
+            if len(results) < len(names):
+                args = dict(route, service_date=lookup_day, train_no=names[len(results)], limit=20)
+                return call('railway_query_trips', args)
+            comparisons = [json.loads(item['content']) for item in results]
+            if any(row.get('status') != 'FOUND' or row.get('total_count') != 1 for row in comparisons):
+                return reply('当前条件下无法唯一确定这两趟车，请核对日期、区间和车次。')
+            return reply('两趟车的静态时刻如下。' + '；'.join(
+                f"{name} {row['data'][0]['departure_at']}→{row['data'][0]['arrival_at']}"
+                for name, row in zip(names, comparisons)
+            ) + '。')
         if text.startswith(('查询真实静态车站：','分别查询真实静态车站：')):
             requested=text.split('：',1)[1].split('。',1)[0].split('、')
             if len(results)<len(requested):return call('railway_search_stations',dict(name=requested[len(results)].strip()))
-        if day_match and any(w in text for w in ('经停','停靠站')):
+        if lookup_day and any(w in text for w in ('经停','停靠站')):
             tid=re.search(r'班次标识([A-Za-z0-9]+)',text)
             if not results:
-                if tid:return call('railway_trip_stops',dict(trip_id=tid[1],service_date=day_match[0]))
-                if number_match:return call('railway_query_trips',dict(service_date=day_match[0],train_no=number_match[0]))
-            if results and results[-1]['name']=='railway_query_trips' and len(payload.get('data') or [])==1:
-                return call('railway_trip_stops',dict(trip_id=payload['data'][0]['trip_id'],service_date=day_match[0]))
+                if tid:return call('railway_trip_stops',dict(trip_id=tid[1],service_date=lookup_day))
+                if number_match:
+                    args = route if not explicit_day else {}
+                    return call('railway_query_trips',dict(args,service_date=lookup_day,train_no=number_match[0]))
+            if results and results[-1]['name']=='railway_query_trips' and payload.get('total_count')==1:
+                return call('railway_trip_stops',dict(trip_id=payload['data'][0]['trip_id'],service_date=lookup_day))
         elif day_match and number_match and not results:
             return call('railway_query_trips',dict(service_date=day_match[0],train_no=number_match[0],limit=20))
-        origin_code=re.search(r'出发站编码([A-Za-z0-9]+)',text);destination_code=re.search(r'到达站编码([A-Za-z0-9]+)',text)
         if day_match and origin_code and destination_code and not results:
             offset=re.search(r'从第(\d+)条开始',text)
             return call('railway_query_trips',dict(service_date=day_match[0],origin_stop_id=origin_code[1],destination_stop_id=destination_code[1],limit=20,**({'cursor':str(int(offset[1])-1)} if offset else {})))
@@ -62,6 +137,9 @@ class RailwayDemoProvider:
             payload=json.loads(results[-1]['content'])
             if isinstance(payload,dict) and payload.get('error'):return reply('本次未完成：'+payload['error']+'。没有因此完成出票或扣款。')
             if isinstance(payload,dict) and payload.get('proposal_id'):return reply('已生成操作确认卡，请在页面核对后确认。本轮尚未完成该交易。')
+            if results[-1]['name']=='railway_query_trips' and not any(w in text for w in ('经停','停靠站')):
+                if isinstance(payload.get('data'),list) and {'total_count','returned_count','has_more'} <= payload.keys():
+                    return reply(_page_reply(payload))
         if re.search('不要|暂不|别|如果|假设|能否|可以吗|怎么|如何|[？?]',text):
             if any(word in text for word in ('退票','退款','改签','手续费','政策')):
                 return reply('D9 已批准方案B：改签后仍可退款；部分退款后可改签剩余 ACTIVE 乘客，也可继续退款。每名乘客最多一次成功退款，每订单最多一次成功改签。P01 以当前有效乘客价格快照为基数：>48小时5%，24至48小时10%，<24小时20%，整数分 half-up。以上仅为本地模拟规则，不代替真实铁路政策。')

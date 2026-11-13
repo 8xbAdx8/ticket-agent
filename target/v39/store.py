@@ -46,7 +46,8 @@ def safe_path(path):
         allowed = p.is_relative_to(ROOT/'data/v39')
         runtime = ROOT/'artifacts/runtime'
         if p.is_relative_to(runtime):
-            allowed = p.relative_to(runtime).parts[0].startswith(('v39-implementation-','v391-d9-lifecycle-','v392-','v394-','v310-','full-system-audit-','e2e-user-journey-','v3101-e2e-'))
+            namespace = p.relative_to(runtime).parts[0]
+            allowed = namespace in ('v311-abc-integration-20261112','v311-r2-qa09-live-20261112') or namespace.startswith(('v39-implementation-','v391-d9-lifecycle-','v392-','v394-','v310-','full-system-audit-','e2e-user-journey-','v3101-e2e-'))
         if not allowed:
             raise ValueError('PROTECTED_DATABASE_NAMESPACE')
     return p

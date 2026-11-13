@@ -157,7 +157,13 @@ def developer_page(sessions):
                     saved = selected.followups_for(public)
                     if saved:
                         st.json(sanitize(saved), expanded=False)
-                    st.json(sanitize(audit.get('error')), expanded=False)
+                    error = audit.get('error')
+                    if isinstance(error, (dict, list)):
+                        st.json(sanitize(error), expanded=False)
+                    elif error:
+                        st.code(str(sanitize(error)))
+                    else:
+                        st.caption('本次运行未记录错误。')
             _followup_lifecycle_panel(selected, events)
         else:
             st.caption('还没有可回放的运行；先在下面执行一次独立调试，或在用户端发送一条消息。')

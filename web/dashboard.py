@@ -2,7 +2,7 @@
 import streamlit as st
 from web.design import header,kpis,empty,panel_title,table
 from web import charts
-from web.evidence import batch,summary,dimension_rows,latency_rows,mutation_totals,verified_manifest,export_rows,read_json,B_SOURCE,audit_batch,b_aux_batch
+from web.evidence import batch,summary,dimension_rows,latency_rows,mutation_totals,verified_manifest,export_rows,audit_batch,b_aux_batch
 
 
 def choose_batch(key,show_meta=True):
@@ -25,9 +25,9 @@ def current_lab_page(runtime_dirs):
         st.info("暂无本浏览器实验记录。请到测试实验室执行一次，再返回本页。")
         if read_status['invalid']: st.warning("部分记录无法读取或校验。")
         return
-    sources=sorted({(r['provider'],r['model']) for r in rows})
-    provider,model=st.selectbox("实验模型与模式", sources,format_func=lambda v: v[0]+" · "+v[1],key="dashboard_live_source")
-    selected=[r for r in rows if (r['provider'],r['model'])==(provider,model)]
+    sources=sorted({(r['provider'],r['model'],r['scope']) for r in rows})
+    provider,model,scope=st.selectbox("实验模型与模式", sources,format_func=lambda value: " · ".join(value),key="dashboard_live_source")
+    selected=[r for r in rows if (r['provider'],r['model'],r['scope'])==(provider,model,scope)]
     counts=Counter(r['status'] for r in selected)
     kpis([("记录数",len(selected),"每条是一次审计记录"),
           ("有限规则未发现问题",counts['有限规则未发现问题'],"不代表正式测试通过"),
@@ -36,7 +36,7 @@ def current_lab_page(runtime_dirs):
     st.info("这是 A 的实验审计，不是 B 的正式测试成绩。质量规则通过不代表业务一定正确；变异实验与正常实验不可直接混算通过率。")
     if read_status['truncated']: st.warning("记录较多，仅展示近期最多 300 条；不是全部历史。")
     if read_status['invalid']: st.warning(f"有 {read_status['invalid']} 条记录无法读取或校验，未计入统计。")
-    table([{'时间（UTC）':r['time'],'Trace ID':r['trace_id'],'审计状态':r['status'],
+    table([{'时间（UTC）':r['time'],'Trace ID':r['trace_id'],'证据归属':r['scope'],'审计状态':r['status'],
             '测试预期':r['test_verdict'],'耗时 ms':r['latency_ms'] if r['latency_ms'] is not None else '未知',
             'Token':str(r['tokens']) if r['tokens'] is not None else '未知','错误':r['error'] or '无已记录错误'} for r in selected],"dashboard_live_rows")
     st.caption("查看原始工具调用、判断原因和证据：进入 Trace 分析并选择对应 Trace ID。")
@@ -53,7 +53,8 @@ def dashboard_page(runtime_dirs=(), lab_runtime_dirs=(), source=None):
         return
     if source=="B 独立测试":
         with kind_col:
-            kind=st.selectbox("B 结果类型",["正式功能用例","新增代码专项（47 检查）","M8 并发幂等（10 检查）","选定变异矩阵（69 组合）"],key="dashboard_kind")
+            kind=st.selectbox("B 结果类型",["正式功能用例","新增代码专项（47 检查）","M8 并发幂等（10 检查）","选定变异矩阵（69 组合）"],
+                              format_func=lambda value: value.partition("（")[0], key="dashboard_kind")
         if kind=="正式功能用例":
             with batch_col:
                 data=choose_batch("dashboard_batch",show_meta=False)
@@ -65,7 +66,11 @@ def dashboard_page(runtime_dirs=(), lab_runtime_dirs=(), source=None):
     else:
         data=audit_batch(runtime_dirs,historical=source=="A 历史离线自测")
         st.caption(data["title"]+" · "+data["mode"]+" · "+data["date"]+" · "+data["source"])
-        st.info("此处按有限审计/受控预期统计，不是 B 正式功能成绩。注入被检出可满足测试预期，同时业务质量失败；当前 Live 不混入本地批次。")
+        st.info("此处按有限审计/受控预期统计，不是 B 正式功能成绩。故障注入的测试预期与正常业务质量分别统计。")
+        scopes=sorted({row["scope"] for row in data["rows"]})
+        if scopes:
+            scope=st.selectbox("审计证据归属",scopes,key="dashboard_audit_scope")
+            data=dict(data,rows=[row for row in data["rows"] if row["scope"]==scope])
     counts=summary(data["rows"])
     good,bad=data.get("outcome_labels",("通过","失败"))
     kpis([("已判定记录" if data["owner"]=="A" else "实际执行",counts["executed"],f"本批次 {counts['defined']}；{data['grain']}"),
@@ -79,7 +84,7 @@ def dashboard_page(runtime_dirs=(), lab_runtime_dirs=(), source=None):
         else:
             empty("本批次未映射七维度","专项检查/审计记录与正式功能用例的粒度不同，不生成虚构维度得分。")
     with b,st.container(border=True):
-        panel_title("执行状态分布",f"不适用 {counts['not_applicable']} · 跳过 {counts['skipped']} · 未验证 {counts['not_verified']} · 无法判定 {counts['indeterminate']}")
+        panel_title("执行状态分布",f"不适用 {counts['not_applicable']} · 跳过 {counts['skipped']} · 未执行 {counts['not_run']} · 未验证 {counts['not_verified']} · 无法判定 {counts['indeterminate']} · 未知 {counts['unknown']} · 证据缺失 {counts['missing']}")
         st.altair_chart(charts.statuses(counts,(good,bad)),width="stretch")
     c,d=st.columns([1.2,1],gap="large")
     with c,st.container(border=True):
@@ -90,9 +95,8 @@ def dashboard_page(runtime_dirs=(), lab_runtime_dirs=(), source=None):
         else:
             empty("暂无同口径耗时序列","各审计记录的工具/总耗时可在 Trace 分析中查看。")
     with d,st.container(border=True):
-        panel_title("B 选定七类变异矩阵 · 独立参考","来源：B mutation.json；69 / 69 个指定组合被任意规则检出。与当前选中批次不合并，M8 单列。")
+        panel_title("B 选定变异矩阵 · 独立参考","来自 B 的 mutation.json。额外探测和 M8 并发幂等在质量分析中单列。")
         st.altair_chart(charts.mutation_distribution(mutation_totals()),width="stretch")
-    st.warning("已知边界：T04 假车次未检出；R01 政策场景不适用；F15、M12 被其他规则检出，不能算 C5 命中。当前 V3.3 真实模型专项未执行。")
     with st.expander("失败、不适用与未验证用例"):
         rows=[{"用例":r["id"],"维度":r["dimension"],"状态":r["status"],"说明":r.get("note","")} for r in data["rows"] if r["status"]!="passed"]
         table(rows,"dashboard_exceptions") if rows else st.caption("本批次没有该类记录；不代表未测试功能已通过。")
@@ -106,14 +110,18 @@ def dashboard_page(runtime_dirs=(), lab_runtime_dirs=(), source=None):
 def quality_dimensions():
     data=choose_batch("quality_batch")
     from web.evidence import DIMENSIONS, cases
+    from web.competition_view import COVERAGE_NOTE, MATRIX_FIELDS, coverage_text
     from target.diagnostics import sanitize
     dimension=st.selectbox("证据维度", ["全部", *DIMENSIONS], key="quality_dimension")
     rows=dimension_rows(data["rows"])
     if dimension != "全部":
         rows=[r for r in rows if r["dimension"]==dimension]
     st.altair_chart(charts.dimensions(rows),width="stretch")
-    table([{ "维度":r["dimension"],"定义用例":r["defined"],"执行":r["executed"],"通过":r["passed"],"失败":r["failed"],"跳过":r["skipped"],"不适用":r["not_applicable"],"未验证":r["not_verified"],"无法判定":r["indeterminate"]} for r in rows],"quality_dimensions")
-    st.caption("来源为 B 原始用例及执行记录；没有以代码覆盖率代替测试维度。RAG 15 条是现有政策断言，不代表已完成 RAGAS/DeepEval 忠实度评测。")
+    table([{"维度": row["dimension"], "定义用例": row["defined"],
+            **{label: row[key] for key, label in MATRIX_FIELDS},
+            "执行覆盖率": coverage_text(row)} for row in rows], "quality_dimensions")
+    st.caption(COVERAGE_NOTE)
+    st.caption("通过率图只使用已执行的历史断言。RAG 用例来自已有政策断言，完整回答忠实度另行验证。")
     if dimension == "全部":
         st.caption("选择一个证据维度，可查看该引擎对应的用例、原始断言和实际执行记录。")
         return

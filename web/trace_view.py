@@ -139,12 +139,15 @@ def show_record(audit,public=None,key="trace"):
         index=st.selectbox("选择变异事件",range(len(events)),format_func=lambda i:str(i+1)+" · "+events[i].get("mutation","unknown"),key=key+"_mutation")
         event=events[index]
         left,right=st.columns(2)
-        with left:
-            st.caption("原始参数 / 结果")
-            st.json(sanitize(event.get("original")),expanded=1)
-        with right:
-            st.caption("变异后参数 / 结果")
-            st.json(sanitize(event.get("mutated")),expanded=1)
+        for column, field, label in ((left, "original", "原始参数 / 结果"),
+                                     (right, "mutated", "变异后参数 / 结果")):
+            with column:
+                st.caption(label)
+                value = sanitize(event.get(field))
+                if isinstance(value, (dict, list)):
+                    st.json(value, expanded=1)
+                else:
+                    st.code(json.dumps(value, ensure_ascii=False), language="json")
         changes=diff_values(sanitize(event.get("original")),sanitize(event.get("mutated")))
         if changes:
             table(changes,key+"_diff")
@@ -152,6 +155,26 @@ def show_record(audit,public=None,key="trace"):
             st.caption("没有可比较的字段差异；查看事件状态与原因。")
     with st.expander("完整 JSON 与脱敏导出"):
         safe_json({"public_trace":public,"audit":audit or "历史记录未提供该字段"},key)
+
+
+def lab_replay(default_sid=""):
+    import config
+
+    sid = st.text_input("实验会话 ID", value=default_sid, placeholder="例如 web-0123456789ab").strip()
+    st.caption("填写实验页面显示的会话 ID；只读该实验的本地证据，不恢复模型上下文或重新执行。")
+    if not sid:
+        return
+    if not re.fullmatch(r"web-[0-9a-f]{12}", sid):
+        st.warning("会话 ID 格式无效，请填写实验页显示的 web- 开头编号。")
+        return
+    runtime = (Path(config.BASE_DIR) / "artifacts/runtime").resolve()
+    base = (runtime / "v33/lab").resolve()
+    folder = (base / sid / "traces").resolve()
+    if not base.is_relative_to(runtime) or not folder.is_relative_to(base):
+        st.error("实验路径超出本地运行目录，无法读取。")
+        return
+    entries = [entry for entry in audit_catalog([folder]) if entry["kind"] == "当前工作空间"]
+    _show_entries(entries)
 
 
 def trace_page(runtime_dirs):
@@ -180,22 +203,12 @@ def trace_page(runtime_dirs):
             show_record(audit,records[i],"public_replay")
         return
     if scope=="本地实验按会话ID回放":
-        import config
-        sid=st.text_input("实验会话 ID",placeholder="例如 web-0123456789ab").strip()
-        st.caption("填写实验页面显示的会话 ID；只读该实验的本地证据，不恢复模型上下文或重新执行。")
-        if not sid:return
-        if not re.fullmatch(r"web-[0-9a-f]{12}",sid):
-            st.warning("会话 ID 格式无效，请填写实验页显示的 web- 开头编号。")
-            return
-        runtime=(Path(config.BASE_DIR)/"artifacts/runtime").resolve()
-        base=(runtime/"v33/lab").resolve()
-        folder=(base/sid/"traces").resolve()
-        if not base.is_relative_to(runtime) or not folder.is_relative_to(base):
-            st.error("实验路径超出本地运行目录，无法读取。")
-            return
-        entries=[e for e in audit_catalog([folder]) if e["kind"]=="当前工作空间"]
-    else:
-        entries=[e for e in entries if e["kind"]==scope]
+        lab_replay()
+        return
+    _show_entries([entry for entry in entries if entry["kind"] == scope])
+
+
+def _show_entries(entries):
     entries.sort(key=lambda e:e["record"].get("timestamp", ""))
     if not entries:
         empty("暂无该范围的审计记录","先在测试实验室执行离线案例，或切换到历史离线自测。不会自动重跑。")

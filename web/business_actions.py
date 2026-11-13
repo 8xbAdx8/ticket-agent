@@ -42,6 +42,9 @@ def _end(session,row,result,*,before=None,after=None,proposal_id=None,call_id=No
     if get_script_run_ctx(suppress_warning=True) is not None:
         import streamlit as st
         st.session_state['user_focus_run']=(session.sid,row['run_id'])
+        if (status=='SUCCEEDED' and verified and receipt['action']=='CREATE_ORDER'
+                and after and receipt['order_id']==after.get('order_id')):
+            st.session_state['railway_created_order_'+session.sid]=receipt['order_id']
     from web.business_state import refresh
     refresh(session)
     return result

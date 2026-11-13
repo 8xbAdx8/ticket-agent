@@ -231,6 +231,9 @@ class Conversation:
                     from target.run_events import finish
                     finish(result)
                     emit('agent_returned',reply=result.get('reply'),finish_reason=result.get('finish_reason'))
+                    if fresh:
+                        from web.order_state_evidence import agent_declarations
+                        agent_declarations(self, result)
                     return result
                 except Exception as exc:
                     from target.run_events import finish
@@ -678,6 +681,13 @@ def operation_kind(message, history=None):
     """UI confirmation aid only. Existing backend authorization remains authoritative."""
     import re
     if re.search(r"[?？]|多久|政策|规则|怎么|如何|是否|会不会", message):
+        return None
+    if re.fullmatch(
+        r"(?:(?:按|根据)(?:本)?项目示例条款[，,：:]\s*)?(?:请)?(?:查明|查询|说明)"
+        r"(?:距离发车|开车前)(?:超过|少于|不足)?\s*\d+\s*小时(?:的)?退票(?:的)?"
+        r"(?:手续费(?:比例)?|费率)(?:[，,]\s*(?:并)?(?:引用|注明)条款编号)?[。]?",
+        message.strip(),
+    ):
         return None
     if re.search(r"不要|别|不想|不能|不需要", message):
         return None
