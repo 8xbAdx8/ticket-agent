@@ -5,16 +5,32 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent
+from target.api_config import bootstrap
+bootstrap(BASE_DIR)
+PROVIDER = os.getenv("AGENT_PROVIDER", "mock")      # mock | openai | deepseek | bailian
 DB_PATH = Path(os.getenv("AGENT_DB_PATH", str(BASE_DIR / "data" / "tickets.db")))
-POLICY_PATH = BASE_DIR / "data" / "policies.md"
-TRACE_DIR = Path(os.getenv("AGENT_TRACE_DIR", str(BASE_DIR / "traces")))
+POLICY_PATH = Path(os.getenv('AGENT_POLICY_PATH',str(BASE_DIR / 'data' / 'policies.md')))
+TRACE_DIR = Path(os.getenv("AGENT_TRACE_DIR", str(BASE_DIR / "traces" / (PROVIDER+"_live") if PROVIDER in ("deepseek","bailian") else BASE_DIR / "traces")))
 TRACE_DIR.mkdir(parents=True, exist_ok=True)
 
 # ---- 模型提供者：mock（零依赖离线） 或 openai（OpenAI 兼容端点）----
-PROVIDER = os.getenv("AGENT_PROVIDER", "mock")      # mock | openai
-MODEL_NAME = os.getenv("AGENT_MODEL", "glm-4-flash")
-BASE_URL = os.getenv("AGENT_BASE_URL", "https://open.bigmodel.cn/api/paas/v4")
-API_KEY = os.getenv("AGENT_API_KEY", "")
+MODEL_NAME = os.getenv("AGENT_MODEL", "deepseek-flash" if PROVIDER == "deepseek" else "glm-4-flash")
+BASE_URL = os.getenv("AGENT_BASE_URL", "https://api.deepseek.com" if PROVIDER == "deepseek" else "https://open.bigmodel.cn/api/paas/v4")
+# DeepSeek 只有一个密钥来源；AGENT_API_KEY 继续专用于旧 openai Provider。
+API_KEY = os.getenv("DEEPSEEK_API_KEY" if PROVIDER == "deepseek" else "AGENT_API_KEY", "")
+if PROVIDER=="deepseek":
+    from target.api_config import model_config
+    _api=model_config(PROVIDER,active=True)
+    MODEL_NAME,BASE_URL=_api["model"],_api["base_url"]
+if PROVIDER == "bailian":
+    # No implicit region/account entitlement. Only the Bailian variables select its endpoint/model/key.
+    MODEL_NAME = os.getenv("DASHSCOPE_MODEL", "qwen3.8-flash")
+    BASE_URL = os.getenv("DASHSCOPE_BASE_URL", "")
+    API_KEY = os.getenv("DASHSCOPE_API_KEY", "")
+
+# V3 增量引擎；legacy 保留 V2 零框架依赖路径。
+ENGINE = os.getenv("AGENT_ENGINE", "langchain" if PROVIDER in ("deepseek","bailian") else "legacy")  # legacy | langchain
+LC_TOOLSET = os.getenv("AGENT_LC_TOOLSET", "read_only")  # read_only | all
 
 # ---- Agent 主循环参数 ----
 MAX_STEPS = int(os.getenv("AGENT_MAX_STEPS", "8"))  # 超过即判定为疑似死循环
@@ -41,6 +57,7 @@ OTHER_USER_PHONE = "13900000002"
 
 def now():
     """业务时钟：北京时间的无时区 datetime，与 SQLite 既有时间格式兼容。"""
+    if os.getenv('TICKET_TEST_MODE')=='1':return datetime.fromisoformat('2026-10-20T12:00:00')
     return datetime.now(timezone(timedelta(hours=8))).replace(tzinfo=None)
 
 def today():

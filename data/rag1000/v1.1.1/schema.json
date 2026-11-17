@@ -1,0 +1,243 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "expected_doc_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "expected_answer_points": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "required_conditions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "forbidden_claims": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "clarification_fields": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "expected_citations": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "source_policy_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "fixture_doc_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "case_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "dataset_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "question": {
+      "type": "string",
+      "minLength": 1
+    },
+    "group_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "test_purpose": {
+      "type": "string",
+      "minLength": 1
+    },
+    "category": {
+      "enum": [
+        "normal_qa",
+        "paraphrase",
+        "multi_policy",
+        "no_answer",
+        "missing_conditions",
+        "conflict_version",
+        "prompt_injection",
+        "false_premise",
+        "numeric_boundary"
+      ]
+    },
+    "answerable": {
+      "type": "boolean"
+    },
+    "difficulty": {
+      "enum": [
+        "easy",
+        "medium",
+        "hard"
+      ]
+    },
+    "split": {
+      "enum": [
+        "development",
+        "validation",
+        "holdout"
+      ]
+    },
+    "expected_behavior": {
+      "enum": [
+        "answer",
+        "clarify",
+        "refuse",
+        "insufficient_evidence",
+        "explain_conflict",
+        "correct_premise"
+      ]
+    },
+    "required_evidence": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "doc_id",
+          "version",
+          "quote"
+        ],
+        "properties": {
+          "doc_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "version": {
+            "type": "string",
+            "minLength": 1
+          },
+          "quote": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "provenance": {
+      "type": "object",
+      "required": [
+        "type",
+        "policy_version",
+        "review_status",
+        "review_method"
+      ],
+      "properties": {
+        "type": {
+          "type": "string"
+        },
+        "policy_version": {
+          "type": "string"
+        },
+        "review_status": {
+          "enum": [
+            "verified",
+            "needs_review",
+            "invalid"
+          ]
+        },
+        "review_method": {
+          "type": "string"
+        }
+      }
+    },
+    "retrieval_assertions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "rule"
+        ],
+        "properties": {
+          "rule": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "answer_assertions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "rule"
+        ],
+        "properties": {
+          "rule": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "safety_assertions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "rule"
+        ],
+        "properties": {
+          "rule": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    }
+  },
+  "required": [
+    "tags",
+    "expected_answer_points",
+    "case_id",
+    "forbidden_claims",
+    "question",
+    "expected_behavior",
+    "clarification_fields",
+    "required_evidence",
+    "retrieval_assertions",
+    "difficulty",
+    "provenance",
+    "expected_doc_ids",
+    "expected_citations",
+    "safety_assertions",
+    "test_purpose",
+    "source_policy_ids",
+    "group_id",
+    "split",
+    "dataset_version",
+    "answerable",
+    "required_conditions",
+    "answer_assertions",
+    "category"
+  ],
+  "additionalProperties": true
+}

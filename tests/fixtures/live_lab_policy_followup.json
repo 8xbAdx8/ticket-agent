@@ -1,0 +1,31 @@
+{
+  "source_trace_id": "6a8129505d5b4d20b96a8e39c36db92c",
+  "reply": "我检索了政策知识库，**没有找到关于\"去火星隔离天数\"的任何政策条目**（返回结果为空）。\n\n需要说明的是：当前系统只支持境内高铁/机票的模拟查票和出行退改签、儿童票、行李、报销凭证等政策咨询，并不覆盖星际旅行类内容，这类场景也不在虚构业务范围内。\n\n如果您有实际的出行需求，可以告诉我出发地、到达地和日期，我帮您查询车次与余票；或者询问常规票务政策，我会给出带出处的答复。",
+  "events": [
+    {
+      "event": "tool_end",
+      "tool": "search_policy",
+      "args": {
+        "question": "去火星需要隔离几天？"
+      },
+      "call_id": "call_305374b7d41d4ad6ab83d531",
+      "ok": true,
+      "executed": true,
+      "execution_index": 1,
+      "latency_ms": 30,
+      "result": {
+        "question": "去火星需要隔离几天？",
+        "hits": [],
+        "count": 0
+      },
+      "parameter_validation": {
+        "status": "valid",
+        "validated_args": {
+          "question": "去火星需要隔离几天？"
+        }
+      },
+      "timestamp": "2026-10-27T15:05:56.099417+00:00",
+      "step": 1
+    }
+  ]
+}

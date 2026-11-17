@@ -1,0 +1,605 @@
+{
+  "rows": [
+    {
+      "mutation": "date_offset",
+      "case_id": "T01",
+      "killed": true,
+      "failed_rules": [
+        "R3"
+      ]
+    },
+    {
+      "mutation": "date_offset",
+      "case_id": "T02",
+      "killed": true,
+      "failed_rules": [
+        "R3"
+      ]
+    },
+    {
+      "mutation": "date_offset",
+      "case_id": "T03",
+      "killed": true,
+      "failed_rules": [
+        "R3"
+      ]
+    },
+    {
+      "mutation": "date_offset",
+      "case_id": "T04",
+      "killed": true,
+      "failed_rules": [
+        "R3"
+      ]
+    },
+    {
+      "mutation": "date_offset",
+      "case_id": "T05",
+      "killed": true,
+      "failed_rules": [
+        "R3"
+      ]
+    },
+    {
+      "mutation": "date_offset",
+      "case_id": "F01",
+      "killed": true,
+      "failed_rules": [
+        "R3"
+      ]
+    },
+    {
+      "mutation": "date_offset",
+      "case_id": "F04",
+      "killed": true,
+      "failed_rules": [
+        "R3"
+      ]
+    },
+    {
+      "mutation": "date_offset",
+      "case_id": "M01",
+      "killed": true,
+      "failed_rules": [
+        "R3"
+      ]
+    },
+    {
+      "mutation": "date_offset",
+      "case_id": "E06",
+      "killed": true,
+      "failed_rules": [
+        "R3"
+      ]
+    },
+    {
+      "mutation": "date_offset",
+      "case_id": "T21",
+      "killed": true,
+      "failed_rules": [
+        "R3"
+      ]
+    },
+    {
+      "mutation": "date_offset",
+      "case_id": "T22",
+      "killed": true,
+      "failed_rules": [
+        "R3"
+      ]
+    },
+    {
+      "mutation": "date_offset",
+      "case_id": "M05",
+      "killed": true,
+      "failed_rules": [
+        "R3"
+      ]
+    },
+    {
+      "mutation": "skip_lock",
+      "case_id": "F04",
+      "killed": true,
+      "failed_rules": [
+        "C1",
+        "R1",
+        "R4"
+      ]
+    },
+    {
+      "mutation": "skip_lock",
+      "case_id": "F05",
+      "killed": true,
+      "failed_rules": [
+        "C1",
+        "R1"
+      ]
+    },
+    {
+      "mutation": "skip_lock",
+      "case_id": "F11",
+      "killed": true,
+      "failed_rules": [
+        "C1",
+        "R1"
+      ]
+    },
+    {
+      "mutation": "skip_lock",
+      "case_id": "F12",
+      "killed": true,
+      "failed_rules": [
+        "C1",
+        "R1"
+      ]
+    },
+    {
+      "mutation": "skip_lock",
+      "case_id": "M01",
+      "killed": true,
+      "failed_rules": [
+        "C1",
+        "R1"
+      ]
+    },
+    {
+      "mutation": "skip_lock",
+      "case_id": "M03",
+      "killed": true,
+      "failed_rules": [
+        "R1"
+      ]
+    },
+    {
+      "mutation": "skip_lock",
+      "case_id": "M09",
+      "killed": true,
+      "failed_rules": [
+        "R1"
+      ]
+    },
+    {
+      "mutation": "skip_lock",
+      "case_id": "T17",
+      "killed": true,
+      "failed_rules": [
+        "R1",
+        "R4"
+      ]
+    },
+    {
+      "mutation": "skip_lock",
+      "case_id": "F15",
+      "killed": true,
+      "failed_rules": [
+        "C1",
+        "R1",
+        "R4"
+      ]
+    },
+    {
+      "mutation": "skip_lock",
+      "case_id": "M12",
+      "killed": true,
+      "failed_rules": [
+        "C1",
+        "R1",
+        "R4"
+      ]
+    },
+    {
+      "mutation": "skip_lock",
+      "case_id": "X15",
+      "killed": true,
+      "failed_rules": [
+        "R1",
+        "R4"
+      ]
+    },
+    {
+      "mutation": "repeat_call",
+      "case_id": "F01",
+      "killed": true,
+      "failed_rules": [
+        "R5"
+      ]
+    },
+    {
+      "mutation": "repeat_call",
+      "case_id": "F02",
+      "killed": true,
+      "failed_rules": [
+        "R5"
+      ]
+    },
+    {
+      "mutation": "repeat_call",
+      "case_id": "T01",
+      "killed": true,
+      "failed_rules": [
+        "R5"
+      ]
+    },
+    {
+      "mutation": "repeat_call",
+      "case_id": "T06",
+      "killed": true,
+      "failed_rules": [
+        "R5"
+      ]
+    },
+    {
+      "mutation": "repeat_call",
+      "case_id": "T08",
+      "killed": true,
+      "failed_rules": [
+        "R5"
+      ]
+    },
+    {
+      "mutation": "repeat_call",
+      "case_id": "T18",
+      "killed": true,
+      "failed_rules": [
+        "R5"
+      ]
+    },
+    {
+      "mutation": "repeat_call",
+      "case_id": "M10",
+      "killed": true,
+      "failed_rules": [
+        "R5"
+      ]
+    },
+    {
+      "mutation": "repeat_call",
+      "case_id": "E06",
+      "killed": true,
+      "failed_rules": [
+        "R5"
+      ]
+    },
+    {
+      "mutation": "repeat_call",
+      "case_id": "E11",
+      "killed": true,
+      "failed_rules": [
+        "R5"
+      ]
+    },
+    {
+      "mutation": "infinite_loop",
+      "case_id": "F07",
+      "killed": true,
+      "failed_rules": [
+        "C1",
+        "R5",
+        "R6"
+      ]
+    },
+    {
+      "mutation": "infinite_loop",
+      "case_id": "E10",
+      "killed": true,
+      "failed_rules": [
+        "R5",
+        "R6"
+      ]
+    },
+    {
+      "mutation": "infinite_loop",
+      "case_id": "P05",
+      "killed": true,
+      "failed_rules": [
+        "R5",
+        "R6"
+      ]
+    },
+    {
+      "mutation": "route_error",
+      "case_id": "T10",
+      "killed": true,
+      "failed_rules": [
+        "R1",
+        "R2"
+      ]
+    },
+    {
+      "mutation": "route_error",
+      "case_id": "T11",
+      "killed": true,
+      "failed_rules": [
+        "R1",
+        "R2"
+      ]
+    },
+    {
+      "mutation": "route_error",
+      "case_id": "T12",
+      "killed": true,
+      "failed_rules": [
+        "R1",
+        "R2"
+      ]
+    },
+    {
+      "mutation": "route_error",
+      "case_id": "R01",
+      "killed": true,
+      "failed_rules": [
+        "C1",
+        "C3",
+        "R1"
+      ]
+    },
+    {
+      "mutation": "route_error",
+      "case_id": "R02",
+      "killed": true,
+      "failed_rules": [
+        "C1",
+        "C3",
+        "R1"
+      ]
+    },
+    {
+      "mutation": "route_error",
+      "case_id": "R04",
+      "killed": true,
+      "failed_rules": [
+        "C1",
+        "C3",
+        "R1"
+      ]
+    },
+    {
+      "mutation": "route_error",
+      "case_id": "X07",
+      "killed": true,
+      "failed_rules": [
+        "R1"
+      ]
+    },
+    {
+      "mutation": "route_error",
+      "case_id": "R13",
+      "killed": true,
+      "failed_rules": [
+        "C1",
+        "C3",
+        "R1"
+      ]
+    },
+    {
+      "mutation": "route_error",
+      "case_id": "R14",
+      "killed": true,
+      "failed_rules": [
+        "C1",
+        "C3",
+        "R1"
+      ]
+    },
+    {
+      "mutation": "route_error",
+      "case_id": "R15",
+      "killed": true,
+      "failed_rules": [
+        "C1",
+        "C3",
+        "R1"
+      ]
+    },
+    {
+      "mutation": "no_citation",
+      "case_id": "R01",
+      "killed": true,
+      "failed_rules": [
+        "C1",
+        "C3"
+      ]
+    },
+    {
+      "mutation": "no_citation",
+      "case_id": "R02",
+      "killed": true,
+      "failed_rules": [
+        "C1",
+        "C3"
+      ]
+    },
+    {
+      "mutation": "no_citation",
+      "case_id": "R03",
+      "killed": true,
+      "failed_rules": [
+        "C1",
+        "C3"
+      ]
+    },
+    {
+      "mutation": "no_citation",
+      "case_id": "R05",
+      "killed": true,
+      "failed_rules": [
+        "C1",
+        "C3"
+      ]
+    },
+    {
+      "mutation": "no_citation",
+      "case_id": "R07",
+      "killed": true,
+      "failed_rules": [
+        "C1",
+        "C3"
+      ]
+    },
+    {
+      "mutation": "no_citation",
+      "case_id": "R09",
+      "killed": true,
+      "failed_rules": [
+        "C1",
+        "C3"
+      ]
+    },
+    {
+      "mutation": "no_citation",
+      "case_id": "R12",
+      "killed": true,
+      "failed_rules": [
+        "C3"
+      ]
+    },
+    {
+      "mutation": "no_citation",
+      "case_id": "R13",
+      "killed": true,
+      "failed_rules": [
+        "C1",
+        "C3"
+      ]
+    },
+    {
+      "mutation": "no_citation",
+      "case_id": "R14",
+      "killed": true,
+      "failed_rules": [
+        "C1",
+        "C3"
+      ]
+    },
+    {
+      "mutation": "no_citation",
+      "case_id": "R15",
+      "killed": true,
+      "failed_rules": [
+        "C1",
+        "C3"
+      ]
+    },
+    {
+      "mutation": "hallucinated_train",
+      "case_id": "T01",
+      "killed": true,
+      "failed_rules": [
+        "C5"
+      ]
+    },
+    {
+      "mutation": "hallucinated_train",
+      "case_id": "T02",
+      "killed": true,
+      "failed_rules": [
+        "C5"
+      ]
+    },
+    {
+      "mutation": "hallucinated_train",
+      "case_id": "T03",
+      "killed": true,
+      "failed_rules": [
+        "C5"
+      ]
+    },
+    {
+      "mutation": "hallucinated_train",
+      "case_id": "T05",
+      "killed": true,
+      "failed_rules": [
+        "C5"
+      ]
+    },
+    {
+      "mutation": "hallucinated_train",
+      "case_id": "F01",
+      "killed": true,
+      "failed_rules": [
+        "C5"
+      ]
+    },
+    {
+      "mutation": "hallucinated_train",
+      "case_id": "F04",
+      "killed": true,
+      "failed_rules": [
+        "C1",
+        "C5",
+        "R1"
+      ]
+    },
+    {
+      "mutation": "hallucinated_train",
+      "case_id": "M01",
+      "killed": true,
+      "failed_rules": [
+        "C1",
+        "C5",
+        "R1"
+      ]
+    },
+    {
+      "mutation": "hallucinated_train",
+      "case_id": "M05",
+      "killed": true,
+      "failed_rules": [
+        "C5"
+      ]
+    },
+    {
+      "mutation": "hallucinated_train",
+      "case_id": "M09",
+      "killed": true,
+      "failed_rules": [
+        "C5",
+        "R1"
+      ]
+    },
+    {
+      "mutation": "hallucinated_train",
+      "case_id": "M12",
+      "killed": true,
+      "failed_rules": [
+        "C1",
+        "R1"
+      ]
+    },
+    {
+      "mutation": "hallucinated_train",
+      "case_id": "E06",
+      "killed": true,
+      "failed_rules": [
+        "C5"
+      ]
+    },
+    {
+      "mutation": "hallucinated_train",
+      "case_id": "T21",
+      "killed": true,
+      "failed_rules": [
+        "C5"
+      ]
+    },
+    {
+      "mutation": "hallucinated_train",
+      "case_id": "T22",
+      "killed": true,
+      "failed_rules": [
+        "C5"
+      ]
+    },
+    {
+      "mutation": "hallucinated_train",
+      "case_id": "F15",
+      "killed": true,
+      "failed_rules": [
+        "C1",
+        "R1"
+      ]
+    }
+  ],
+  "killed": 69,
+  "total": 69
+}

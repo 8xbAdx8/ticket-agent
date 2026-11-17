@@ -1,0 +1,19 @@
+{
+  "format": 1,
+  "source_archive_sha256": "d3fdb9c25f4583272ef4bcf97eed6624d296c2648f37ce48b65fca79b680ec25",
+  "railway": {
+    "path": "ticket-agent/artifacts/runtime/railway-static-phase8-20261102-184912/static.sqlite",
+    "bytes": 893722624,
+    "sha256": "e32f0cd41b45532ea7aedf4c72a6ffc24f6eaa23c042ee8f35cb02aa50735c69",
+    "file": "railway.sqlite.zst",
+    "compressed_bytes": 72522873,
+    "compressed_sha256": "ea2f5a4c365d1164560afce909c7361f04a9e02bf1559a3c2a7eb28ddc7530bb"
+  },
+  "runtime": {
+    "file": "python.tar.zst",
+    "compressed_bytes": 101778584,
+    "compressed_sha256": "d7e7bddb59546d3befa0f25773db79b1577dc61d0d9bc413a1b455fdcd4e4ba3",
+    "files": 14342,
+    "bytes": 528081368
+  }
+}

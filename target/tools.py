@@ -6,6 +6,8 @@
 """
 import json
 import time
+import copy
+from contextvars import ContextVar
 import urllib.request
 from datetime import date
 
@@ -14,6 +16,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 import config
 from target import mock_core, rag
+DISPATCH_OBSERVER = ContextVar("ticket_dispatch_observer",default=None)
 
 # ---------------- 工具 Schema ----------------
 TOOLS = [
@@ -41,7 +44,7 @@ TOOLS = [
         "type": "function",
         "function": {
             "name": "monitor_seat",
-            "description": "当目标车次无余票时，订阅该车次的余票监控（候补），返回监控任务 ID。",
+            "description": "当目标车次无余票时创建模拟候补记录并返回模拟任务 ID；不会在后台持续监控，也不会发送通知。",
             "parameters": {
                 "type": "object",
                 "properties": {
@@ -202,6 +205,10 @@ def validate(name, args):
         parsed = date.fromisoformat(args["date"])
         if parsed.isoformat() != args["date"]:
             raise ValueError("date 必须为 YYYY-MM-DD")
+    if name == "query_tickets" and args.get("kind") and args.get("seat_type"):
+        allowed = {"高铁": ("二等座", "一等座", "商务座"), "机票": ("经济舱", "公务舱")}
+        if args["seat_type"] not in allowed[args["kind"]]:
+            raise ValueError("seat_type 与 kind 不兼容")
 
 
 for _tool in TOOLS:
@@ -211,12 +218,37 @@ for _tool in TOOLS:
 def dispatch(name, args):
     """真正执行工具的地方。返回 (result, ok, latency_ms)。"""
     t0 = time.perf_counter()
+    diagnostic = {"validation":{"status":"unknown"},"backend_executed":False}
+    from target.run_events import emit
+    from target.rag_service import SCOPE
+    from target.run_events import identity
+    context=SCOPE.get()
+    call_id=context.get('call_id') if context.get('trace_id')==identity().get('run_id') else None
+    emit('tool_proposed',tool=name,args=args,call_id=call_id)
     try:
         validate(name, args)
+        emit('parameter_validation','passed',tool=name)
+        diagnostic["validation"]={"status":"valid","validated_args":copy.deepcopy(args)}
+        from target.execution_config import tool_denial
+        denied=tool_denial(name)
+        if denied:
+            emit('config_permission_denied','blocked',tool=name,reason=denied,executed=False)
+            raise ValueError(denied)
+        diagnostic["backend_executed"]=True
+        emit('tool_start',tool=name,args=args)
         result = _call_http(name, args) if config.USE_HTTP_MOCK else _call_local(name, args)
         ok = not (isinstance(result, dict) and "error" in result)
     except Exception as e:
+        if diagnostic["validation"]["status"] == "unknown":
+            diagnostic["validation"]={"status":"invalid","reason":type(e).__name__}
+            emit('parameter_validation','failed',tool=name,error=type(e).__name__,executed=False)
         # 参数错误可以说明；其他异常不回显外部响应、密钥或本机路径。
         result = {"error": str(e) if isinstance(e, ValueError) else f"工具执行失败 ({type(e).__name__})"}
         ok = False
+    duration=int((time.perf_counter()-t0)*1000)
+    emit('tool_result','succeeded' if ok else 'failed' if diagnostic['backend_executed'] else 'blocked',
+         tool=name,executed=diagnostic['backend_executed'],output=result,duration_ms=duration)
+    observer=DISPATCH_OBSERVER.get()
+    if observer is not None:
+        observer(diagnostic)
     return result, ok, int((time.perf_counter() - t0) * 1000)

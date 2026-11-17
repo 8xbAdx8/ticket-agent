@@ -1,0 +1,1283 @@
+{
+  "schema": "ticket-v352-claim-evidence-table/1",
+  "date": "2026-10-26",
+  "baseline": "61c9f1953ff56e6037d3b996a333ef9c5a0164c5",
+  "real_API_requests": 0,
+  "models": [
+    {
+      "model": "deepseek-flash",
+      "verdict": "INDETERMINATE",
+      "factual_assertions": 10,
+      "counts": {
+        "supported": 6,
+        "contradicted": 0,
+        "unsupported": 0,
+        "indeterminate": 4,
+        "not_applicable": 0
+      },
+      "claims": [
+        {
+          "model": "deepseek-flash",
+          "trace_id": "2c9a9c4e4f99497c931a48e792c2eb49",
+          "claim_id": "C01",
+          "original_sentence": "根据政策知识库（doc_id: P11，《锁座与支付有效期》）：模拟锁座有效期为 **15 分钟**，超过有效期未支付，库存会自动释放。",
+          "original_span": {
+            "start": 0,
+            "end": 68
+          },
+          "independent_assertion": "根据政策知识库（doc_id: P11，《锁座与支付有效期》）：",
+          "factual": true,
+          "evidence_document": [
+            {
+              "doc_id": "P11",
+              "version": "43aea1ebf3c7b333"
+            }
+          ],
+          "evidence_location": [
+            {
+              "path": "docs/evidence/v352/live/paired-report-resumed.json",
+              "json_pointer": "/records/0/live_evidence/events/7/result/hits/0"
+            },
+            {
+              "path": "docs/evidence/v352/live/runs/deepseek/traces/audit_runs.jsonl",
+              "jsonl_line": 1,
+              "json_pointer": "/framework_events"
+            },
+            {
+              "path": "data/policies.md",
+              "line": 38,
+              "doc_id": "P11",
+              "version": "43aea1ebf3c7b333"
+            },
+            {
+              "path": "docs/evidence/v352-audit/answers/policy-index-snapshot.json",
+              "json_pointer": "/p11",
+              "scope": "actual original Chroma read on isolated copy"
+            }
+          ],
+          "actual_evidence": [
+            {
+              "type": "actual_tool_execution",
+              "tool": "search_policy",
+              "ok": true,
+              "executed": true
+            },
+            {
+              "doc_id": "P11",
+              "title": "锁座与支付有效期",
+              "source": "data/policies.md#P11",
+              "version": "43aea1ebf3c7b333",
+              "chunk_id": "P11-0000-589c2e46be21",
+              "content": "模拟锁座有效期 15 分钟，过期未支付自动释放库存；下单必须提供与锁座一致的乘客列表。重复支付不重复扣减库存。"
+            }
+          ],
+          "verdict": "supported",
+          "reason": "同一Trace有真实search_policy执行成功及完整返回，来源/查询结果声明有执行依据。",
+          "severity": "low",
+          "needs_b_review": false,
+          "rule": "query_completion",
+          "citation_binding": "inline"
+        },
+        {
+          "model": "deepseek-flash",
+          "trace_id": "2c9a9c4e4f99497c931a48e792c2eb49",
+          "claim_id": "C02",
+          "original_sentence": "根据政策知识库（doc_id: P11，《锁座与支付有效期》）：模拟锁座有效期为 **15 分钟**，超过有效期未支付，库存会自动释放。",
+          "original_span": {
+            "start": 0,
+            "end": 68
+          },
+          "independent_assertion": "模拟锁座有效期为 **15 分钟**",
+          "factual": true,
+          "evidence_document": [
+            {
+              "doc_id": "P11",
+              "version": "43aea1ebf3c7b333"
+            }
+          ],
+          "evidence_location": [
+            {
+              "path": "docs/evidence/v352/live/paired-report-resumed.json",
+              "json_pointer": "/records/0/live_evidence/events/7/result/hits/0"
+            },
+            {
+              "path": "docs/evidence/v352/live/runs/deepseek/traces/audit_runs.jsonl",
+              "jsonl_line": 1,
+              "json_pointer": "/framework_events"
+            },
+            {
+              "path": "data/policies.md",
+              "line": 38,
+              "doc_id": "P11",
+              "version": "43aea1ebf3c7b333"
+            },
+            {
+              "path": "docs/evidence/v352-audit/answers/policy-index-snapshot.json",
+              "json_pointer": "/p11",
+              "scope": "actual original Chroma read on isolated copy"
+            }
+          ],
+          "actual_evidence": [
+            {
+              "doc_id": "P11",
+              "version": "43aea1ebf3c7b333",
+              "source": "data/policies.md#P11",
+              "chunk_id": "P11-0000-589c2e46be21",
+              "content": "模拟锁座有效期 15 分钟，过期未支付自动释放库存；下单必须提供与锁座一致的乘客列表。重复支付不重复扣减库存。"
+            }
+          ],
+          "verdict": "supported",
+          "reason": "去除Markdown/空白和有限等价措辞后，整条陈述与证据相符；不是只命中一个数字。",
+          "severity": "low",
+          "needs_b_review": false,
+          "rule": "whole_literal",
+          "citation_binding": "same_original_sentence"
+        },
+        {
+          "model": "deepseek-flash",
+          "trace_id": "2c9a9c4e4f99497c931a48e792c2eb49",
+          "claim_id": "C03",
+          "original_sentence": "根据政策知识库（doc_id: P11，《锁座与支付有效期》）：模拟锁座有效期为 **15 分钟**，超过有效期未支付，库存会自动释放。",
+          "original_span": {
+            "start": 0,
+            "end": 68
+          },
+          "independent_assertion": "超过有效期未支付，库存会自动释放",
+          "factual": true,
+          "evidence_document": [
+            {
+              "doc_id": "P11",
+              "version": "43aea1ebf3c7b333"
+            }
+          ],
+          "evidence_location": [
+            {
+              "path": "docs/evidence/v352/live/paired-report-resumed.json",
+              "json_pointer": "/records/0/live_evidence/events/7/result/hits/0"
+            },
+            {
+              "path": "docs/evidence/v352/live/runs/deepseek/traces/audit_runs.jsonl",
+              "jsonl_line": 1,
+              "json_pointer": "/framework_events"
+            },
+            {
+              "path": "data/policies.md",
+              "line": 38,
+              "doc_id": "P11",
+              "version": "43aea1ebf3c7b333"
+            },
+            {
+              "path": "docs/evidence/v352-audit/answers/policy-index-snapshot.json",
+              "json_pointer": "/p11",
+              "scope": "actual original Chroma read on isolated copy"
+            }
+          ],
+          "actual_evidence": [
+            {
+              "doc_id": "P11",
+              "version": "43aea1ebf3c7b333",
+              "source": "data/policies.md#P11",
+              "chunk_id": "P11-0000-589c2e46be21",
+              "content": "模拟锁座有效期 15 分钟，过期未支付自动释放库存；下单必须提供与锁座一致的乘客列表。重复支付不重复扣减库存。"
+            }
+          ],
+          "verdict": "supported",
+          "reason": "保留“过期且未支付”两个条件，与P11自动释放库存的规则一致。",
+          "severity": "low",
+          "needs_b_review": false,
+          "rule": "conditional_release",
+          "citation_binding": "same_original_sentence"
+        },
+        {
+          "model": "deepseek-flash",
+          "trace_id": "2c9a9c4e4f99497c931a48e792c2eb49",
+          "claim_id": "C04",
+          "original_sentence": "下单时还需提供与锁座一致的乘客列表；",
+          "original_span": {
+            "start": 68,
+            "end": 86
+          },
+          "independent_assertion": "下单时还需提供与锁座一致的乘客列表",
+          "factual": true,
+          "evidence_document": [
+            {
+              "doc_id": "P11",
+              "version": "43aea1ebf3c7b333"
+            }
+          ],
+          "evidence_location": [
+            {
+              "path": "docs/evidence/v352/live/paired-report-resumed.json",
+              "json_pointer": "/records/0/live_evidence/events/7/result/hits/0"
+            },
+            {
+              "path": "docs/evidence/v352/live/runs/deepseek/traces/audit_runs.jsonl",
+              "jsonl_line": 1,
+              "json_pointer": "/framework_events"
+            },
+            {
+              "path": "data/policies.md",
+              "line": 38,
+              "doc_id": "P11",
+              "version": "43aea1ebf3c7b333"
+            },
+            {
+              "path": "docs/evidence/v352-audit/answers/policy-index-snapshot.json",
+              "json_pointer": "/p11",
+              "scope": "actual original Chroma read on isolated copy"
+            }
+          ],
+          "actual_evidence": [
+            {
+              "doc_id": "P11",
+              "version": "43aea1ebf3c7b333",
+              "source": "data/policies.md#P11",
+              "chunk_id": "P11-0000-589c2e46be21",
+              "content": "模拟锁座有效期 15 分钟，过期未支付自动释放库存；下单必须提供与锁座一致的乘客列表。重复支付不重复扣减库存。"
+            }
+          ],
+          "verdict": "supported",
+          "reason": "去除Markdown/空白和有限等价措辞后，整条陈述与证据相符；不是只命中一个数字。",
+          "severity": "low",
+          "needs_b_review": false,
+          "rule": "whole_literal",
+          "citation_binding": "paragraph_prefix"
+        },
+        {
+          "model": "deepseek-flash",
+          "trace_id": "2c9a9c4e4f99497c931a48e792c2eb49",
+          "claim_id": "C05",
+          "original_sentence": "重复支付不会重复扣减库存。",
+          "original_span": {
+            "start": 86,
+            "end": 99
+          },
+          "independent_assertion": "重复支付不会重复扣减库存",
+          "factual": true,
+          "evidence_document": [
+            {
+              "doc_id": "P11",
+              "version": "43aea1ebf3c7b333"
+            }
+          ],
+          "evidence_location": [
+            {
+              "path": "docs/evidence/v352/live/paired-report-resumed.json",
+              "json_pointer": "/records/0/live_evidence/events/7/result/hits/0"
+            },
+            {
+              "path": "docs/evidence/v352/live/runs/deepseek/traces/audit_runs.jsonl",
+              "jsonl_line": 1,
+              "json_pointer": "/framework_events"
+            },
+            {
+              "path": "data/policies.md",
+              "line": 38,
+              "doc_id": "P11",
+              "version": "43aea1ebf3c7b333"
+            },
+            {
+              "path": "docs/evidence/v352-audit/answers/policy-index-snapshot.json",
+              "json_pointer": "/p11",
+              "scope": "actual original Chroma read on isolated copy"
+            }
+          ],
+          "actual_evidence": [
+            {
+              "doc_id": "P11",
+              "version": "43aea1ebf3c7b333",
+              "source": "data/policies.md#P11",
+              "chunk_id": "P11-0000-589c2e46be21",
+              "content": "模拟锁座有效期 15 分钟，过期未支付自动释放库存；下单必须提供与锁座一致的乘客列表。重复支付不重复扣减库存。"
+            }
+          ],
+          "verdict": "supported",
+          "reason": "去除Markdown/空白和有限等价措辞后，整条陈述与证据相符；不是只命中一个数字。",
+          "severity": "low",
+          "needs_b_review": false,
+          "rule": "whole_literal",
+          "citation_binding": "paragraph_prefix"
+        },
+        {
+          "model": "deepseek-flash",
+          "trace_id": "2c9a9c4e4f99497c931a48e792c2eb49",
+          "claim_id": "C06",
+          "original_sentence": "需要说明的是，我这侧目前仅支持模拟查票和政策咨询，无法实际办理锁座、支付或下单。",
+          "original_span": {
+            "start": 101,
+            "end": 141
+          },
+          "independent_assertion": "助手支持模拟查票",
+          "factual": true,
+          "evidence_document": [],
+          "evidence_location": [
+            {
+              "path": "docs/evidence/v352/live/paired-report-resumed.json",
+              "json_pointer": "/records/0/live_evidence/events/7/result/hits/0"
+            },
+            {
+              "path": "docs/evidence/v352/live/runs/deepseek/traces/audit_runs.jsonl",
+              "jsonl_line": 1,
+              "json_pointer": "/framework_events"
+            },
+            {
+              "path": "data/policies.md",
+              "line": 38,
+              "doc_id": "P11",
+              "version": "43aea1ebf3c7b333"
+            },
+            {
+              "path": "docs/evidence/v352-audit/answers/policy-index-snapshot.json",
+              "json_pointer": "/p11",
+              "scope": "actual original Chroma read on isolated copy"
+            }
+          ],
+          "actual_evidence": [
+            {
+              "type": "static_code_and_prompt_only",
+              "note": "与声明一致，但缺历史运行时schema/绑定回执，不当作运行能力实测证明。"
+            }
+          ],
+          "verdict": "indeterminate",
+          "reason": "P11不证明应用能力；未保存当次完整HTTP tools schema/运行时白名单快照。历史代码/Prompt与只读声明一致，但本审计不将静态声明或未执行写操作当作历史运行时绑定实测证明，交B裁定。",
+          "severity": "medium",
+          "needs_b_review": true,
+          "rule": "runtime_capability_evidence_missing",
+          "citation_binding": "runtime_evidence_not_policy"
+        },
+        {
+          "model": "deepseek-flash",
+          "trace_id": "2c9a9c4e4f99497c931a48e792c2eb49",
+          "claim_id": "C07",
+          "original_sentence": "需要说明的是，我这侧目前仅支持模拟查票和政策咨询，无法实际办理锁座、支付或下单。",
+          "original_span": {
+            "start": 101,
+            "end": 141
+          },
+          "independent_assertion": "助手支持政策咨询",
+          "factual": true,
+          "evidence_document": [],
+          "evidence_location": [
+            {
+              "path": "docs/evidence/v352/live/paired-report-resumed.json",
+              "json_pointer": "/records/0/live_evidence/events/7/result/hits/0"
+            },
+            {
+              "path": "docs/evidence/v352/live/runs/deepseek/traces/audit_runs.jsonl",
+              "jsonl_line": 1,
+              "json_pointer": "/framework_events"
+            },
+            {
+              "path": "data/policies.md",
+              "line": 38,
+              "doc_id": "P11",
+              "version": "43aea1ebf3c7b333"
+            },
+            {
+              "path": "docs/evidence/v352-audit/answers/policy-index-snapshot.json",
+              "json_pointer": "/p11",
+              "scope": "actual original Chroma read on isolated copy"
+            }
+          ],
+          "actual_evidence": [
+            {
+              "type": "actual_tool_execution",
+              "tool": "search_policy",
+              "ok": true,
+              "executed": true
+            }
+          ],
+          "verdict": "supported",
+          "reason": "本次search_policy确已实际执行成功，支持本次可进行政策咨询的能力声明。",
+          "severity": "low",
+          "needs_b_review": false,
+          "rule": "observed_runtime_capability",
+          "citation_binding": "runtime_evidence_not_policy"
+        },
+        {
+          "model": "deepseek-flash",
+          "trace_id": "2c9a9c4e4f99497c931a48e792c2eb49",
+          "claim_id": "C08",
+          "original_sentence": "需要说明的是，我这侧目前仅支持模拟查票和政策咨询，无法实际办理锁座、支付或下单。",
+          "original_span": {
+            "start": 101,
+            "end": 141
+          },
+          "independent_assertion": "助手不能执行锁座",
+          "factual": true,
+          "evidence_document": [],
+          "evidence_location": [
+            {
+              "path": "docs/evidence/v352/live/paired-report-resumed.json",
+              "json_pointer": "/records/0/live_evidence/events/7/result/hits/0"
+            },
+            {
+              "path": "docs/evidence/v352/live/runs/deepseek/traces/audit_runs.jsonl",
+              "jsonl_line": 1,
+              "json_pointer": "/framework_events"
+            },
+            {
+              "path": "data/policies.md",
+              "line": 38,
+              "doc_id": "P11",
+              "version": "43aea1ebf3c7b333"
+            },
+            {
+              "path": "docs/evidence/v352-audit/answers/policy-index-snapshot.json",
+              "json_pointer": "/p11",
+              "scope": "actual original Chroma read on isolated copy"
+            }
+          ],
+          "actual_evidence": [
+            {
+              "type": "static_code_and_prompt_only",
+              "note": "与声明一致，但缺历史运行时schema/绑定回执，不当作运行能力实测证明。"
+            }
+          ],
+          "verdict": "indeterminate",
+          "reason": "P11不证明应用能力；未保存当次完整HTTP tools schema/运行时白名单快照。历史代码/Prompt与只读声明一致，但本审计不将静态声明或未执行写操作当作历史运行时绑定实测证明，交B裁定。",
+          "severity": "medium",
+          "needs_b_review": true,
+          "rule": "runtime_capability_evidence_missing",
+          "citation_binding": "runtime_evidence_not_policy"
+        },
+        {
+          "model": "deepseek-flash",
+          "trace_id": "2c9a9c4e4f99497c931a48e792c2eb49",
+          "claim_id": "C09",
+          "original_sentence": "需要说明的是，我这侧目前仅支持模拟查票和政策咨询，无法实际办理锁座、支付或下单。",
+          "original_span": {
+            "start": 101,
+            "end": 141
+          },
+          "independent_assertion": "助手不能执行支付",
+          "factual": true,
+          "evidence_document": [],
+          "evidence_location": [
+            {
+              "path": "docs/evidence/v352/live/paired-report-resumed.json",
+              "json_pointer": "/records/0/live_evidence/events/7/result/hits/0"
+            },
+            {
+              "path": "docs/evidence/v352/live/runs/deepseek/traces/audit_runs.jsonl",
+              "jsonl_line": 1,
+              "json_pointer": "/framework_events"
+            },
+            {
+              "path": "data/policies.md",
+              "line": 38,
+              "doc_id": "P11",
+              "version": "43aea1ebf3c7b333"
+            },
+            {
+              "path": "docs/evidence/v352-audit/answers/policy-index-snapshot.json",
+              "json_pointer": "/p11",
+              "scope": "actual original Chroma read on isolated copy"
+            }
+          ],
+          "actual_evidence": [
+            {
+              "type": "static_code_and_prompt_only",
+              "note": "与声明一致，但缺历史运行时schema/绑定回执，不当作运行能力实测证明。"
+            }
+          ],
+          "verdict": "indeterminate",
+          "reason": "P11不证明应用能力；未保存当次完整HTTP tools schema/运行时白名单快照。历史代码/Prompt与只读声明一致，但本审计不将静态声明或未执行写操作当作历史运行时绑定实测证明，交B裁定。",
+          "severity": "medium",
+          "needs_b_review": true,
+          "rule": "runtime_capability_evidence_missing",
+          "citation_binding": "runtime_evidence_not_policy"
+        },
+        {
+          "model": "deepseek-flash",
+          "trace_id": "2c9a9c4e4f99497c931a48e792c2eb49",
+          "claim_id": "C10",
+          "original_sentence": "需要说明的是，我这侧目前仅支持模拟查票和政策咨询，无法实际办理锁座、支付或下单。",
+          "original_span": {
+            "start": 101,
+            "end": 141
+          },
+          "independent_assertion": "助手不能执行下单",
+          "factual": true,
+          "evidence_document": [],
+          "evidence_location": [
+            {
+              "path": "docs/evidence/v352/live/paired-report-resumed.json",
+              "json_pointer": "/records/0/live_evidence/events/7/result/hits/0"
+            },
+            {
+              "path": "docs/evidence/v352/live/runs/deepseek/traces/audit_runs.jsonl",
+              "jsonl_line": 1,
+              "json_pointer": "/framework_events"
+            },
+            {
+              "path": "data/policies.md",
+              "line": 38,
+              "doc_id": "P11",
+              "version": "43aea1ebf3c7b333"
+            },
+            {
+              "path": "docs/evidence/v352-audit/answers/policy-index-snapshot.json",
+              "json_pointer": "/p11",
+              "scope": "actual original Chroma read on isolated copy"
+            }
+          ],
+          "actual_evidence": [
+            {
+              "type": "static_code_and_prompt_only",
+              "note": "与声明一致，但缺历史运行时schema/绑定回执，不当作运行能力实测证明。"
+            }
+          ],
+          "verdict": "indeterminate",
+          "reason": "P11不证明应用能力；未保存当次完整HTTP tools schema/运行时白名单快照。历史代码/Prompt与只读声明一致，但本审计不将静态声明或未执行写操作当作历史运行时绑定实测证明，交B裁定。",
+          "severity": "medium",
+          "needs_b_review": true,
+          "rule": "runtime_capability_evidence_missing",
+          "citation_binding": "runtime_evidence_not_policy"
+        }
+      ],
+      "trace_id": "2c9a9c4e4f99497c931a48e792c2eb49",
+      "original_reply_sha256": "1d01a0aa8cbbf123c6acb3c8a88434fa25475246d218a001e09664a19b11172e",
+      "original_model_reply": "根据政策知识库（doc_id: P11，《锁座与支付有效期》）：模拟锁座有效期为 **15 分钟**，超过有效期未支付，库存会自动释放。下单时还需提供与锁座一致的乘客列表；重复支付不会重复扣减库存。\n\n需要说明的是，我这侧目前仅支持模拟查票和政策咨询，无法实际办理锁座、支付或下单。",
+      "original_automatic_status": "indeterminate",
+      "old_claim_checks": [
+        {
+          "claim": "根据政策知识库（doc_id: P11，《锁座与支付有效期》）：模拟锁座有效期为 **15 分钟**，超过有效期未支付，库存会自动释放",
+          "status": "supported_scoped_quantities",
+          "quantities": [
+            {
+              "text": "15 分钟",
+              "dimension": "duration",
+              "value": "15",
+              "start": 40,
+              "end": 45,
+              "negated": false
+            }
+          ],
+          "sources": [
+            {
+              "doc_id": "P11",
+              "evidence_text": "模拟锁座有效期 15 分钟",
+              "source": "data/policies.md#P11"
+            }
+          ],
+          "basis": "Same citation, compatible subjects/explicit interval, quantities with normalized units"
+        },
+        {
+          "claim": "重复支付不会重复扣减库存",
+          "status": "indeterminate",
+          "reason": "No local doc_id anchors this assertion"
+        }
+      ],
+      "old_manual_review": [
+        {
+          "claim": "重复支付不会重复扣减库存",
+          "reason": "no_locatable_citation"
+        }
+      ],
+      "source_paths": [
+        "docs\\evidence\\v352\\live\\paired-report-resumed.json",
+        "docs\\evidence\\v352\\live\\runs\\deepseek\\traces\\audit_runs.jsonl",
+        "docs\\evidence\\v352\\live\\runs\\deepseek\\traces\\provider_runs.jsonl",
+        "docs\\evidence\\v352\\live\\runs\\deepseek\\traces\\rag_runs.jsonl",
+        "docs\\evidence\\v352\\live\\runs\\deepseek\\traces\\traces.jsonl"
+      ]
+    },
+    {
+      "model": "qwen3.8-flash",
+      "verdict": "INDETERMINATE",
+      "factual_assertions": 10,
+      "counts": {
+        "supported": 7,
+        "contradicted": 0,
+        "unsupported": 0,
+        "indeterminate": 3,
+        "not_applicable": 0
+      },
+      "claims": [
+        {
+          "model": "qwen3.8-flash",
+          "trace_id": "b4c2d6e91b594b24b0e078dfdb7d333d",
+          "claim_id": "C01",
+          "original_sentence": "根据政策库查询结果：\n",
+          "original_span": {
+            "start": 0,
+            "end": 11
+          },
+          "independent_assertion": "根据政策库查询结果：",
+          "factual": true,
+          "evidence_document": [
+            {
+              "doc_id": "P11",
+              "version": "43aea1ebf3c7b333"
+            }
+          ],
+          "evidence_location": [
+            {
+              "path": "docs/evidence/v352/live/paired-report-resumed.json",
+              "json_pointer": "/records/1/live_evidence/events/7/result/hits/0"
+            },
+            {
+              "path": "docs/evidence/v352/live/runs/bailian-resumed/traces/audit_runs.jsonl",
+              "jsonl_line": 1,
+              "json_pointer": "/framework_events"
+            },
+            {
+              "path": "data/policies.md",
+              "line": 38,
+              "doc_id": "P11",
+              "version": "43aea1ebf3c7b333"
+            },
+            {
+              "path": "docs/evidence/v352-audit/answers/policy-index-snapshot.json",
+              "json_pointer": "/p11",
+              "scope": "actual original Chroma read on isolated copy"
+            }
+          ],
+          "actual_evidence": [
+            {
+              "type": "actual_tool_execution",
+              "tool": "search_policy",
+              "ok": true,
+              "executed": true
+            },
+            {
+              "doc_id": "P11",
+              "title": "锁座与支付有效期",
+              "source": "data/policies.md#P11",
+              "version": "43aea1ebf3c7b333",
+              "chunk_id": "P11-0000-589c2e46be21",
+              "content": "模拟锁座有效期 15 分钟，过期未支付自动释放库存；下单必须提供与锁座一致的乘客列表。重复支付不重复扣减库存。"
+            }
+          ],
+          "verdict": "supported",
+          "reason": "同一Trace有真实search_policy执行成功及完整返回，来源/查询结果声明有执行依据。",
+          "severity": "low",
+          "needs_b_review": false,
+          "rule": "query_completion",
+          "citation_binding": "explicit_single_document_footer"
+        },
+        {
+          "model": "qwen3.8-flash",
+          "trace_id": "b4c2d6e91b594b24b0e078dfdb7d333d",
+          "claim_id": "C02",
+          "original_sentence": "**锁座有效期为 15 分钟。",
+          "original_span": {
+            "start": 12,
+            "end": 27
+          },
+          "independent_assertion": "*锁座有效期为 15 分钟",
+          "factual": true,
+          "evidence_document": [
+            {
+              "doc_id": "P11",
+              "version": "43aea1ebf3c7b333"
+            }
+          ],
+          "evidence_location": [
+            {
+              "path": "docs/evidence/v352/live/paired-report-resumed.json",
+              "json_pointer": "/records/1/live_evidence/events/7/result/hits/0"
+            },
+            {
+              "path": "docs/evidence/v352/live/runs/bailian-resumed/traces/audit_runs.jsonl",
+              "jsonl_line": 1,
+              "json_pointer": "/framework_events"
+            },
+            {
+              "path": "data/policies.md",
+              "line": 38,
+              "doc_id": "P11",
+              "version": "43aea1ebf3c7b333"
+            },
+            {
+              "path": "docs/evidence/v352-audit/answers/policy-index-snapshot.json",
+              "json_pointer": "/p11",
+              "scope": "actual original Chroma read on isolated copy"
+            }
+          ],
+          "actual_evidence": [
+            {
+              "doc_id": "P11",
+              "version": "43aea1ebf3c7b333",
+              "source": "data/policies.md#P11",
+              "chunk_id": "P11-0000-589c2e46be21",
+              "content": "模拟锁座有效期 15 分钟，过期未支付自动释放库存；下单必须提供与锁座一致的乘客列表。重复支付不重复扣减库存。"
+            }
+          ],
+          "verdict": "supported",
+          "reason": "去除Markdown/空白和有限等价措辞后，整条陈述与证据相符；不是只命中一个数字。",
+          "severity": "low",
+          "needs_b_review": false,
+          "rule": "whole_literal",
+          "citation_binding": "explicit_single_document_footer"
+        },
+        {
+          "model": "qwen3.8-flash",
+          "trace_id": "b4c2d6e91b594b24b0e078dfdb7d333d",
+          "claim_id": "C03",
+          "original_sentence": "- 若在 15 分钟内未完成支付，系统将自动释放已锁定的库存。",
+          "original_span": {
+            "start": 31,
+            "end": 62
+          },
+          "independent_assertion": "若在 15 分钟内未完成支付，系统将自动释放已锁定的库存",
+          "factual": true,
+          "evidence_document": [
+            {
+              "doc_id": "P11",
+              "version": "43aea1ebf3c7b333"
+            }
+          ],
+          "evidence_location": [
+            {
+              "path": "docs/evidence/v352/live/paired-report-resumed.json",
+              "json_pointer": "/records/1/live_evidence/events/7/result/hits/0"
+            },
+            {
+              "path": "docs/evidence/v352/live/runs/bailian-resumed/traces/audit_runs.jsonl",
+              "jsonl_line": 1,
+              "json_pointer": "/framework_events"
+            },
+            {
+              "path": "data/policies.md",
+              "line": 38,
+              "doc_id": "P11",
+              "version": "43aea1ebf3c7b333"
+            },
+            {
+              "path": "docs/evidence/v352-audit/answers/policy-index-snapshot.json",
+              "json_pointer": "/p11",
+              "scope": "actual original Chroma read on isolated copy"
+            }
+          ],
+          "actual_evidence": [
+            {
+              "doc_id": "P11",
+              "version": "43aea1ebf3c7b333",
+              "source": "data/policies.md#P11",
+              "chunk_id": "P11-0000-589c2e46be21",
+              "content": "模拟锁座有效期 15 分钟，过期未支付自动释放库存；下单必须提供与锁座一致的乘客列表。重复支付不重复扣减库存。"
+            }
+          ],
+          "verdict": "supported",
+          "reason": "将证据中的有效期代入“未在有效期内完成支付”，与“过期未支付”条件等价；未扩大为无条件释放。",
+          "severity": "low",
+          "needs_b_review": false,
+          "rule": "bound_deadline_release",
+          "citation_binding": "explicit_single_document_footer"
+        },
+        {
+          "model": "qwen3.8-flash",
+          "trace_id": "b4c2d6e91b594b24b0e078dfdb7d333d",
+          "claim_id": "C04",
+          "original_sentence": "- 下单时必须提供与锁座时一致的乘客列表。",
+          "original_span": {
+            "start": 63,
+            "end": 84
+          },
+          "independent_assertion": "下单时必须提供与锁座时一致的乘客列表",
+          "factual": true,
+          "evidence_document": [
+            {
+              "doc_id": "P11",
+              "version": "43aea1ebf3c7b333"
+            }
+          ],
+          "evidence_location": [
+            {
+              "path": "docs/evidence/v352/live/paired-report-resumed.json",
+              "json_pointer": "/records/1/live_evidence/events/7/result/hits/0"
+            },
+            {
+              "path": "docs/evidence/v352/live/runs/bailian-resumed/traces/audit_runs.jsonl",
+              "jsonl_line": 1,
+              "json_pointer": "/framework_events"
+            },
+            {
+              "path": "data/policies.md",
+              "line": 38,
+              "doc_id": "P11",
+              "version": "43aea1ebf3c7b333"
+            },
+            {
+              "path": "docs/evidence/v352-audit/answers/policy-index-snapshot.json",
+              "json_pointer": "/p11",
+              "scope": "actual original Chroma read on isolated copy"
+            }
+          ],
+          "actual_evidence": [
+            {
+              "doc_id": "P11",
+              "version": "43aea1ebf3c7b333",
+              "source": "data/policies.md#P11",
+              "chunk_id": "P11-0000-589c2e46be21",
+              "content": "模拟锁座有效期 15 分钟，过期未支付自动释放库存；下单必须提供与锁座一致的乘客列表。重复支付不重复扣减库存。"
+            }
+          ],
+          "verdict": "supported",
+          "reason": "去除Markdown/空白和有限等价措辞后，整条陈述与证据相符；不是只命中一个数字。",
+          "severity": "low",
+          "needs_b_review": false,
+          "rule": "whole_literal",
+          "citation_binding": "explicit_single_document_footer"
+        },
+        {
+          "model": "qwen3.8-flash",
+          "trace_id": "b4c2d6e91b594b24b0e078dfdb7d333d",
+          "claim_id": "C05",
+          "original_sentence": "- 重复支付不会重复扣减库存。",
+          "original_span": {
+            "start": 85,
+            "end": 100
+          },
+          "independent_assertion": "重复支付不会重复扣减库存",
+          "factual": true,
+          "evidence_document": [
+            {
+              "doc_id": "P11",
+              "version": "43aea1ebf3c7b333"
+            }
+          ],
+          "evidence_location": [
+            {
+              "path": "docs/evidence/v352/live/paired-report-resumed.json",
+              "json_pointer": "/records/1/live_evidence/events/7/result/hits/0"
+            },
+            {
+              "path": "docs/evidence/v352/live/runs/bailian-resumed/traces/audit_runs.jsonl",
+              "jsonl_line": 1,
+              "json_pointer": "/framework_events"
+            },
+            {
+              "path": "data/policies.md",
+              "line": 38,
+              "doc_id": "P11",
+              "version": "43aea1ebf3c7b333"
+            },
+            {
+              "path": "docs/evidence/v352-audit/answers/policy-index-snapshot.json",
+              "json_pointer": "/p11",
+              "scope": "actual original Chroma read on isolated copy"
+            }
+          ],
+          "actual_evidence": [
+            {
+              "doc_id": "P11",
+              "version": "43aea1ebf3c7b333",
+              "source": "data/policies.md#P11",
+              "chunk_id": "P11-0000-589c2e46be21",
+              "content": "模拟锁座有效期 15 分钟，过期未支付自动释放库存；下单必须提供与锁座一致的乘客列表。重复支付不重复扣减库存。"
+            }
+          ],
+          "verdict": "supported",
+          "reason": "去除Markdown/空白和有限等价措辞后，整条陈述与证据相符；不是只命中一个数字。",
+          "severity": "low",
+          "needs_b_review": false,
+          "rule": "whole_literal",
+          "citation_binding": "explicit_single_document_footer"
+        },
+        {
+          "model": "qwen3.8-flash",
+          "trace_id": "b4c2d6e91b594b24b0e078dfdb7d333d",
+          "claim_id": "C06",
+          "original_sentence": "> 📄 来源：《锁座与支付有效期》（doc_id: P11）\n",
+          "original_span": {
+            "start": 102,
+            "end": 133
+          },
+          "independent_assertion": "📄 来源：《锁座与支付有效期》（doc_id: P11）",
+          "factual": true,
+          "evidence_document": [
+            {
+              "doc_id": "P11",
+              "version": "43aea1ebf3c7b333"
+            }
+          ],
+          "evidence_location": [
+            {
+              "path": "docs/evidence/v352/live/paired-report-resumed.json",
+              "json_pointer": "/records/1/live_evidence/events/7/result/hits/0"
+            },
+            {
+              "path": "docs/evidence/v352/live/runs/bailian-resumed/traces/audit_runs.jsonl",
+              "jsonl_line": 1,
+              "json_pointer": "/framework_events"
+            },
+            {
+              "path": "data/policies.md",
+              "line": 38,
+              "doc_id": "P11",
+              "version": "43aea1ebf3c7b333"
+            },
+            {
+              "path": "docs/evidence/v352-audit/answers/policy-index-snapshot.json",
+              "json_pointer": "/p11",
+              "scope": "actual original Chroma read on isolated copy"
+            }
+          ],
+          "actual_evidence": [
+            {
+              "doc_id": "P11",
+              "version": "43aea1ebf3c7b333",
+              "source": "data/policies.md#P11",
+              "chunk_id": "P11-0000-589c2e46be21",
+              "content": "模拟锁座有效期 15 分钟，过期未支付自动释放库存；下单必须提供与锁座一致的乘客列表。重复支付不重复扣减库存。"
+            }
+          ],
+          "verdict": "supported",
+          "reason": "doc_id、标题及版本与实际ToolMessage一致，没有用别的文档支持P11。",
+          "severity": "low",
+          "needs_b_review": false,
+          "rule": "document_identity",
+          "citation_binding": "inline"
+        },
+        {
+          "model": "qwen3.8-flash",
+          "trace_id": "b4c2d6e91b594b24b0e078dfdb7d333d",
+          "claim_id": "C07",
+          "original_sentence": "需要说明的是，当前助手仅支持模拟查票和政策咨询，无法为您实际执行锁座或支付操作。",
+          "original_span": {
+            "start": 134,
+            "end": 174
+          },
+          "independent_assertion": "助手支持模拟查票",
+          "factual": true,
+          "evidence_document": [],
+          "evidence_location": [
+            {
+              "path": "docs/evidence/v352/live/paired-report-resumed.json",
+              "json_pointer": "/records/1/live_evidence/events/7/result/hits/0"
+            },
+            {
+              "path": "docs/evidence/v352/live/runs/bailian-resumed/traces/audit_runs.jsonl",
+              "jsonl_line": 1,
+              "json_pointer": "/framework_events"
+            },
+            {
+              "path": "data/policies.md",
+              "line": 38,
+              "doc_id": "P11",
+              "version": "43aea1ebf3c7b333"
+            },
+            {
+              "path": "docs/evidence/v352-audit/answers/policy-index-snapshot.json",
+              "json_pointer": "/p11",
+              "scope": "actual original Chroma read on isolated copy"
+            }
+          ],
+          "actual_evidence": [
+            {
+              "type": "static_code_and_prompt_only",
+              "note": "与声明一致，但缺历史运行时schema/绑定回执，不当作运行能力实测证明。"
+            }
+          ],
+          "verdict": "indeterminate",
+          "reason": "P11不证明应用能力；未保存当次完整HTTP tools schema/运行时白名单快照。历史代码/Prompt与只读声明一致，但本审计不将静态声明或未执行写操作当作历史运行时绑定实测证明，交B裁定。",
+          "severity": "medium",
+          "needs_b_review": true,
+          "rule": "runtime_capability_evidence_missing",
+          "citation_binding": "runtime_evidence_not_policy"
+        },
+        {
+          "model": "qwen3.8-flash",
+          "trace_id": "b4c2d6e91b594b24b0e078dfdb7d333d",
+          "claim_id": "C08",
+          "original_sentence": "需要说明的是，当前助手仅支持模拟查票和政策咨询，无法为您实际执行锁座或支付操作。",
+          "original_span": {
+            "start": 134,
+            "end": 174
+          },
+          "independent_assertion": "助手支持政策咨询",
+          "factual": true,
+          "evidence_document": [],
+          "evidence_location": [
+            {
+              "path": "docs/evidence/v352/live/paired-report-resumed.json",
+              "json_pointer": "/records/1/live_evidence/events/7/result/hits/0"
+            },
+            {
+              "path": "docs/evidence/v352/live/runs/bailian-resumed/traces/audit_runs.jsonl",
+              "jsonl_line": 1,
+              "json_pointer": "/framework_events"
+            },
+            {
+              "path": "data/policies.md",
+              "line": 38,
+              "doc_id": "P11",
+              "version": "43aea1ebf3c7b333"
+            },
+            {
+              "path": "docs/evidence/v352-audit/answers/policy-index-snapshot.json",
+              "json_pointer": "/p11",
+              "scope": "actual original Chroma read on isolated copy"
+            }
+          ],
+          "actual_evidence": [
+            {
+              "type": "actual_tool_execution",
+              "tool": "search_policy",
+              "ok": true,
+              "executed": true
+            }
+          ],
+          "verdict": "supported",
+          "reason": "本次search_policy确已实际执行成功，支持本次可进行政策咨询的能力声明。",
+          "severity": "low",
+          "needs_b_review": false,
+          "rule": "observed_runtime_capability",
+          "citation_binding": "runtime_evidence_not_policy"
+        },
+        {
+          "model": "qwen3.8-flash",
+          "trace_id": "b4c2d6e91b594b24b0e078dfdb7d333d",
+          "claim_id": "C09",
+          "original_sentence": "需要说明的是，当前助手仅支持模拟查票和政策咨询，无法为您实际执行锁座或支付操作。",
+          "original_span": {
+            "start": 134,
+            "end": 174
+          },
+          "independent_assertion": "助手不能执行锁座",
+          "factual": true,
+          "evidence_document": [],
+          "evidence_location": [
+            {
+              "path": "docs/evidence/v352/live/paired-report-resumed.json",
+              "json_pointer": "/records/1/live_evidence/events/7/result/hits/0"
+            },
+            {
+              "path": "docs/evidence/v352/live/runs/bailian-resumed/traces/audit_runs.jsonl",
+              "jsonl_line": 1,
+              "json_pointer": "/framework_events"
+            },
+            {
+              "path": "data/policies.md",
+              "line": 38,
+              "doc_id": "P11",
+              "version": "43aea1ebf3c7b333"
+            },
+            {
+              "path": "docs/evidence/v352-audit/answers/policy-index-snapshot.json",
+              "json_pointer": "/p11",
+              "scope": "actual original Chroma read on isolated copy"
+            }
+          ],
+          "actual_evidence": [
+            {
+              "type": "static_code_and_prompt_only",
+              "note": "与声明一致，但缺历史运行时schema/绑定回执，不当作运行能力实测证明。"
+            }
+          ],
+          "verdict": "indeterminate",
+          "reason": "P11不证明应用能力；未保存当次完整HTTP tools schema/运行时白名单快照。历史代码/Prompt与只读声明一致，但本审计不将静态声明或未执行写操作当作历史运行时绑定实测证明，交B裁定。",
+          "severity": "medium",
+          "needs_b_review": true,
+          "rule": "runtime_capability_evidence_missing",
+          "citation_binding": "runtime_evidence_not_policy"
+        },
+        {
+          "model": "qwen3.8-flash",
+          "trace_id": "b4c2d6e91b594b24b0e078dfdb7d333d",
+          "claim_id": "C10",
+          "original_sentence": "需要说明的是，当前助手仅支持模拟查票和政策咨询，无法为您实际执行锁座或支付操作。",
+          "original_span": {
+            "start": 134,
+            "end": 174
+          },
+          "independent_assertion": "助手不能执行支付",
+          "factual": true,
+          "evidence_document": [],
+          "evidence_location": [
+            {
+              "path": "docs/evidence/v352/live/paired-report-resumed.json",
+              "json_pointer": "/records/1/live_evidence/events/7/result/hits/0"
+            },
+            {
+              "path": "docs/evidence/v352/live/runs/bailian-resumed/traces/audit_runs.jsonl",
+              "jsonl_line": 1,
+              "json_pointer": "/framework_events"
+            },
+            {
+              "path": "data/policies.md",
+              "line": 38,
+              "doc_id": "P11",
+              "version": "43aea1ebf3c7b333"
+            },
+            {
+              "path": "docs/evidence/v352-audit/answers/policy-index-snapshot.json",
+              "json_pointer": "/p11",
+              "scope": "actual original Chroma read on isolated copy"
+            }
+          ],
+          "actual_evidence": [
+            {
+              "type": "static_code_and_prompt_only",
+              "note": "与声明一致，但缺历史运行时schema/绑定回执，不当作运行能力实测证明。"
+            }
+          ],
+          "verdict": "indeterminate",
+          "reason": "P11不证明应用能力；未保存当次完整HTTP tools schema/运行时白名单快照。历史代码/Prompt与只读声明一致，但本审计不将静态声明或未执行写操作当作历史运行时绑定实测证明，交B裁定。",
+          "severity": "medium",
+          "needs_b_review": true,
+          "rule": "runtime_capability_evidence_missing",
+          "citation_binding": "runtime_evidence_not_policy"
+        }
+      ],
+      "trace_id": "b4c2d6e91b594b24b0e078dfdb7d333d",
+      "original_reply_sha256": "2f2a04cafd68a80041b9d8ba9cda6b62b8c4ea4d69262b01ad43abfd1a4cbf3d",
+      "original_model_reply": "根据政策库查询结果：\n\n**锁座有效期为 15 分钟。**\n\n- 若在 15 分钟内未完成支付，系统将自动释放已锁定的库存。\n- 下单时必须提供与锁座时一致的乘客列表。\n- 重复支付不会重复扣减库存。\n\n> 📄 来源：《锁座与支付有效期》（doc_id: P11）\n\n需要说明的是，当前助手仅支持模拟查票和政策咨询，无法为您实际执行锁座或支付操作。",
+      "original_automatic_status": "indeterminate",
+      "old_claim_checks": [
+        {
+          "claim": "**锁座有效期为 15 分钟 **",
+          "status": "indeterminate",
+          "reason": "No local doc_id anchors this assertion"
+        },
+        {
+          "claim": "- 若在 15 分钟内未完成支付，系统将自动释放已锁定的库存",
+          "status": "indeterminate",
+          "reason": "No local doc_id anchors this assertion"
+        },
+        {
+          "claim": "- 重复支付不会重复扣减库存",
+          "status": "indeterminate",
+          "reason": "No local doc_id anchors this assertion"
+        },
+        {
+          "claim": "📄 来源：《锁座与支付有效期》（doc_id: P11）",
+          "status": "indeterminate",
+          "reason": "Non-numeric semantic paraphrase is not automatically proved"
+        }
+      ],
+      "old_manual_review": [
+        {
+          "claim": "**锁座有效期为 15 分钟 **",
+          "reason": "no_locatable_citation"
+        },
+        {
+          "claim": "- 若在 15 分钟内未完成支付，系统将自动释放已锁定的库存",
+          "reason": "no_locatable_citation"
+        },
+        {
+          "claim": "- 重复支付不会重复扣减库存",
+          "reason": "no_locatable_citation"
+        },
+        {
+          "claim": "📄 来源：《锁座与支付有效期》（doc_id: P11）",
+          "reason": "semantic_support_requires_review"
+        }
+      ],
+      "source_paths": [
+        "docs\\evidence\\v352\\live\\paired-report-resumed.json",
+        "docs\\evidence\\v352\\live\\runs\\bailian-resumed\\traces\\audit_runs.jsonl",
+        "docs\\evidence\\v352\\live\\runs\\bailian-resumed\\traces\\provider_runs.jsonl",
+        "docs\\evidence\\v352\\live\\runs\\bailian-resumed\\traces\\rag_runs.jsonl",
+        "docs\\evidence\\v352\\live\\runs\\bailian-resumed\\traces\\traces.jsonl"
+      ]
+    }
+  ],
+  "same_policy_and_prompt": true,
+  "missing_evidence": [
+    "Original full HTTP request body including tools schema was not retained.",
+    "No saved runtime tool-binding/schema snapshot for claims about non-executed tools."
+  ],
+  "historical_source_comparison": [
+    {
+      "path": "target/agent.py",
+      "hashes": [
+        "71b77ec2661a27dd5a75657577c3e3c76585a40ff96db29e7cc09eef424dffcb",
+        "71b77ec2661a27dd5a75657577c3e3c76585a40ff96db29e7cc09eef424dffcb"
+      ],
+      "identical": true
+    },
+    {
+      "path": "target/langchain_agent.py",
+      "hashes": [
+        "8a9898f0240c97ef75549f1146eedd9ad865dcd182ac6f578798f983145b7945",
+        "8a9898f0240c97ef75549f1146eedd9ad865dcd182ac6f578798f983145b7945"
+      ],
+      "identical": true
+    },
+    {
+      "path": "target/rag_service.py",
+      "hashes": [
+        "e9d7c7bcd3449c50d08fa83fdb49f86331726aa638d88c8338fe47cea5280aec",
+        "e9d7c7bcd3449c50d08fa83fdb49f86331726aa638d88c8338fe47cea5280aec"
+      ],
+      "identical": true
+    },
+    {
+      "path": "target/rag_store.py",
+      "hashes": [
+        "f6cd1d80ca3ec095430f155cb7fabf1f2a8e301647664bba5801f58051024e72",
+        "f6cd1d80ca3ec095430f155cb7fabf1f2a8e301647664bba5801f58051024e72"
+      ],
+      "identical": true
+    },
+    {
+      "path": "target/rag_relevance.py",
+      "hashes": [
+        "c5ed14431a3c170f7aeb667fee3cc3dc4df3ef5cb6bbcd436c15e9ad25bde0dd",
+        "c5ed14431a3c170f7aeb667fee3cc3dc4df3ef5cb6bbcd436c15e9ad25bde0dd"
+      ],
+      "identical": true
+    },
+    {
+      "path": "target/deepseek_runtime.py",
+      "hashes": [
+        "e616b9fa4ab47a92618fb619ac05285b3565fa71cfe5e52e24d4d584b63e7290",
+        "e616b9fa4ab47a92618fb619ac05285b3565fa71cfe5e52e24d4d584b63e7290"
+      ],
+      "identical": true
+    },
+    {
+      "path": "target/bailian_runtime.py",
+      "hashes": [
+        "c1ff6499c3c006c41bb68d1ed27178a0d7d9055ac0c389b7a3b39fcd3a7d9fc1",
+        "c1ff6499c3c006c41bb68d1ed27178a0d7d9055ac0c389b7a3b39fcd3a7d9fc1"
+      ],
+      "identical": true
+    },
+    {
+      "path": "target/tools.py",
+      "hashes": [
+        "c470abc506ad29851c1a67f1db0e1f37bacc492c49fc0bdff3f3ef6296c1b6b9",
+        "c470abc506ad29851c1a67f1db0e1f37bacc492c49fc0bdff3f3ef6296c1b6b9"
+      ],
+      "identical": true
+    },
+    {
+      "path": "data/policies.md",
+      "hashes": [
+        "bfef71389558e57a11f6d2459d7cc7ef79c1c77c8ff2e60152197e21c18a44ad",
+        "bfef71389558e57a11f6d2459d7cc7ef79c1c77c8ff2e60152197e21c18a44ad"
+      ],
+      "identical": true
+    },
+    {
+      "path": "requirements-v35-lock.txt",
+      "hashes": [
+        "df6e5e588b2e8c0405199bf542147e68bb14c9d921b3d28d6c6e599eb54e2748",
+        "df6e5e588b2e8c0405199bf542147e68bb14c9d921b3d28d6c6e599eb54e2748"
+      ],
+      "identical": true
+    },
+    {
+      "path": "target/live_providers.py",
+      "hashes": [
+        "a69218334057163d9d71d352aee525c257e173b5a64947d9a9f132a36e2d0031",
+        "32b8236713b342fc5f6ce10f9337ffa12ad8b896e8e0f4b5877f1519d54f7ce5"
+      ],
+      "identical": false
+    },
+    {
+      "path": "scripts/verify_v352_live.py",
+      "hashes": [
+        "79a457d5599f42b69e95ddaba43ee575c85d2b408109cb3da271bb637c6bb61b",
+        "1309642ce12b6789878c09bba3642d20bf49be50b79795607483a136a5a37993"
+      ],
+      "identical": false
+    }
+  ],
+  "raw_audit": "docs/evidence/v352-audit/answers/audit.json"
+}

@@ -1,0 +1,1168 @@
+{
+  "schema": "ticket-rag-faithfulness-fixtures/1",
+  "scope": "A deterministic offline fixtures, not B formal judgement or Live accuracy",
+  "cases": [
+    {
+      "id": "F01",
+      "purpose": "正确期限",
+      "input": "请解释相关模拟政策",
+      "hits": [
+        {
+          "doc_id": "P11",
+          "title": "锁座与支付有效期",
+          "content": "模拟锁座有效期 15 分钟，过期未支付自动释放库存；下单必须提供与锁座一致的乘客列表。重复支付不重复扣减库存。",
+          "source": "data/policies.md#P11"
+        }
+      ],
+      "reply": "模拟锁座有效期15分钟 [P11]。",
+      "events": [],
+      "expected": {
+        "failed": false,
+        "finding_types": [],
+        "full_semantic_faithfulness": "indeterminate"
+      }
+    },
+    {
+      "id": "F02",
+      "purpose": "分钟与小时换算",
+      "input": "请解释相关模拟政策",
+      "hits": [
+        {
+          "doc_id": "P11",
+          "title": "锁座与支付有效期",
+          "content": "模拟锁座有效期 15 分钟，过期未支付自动释放库存；下单必须提供与锁座一致的乘客列表。重复支付不重复扣减库存。",
+          "source": "data/policies.md#P11"
+        }
+      ],
+      "reply": "模拟锁座有效期0.25小时 [P11]。",
+      "events": [],
+      "expected": {
+        "failed": false,
+        "finding_types": [],
+        "full_semantic_faithfulness": "indeterminate"
+      }
+    },
+    {
+      "id": "F03",
+      "purpose": "添加不存在的期限",
+      "input": "请解释相关模拟政策",
+      "hits": [
+        {
+          "doc_id": "P11",
+          "title": "锁座与支付有效期",
+          "content": "模拟锁座有效期 15 分钟，过期未支付自动释放库存；下单必须提供与锁座一致的乘客列表。重复支付不重复扣减库存。",
+          "source": "data/policies.md#P11"
+        }
+      ],
+      "reply": "模拟锁座有效期30分钟 [P11]。",
+      "events": [],
+      "expected": {
+        "failed": true,
+        "finding_types": [
+          "unsupported_quantity_or_scope"
+        ],
+        "full_semantic_faithfulness": "indeterminate"
+      }
+    },
+    {
+      "id": "F04",
+      "purpose": "单位错配",
+      "input": "请解释相关模拟政策",
+      "hits": [
+        {
+          "doc_id": "P11",
+          "title": "锁座与支付有效期",
+          "content": "模拟锁座有效期 15 分钟，过期未支付自动释放库存；下单必须提供与锁座一致的乘客列表。重复支付不重复扣减库存。",
+          "source": "data/policies.md#P11"
+        }
+      ],
+      "reply": "模拟锁座有效期15小时 [P11]。",
+      "events": [],
+      "expected": {
+        "failed": true,
+        "finding_types": [
+          "unsupported_quantity_or_scope"
+        ],
+        "full_semantic_faithfulness": "indeterminate"
+      }
+    },
+    {
+      "id": "F05",
+      "purpose": "同文档条件错绑",
+      "input": "请解释相关模拟政策",
+      "hits": [
+        {
+          "doc_id": "P01",
+          "title": "退票手续费阶梯",
+          "content": "开车前 48 小时以上退票，收取票价 5% 手续费；开车前 24 至 48 小时退票，收取 10%；开车前不足 24 小时退票，收取 20%。已取报销凭证或已改签的车票不退。",
+          "source": "data/policies.md#P01"
+        }
+      ],
+      "reply": "开车前48小时以上退票收取10%手续费 [P01]。",
+      "events": [],
+      "expected": {
+        "failed": true,
+        "finding_types": [
+          "unsupported_quantity_or_scope"
+        ],
+        "full_semantic_faithfulness": "indeterminate"
+      }
+    },
+    {
+      "id": "F06",
+      "purpose": "条件与费用正确",
+      "input": "请解释相关模拟政策",
+      "hits": [
+        {
+          "doc_id": "P01",
+          "title": "退票手续费阶梯",
+          "content": "开车前 48 小时以上退票，收取票价 5% 手续费；开车前 24 至 48 小时退票，收取 10%；开车前不足 24 小时退票，收取 20%。已取报销凭证或已改签的车票不退。",
+          "source": "data/policies.md#P01"
+        }
+      ],
+      "reply": "开车前48小时以上退票收取5%手续费 [P01]。",
+      "events": [],
+      "expected": {
+        "failed": false,
+        "finding_types": [],
+        "full_semantic_faithfulness": "indeterminate"
+      }
+    },
+    {
+      "id": "F07",
+      "purpose": "区间与费用正确",
+      "input": "请解释相关模拟政策",
+      "hits": [
+        {
+          "doc_id": "P01",
+          "title": "退票手续费阶梯",
+          "content": "开车前 48 小时以上退票，收取票价 5% 手续费；开车前 24 至 48 小时退票，收取 10%；开车前不足 24 小时退票，收取 20%。已取报销凭证或已改签的车票不退。",
+          "source": "data/policies.md#P01"
+        }
+      ],
+      "reply": "开车前24至48小时退票收取10%手续费 [P01]。",
+      "events": [],
+      "expected": {
+        "failed": false,
+        "finding_types": [],
+        "full_semantic_faithfulness": "indeterminate"
+      }
+    },
+    {
+      "id": "F08",
+      "purpose": "省略适用条件待人工",
+      "input": "请解释相关模拟政策",
+      "hits": [
+        {
+          "doc_id": "P01",
+          "title": "退票手续费阶梯",
+          "content": "开车前 48 小时以上退票，收取票价 5% 手续费；开车前 24 至 48 小时退票，收取 10%；开车前不足 24 小时退票，收取 20%。已取报销凭证或已改签的车票不退。",
+          "source": "data/policies.md#P01"
+        }
+      ],
+      "reply": "退票收取10%手续费 [P01]。",
+      "events": [],
+      "expected": {
+        "failed": false,
+        "finding_types": [],
+        "full_semantic_faithfulness": "indeterminate"
+      }
+    },
+    {
+      "id": "F09",
+      "purpose": "编造引用",
+      "input": "请解释相关模拟政策",
+      "hits": [
+        {
+          "doc_id": "P11",
+          "title": "锁座与支付有效期",
+          "content": "模拟锁座有效期 15 分钟，过期未支付自动释放库存；下单必须提供与锁座一致的乘客列表。重复支付不重复扣减库存。",
+          "source": "data/policies.md#P11"
+        }
+      ],
+      "reply": "锁座有效期15分钟 [P99]。",
+      "events": [],
+      "expected": {
+        "failed": true,
+        "finding_types": [
+          "nonexistent_citation"
+        ],
+        "full_semantic_faithfulness": "indeterminate"
+      }
+    },
+    {
+      "id": "F10",
+      "purpose": "用户引用不当模型陈述",
+      "input": "请解释相关模拟政策",
+      "hits": [
+        {
+          "doc_id": "P11",
+          "title": "锁座与支付有效期",
+          "content": "模拟锁座有效期 15 分钟，过期未支付自动释放库存；下单必须提供与锁座一致的乘客列表。重复支付不重复扣减库存。",
+          "source": "data/policies.md#P11"
+        }
+      ],
+      "reply": "用户说“锁座有效期45分钟 [P99]”，请先核对您的问题。",
+      "events": [],
+      "expected": {
+        "failed": false,
+        "finding_types": [],
+        "full_semantic_faithfulness": "indeterminate"
+      }
+    },
+    {
+      "id": "F11",
+      "purpose": "否定不存在引用不当来源声称",
+      "input": "请解释相关模拟政策",
+      "hits": [
+        {
+          "doc_id": "P11",
+          "title": "锁座与支付有效期",
+          "content": "模拟锁座有效期 15 分钟，过期未支付自动释放库存；下单必须提供与锁座一致的乘客列表。重复支付不重复扣减库存。",
+          "source": "data/policies.md#P11"
+        }
+      ],
+      "reply": "P99不存在于当前检索证据中，无法确认该说法。",
+      "events": [],
+      "expected": {
+        "failed": false,
+        "finding_types": [],
+        "full_semantic_faithfulness": "indeterminate"
+      }
+    },
+    {
+      "id": "F12",
+      "purpose": "无证据明确拒答",
+      "input": "请解释相关模拟政策",
+      "hits": [],
+      "reply": "无法确认，当前没有相关政策依据。",
+      "events": [],
+      "expected": {
+        "failed": false,
+        "finding_types": [],
+        "full_semantic_faithfulness": "indeterminate"
+      }
+    },
+    {
+      "id": "F13",
+      "purpose": "无证据仍编造金额",
+      "input": "请解释相关模拟政策",
+      "hits": [],
+      "reply": "可以理赔100元 [P11]。",
+      "events": [],
+      "expected": {
+        "failed": true,
+        "finding_types": [
+          "no_evidence_positive_claim"
+        ],
+        "full_semantic_faithfulness": "indeterminate"
+      }
+    },
+    {
+      "id": "F14",
+      "purpose": "虚构已支付",
+      "input": "请解释相关模拟政策",
+      "hits": [],
+      "reply": "我已成功支付。",
+      "events": [],
+      "expected": {
+        "failed": true,
+        "finding_types": [
+          "unsubstantiated_execution"
+        ],
+        "full_semantic_faithfulness": "indeterminate"
+      }
+    },
+    {
+      "id": "F15",
+      "purpose": "实际支付事件",
+      "input": "请解释相关模拟政策",
+      "hits": [],
+      "reply": "我已成功支付。",
+      "events": [
+        {
+          "event": "tool_end",
+          "tool": "pay_order",
+          "ok": true,
+          "executed": true,
+          "call_id": "offline-fixture-call",
+          "result": {
+            "status": "ok"
+          }
+        }
+      ],
+      "expected": {
+        "failed": false,
+        "finding_types": [],
+        "full_semantic_faithfulness": "indeterminate"
+      }
+    },
+    {
+      "id": "F16",
+      "purpose": "失败事件不能成功声称",
+      "input": "请解释相关模拟政策",
+      "hits": [],
+      "reply": "我已成功支付。",
+      "events": [
+        {
+          "event": "tool_end",
+          "tool": "pay_order",
+          "ok": false,
+          "executed": true,
+          "call_id": "offline-fixture-call",
+          "result": {
+            "status": "error"
+          }
+        }
+      ],
+      "expected": {
+        "failed": true,
+        "finding_types": [
+          "unsubstantiated_execution"
+        ],
+        "full_semantic_faithfulness": "indeterminate"
+      }
+    },
+    {
+      "id": "F17",
+      "purpose": "未实际执行不能声称成功",
+      "input": "请解释相关模拟政策",
+      "hits": [],
+      "reply": "我已成功支付。",
+      "events": [
+        {
+          "event": "tool_end",
+          "tool": "pay_order",
+          "ok": true,
+          "executed": false,
+          "call_id": "offline-fixture-call",
+          "result": {
+            "status": "ok"
+          }
+        }
+      ],
+      "expected": {
+        "failed": true,
+        "finding_types": [
+          "unsubstantiated_execution"
+        ],
+        "full_semantic_faithfulness": "indeterminate"
+      }
+    },
+    {
+      "id": "F18",
+      "purpose": "用户引用的操作不是执行事实",
+      "input": "请解释相关模拟政策",
+      "hits": [],
+      "reply": "用户说“我已成功支付”，请补充订单号。",
+      "events": [],
+      "expected": {
+        "failed": false,
+        "finding_types": [],
+        "full_semantic_faithfulness": "indeterminate"
+      }
+    },
+    {
+      "id": "F19",
+      "purpose": "条件句不是操作声称",
+      "input": "请解释相关模拟政策",
+      "hits": [
+        {
+          "doc_id": "P12",
+          "title": "未支付订单取消",
+          "content": "未支付订单取消不收取手续费，释放已占库存；已退款或已取消订单不得再次释放库存，取消后的订单不可支付。",
+          "source": "data/policies.md#P12"
+        }
+      ],
+      "reply": "如果订单已支付，则应根据政策判断后续操作。",
+      "events": [],
+      "expected": {
+        "failed": false,
+        "finding_types": [],
+        "full_semantic_faithfulness": "indeterminate"
+      }
+    },
+    {
+      "id": "F20",
+      "purpose": "否定操作不是成功声称",
+      "input": "请解释相关模拟政策",
+      "hits": [],
+      "reply": "尚未成功支付，本次没有执行任何写操作。",
+      "events": [],
+      "expected": {
+        "failed": false,
+        "finding_types": [],
+        "full_semantic_faithfulness": "indeterminate"
+      }
+    },
+    {
+      "id": "F21",
+      "purpose": "冲突来源未披露",
+      "input": "请解释相关模拟政策",
+      "hits": [
+        {
+          "doc_id": "P11",
+          "title": "锁座与支付有效期",
+          "content": "模拟锁座有效期 15 分钟，过期未支付自动释放库存；下单必须提供与锁座一致的乘客列表。重复支付不重复扣减库存。",
+          "source": "data/policies.md#P11"
+        },
+        {
+          "doc_id": "P90",
+          "title": "冲突测试政策",
+          "content": "锁座有效期60分钟。",
+          "source": "isolated-test#P90"
+        }
+      ],
+      "reply": "锁座有效期15分钟 [P11]。",
+      "events": [],
+      "expected": {
+        "failed": true,
+        "finding_types": [
+          "undisclosed_conflicting_policy"
+        ],
+        "full_semantic_faithfulness": "indeterminate"
+      }
+    },
+    {
+      "id": "F22",
+      "purpose": "冲突明确披露",
+      "input": "请解释相关模拟政策",
+      "hits": [
+        {
+          "doc_id": "P11",
+          "title": "锁座与支付有效期",
+          "content": "模拟锁座有效期 15 分钟，过期未支付自动释放库存；下单必须提供与锁座一致的乘客列表。重复支付不重复扣减库存。",
+          "source": "data/policies.md#P11"
+        },
+        {
+          "doc_id": "P90",
+          "title": "冲突测试政策",
+          "content": "锁座有效期60分钟。",
+          "source": "isolated-test#P90"
+        }
+      ],
+      "reply": "P11规定15分钟，P90规定60分钟，两份政策存在冲突，无法确认采用哪条。",
+      "events": [],
+      "expected": {
+        "failed": false,
+        "finding_types": [],
+        "full_semantic_faithfulness": "indeterminate"
+      }
+    },
+    {
+      "id": "F23",
+      "purpose": "字面规则有来源",
+      "input": "请解释相关模拟政策",
+      "hits": [
+        {
+          "doc_id": "P12",
+          "title": "未支付订单取消",
+          "content": "未支付订单取消不收取手续费，释放已占库存；已退款或已取消订单不得再次释放库存，取消后的订单不可支付。",
+          "source": "data/policies.md#P12"
+        }
+      ],
+      "reply": "未支付订单取消不收取手续费 [P12]。",
+      "events": [],
+      "expected": {
+        "failed": false,
+        "finding_types": [],
+        "full_semantic_faithfulness": "indeterminate"
+      }
+    },
+    {
+      "id": "F24",
+      "purpose": "费用否定条件反转",
+      "input": "请解释相关模拟政策",
+      "hits": [
+        {
+          "doc_id": "P12",
+          "title": "未支付订单取消",
+          "content": "未支付订单取消不收取手续费，释放已占库存；已退款或已取消订单不得再次释放库存，取消后的订单不可支付。",
+          "source": "data/policies.md#P12"
+        }
+      ],
+      "reply": "未支付订单取消需要收取手续费 [P12]。",
+      "events": [],
+      "expected": {
+        "failed": true,
+        "finding_types": [
+          "restriction_contradiction"
+        ],
+        "full_semantic_faithfulness": "indeterminate"
+      }
+    },
+    {
+      "id": "F25",
+      "purpose": "额外强制购买保险",
+      "input": "请解释相关模拟政策",
+      "hits": [
+        {
+          "doc_id": "P11",
+          "title": "锁座与支付有效期",
+          "content": "模拟锁座有效期 15 分钟，过期未支付自动释放库存；下单必须提供与锁座一致的乘客列表。重复支付不重复扣减库存。",
+          "source": "data/policies.md#P11"
+        }
+      ],
+      "reply": "锁座有效期15分钟且必须购买保险 [P11]。",
+      "events": [],
+      "expected": {
+        "failed": true,
+        "finding_types": [
+          "unsupported_added_requirement"
+        ],
+        "full_semantic_faithfulness": "indeterminate"
+      }
+    },
+    {
+      "id": "F26",
+      "purpose": "难判语义不强行通过",
+      "input": "请解释相关模拟政策",
+      "hits": [
+        {
+          "doc_id": "P11",
+          "title": "锁座与支付有效期",
+          "content": "模拟锁座有效期 15 分钟，过期未支付自动释放库存；下单必须提供与锁座一致的乘客列表。重复支付不重复扣减库存。",
+          "source": "data/policies.md#P11"
+        }
+      ],
+      "reply": "提前付款会更稳妥 [P11]。",
+      "events": [],
+      "expected": {
+        "failed": false,
+        "finding_types": [],
+        "full_semantic_faithfulness": "indeterminate"
+      }
+    },
+    {
+      "id": "F27",
+      "purpose": "添加不存在的手续费",
+      "input": "请解释相关模拟政策",
+      "hits": [
+        {
+          "doc_id": "P12",
+          "title": "未支付订单取消",
+          "content": "未支付订单取消不收取手续费，释放已占库存；已退款或已取消订单不得再次释放库存，取消后的订单不可支付。",
+          "source": "data/policies.md#P12"
+        }
+      ],
+      "reply": "取消未支付订单手续费5元 [P12]。",
+      "events": [],
+      "expected": {
+        "failed": true,
+        "finding_types": [
+          "unsupported_quantity_or_scope"
+        ],
+        "full_semantic_faithfulness": "indeterminate"
+      }
+    },
+    {
+      "id": "F28",
+      "purpose": "儿童与成人额度错绑",
+      "input": "请解释相关模拟政策",
+      "hits": [
+        {
+          "doc_id": "P06",
+          "title": "行李规定",
+          "content": "高铁成人免费携带品重量 20 千克，儿童 10 千克；每件物品长宽高之和不超过 160 厘米。超重部分按每千克 5 元补收运费。",
+          "source": "data/policies.md#P06"
+        }
+      ],
+      "reply": "儿童免费行李20千克 [P06]。",
+      "events": [],
+      "expected": {
+        "failed": true,
+        "finding_types": [
+          "unsupported_quantity_or_scope"
+        ],
+        "full_semantic_faithfulness": "indeterminate"
+      }
+    },
+    {
+      "id": "F29",
+      "purpose": "正确儿童额度",
+      "input": "请解释相关模拟政策",
+      "hits": [
+        {
+          "doc_id": "P06",
+          "title": "行李规定",
+          "content": "高铁成人免费携带品重量 20 千克，儿童 10 千克；每件物品长宽高之和不超过 160 厘米。超重部分按每千克 5 元补收运费。",
+          "source": "data/policies.md#P06"
+        }
+      ],
+      "reply": "儿童免费行李10千克 [P06]。",
+      "events": [],
+      "expected": {
+        "failed": false,
+        "finding_types": [],
+        "full_semantic_faithfulness": "indeterminate"
+      }
+    },
+    {
+      "id": "F30",
+      "purpose": "成人与儿童额度错绑",
+      "input": "请解释相关模拟政策",
+      "hits": [
+        {
+          "doc_id": "P06",
+          "title": "行李规定",
+          "content": "高铁成人免费携带品重量 20 千克，儿童 10 千克；每件物品长宽高之和不超过 160 厘米。超重部分按每千克 5 元补收运费。",
+          "source": "data/policies.md#P06"
+        }
+      ],
+      "reply": "成人免费行李10千克 [P06]。",
+      "events": [],
+      "expected": {
+        "failed": true,
+        "finding_types": [
+          "unsupported_quantity_or_scope"
+        ],
+        "full_semantic_faithfulness": "indeterminate"
+      }
+    },
+    {
+      "id": "F31",
+      "purpose": "改签后不退限制被反转",
+      "input": "请解释相关模拟政策",
+      "hits": [
+        {
+          "doc_id": "P02",
+          "title": "改签规则",
+          "content": "开车前 48 小时以上可改签预售期内任意车次；开车前 48 小时以内可改签开车前的其他车次，也可改签开车后至当日 24:00 之间的车次。每张票仅可改签一次，改签后不退。",
+          "source": "data/policies.md#P02"
+        }
+      ],
+      "reply": "改签后可以退票 [P02]。",
+      "events": [],
+      "expected": {
+        "failed": true,
+        "finding_types": [
+          "restriction_contradiction"
+        ],
+        "full_semantic_faithfulness": "indeterminate"
+      }
+    },
+    {
+      "id": "F32",
+      "purpose": "席别儿童票限制反转",
+      "input": "请解释相关模拟政策",
+      "hits": [
+        {
+          "doc_id": "P04",
+          "title": "儿童票",
+          "content": "身高 1.2 米以下且不满 6 周岁儿童可免票（不占座）；6 至 14 周岁需购买儿童票，二等座按公布票价 50% 计算，一等座与商务座不售儿童票。",
+          "source": "data/policies.md#P04"
+        }
+      ],
+      "reply": "商务座可以购买儿童票 [P04]。",
+      "events": [],
+      "expected": {
+        "failed": true,
+        "finding_types": [
+          "restriction_contradiction"
+        ],
+        "full_semantic_faithfulness": "indeterminate"
+      }
+    },
+    {
+      "id": "F33",
+      "purpose": "新增服务费",
+      "input": "请解释相关模拟政策",
+      "hits": [
+        {
+          "doc_id": "P11",
+          "title": "锁座与支付有效期",
+          "content": "模拟锁座有效期 15 分钟，过期未支付自动释放库存；下单必须提供与锁座一致的乘客列表。重复支付不重复扣减库存。",
+          "source": "data/policies.md#P11"
+        }
+      ],
+      "reply": "锁座服务费1000元 [P11]。",
+      "events": [],
+      "expected": {
+        "failed": true,
+        "finding_types": [
+          "unsupported_quantity_or_scope"
+        ],
+        "full_semantic_faithfulness": "indeterminate"
+      }
+    },
+    {
+      "id": "F34",
+      "purpose": "引用存在但不支持结论",
+      "input": "请解释相关模拟政策",
+      "hits": [
+        {
+          "doc_id": "P01",
+          "title": "退票手续费阶梯",
+          "content": "开车前 48 小时以上退票，收取票价 5% 手续费；开车前 24 至 48 小时退票，收取 10%；开车前不足 24 小时退票，收取 20%。已取报销凭证或已改签的车票不退。",
+          "source": "data/policies.md#P01"
+        }
+      ],
+      "reply": "锁座有效期15分钟 [P01]。",
+      "events": [],
+      "expected": {
+        "failed": true,
+        "finding_types": [
+          "unsupported_quantity_or_scope"
+        ],
+        "full_semantic_faithfulness": "indeterminate"
+      }
+    },
+    {
+      "id": "F35",
+      "purpose": "多来源跨句绑定不确定",
+      "input": "请解释相关模拟政策",
+      "hits": [
+        {
+          "doc_id": "P11",
+          "title": "锁座与支付有效期",
+          "content": "模拟锁座有效期 15 分钟，过期未支付自动释放库存；下单必须提供与锁座一致的乘客列表。重复支付不重复扣减库存。",
+          "source": "data/policies.md#P11"
+        },
+        {
+          "doc_id": "P06",
+          "title": "行李规定",
+          "content": "高铁成人免费携带品重量 20 千克，儿童 10 千克；每件物品长宽高之和不超过 160 厘米。超重部分按每千克 5 元补收运费。",
+          "source": "data/policies.md#P06"
+        }
+      ],
+      "reply": "锁座15分钟，成人行李20千克 [P11][P06]。",
+      "events": [],
+      "expected": {
+        "failed": false,
+        "finding_types": [],
+        "full_semantic_faithfulness": "indeterminate"
+      }
+    },
+    {
+      "id": "F36",
+      "purpose": "真实Qwen政策样本保留未知",
+      "input": "请解释相关模拟政策",
+      "hits": [
+        {
+          "doc_id": "P11",
+          "title": "锁座与支付有效期",
+          "content": "模拟锁座有效期 15 分钟，过期未支付自动释放库存；下单必须提供与锁座一致的乘客列表。重复支付不重复扣减库存。",
+          "source": "data/policies.md#P11"
+        },
+        {
+          "doc_id": "P12",
+          "title": "未支付订单取消",
+          "content": "未支付订单取消不收取手续费，释放已占库存；已退款或已取消订单不得再次释放库存，取消后的订单不可支付。",
+          "source": "data/policies.md#P12"
+        },
+        {
+          "doc_id": "P15",
+          "title": "数据预售范围",
+          "content": "演示数据库覆盖生成当天及之后六天；超出日期范围或没有配置的路线返回空列表，不表示真实系统没有余票。",
+          "source": "data/policies.md#P15"
+        }
+      ],
+      "reply": "根据检索证据，锁座后必须在 **15分钟** 内完成支付。如果过期未支付，系统将自动释放库存（依据 doc_id: P11）。",
+      "events": [],
+      "expected": {
+        "failed": false,
+        "finding_types": [],
+        "full_semantic_faithfulness": "indeterminate"
+      }
+    },
+    {
+      "id": "F37",
+      "purpose": "真实Qwen否定引用样本",
+      "input": "请解释相关模拟政策",
+      "hits": [
+        {
+          "doc_id": "P01",
+          "title": "退票手续费阶梯",
+          "content": "开车前 48 小时以上退票，收取票价 5% 手续费；开车前 24 至 48 小时退票，收取 10%；开车前不足 24 小时退票，收取 20%。已取报销凭证或已改签的车票不退。",
+          "source": "data/policies.md#P01"
+        },
+        {
+          "doc_id": "P07",
+          "title": "报销凭证",
+          "content": "乘车之日起 180 日内可在车站窗口或自助机打印报销凭证，仅可打印一次；已打印报销凭证的车票退票时需先交回凭证。",
+          "source": "data/policies.md#P07"
+        },
+        {
+          "doc_id": "P09",
+          "title": "机票退改规则",
+          "content": "机票经济舱起飞前 24 小时以上退票收取票面价 10%，24 小时内收取 30%；特价舱位（折扣低于 4 折）不支持退票，仅退机场建设费与燃油附加费。",
+          "source": "data/policies.md#P09"
+        }
+      ],
+      "reply": "无法确认。提供的检索证据仅包含火车票退票手续费阶梯（doc_id: P01）、报销凭证规定（doc_id: P07）以及机票退改规则（doc_id: P09），均未涉及“票务保险”的理赔金额或赔付比例相关内容。",
+      "events": [],
+      "expected": {
+        "failed": false,
+        "finding_types": [],
+        "full_semantic_faithfulness": "indeterminate"
+      }
+    },
+    {
+      "id": "F38",
+      "purpose": "带订单ID的虚构状态",
+      "input": "请解释相关模拟政策",
+      "hits": [],
+      "reply": "订单AB123已支付。",
+      "events": [],
+      "expected": {
+        "failed": true,
+        "finding_types": [
+          "unsubstantiated_execution"
+        ],
+        "full_semantic_faithfulness": "indeterminate"
+      }
+    },
+    {
+      "id": "F39",
+      "purpose": "虚构调用工具",
+      "input": "请解释相关模拟政策",
+      "hits": [],
+      "reply": "已调用 search_policy 查询政策。",
+      "events": [],
+      "expected": {
+        "failed": true,
+        "finding_types": [
+          "unsubstantiated_execution"
+        ],
+        "full_semantic_faithfulness": "indeterminate"
+      }
+    },
+    {
+      "id": "F40",
+      "purpose": "真实执行工具事件",
+      "input": "请解释相关模拟政策",
+      "hits": [],
+      "reply": "已调用 search_policy 查询政策。",
+      "events": [
+        {
+          "event": "tool_end",
+          "tool": "search_policy",
+          "ok": true,
+          "executed": true,
+          "call_id": "offline-fixture-call",
+          "result": {
+            "status": "ok"
+          }
+        }
+      ],
+      "expected": {
+        "failed": false,
+        "finding_types": [],
+        "full_semantic_faithfulness": "indeterminate"
+      }
+    },
+    {
+      "id": "F41",
+      "purpose": "用户错误数字与模型正确数字分离",
+      "input": "请解释相关模拟政策",
+      "hits": [
+        {
+          "doc_id": "P11",
+          "title": "锁座与支付有效期",
+          "content": "模拟锁座有效期 15 分钟，过期未支付自动释放库存；下单必须提供与锁座一致的乘客列表。重复支付不重复扣减库存。",
+          "source": "data/policies.md#P11"
+        }
+      ],
+      "reply": "用户说“锁座45分钟 [P11]”，模拟锁座有效期15分钟 [P11]。",
+      "events": [],
+      "expected": {
+        "failed": false,
+        "finding_types": [],
+        "full_semantic_faithfulness": "indeterminate"
+      }
+    },
+    {
+      "id": "F42",
+      "purpose": "纯用户引用不得自动算模型回答",
+      "input": "请解释相关模拟政策",
+      "hits": [
+        {
+          "doc_id": "P01",
+          "title": "退票手续费阶梯",
+          "content": "开车前 48 小时以上退票，收取票价 5% 手续费；开车前 24 至 48 小时退票，收取 10%；开车前不足 24 小时退票，收取 20%。已取报销凭证或已改签的车票不退。",
+          "source": "data/policies.md#P01"
+        }
+      ],
+      "reply": "用户问“退票手续费是不是100元 [P01]”？",
+      "events": [],
+      "expected": {
+        "failed": false,
+        "finding_types": [],
+        "full_semantic_faithfulness": "indeterminate"
+      }
+    },
+    {
+      "id": "F43",
+      "purpose": "否定错误数字且给出正确值",
+      "input": "请解释相关模拟政策",
+      "hits": [
+        {
+          "doc_id": "P11",
+          "title": "锁座与支付有效期",
+          "content": "模拟锁座有效期 15 分钟，过期未支付自动释放库存；下单必须提供与锁座一致的乘客列表。重复支付不重复扣减库存。",
+          "source": "data/policies.md#P11"
+        }
+      ],
+      "reply": "锁座有效期不是30分钟，而是15分钟 [P11]。",
+      "events": [],
+      "expected": {
+        "failed": false,
+        "finding_types": [],
+        "full_semantic_faithfulness": "indeterminate"
+      }
+    },
+    {
+      "id": "F44",
+      "purpose": "否定权威唯一期限",
+      "input": "请解释相关模拟政策",
+      "hits": [
+        {
+          "doc_id": "P11",
+          "title": "锁座与支付有效期",
+          "content": "模拟锁座有效期 15 分钟，过期未支付自动释放库存；下单必须提供与锁座一致的乘客列表。重复支付不重复扣减库存。",
+          "source": "data/policies.md#P11"
+        }
+      ],
+      "reply": "锁座有效期不是15分钟 [P11]。",
+      "events": [],
+      "expected": {
+        "failed": true,
+        "finding_types": [
+          "denies_authoritative_quantity"
+        ],
+        "full_semantic_faithfulness": "indeterminate"
+      }
+    },
+    {
+      "id": "F45",
+      "purpose": "两段实际证据分别有对应引用",
+      "input": "请解释相关模拟政策",
+      "hits": [
+        {
+          "doc_id": "P11",
+          "title": "锁座与支付有效期",
+          "content": "模拟锁座有效期 15 分钟，过期未支付自动释放库存；下单必须提供与锁座一致的乘客列表。重复支付不重复扣减库存。",
+          "source": "data/policies.md#P11"
+        },
+        {
+          "doc_id": "P06",
+          "title": "行李规定",
+          "content": "高铁成人免费携带品重量 20 千克，儿童 10 千克；每件物品长宽高之和不超过 160 厘米。超重部分按每千克 5 元补收运费。",
+          "source": "data/policies.md#P06"
+        }
+      ],
+      "reply": "模拟锁座有效期15分钟 [P11]；儿童免费行李10千克 [P06]。",
+      "events": [],
+      "expected": {
+        "failed": false,
+        "finding_types": [],
+        "full_semantic_faithfulness": "indeterminate"
+      }
+    },
+    {
+      "id": "F46",
+      "purpose": "条件单位换算",
+      "input": "请解释相关模拟政策",
+      "hits": [
+        {
+          "doc_id": "P01",
+          "title": "退票手续费阶梯",
+          "content": "开车前 48 小时以上退票，收取票价 5% 手续费；开车前 24 至 48 小时退票，收取 10%；开车前不足 24 小时退票，收取 20%。已取报销凭证或已改签的车票不退。",
+          "source": "data/policies.md#P01"
+        }
+      ],
+      "reply": "开车前2天以上退票收取5%手续费 [P01]。",
+      "events": [],
+      "expected": {
+        "failed": false,
+        "finding_types": [],
+        "full_semantic_faithfulness": "indeterminate"
+      }
+    },
+    {
+      "id": "F47",
+      "purpose": "仅拒答但又编造金额",
+      "input": "请解释相关模拟政策",
+      "hits": [],
+      "reply": "无法确认，但可以获得理赔100元。",
+      "events": [],
+      "expected": {
+        "failed": true,
+        "finding_types": [
+          "no_evidence_positive_claim"
+        ],
+        "full_semantic_faithfulness": "indeterminate"
+      }
+    },
+    {
+      "id": "F48",
+      "purpose": "错误数字在代码引用也不可当支持",
+      "input": "请解释相关模拟政策",
+      "hits": [
+        {
+          "doc_id": "P11",
+          "title": "锁座与支付有效期",
+          "content": "模拟锁座有效期 15 分钟，过期未支付自动释放库存；下单必须提供与锁座一致的乘客列表。重复支付不重复扣减库存。",
+          "source": "data/policies.md#P11"
+        }
+      ],
+      "reply": "模拟锁座有效期`30分钟` [P11]。",
+      "events": [],
+      "expected": {
+        "failed": true,
+        "finding_types": [
+          "unsupported_quantity_or_scope"
+        ],
+        "full_semantic_faithfulness": "indeterminate"
+      }
+    },
+    {
+      "id": "F49",
+      "purpose": "否定引用后不能夹带编造金额",
+      "input": "解释相关模拟政策",
+      "hits": [
+        {
+          "doc_id": "P11",
+          "title": "锁座与支付有效期",
+          "content": "模拟锁座有效期 15 分钟，过期未支付自动释放库存；下单必须提供与锁座一致的乘客列表。重复支付不重复扣减库存。",
+          "source": "data/policies.md#P11"
+        }
+      ],
+      "reply": "P11未涉及保险理赔，但可以理赔100元 [P11]。",
+      "events": [],
+      "expected": {
+        "failed": true,
+        "finding_types": [
+          "unsupported_quantity_or_scope"
+        ],
+        "full_semantic_faithfulness": "indeterminate"
+      }
+    },
+    {
+      "id": "F50",
+      "purpose": "无引用且新增无来源金额",
+      "input": "解释相关模拟政策",
+      "hits": [
+        {
+          "doc_id": "P11",
+          "title": "锁座与支付有效期",
+          "content": "模拟锁座有效期 15 分钟，过期未支付自动释放库存；下单必须提供与锁座一致的乘客列表。重复支付不重复扣减库存。",
+          "source": "data/policies.md#P11"
+        }
+      ],
+      "reply": "锁座手续费100元。",
+      "events": [],
+      "expected": {
+        "failed": true,
+        "finding_types": [
+          "unsupported_uncited_quantity"
+        ],
+        "full_semantic_faithfulness": "indeterminate"
+      }
+    },
+    {
+      "id": "F51",
+      "purpose": "裸时间条件无法确定",
+      "input": "解释相关模拟政策",
+      "hits": [
+        {
+          "doc_id": "P01",
+          "title": "退票手续费阶梯",
+          "content": "开车前 48 小时以上退票，收取票价 5% 手续费；开车前 24 至 48 小时退票，收取 10%；开车前不足 24 小时退票，收取 20%。已取报销凭证或已改签的车票不退。",
+          "source": "data/policies.md#P01"
+        }
+      ],
+      "reply": "开车前48小时退票收取5%手续费 [P01]。",
+      "events": [],
+      "expected": {
+        "failed": false,
+        "finding_types": [],
+        "full_semantic_faithfulness": "indeterminate"
+      }
+    },
+    {
+      "id": "F52",
+      "purpose": "假设或不确定期限",
+      "input": "解释相关模拟政策",
+      "hits": [
+        {
+          "doc_id": "P11",
+          "title": "锁座与支付有效期",
+          "content": "模拟锁座有效期 15 分钟，过期未支付自动释放库存；下单必须提供与锁座一致的乘客列表。重复支付不重复扣减库存。",
+          "source": "data/policies.md#P11"
+        }
+      ],
+      "reply": "锁座也许有效30分钟 [P11]。",
+      "events": [],
+      "expected": {
+        "failed": false,
+        "finding_types": [],
+        "full_semantic_faithfulness": "indeterminate"
+      }
+    },
+    {
+      "id": "F53",
+      "purpose": "未归属用户的块引用仍要校验",
+      "input": "解释相关模拟政策",
+      "hits": [
+        {
+          "doc_id": "P11",
+          "title": "锁座与支付有效期",
+          "content": "模拟锁座有效期 15 分钟，过期未支付自动释放库存；下单必须提供与锁座一致的乘客列表。重复支付不重复扣减库存。",
+          "source": "data/policies.md#P11"
+        }
+      ],
+      "reply": "> 模拟锁座有效期30分钟 [P11]。",
+      "events": [],
+      "expected": {
+        "failed": true,
+        "finding_types": [
+          "unsupported_quantity_or_scope"
+        ],
+        "full_semantic_faithfulness": "indeterminate"
+      }
+    },
+    {
+      "id": "F54",
+      "purpose": "明确用户块引用不作模型断言",
+      "input": "解释相关模拟政策",
+      "hits": [
+        {
+          "doc_id": "P11",
+          "title": "锁座与支付有效期",
+          "content": "模拟锁座有效期 15 分钟，过期未支付自动释放库存；下单必须提供与锁座一致的乘客列表。重复支付不重复扣减库存。",
+          "source": "data/policies.md#P11"
+        }
+      ],
+      "reply": "用户原话：\n> 模拟锁座有效期30分钟 [P11]。\n请补充您的问题。",
+      "events": [],
+      "expected": {
+        "failed": false,
+        "finding_types": [],
+        "full_semantic_faithfulness": "indeterminate"
+      }
+    },
+    {
+      "id": "F55",
+      "purpose": "数字存在但政策类别错配",
+      "input": "退票需要等待多久？",
+      "hits": [
+        {
+          "doc_id": "P11",
+          "title": "锁座与支付有效期",
+          "content": "模拟锁座有效期 15 分钟，过期未支付自动释放库存；下单必须提供与锁座一致的乘客列表。重复支付不重复扣减库存。",
+          "source": "data/policies.md#P11"
+        }
+      ],
+      "reply": "退票需要等待15分钟 [P11]。",
+      "events": [],
+      "expected": {
+        "failed": true,
+        "finding_types": [
+          "citation_policy_category_mismatch"
+        ],
+        "full_semantic_faithfulness": "indeterminate"
+      }
+    }
+  ]
+}

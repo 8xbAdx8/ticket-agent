@@ -1,0 +1,443 @@
+{
+  "version": "1.2.2",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "railway_search_stations",
+        "description": "搜索铁路站点，返回候选 stop_id；同名站必须让用户选择，不自动猜测。",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "minLength": 1,
+              "description": "站名或部分站名"
+            },
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50
+            },
+            "cursor": {
+              "type": "string",
+              "pattern": "^[0-9]+$",
+              "description": "上一页工具结果的next_cursor；首轮查询省略。"
+            }
+          },
+          "required": [
+            "name"
+          ],
+          "additionalProperties": false
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "railway_query_trips",
+        "description": "查询某始发服务日的静态车次；可限定起点/终点/车次号。只读，不代表有票。",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "trip_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "service_date": {
+              "type": "string",
+              "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+            },
+            "origin_stop_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "destination_stop_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "seat_class": {
+              "type": "string",
+              "enum": [
+                "SECOND",
+                "FIRST",
+                "BUSINESS"
+              ],
+              "description": "模拟席别；非真实列车席别配置"
+            },
+            "train_no": {
+              "type": "string"
+            },
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50
+            },
+            "cursor": {
+              "type": "string",
+              "pattern": "^[0-9]+$",
+              "description": "上一页工具结果的next_cursor；首轮查询省略。"
+            }
+          },
+          "required": [
+            "service_date"
+          ],
+          "additionalProperties": false
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "railway_trip_stops",
+        "description": "查询指定 trip_id 在服务日的完整经停；隔离班次返回 TRIP_QUARANTINED。",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "trip_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "service_date": {
+              "type": "string",
+              "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+            }
+          },
+          "required": [
+            "trip_id",
+            "service_date"
+          ],
+          "additionalProperties": false
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "railway_check_inventory",
+        "description": "查询某区间/席别的模拟余票；静态车次存在不代表有票。",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "trip_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "service_date": {
+              "type": "string",
+              "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+            },
+            "origin_stop_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "destination_stop_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "seat_class": {
+              "type": "string",
+              "enum": [
+                "SECOND",
+                "FIRST",
+                "BUSINESS"
+              ],
+              "description": "模拟席别；非真实列车席别配置"
+            },
+            "quantity": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 6
+            }
+          },
+          "required": [
+            "trip_id",
+            "service_date",
+            "origin_stop_id",
+            "destination_stop_id",
+            "seat_class",
+            "quantity"
+          ],
+          "additionalProperties": false
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "railway_quote_fare",
+        "description": "创建模拟价格报价；无价格规则返回 PRICE_NOT_CONFIGURED；不创建订单/库存。",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "trip_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "service_date": {
+              "type": "string",
+              "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+            },
+            "origin_stop_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "destination_stop_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "seat_class": {
+              "type": "string",
+              "enum": [
+                "SECOND",
+                "FIRST",
+                "BUSINESS"
+              ],
+              "description": "模拟席别；非真实列车席别配置"
+            },
+            "passenger_count": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 6
+            }
+          },
+          "required": [
+            "trip_id",
+            "service_date",
+            "origin_stop_id",
+            "destination_stop_id",
+            "seat_class",
+            "passenger_count"
+          ],
+          "additionalProperties": false
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "railway_create_order",
+        "description": "为已有报价创建建单提案；只返回 proposal_id，需用户在 UI 确认，模型不能确认。",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "quote_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "passengers": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              },
+              "minItems": 1,
+              "maxItems": 6
+            },
+            "contact": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "required": [
+            "quote_id",
+            "passengers",
+            "contact"
+          ],
+          "additionalProperties": false
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "railway_get_order",
+        "description": "查询当前用户订单、支付、退款、改签历史；不能读取他人订单。",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "order_id": {
+              "type": "string"
+            }
+          },
+          "required": [],
+          "additionalProperties": false
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "railway_pay_order",
+        "description": "为待支付订单创建支付提案；只返回 proposal_id，需 UI 确认。",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "order_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "expected_total_fen": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "pay_type": {
+              "type": "string",
+              "enum": [
+                "alipay",
+                "wechat",
+                "card"
+              ]
+            }
+          },
+          "required": [
+            "order_id",
+            "expected_total_fen"
+          ],
+          "additionalProperties": false
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "railway_cancel_order",
+        "description": "创建取消/退款提案；未支付释放 held，已支付进入退款流程；需 UI 确认。",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "order_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "reason": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "order_id"
+          ],
+          "additionalProperties": false
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "railway_refund_order",
+        "description": "为本人已支付订单创建退款提案；FULL=整单，ITEMS=选择乘客明细；只创建 proposal，需 UI 确认；不得用 reason 代替 item_ids。",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "order_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "scope": {
+              "type": "string",
+              "enum": [
+                "FULL",
+                "ITEMS"
+              ],
+              "description": "FULL=整单退款；ITEMS=按乘客明细部分退款"
+            },
+            "item_ids": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              },
+              "minItems": 1,
+              "maxItems": 6,
+              "description": "部分退款时必填；必须是本订单 active item_id"
+            },
+            "reason": {
+              "type": "string",
+              "description": "仅说明文本，不能替代 item_ids"
+            }
+          },
+          "required": [
+            "order_id",
+            "scope"
+          ],
+          "additionalProperties": false,
+          "allOf": [
+            {
+              "if": {
+                "properties": {
+                  "scope": {
+                    "const": "ITEMS"
+                  }
+                },
+                "required": [
+                  "scope"
+                ]
+              },
+              "then": {
+                "required": [
+                  "item_ids"
+                ]
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "railway_change_order",
+        "description": "绑定目标报价创建改签提案；需 UI 确认；失败保留原订单/库存。",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "order_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "target_quote_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "target_trip_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "target_service_date": {
+              "type": "string",
+              "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+            },
+            "target_origin_stop_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "target_destination_stop_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "target_seat_class": {
+              "type": "string",
+              "enum": [
+                "SECOND",
+                "FIRST",
+                "BUSINESS"
+              ],
+              "description": "模拟席别；非真实列车席别配置"
+            }
+          },
+          "required": [
+            "order_id",
+            "target_quote_id",
+            "target_trip_id",
+            "target_service_date",
+            "target_origin_stop_id",
+            "target_destination_stop_id",
+            "target_seat_class"
+          ],
+          "additionalProperties": false
+        }
+      }
+    }
+  ],
+  "note": "No tool accepts or returns a confirmation secret. Quote/order ownership and partial-refund item selection are server-validated."
+}

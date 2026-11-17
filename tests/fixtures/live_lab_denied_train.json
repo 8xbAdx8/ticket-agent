@@ -1,0 +1,75 @@
+{
+  "source_trace_id": "b071da602f4b4f68ab7ac86df05df6ca",
+  "reply": "查询结果里没有 G9999 这个车次。明天（2026-10-28）上海到杭州的高铁二等座只有以下 3 个班次：\n\n| 车次 | 出发 | 到达 | 二等座余票 | 票价 |\n|---|---|---|---|---|\n| G7301 | 06:00 | 07:00 | 35 张 | ¥73 |\n| G7302 | 09:17 | 10:17 | 47 张 | ¥73 |\n| G7303 | 12:34 | 13:34 | 51 张 | ¥73 |\n\n因此查不到 G9999，可能车次号有误，也可能它不在运行计划内。\n\n说明：当前仅支持模拟查票和政策咨询，不能锁座、候补、下单或支付。需要我查这几个班次的其他席别吗？",
+  "events": [
+    {
+      "event": "tool_end",
+      "tool": "query_tickets",
+      "args": {
+        "from_city": "上海",
+        "to_city": "杭州",
+        "date": "2026-10-28",
+        "seat_type": "二等座",
+        "kind": "高铁"
+      },
+      "call_id": "call_00_dKY01L4PaG2ssGxi3OoL9216",
+      "ok": true,
+      "executed": true,
+      "execution_index": 1,
+      "latency_ms": 6,
+      "result": {
+        "trains": [
+          {
+            "kind": "高铁",
+            "train_no": "G7303",
+            "from_city": "上海",
+            "to_city": "杭州",
+            "date": "2026-10-28",
+            "depart": "12:34",
+            "arrive": "13:34",
+            "seat_type": "二等座",
+            "price": 73.0,
+            "seats_left": 51
+          },
+          {
+            "kind": "高铁",
+            "train_no": "G7302",
+            "from_city": "上海",
+            "to_city": "杭州",
+            "date": "2026-10-28",
+            "depart": "09:17",
+            "arrive": "10:17",
+            "seat_type": "二等座",
+            "price": 73.0,
+            "seats_left": 47
+          },
+          {
+            "kind": "高铁",
+            "train_no": "G7301",
+            "from_city": "上海",
+            "to_city": "杭州",
+            "date": "2026-10-28",
+            "depart": "06:00",
+            "arrive": "07:00",
+            "seat_type": "二等座",
+            "price": 73.0,
+            "seats_left": 35
+          }
+        ],
+        "count": 3
+      },
+      "parameter_validation": {
+        "status": "valid",
+        "validated_args": {
+          "from_city": "上海",
+          "to_city": "杭州",
+          "date": "2026-10-28",
+          "seat_type": "二等座",
+          "kind": "高铁"
+        }
+      },
+      "timestamp": "2026-10-27T14:55:55.506127+00:00",
+      "step": 1
+    }
+  ]
+}

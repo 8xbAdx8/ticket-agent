@@ -1,0 +1,143 @@
+{
+  "source_trace_id": "b8059bab1a5d4777887e3dfe4e81a8ca",
+  "reply": "**有票**，但二等座已全部售罄。\n\n明天（2026-10-28）北京 → 上海 余票情况：\n\n| 车次 | 时间 | 席别 | 票价 | 余票 |\n|---|---|---|---|---|\n| G101 | 06:00 → 11:00 | 一等座 | ¥884.8 | 195 |\n| G102 | 09:17 → 14:17 | 一等座 | ¥884.8 | 172 |\n| G103 | 12:34 → 17:34 | 一等座 | ¥884.8 | 57 |\n| G101 | 06:00 → 11:00 | 商务座 | ¥1659.0 | 4 |\n| G103 | 12:34 → 17:34 | 商务座 | ¥1659.0 | 3 |\n| G102 | 09:17 → 14:17 | 商务座 | ¥1659.0 | **0（售罄）** |\n| G101/G102/G103 | — | 二等座 | ¥553.0 | **0（全部售罄）** |\n\n几点说明：\n- **二等座三趟车均无余票**；如可接受升席，一等座余量充足，商务座仅剩个位数。\n- 我默认按北京→上海查询的——如果你的出发地/目的地不是这两个城市，告诉我我再查一次。\n- 当前仅支持模拟查票和政策咨询，无法锁座、下单或支付。",
+  "events": [
+    {
+      "event": "tool_end",
+      "tool": "query_tickets",
+      "args": {
+        "from_city": "北京",
+        "date": "2026-10-28",
+        "to_city": "上海"
+      },
+      "call_id": "call_7c93552cc4024ef9a71b6da3",
+      "ok": true,
+      "executed": true,
+      "execution_index": 1,
+      "latency_ms": 2,
+      "result": {
+        "trains": [
+          {
+            "kind": "高铁",
+            "train_no": "G101",
+            "from_city": "北京",
+            "to_city": "上海",
+            "date": "2026-10-28",
+            "depart": "06:00",
+            "arrive": "11:00",
+            "seat_type": "一等座",
+            "price": 884.8,
+            "seats_left": 195
+          },
+          {
+            "kind": "高铁",
+            "train_no": "G102",
+            "from_city": "北京",
+            "to_city": "上海",
+            "date": "2026-10-28",
+            "depart": "09:17",
+            "arrive": "14:17",
+            "seat_type": "一等座",
+            "price": 884.8,
+            "seats_left": 172
+          },
+          {
+            "kind": "高铁",
+            "train_no": "G103",
+            "from_city": "北京",
+            "to_city": "上海",
+            "date": "2026-10-28",
+            "depart": "12:34",
+            "arrive": "17:34",
+            "seat_type": "一等座",
+            "price": 884.8,
+            "seats_left": 57
+          },
+          {
+            "kind": "高铁",
+            "train_no": "G101",
+            "from_city": "北京",
+            "to_city": "上海",
+            "date": "2026-10-28",
+            "depart": "06:00",
+            "arrive": "11:00",
+            "seat_type": "商务座",
+            "price": 1659.0,
+            "seats_left": 4
+          },
+          {
+            "kind": "高铁",
+            "train_no": "G103",
+            "from_city": "北京",
+            "to_city": "上海",
+            "date": "2026-10-28",
+            "depart": "12:34",
+            "arrive": "17:34",
+            "seat_type": "商务座",
+            "price": 1659.0,
+            "seats_left": 3
+          },
+          {
+            "kind": "高铁",
+            "train_no": "G101",
+            "from_city": "北京",
+            "to_city": "上海",
+            "date": "2026-10-28",
+            "depart": "06:00",
+            "arrive": "11:00",
+            "seat_type": "二等座",
+            "price": 553.0,
+            "seats_left": 0
+          },
+          {
+            "kind": "高铁",
+            "train_no": "G102",
+            "from_city": "北京",
+            "to_city": "上海",
+            "date": "2026-10-28",
+            "depart": "09:17",
+            "arrive": "14:17",
+            "seat_type": "二等座",
+            "price": 553.0,
+            "seats_left": 0
+          },
+          {
+            "kind": "高铁",
+            "train_no": "G102",
+            "from_city": "北京",
+            "to_city": "上海",
+            "date": "2026-10-28",
+            "depart": "09:17",
+            "arrive": "14:17",
+            "seat_type": "商务座",
+            "price": 1659.0,
+            "seats_left": 0
+          },
+          {
+            "kind": "高铁",
+            "train_no": "G103",
+            "from_city": "北京",
+            "to_city": "上海",
+            "date": "2026-10-28",
+            "depart": "12:34",
+            "arrive": "17:34",
+            "seat_type": "二等座",
+            "price": 553.0,
+            "seats_left": 0
+          }
+        ],
+        "count": 9
+      },
+      "parameter_validation": {
+        "status": "valid",
+        "validated_args": {
+          "from_city": "北京",
+          "date": "2026-10-28",
+          "to_city": "上海"
+        }
+      },
+      "timestamp": "2026-10-27T14:49:39.248857+00:00",
+      "step": 1
+    }
+  ]
+}

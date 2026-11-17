@@ -13,7 +13,7 @@ def run():
     examples = []
     for msg in ["查明天上海到杭州的高铁", "我要买一张", "支付", "帮我退掉", "退票手续费怎么算", "查我的订单"]:
         examples.append({"label": "normal", "result": agent.chat("handoff-normal", msg)})
-    examples.append({"label":"normal-waitlist", "result":agent.chat("handoff-wait", "抢明天北京到上海的票")})
+    examples.append({"label":"normal-monitor-seat", "result":agent.chat("handoff-wait", "抢明天北京到上海的票")})
     for name in providers.MUTATION_NAMES:
         providers.clear_mutations()
         providers.set_mutation(name, 1 if name == "date_offset" else True)

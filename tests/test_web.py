@@ -1,3 +1,5 @@
+# V3.3: preserve original V3.2 UI assertions against the explicit compatibility entry.
+# New default app coverage lives in test_v33_app.py.
 import unittest
 import tempfile
 from pathlib import Path
@@ -13,7 +15,7 @@ class WebTests(unittest.TestCase):
         config.DB_PATH = Path(self.tmp.name) / "test.db"
         config.TRACE_DIR = Path(self.tmp.name) / "trace"
         build_db()
-        self.app = AppTest.from_file(str(config.BASE_DIR / "web" / "app.py"), default_timeout=20).run()
+        self.app = AppTest.from_file(str(config.BASE_DIR / "web" / "legacy_app.py"), default_timeout=20).run()
 
     def tearDown(self):
         config.DB_PATH, config.TRACE_DIR = self.db, self.trace
@@ -36,11 +38,11 @@ class WebTests(unittest.TestCase):
         self.assertGreater(len(self.app.json), 0)
 
     def test_all_controls_and_restore(self):
-        self.assertEqual(len(self.app.checkbox), 6)
+        self.assertEqual(len(self.app.checkbox), 8)
         for box in self.app.checkbox:
             box.check()
         self.app.run()
-        self.assertEqual(len(self.app.session_state["mutations"]), 6)
+        self.assertEqual(len(self.app.session_state["mutations"]), 8)
         self.button("恢复正常模式").click().run()
         self.assertEqual(dict(self.app.session_state["mutations"]), {})
         self.assertTrue(all(not b.value for b in self.app.checkbox))
@@ -48,6 +50,35 @@ class WebTests(unittest.TestCase):
         next(b for b in self.app.checkbox if b.label == "infinite_loop").check().run()
         self.assertEqual(self.send("抢明天北京到上海的票")["finish_reason"], "max_steps_exceeded")
         self.assertGreater(len(self.app.error), 0)
+
+    def test_audit_and_hallucination_restore(self):
+        next(b for b in self.app.checkbox if b.label == "hallucinated_train").check().run()
+        record=self.send("查明天上海到杭州高铁")
+        audit=self.app.session_state["last_audit_report"]
+        self.assertIn("G9999",record["reply"])
+        self.assertTrue(audit["judgement"]["dimensions"]["platform_defect_detected"])
+        self.assertTrue(any(s.label=="选择诊断记录（按唯一 Trace ID）" for s in self.app.selectbox))
+        self.button("恢复正常模式").click().run()
+        self.assertNotIn("G9999",self.send("查明天上海到杭州高铁")["reply"])
+
+    def test_concurrency_button_and_saved_replay(self):
+        self.button("运行并发订单对照（离线）").click().run()
+        self.assertEqual(len(self.app.exception),0)
+        records=self.app.session_state["concurrency_reports"]
+        self.assertEqual([r["judgement"]["quality_verdict"] for r in records],["pass","fail"])
+        self.assertTrue(all(r["resources_cleaned"] for r in records))
+        self.assertEqual(len(self.app.session_state["history"]),0)
+
+    def test_old_trace_is_not_attached_to_new_audit(self):
+        import json
+        record=self.send("查明天上海到杭州高铁")
+        record=dict(record,user_msg="old record with no audit",session_id="old")
+        with (config.TRACE_DIR/"traces.jsonl").open("a",encoding="utf-8") as out:
+            out.write(json.dumps(record,ensure_ascii=False)+"\n")
+        self.app.run()
+        next(s for s in self.app.selectbox if s.label=="选择回放记录").select(1).run()
+        self.assertEqual(len(self.app.exception),0)
+        self.assertTrue(any("该历史记录未包含此项诊断信息" in i.value for i in self.app.info))
 
 
 if __name__ == "__main__":

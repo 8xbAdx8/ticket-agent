@@ -43,6 +43,11 @@ ROUTES += [
 ROUTES += [("机票", "广州", "成都", "CZ80", 1100.0, 130),
            ("机票", "深圳", "北京", "ZH90", 1500.0, 180)]
 
+# 真实票价参照：广深二等座 74.5，避免公式 100+i*13 把短途算成 139。
+REAL_BASE = {("广州", "深圳"): 74.5}
+ROUTES = [(kind, fc, tc, prefix, REAL_BASE.get((fc, tc), base), minutes)
+          for kind, fc, tc, prefix, base, minutes in ROUTES]
+
 SEAT_TYPES = {
     "高铁": ["二等座", "一等座", "商务座"],
     "机票": ["经济舱", "公务舱"],

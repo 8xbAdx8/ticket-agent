@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "baseline_id": "ticket-agent-v37-baseline-1",
+  "clock": "2026-10-20T12:00:00",
+  "fixture_sources": {
+    "data/seed.py": "669923da4d15cd4798c1af85558bb5c5562d979f09df5417615d60d413bb464c",
+    "data/policies.md": "bfef71389558e57a11f6d2459d7cc7ef79c1c77c8ff2e60152197e21c18a44ad",
+    "web/datasets/b_v32_20261020/case_catalog.json": "8e8cb2807311c868afe99eb6fb658463b178e33455c791b8752aab50f0adbfdc"
+  },
+  "policy_version": "bfef71389558e57a11f6d2459d7cc7ef79c1c77c8ff2e60152197e21c18a44ad",
+  "tool_names": [
+    "query_tickets",
+    "monitor_seat",
+    "lock_seat",
+    "create_order",
+    "pay_order",
+    "cancel_order",
+    "query_order",
+    "search_policy"
+  ],
+  "write_policy": {
+    "monitor_seat": "confirm",
+    "lock_seat": "confirm",
+    "create_order": "confirm",
+    "pay_order": "confirm",
+    "cancel_order": "confirm"
+  },
+  "providers": {
+    "mock": [
+      "mock-offline",
+      "langchain-mock"
+    ],
+    "deepseek": [
+      "deepseek-flash"
+    ],
+    "bailian": [
+      "qwen3.8-flash"
+    ]
+  },
+  "temperature_default": null,
+  "rag_mode": "keyword"
+}

@@ -1,0 +1,5 @@
+Ticket Agent 图形启动版
+
+请先解压整个 ZIP，打开 Ticket Agent.vbs。
+如果 Windows 已关联 Python，也可打开 Ticket Agent.pyw。
+根目录 README.md 提供详细步骤。

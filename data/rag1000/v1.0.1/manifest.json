@@ -1,0 +1,55 @@
+{
+  "schema": "ticket-rag-dataset/1",
+  "dataset_version": "1.0.1-candidate",
+  "files": {
+    "active-policies.md": "f9407c600bc4d31a8dc7748fc02908622fe78adea693f0a6afc701453d8d380b",
+    "cases.jsonl": "cb86f59e4aba703f7d13caef84e7822de38d0fe6cbc68876284cfce1b6f7b2ea",
+    "corpus.json": "53d43e1597e29299bdf15bfa3f15dbb5ea8aea9aff837c160a2b212b44b08dac",
+    "development.json": "7d673ef797d510dc4e0097b50265507ccdbf2531ceefcfce2761827a84d6a38d",
+    "holdout.json": "a54250d364a37b799d09375aada252d151dccea69b63f4d85e329e68946f0770",
+    "schema.json": "21fdc9a26e8c8135941acb1af92de7fb9f01da2d661fd59b689c8ae5f383e448",
+    "validation.json": "5e2c500c9057ba050c7b7a61e2c61e8e080dbb6746024005043dec90478ff980"
+  },
+  "seed": 20261029,
+  "split_algorithm": "intent_and_local_near_duplicate_components_stratified_greedy_v1",
+  "split_target": {
+    "development": 700,
+    "validation": 150,
+    "holdout": 150
+  },
+  "actual_splits": {
+    "development": 699,
+    "validation": 151,
+    "holdout": 150
+  },
+  "category_targets": {
+    "normal_qa": 250,
+    "paraphrase": 180,
+    "multi_policy": 120,
+    "no_answer": 150,
+    "missing_conditions": 80,
+    "conflict_version": 80,
+    "prompt_injection": 60,
+    "false_premise": 50,
+    "numeric_boundary": 30
+  },
+  "original_corpus": "data/v37/policies.json",
+  "original_corpus_sha256": "53d43e1597e29299bdf15bfa3f15dbb5ea8aea9aff837c160a2b212b44b08dac",
+  "active_documents": 57,
+  "fixture_documents": [
+    "P56",
+    "P57",
+    "P58"
+  ],
+  "legacy_48_compatibility_files": {
+    "cases/rag_quality_v351_development.json": "37645ac9faea23e8316654566fc5d75f6df3cfabcc7a31a910da81d5bf237925",
+    "cases/rag_quality_v351_holdout.json": "195b9f441eaaa44b4547b4e01b19f3bbe4062895f90f9258420539286ad81eb1"
+  },
+  "human_review": "not_performed_B_pending",
+  "holdout_policy": "Frozen before evaluation; no tuning on holdout failures.",
+  "previous_candidate": {
+    "path": "data/rag1000/v1",
+    "change_reason": "Add explicit condition spans and forbidden-claim review before first retrieval run; no labels tuned from retrieval failures."
+  },
+  "annotation_limit": "Candidate release: complex gold annotations require B semantic review; do not claim 1000 verified cases."
+}

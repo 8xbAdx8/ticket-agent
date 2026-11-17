@@ -1,0 +1,703 @@
+"""One UI call path into the existing Agent; per-session business/trace isolation.
+
+The legacy runtime uses module configuration. Serialize UI calls while restoring
+that configuration, rather than changing backend interfaces or sharing databases.
+"""
+import contextlib
+import io
+import json
+import os
+import threading
+import uuid
+from datetime import datetime, timezone
+from dataclasses import dataclass, field
+from pathlib import Path
+import config
+from target.agent import Agent
+from target.deepseek_runtime import safe_error
+from web.presentation import collect_results, turn_cursor
+
+CALL_LOCK = threading.RLock()
+_RENDER_BASE = None
+LIVE_AVAILABLE = config.PROVIDER == "deepseek"
+LIVE_MODEL = config.MODEL_NAME
+LIVE_URL = config.BASE_URL
+LIVE_KEY = config.API_KEY if LIVE_AVAILABLE else ""
+ROOT = config.BASE_DIR
+
+
+def refresh_conversations(sessions):
+    """Streamlit retains old class instances on hot reload; keep their data and new methods."""
+    for session in sessions:
+        old=type(session)
+        if old is not Conversation and (old.__module__,old.__qualname__)==(Conversation.__module__,Conversation.__qualname__):
+            session.__class__=Conversation
+
+
+@contextlib.contextmanager
+def scoped(values, environment=None):
+    """All UI model/business calls hold this lock, including configuration restore."""
+    with CALL_LOCK:
+        global _RENDER_BASE
+        previous_base=_RENDER_BASE
+        prior = {name: getattr(config, name) for name in values}
+        old_env = {name: os.environ.get(name) for name in (environment or {})}
+        if _RENDER_BASE is None:
+            baseline={name:getattr(config,name) for name in ('PROVIDER','ENGINE','MODEL_NAME','BASE_URL','API_KEY','DB_PATH','TRACE_DIR','LC_TOOLSET','USE_HTTP_MOCK','USE_VECTOR_RAG')}
+            _RENDER_BASE=(dict(baseline,**prior),dict(os.environ))
+        try:
+            for name, value in values.items():
+                setattr(config, name, value)
+            for name, value in (environment or {}).items():
+                os.environ[name] = value
+            yield
+        finally:
+            for name, value in prior.items():
+                setattr(config, name, value)
+            for name, value in old_env.items():
+                if value is None:
+                    os.environ.pop(name, None)
+                else:
+                    os.environ[name] = value
+            _RENDER_BASE=previous_base
+
+
+def render_value(name):
+    base=_RENDER_BASE
+    return base[0].get(name,getattr(config,name)) if base else getattr(config,name)
+
+
+def render_environment():
+    base=_RENDER_BASE
+    return base[1] if base else os.environ
+
+
+def live_ready(provider=None):
+    if os.getenv("TICKET_WEB_OFFLINE_ONLY") == "1": return False
+    if provider is None:
+        return LIVE_AVAILABLE and bool(os.getenv("DEEPSEEK_API_KEY", "").strip())
+    from target.live_providers import configuration
+    return bool(configuration(provider)["configured"])
+
+
+@dataclass
+class Conversation:
+    mode: str
+    engine: str = "legacy"
+    live: bool = False
+    live_provider: str = "deepseek"
+    live_model: str | None = None
+    case_id: str | None = None
+    initial_budget: bool = False
+    rag_mode: str | None = None
+    allow_rag_network: bool = False
+    interactive: bool = False
+    full_tools: bool = False
+    mutations: dict = field(default_factory=dict)
+    root: Path | None = None
+    sid: str = field(default_factory=lambda: "web-"+uuid.uuid4().hex[:12])
+    history: list = field(default_factory=list)
+    results: list = field(default_factory=list)
+    audits: list = field(default_factory=list)
+    agent: object = None
+    error: dict | None = None
+    receipts: dict = field(default_factory=dict)
+    remote_receipts: list = field(default_factory=list)
+    read_only: bool = False
+    persistence_warning: str | None = None
+    execution_mode: str = 'session_default'
+    effective_hash: str | None = None
+    config_cost_consent: tuple | None = None
+    config_notice: str | None = None
+    page_proposal_configs: dict = field(default_factory=dict)
+    baseline_binding: tuple = field(default_factory=tuple)
+    train_source_choice: object = None
+    last_train_query: dict | None = None
+    operations: list = field(default_factory=list)
+
+    def __post_init__(self):
+        if not self.baseline_binding:self.baseline_binding=(self.engine,self.live,self.live_provider,self.live_model)
+        if self.mode not in ("user", "lab"):
+            raise ValueError("Unknown UI mode")
+        if self.mode == "user" and self.mutations:
+            raise ValueError("普通用户模式不能注入变异")
+        if self.live and self.engine != "langchain":
+            raise ValueError("Live requires LangChain")
+        if self.live and self.live_provider not in ("deepseek","bailian"):
+            raise ValueError("Unknown Live provider")
+        from web.session_store import session_directory
+        self.root = Path(self.root) if self.root else session_directory(self.mode, self.sid)
+        base=(ROOT/"artifacts/runtime").resolve()
+        if not self.root.resolve().is_relative_to(base) or self.root.resolve()==base:
+            raise ValueError("UI runtime must stay in isolated artifacts/runtime")
+
+    @property
+    def trace_dir(self):
+        return self.root/"traces"
+
+    def _values(self):
+        from target.api_config import model_config
+        environment=render_environment()
+        cfg=model_config(self.live_provider,active=environment.get('AGENT_PROVIDER')==self.live_provider,environment=environment) if self.live else {}
+        model=LIVE_MODEL if self.live_provider=="deepseek" and LIVE_AVAILABLE else cfg.get("model")
+        if self.live and self.live_model:model=self.live_model
+        address=LIVE_URL if self.live_provider=="deepseek" and LIVE_AVAILABLE else cfg.get("base_url")
+        return dict(DB_PATH=self.root/"tickets.db", TRACE_DIR=self.trace_dir, PROVIDER=self.live_provider if self.live else "mock",
+                    ENGINE=self.engine, LC_TOOLSET="all" if not self.live or self.full_tools else "read_only", USE_HTTP_MOCK=False, USE_VECTOR_RAG=False,
+                    MODEL_NAME=model if self.live else "langchain-mock" if self.engine=="langchain" else "mock-offline",
+                    BASE_URL=address if self.live else "https://api.deepseek.com", API_KEY=os.getenv(cfg["key_env"],"") if self.live else "")
+
+    def send(self,message,request_id,event_callback=None,*,followup_authorized=False,followup_origin=None,confirmation=None,entry='chat',defer_followups=False,_operation=None):
+        if self.read_only:raise ValueError('历史恢复为只读，请新建会话后执行')
+        if not getattr(self,'_unified_interaction',False) and entry=='chat' and _operation is None:
+            from target.execution_config import scope as effective_scope,CURRENT as EFFECTIVE,CONFIRMED
+            from target.v39.context import scope as context_scope,CURRENT as RAILWAY
+            from target.v39.registry import service_scope,SERVICE
+            with effective_scope(EFFECTIVE.get(),confirmed=CONFIRMED.get()),context_scope(RAILWAY.get()),service_scope(SERVICE.get()):
+                return self._send_with_events(message,request_id,event_callback,followup_authorized=followup_authorized,
+                    followup_origin=followup_origin,confirmation=confirmation,defer_followups=defer_followups)
+        from web import interaction
+        if _operation is not None:
+            from target.diagnostics import digest
+            if not any(r is _operation for r in self.operations) or _operation['status']!='QUEUED' or _operation['request_id']!=request_id or _operation['input_hash']!=digest(message):
+                raise ValueError('提交标识不匹配')
+            operation,fresh=_operation,True
+        else:operation,fresh=interaction.begin(self,message,request_id,entry)
+        if not fresh:return self.receipts[request_id]
+        def update(event):
+            interaction.observe(self,operation,event)
+            if event_callback:event_callback(event)
+        try:
+            from target.execution_config import scope as effective_scope,CURRENT as EFFECTIVE,CONFIRMED
+            from target.v39.context import scope as context_scope,CURRENT as RAILWAY
+            from target.v39.registry import service_scope,SERVICE
+            # _send activates these contexts. Restore the caller's values on
+            # completion so pooled workers cannot retain another session.
+            with effective_scope(EFFECTIVE.get(),confirmed=CONFIRMED.get()),context_scope(RAILWAY.get()),service_scope(SERVICE.get()):
+                result=self._send_with_events(message,request_id,update,followup_authorized=followup_authorized,
+                    followup_origin=followup_origin,confirmation=confirmation,defer_followups=defer_followups)
+            interaction.finish(self,operation,result=result)
+            return result
+        except Exception as exc:
+            interaction.finish(self,operation,error=exc)
+            raise
+
+    def _send_with_events(self,message,request_id,event_callback=None,*,followup_authorized=False,followup_origin=None,confirmation=None,defer_followups=False):
+        if self.read_only:raise ValueError('历史恢复为只读，请新建会话后执行')
+        self.error=None
+        if followup_authorized and self.live:
+            candidate=self.resolve_config()
+            provider=candidate.provider if candidate else self.live_provider
+            revision=candidate.override_revision if candidate else 0
+            if provider==self.live_provider:
+                self.config_cost_consent=(self.sid,provider,revision)
+        origin=followup_origin or {}
+        from target.run_events import capture,emit
+        try:
+            with capture(self.trace_dir/'run_events.jsonl',event_callback,confirmation=confirmation):
+                try:
+                    fresh=request_id not in self.receipts
+                    if origin.get('run_id'):
+                        emit('followup_selected',followup_id=origin.get('followup_id'),
+                             generation_method=origin.get('generation_method'),selected=True,
+                             question=origin.get('question'),next_run_id=None,intent=origin.get('intent'),
+                             provider=None,model=None,latency_ms=None,token_usage=None,fallback_reason=None)
+                    result=self._send(message,request_id)
+                    if fresh and not defer_followups:self._record_followups(result,followup_authorized)
+                    if origin.get('run_id'):
+                        next_run_id=(self.audits[-1].get('trace_id') if self.audits else None)
+                        emit('followup_submitted',followup_id=origin.get('followup_id'),
+                             generation_method=origin.get('generation_method'),selected=True,
+                             question=origin.get('question'),next_run_id=next_run_id,intent=origin.get('intent'),
+                             provider=None,model=None,latency_ms=None,token_usage=None,fallback_reason=None)
+                        # Join the click to the retrieval actually produced by the
+                        # next run: this is what makes a follow-up traceable.
+                        retrieval_ids,doc_ids,chunk_ids=[],[],[]
+                        path=self.trace_dir/'run_events.jsonl'
+                        if path.is_file():
+                            for line in path.read_text(encoding='utf8').splitlines():
+                                try:row=json.loads(line)
+                                except ValueError:continue
+                                if row.get('run_id')!=next_run_id or row.get('event_type')!='rag_result':continue
+                                if row.get('retrieval_id'):retrieval_ids.append(str(row['retrieval_id']))
+                                for hit in (row.get('documents') or []):
+                                    if not isinstance(hit,dict):continue
+                                    if hit.get('doc_id'):doc_ids.append(str(hit['doc_id']))
+                                    if hit.get('chunk_id'):chunk_ids.append(str(hit['chunk_id']))
+                        emit('followup_outcome',followup_id=origin.get('followup_id'),selected=True,
+                             question=origin.get('question'),next_run_id=next_run_id,intent=origin.get('intent'),
+                             retrieval_ids=sorted(set(retrieval_ids)),doc_ids=sorted(set(doc_ids)),
+                             chunk_ids=sorted(set(chunk_ids)),retrieval_used=bool(retrieval_ids),
+                             provider=None,model=None,latency_ms=None,token_usage=None,fallback_reason=None)
+                    from target.run_events import finish
+                    finish(result)
+                    emit('agent_returned',reply=result.get('reply'),finish_reason=result.get('finish_reason'))
+                    if fresh:
+                        from web.order_state_evidence import agent_declarations
+                        agent_declarations(self, result)
+                    return result
+                except Exception as exc:
+                    from target.run_events import finish
+                    finish(error=self.error or {'type':type(exc).__name__})
+                    emit('agent_error','failed',error=type(exc).__name__)
+                    raise
+        except Exception as exc:
+            if self.error is None:self.error={'type':type(exc).__name__,**safe_error(exc)}
+            raise
+        finally:
+            self.save_replay()
+
+    def save_replay(self):
+        try:
+            from web.session_store import save_session
+            save_session(self)
+        except Exception as exc:
+            # Persistence failure must not turn an already executed operation into a retry.
+            self.persistence_warning='历史索引保存失败（'+type(exc).__name__+'）；请保留本地 Trace。'
+
+    def _audit_for(self, record):
+        """Match by value or by digest: the audit copy is not always the same object."""
+        from target.diagnostics import digest
+        identity = digest(record)
+        return next((a for a in reversed(self.audits)
+                     if a.get('public_trace') == record or a.get('public_trace_sha256') == identity), None)
+
+    def followups_for(self,record):
+        """Rendering/history only reads a run-bound saved snapshot."""
+        from target.followups import read_record
+        audit=self._audit_for(record)
+        return read_record(self.trace_dir,self.sid,(audit or {}).get('trace_id'),record)
+
+    def shown_followups(self):
+        """Suggestions already displayed in this session, so every turn offers new ones."""
+        from target.followups import read_all
+        return read_all(self.trace_dir, self.sid)
+
+    def business_state_of(self, run_id):
+        """Business state produced by this run's real tool results (no model, no DB)."""
+        from target.business_state import detect
+        path = self.trace_dir/'run_events.jsonl'
+        rows = []
+        if path.is_file():
+            for line in path.read_text(encoding='utf8').splitlines():
+                try:
+                    row = json.loads(line)
+                except ValueError:
+                    continue
+                if isinstance(row, dict) and row.get('run_id') == run_id:
+                    rows.append(row)
+        return detect(rows)
+
+    def _record_followups(self,record,authorized=False):
+        if self.mode!='user':return
+        if any(n in record.get('tool_sequence',[]) for n in ('railway_query_trips','railway_search_stations','railway_trip_stops')):
+            from web.railway_followups import register
+            from web.result_rows import iter_rows
+            rows=[r for r in iter_rows(self.results[-1]) if r.get('tool')=='railway_query_trips'] if self.results else []
+            if rows:register(self,rows[-1])
+            elif 'railway_trip_stops' not in record.get('tool_sequence',[]):self.railway_followup_row=None
+            return  # Railway suggestions are deterministic; no auxiliary model request.
+        if getattr(self,'_rail_followup_dispatch',False):return
+        self.railway_followup_row=None
+        from target.run_events import emit
+        from target.followups import generate_and_save
+        audit=self._audit_for(record)
+        if not audit:return
+        # A waiting confirmation must not hide action follow-ups ("确认创建订单"
+        # is exactly what the user needs then); it still suppresses suggestions
+        # when the run produced no real business state.
+        if self.pending_action() and not self.business_state_of(audit.get('trace_id')):return
+        try:
+            engine=getattr(self.agent,'langchain_engine',None)
+            environment={'LANGSMITH_TRACING':'false','LANGCHAIN_TRACING_V2':'false'}
+            if self.live:
+                from target.live_providers import manual_environment
+                environment.update(manual_environment(self.live_provider,self.root,model=self.live_model,full_tools=self.full_tools))
+            with scoped(self._values(),environment):
+                generate_and_save(record,audit,self.trace_dir,
+                    asked=[r['user_msg'] for r in self.history]+self.shown_followups(),
+                    live=self.live,authorized=authorized is True,network_ready=self.live and live_ready(self.live_provider),
+                    prior_run_ids=[a['trace_id'] for a in self.audits if a.get('trace_id')!=audit['trace_id']
+                        and not a.get('error') and a.get('public_trace') in self.history
+                        and not any(c.get('assertion')=='query_result_train_authority' and c.get('passed') is False
+                                    for c in (a.get('judgement') or {}).get('assertions',[]) if isinstance(c,dict))
+                        and (a.get('public_trace') or {}).get('session_id')==self.sid],
+                    model=getattr(engine,'model',None),settings=getattr(engine,'deepseek_settings',None))
+        except Exception as exc:
+            # Auxiliary persistence/format failures must never replace a valid
+            # Agent answer or change its public success/error/Token fields.
+            emit('followup_error','failed',stage='auxiliary_persistence',category=type(exc).__name__)
+
+    def _send(self, message, request_id, decision=None):
+        if request_id in self.receipts:
+            return self.receipts[request_id]
+        effective=self.resolve_config()
+        # When the railway feature flag is on, attach the existing V3.9 service
+        # and trusted context to the original Agent run. The original page and
+        # old eight tools are otherwise untouched.
+        from web import v39_bridge
+        if v39_bridge.enabled():
+            effective=v39_bridge.activate(self,effective)
+        else:
+            v39_bridge.deactivate()
+        if effective:
+            previous=getattr(self.agent,'effective_config',None) if self.agent else None
+            if self.pending_action() and previous and previous.config_hash!=effective.config_hash:
+                if decision is not None and decision.get('approved') is False:effective=previous
+                else:raise ValueError('待确认提案绑定旧配置，请先取消原提案再重新生成')
+            selected_live=effective.provider!='mock'
+            old_provider=self.live_provider if self.live else 'mock'
+            if selected_live and old_provider!=effective.provider:
+                self.live=True;self.live_provider=effective.provider;self.live_model=effective.model;self.engine='langchain'
+                self.config_cost_consent=None
+                self.config_notice='服务已切换为 '+effective.provider+'；本次未发送。请返回用户端核对当前会话费用提示，再明确发送。'
+                raise ValueError(self.config_notice)
+            if selected_live and self.config_cost_consent!=(self.sid,effective.provider,effective.override_revision):
+                raise ValueError('当前Provider/会话/配置版本未获得本轮费用授权；未发送')
+            self.live=selected_live;self.engine=effective.engine
+            if selected_live:self.live_provider=effective.provider;self.live_model=effective.model
+        if self.live and not live_ready(self.live_provider):
+            raise ValueError("Live 未配置或本轮已禁止联网；没有发送请求")
+        if not isinstance(message, str) or not message.strip():
+            raise ValueError("消息不能为空")
+        from target.fault_injection import normalize
+        normalize(self.mutations)
+        if self.mutations.get("concurrent_duplicate_order"):
+            raise ValueError("M8 不适用于普通对话，请运行并发对照")
+        env={"LANGSMITH_TRACING":"false", "LANGCHAIN_TRACING_V2":"false", "AGENT_MUTATIONS":"{}",
+             "TICKET_CASE_ID":self.case_id or "interactive"}
+        if not self.live:
+            # A user's global Live RAG settings must not turn an offline chat
+            # or its suggested follow-up into an Embedding request.
+            env.update(AGENT_RAG_MODE='', RAG_ALLOW_NETWORK='0')
+        if self.live:
+            env["DEEPSEEK_LIVE_TEST_PROFILE"]="read_only"
+            from target.live_providers import manual_environment
+            env.update(manual_environment(self.live_provider,self.root,model=self.live_model,full_tools=self.full_tools))
+            if self.rag_mode is not None:env['AGENT_RAG_MODE']=self.rag_mode
+            env['RAG_ALLOW_NETWORK']='1' if self.allow_rag_network else '0'
+            env["TICKET_CASE_ID"]=self.case_id or "interactive"
+        if effective:
+            env['AGENT_RAG_MODE']=effective.rag_mode
+            env['RAG_ALLOW_NETWORK']='1' if effective.allow_embedding else '0'
+        if not self.live and self.engine=="langchain" and any(self.mutations.get(k) for k in ("skip_lock","infinite_loop")):
+            # Existing sandbox guard, only for the offline Mock test environment.
+            env.update(DEEPSEEK_LIVE_TEST_PROFILE="full_sandbox", DEEPSEEK_SANDBOX_DIR=str(self.root),
+                       DEEPSEEK_BUDGET_PATH=str(self.root/"requests.db"), DEEPSEEK_MAX_REQUESTS="5")
+        if self.mode == "user" and self.interactive and self.live and self.full_tools:
+            env["TICKET_CONFIRM_MODEL_ACTIONS"]="1"
+        self.error=None
+        from target.train_source import conversation_scope,selected,load_fixture
+        with scoped(self._values(),env),conversation_scope(self):
+            try:
+                self.root.mkdir(parents=True,exist_ok=True)
+                self.trace_dir.mkdir(exist_ok=True)
+                if env.get("DEEPSEEK_LIVE_TEST_PROFILE")=="full_sandbox":
+                    marker=self.root/".ticket-agent-sandbox.json"
+                    if not marker.exists() and config.DB_PATH.exists():
+                        raise ValueError('已有数据库不能自动转换为全工具沙箱')
+                    if not marker.exists():
+                        marker.write_text(json.dumps({"purpose":"ticket-agent-fault-test","version":1,"simulated_only":True}),encoding="utf-8")
+                if selected().mode=='fixture':load_fixture()
+                if selected().mode!='fixture' and config.USE_HTTP_MOCK:raise ValueError('快照查询需要当前本地执行器，不通过旧HTTP Mock传递来源配置')
+                if selected().mode=='fixture' and not config.DB_PATH.exists():
+                    from data.seed import build_db
+                    with contextlib.redirect_stdout(io.StringIO()):
+                        build_db(config.DB_PATH)
+                if self.agent is None or effective and self.effective_hash!=effective.config_hash:
+                    old_agent=self.agent
+                    kwargs={"engine":self.engine,"mutations":dict(self.mutations)}
+                    if effective:kwargs['effective_config']=effective
+                    if getattr(self,'_v39_service',None) is not None and not self.live:
+                        # Offline railway sessions use the existing deterministic
+                        # planner so the original Agent can call real static tools.
+                        from target.v39.planner import RailwayDemoProvider
+                        kwargs["provider"]=RailwayDemoProvider()
+                    elif not self.live and self.engine=="legacy":
+                        from target.providers import MockProvider
+                        kwargs["provider"]=MockProvider(mutations=dict(self.mutations))
+                    self.agent=Agent(**kwargs)
+                    if old_agent and effective:
+                        if not old_agent.langchain_engine and not self.agent.langchain_engine and self.sid in old_agent.sessions:
+                            self.agent.sessions[self.sid]=[{'role':'system','content':effective.prompt},*old_agent.sessions[self.sid][1:]]
+                        elif old_agent.langchain_engine and self.agent.langchain_engine:
+                            previous=old_agent.langchain_engine.graph.get_state({'configurable':{'thread_id':self.sid}}).values
+                            if previous.get('messages'):self.agent.langchain_engine.graph.update_state({'configurable':{'thread_id':self.sid}},{'messages':previous['messages']},as_node='model')
+                    self.effective_hash=effective.config_hash if effective else None
+                cursor=turn_cursor(self.agent,self.sid)
+                record=(self.agent.resume_operation(self.sid,decision["proposal"],decision["approved"])
+                        if decision is not None else self.agent.chat(self.sid,message))
+                audit_error=(self.agent.last_audit_report or {}).get('error')
+                if audit_error:
+                    self.error={'type':'AgentError',**audit_error}
+                    raise RuntimeError('agent_recorded_execution_error')
+                full=collect_results(self.agent,self.sid,cursor,record)
+                from web.interaction import LOCK as operation_lock
+                with operation_lock:
+                    self.history.append(record)
+                    self.results.append(full)
+                    if self.agent.last_audit_report:
+                        self.audits.append(self.agent.last_audit_report)
+                    self.receipts[request_id]=record
+                return record
+            except Exception as exc:
+                if self.error is None:self.error={"type":type(exc).__name__,**safe_error(exc)}
+                if self.agent and self.agent.last_audit_report:
+                    self.audits.append(self.agent.last_audit_report)
+                raise
+
+    def resolve_config(self):
+        from target.dev_overrides import Store
+        from target.execution_config import resolve_effective_config
+        if self.execution_mode=='session_default' and Store().load(self.sid,owner=self.sid) is None:return None
+        engine,live,provider,model=self.baseline_binding
+        return resolve_effective_config(self.sid,'baseline' if self.execution_mode=='baseline' else 'developer_custom',engine=engine,
+            provider=provider if live else 'mock',model=model if live else None,full_tools=self.full_tools,allow_embedding=self.allow_rag_network)
+
+    def baseline_settings(self):
+        from target.dev_overrides import defaults
+        engine,live,provider,model=self.baseline_binding
+        return defaults(engine,provider if live else 'mock',model if live else None)
+
+    def set_train_source(self,choice):
+        with CALL_LOCK:return self._set_train_source(choice)
+
+    def _set_train_source(self,choice):
+        from dataclasses import asdict
+        from target.train_source import validate_choice
+        if self.read_only or self.execution_mode=='baseline':raise ValueError('只读历史或正式Baseline不能修改数据来源')
+        if self.pending_action():raise ValueError('请先取消待确认提案，再切换数据来源')
+        validate_choice(choice)
+        self.root.mkdir(parents=True,exist_ok=True)
+        with (self.root/'data-source-selections.jsonl').open('a',encoding='utf-8') as f:
+            from datetime import datetime,timezone
+            f.write(json.dumps({'session_id':self.sid,'choice':asdict(choice),'event':'user_selected_data_source','request_sent':False,'created_at':datetime.now(timezone.utc).isoformat()},ensure_ascii=False)+'\n')
+        self.train_source_choice=choice
+        self.agent=None;self.effective_hash=None;self.last_train_query=None
+        self.page_proposal_configs.clear()
+        self.config_notice='车次数据来源已切换；下一轮生效，请重新查询。原历史保留，旧工具结果不作为新来源的交易依据。'
+
+    def train_source_hash(self):
+        from dataclasses import asdict
+        from target.dev_overrides import digest
+        return digest(asdict(self.train_source_choice)) if self.train_source_choice is not None else None
+
+    def assert_page_allowed(self,tools,*,confirmed=False):
+        from target.train_source import source_scope,assert_demo_acquisition,SourceChoice
+        choice=SourceChoice() if self.execution_mode=='baseline' else self.train_source_choice
+        if any(t in ('monitor_seat','lock_seat','create_order') for t in tools):
+            with source_scope(choice):assert_demo_acquisition()
+        from target.execution_config import scope,tool_denial
+        effective=self.resolve_config()
+        if effective is None:return
+        with scope(effective,confirmed=confirmed):
+            for name in tools:
+                reason=tool_denial(name)
+                if reason:raise ValueError(reason)
+
+    def bind_page_proposal(self,proposal):
+        from target.dev_overrides import digest
+        effective=self.resolve_config()
+        identity=effective.config_hash if effective else None
+        if self.train_source_choice is not None:identity=digest({'config':identity,'data_source':self.train_source_hash()})
+        self.page_proposal_configs[digest(proposal)]=identity
+
+    def assert_page_proposal(self,proposal):
+        from target.dev_overrides import digest
+        effective=self.resolve_config()
+        identity=effective.config_hash if effective else None
+        if self.train_source_choice is not None:identity=digest({'config':identity,'data_source':self.train_source_hash()})
+        if (effective or self.train_source_choice is not None) and self.page_proposal_configs.get(digest(proposal))!=identity:
+            raise ValueError('页面预览对应配置已变更，请取消原预览并重新生成')
+
+
+    def pending_action(self):
+        engine = self.agent.langchain_engine if self.agent else None
+        actions = getattr(engine, "pending_actions", None) if engine else None
+        return actions.get(self.sid) if isinstance(actions, dict) else None
+
+    def payment_order(self, order_id):
+        """Current owned business record, independent of historical model prose."""
+        if self.read_only or not (self.root/'tickets.db').is_file():
+            return {'error': '当前会话没有可操作的演示订单'}
+        from target import mock_core
+        with CALL_LOCK, mock_core.database_scope(self.root/'tickets.db'):
+            return mock_core.query_order(order_id)
+
+    def confirm_demo_payment(self, order_id, amount, pay_type, *, confirmed=False):
+        self.assert_page_allowed(['pay_order'],confirmed=confirmed)
+        if self.read_only or self.mode != 'user' or self.pending_action():
+            raise ValueError('当前会话不能执行演示支付')
+        if self.live and not self.full_tools:
+            raise ValueError('当前在线会话仅支持查询，不能执行演示支付')
+        if not (self.root/'tickets.db').is_file():
+            raise ValueError('当前会话没有可操作的演示订单')
+        from target.demo_payment import confirm
+        with CALL_LOCK:
+            result = confirm(self.root/'tickets.db', order_id, amount, pay_type, confirmed=confirmed)
+            if not result.get('error'):
+                current = self.payment_order(order_id)
+                # Separate display receipt, never rewrite public Trace/results.
+                from web.payment import save_receipt
+                try:
+                    save_receipt(self, current)
+                except (OSError, ValueError):
+                    self.persistence_warning = '演示支付已记录，但刷新展示快照未保存；请保留当前会话并核对订单。'
+            return result
+
+    def confirm_railway_proposal(self, proposal_id, approved=True):
+        """Trusted confirmation; preserve the original Agent run and append a receipt."""
+        from web.business_actions import confirm
+        return confirm(self,proposal_id,approved)
+
+    def confirm_action(self, approved, request_id,*,followup_authorized=False):
+        if self.read_only:raise ValueError('历史回放不能恢复旧操作授权')
+        if type(approved) is not bool:
+            raise ValueError("确认决定必须为布尔值")
+        proposal = self.pending_action()
+        if not proposal:
+            raise ValueError("没有待确认的模拟操作")
+        try:
+            from target.run_events import capture,emit
+            with capture(self.trace_dir/'run_events.jsonl',confirmation={
+                'approved':approved,'proposal':proposal,
+                'source_run_id':self.audits[-1].get('trace_id') if self.audits else None}):
+                try:
+                    result=self._send("确认模拟操作" if approved else "取消模拟操作", request_id,
+                                      decision={"proposal":proposal, "approved":approved})
+                except Exception as exc:
+                    # Keep failure termination inside this run's capture, just
+                    # like send(); never retry a possibly executed write.
+                    from target.run_events import finish
+                    finish(error=self.error or {'type':type(exc).__name__})
+                    emit('agent_error','failed',error=self.error or {'type':type(exc).__name__})
+                    raise
+                emit('operation_resumed','approved' if approved else 'declined',proposal=proposal)
+                self._record_followups(result,followup_authorized)
+                from target.run_events import finish
+                finish(result)
+                emit('agent_returned',reply=result.get('reply'),finish_reason=result.get('finish_reason'))
+                return result
+        except Exception as exc:
+            if self.error is None:
+                self.error = {'type':type(exc).__name__, **safe_error(exc)}
+            raise
+        finally:
+            self.save_replay()
+
+
+    def export_last(self, *, consent=False, transport=None):
+        if not self.agent or not self.agent.langchain_engine or not self.agent.langchain_engine.last_live_run:
+            raise ValueError("No saved Live run available")
+        if self.latest_remote_receipt():
+            raise ValueError("An existing export must be read back, never automatically reposted")
+        from target.observability import export_run
+        receipt=export_run(self.agent.langchain_engine.last_live_run,consent=consent,trace_dir=self.trace_dir,transport=transport)
+        self.remote_receipts.append(receipt)
+        return receipt
+
+    def latest_remote_receipt(self):
+        run=self.agent.langchain_engine.last_live_run if self.agent and self.agent.langchain_engine else None
+        if not run:return None
+        from web.evidence import read_jsonl
+        saved,_=read_jsonl(self.trace_dir/'langsmith_readbacks.jsonl')
+        rows=[r for r in [*self.remote_receipts,*saved] if isinstance(r,dict)
+              and r.get('local_trace_id')==run.get('trace_id') and r.get('remote_run_id')
+              and (r.get('post_http_status') in (200,201,202) or r.get('remote_status')=='upload_outcome_unknown'
+                   or r.get('upload_outcome_unknown'))]
+        return max(rows,key=lambda r:r.get('timestamp','')) if rows else None
+
+    def recheck_export(self, *, consent=False, transport=None):
+        receipt=self.latest_remote_receipt()
+        if not receipt:raise ValueError('No existing remote run available')
+        from target.observability import verify_existing,export_payload
+        run=self.agent.langchain_engine.last_live_run
+        payload=export_payload(run)
+        if receipt.get('payload_file'):
+            expected='langsmith_payloads/'+str(uuid.UUID(receipt['remote_run_id']))+'.json'
+            if receipt['payload_file']!=expected:raise ValueError('Invalid frozen export path')
+            payload=json.loads((self.trace_dir/expected).read_text(encoding='utf-8'))
+        result=verify_existing(receipt,payload,consent=consent,transport=transport,
+                               max_read_attempts=3,trace_dir=self.trace_dir)
+        self.remote_receipts.append(result)
+        return result
+
+    def concurrency(self, scenario="same_lock_two"):
+        if self.mode != "lab":
+            raise ValueError("Only the test lab can run concurrency probes")
+        from target.concurrency_probe import probe
+        self.trace_dir.mkdir(parents=True, exist_ok=True)
+        with scoped(self._values(), {"LANGSMITH_TRACING":"false","LANGCHAIN_TRACING_V2":"false"}):
+            records=[probe(scenario, save=True, trace_dir=self.trace_dir)]
+            self.audits.extend(records)  # Retain a saved baseline even if the next probe fails.
+            if scenario not in ("expired_lock","worker_failure"):
+                mutant=probe(scenario, mutant=True, save=True, trace_dir=self.trace_dir)
+                records.append(mutant)
+                self.audits.append(mutant)
+        return records
+
+
+def failure_hint(category):
+    messages={
+        'historical_unlinked_ledger_requires_new_validation_pair':'这是旧版本保存的账本错误。当前Live已移除该拦截，旧记录保持原样。',
+        'request_budget_exhausted':'这是旧版本保存的本地预算错误。当前Live累计请求数不限，旧记录保持原样。',
+        'missing_DEEPSEEK_API_KEY':'未读取到DeepSeek Key，请重新启动在线入口。',
+        'missing_DASHSCOPE_API_KEY':'未读取到千问Key，请核对DASHSCOPE_API_KEY后重新启动。',
+        'authentication_failed':'模型服务拒绝了Key，请检查有效性。',
+        'qwencloud_key_requires_qwencloud_endpoint':'这个 Key 是 QwenCloud（sk-ws-）的，必须把 DASHSCOPE_BASE_URL 改成对应地域的 https://<region>.maas.qwencloudapi.com/compatible-mode/v1（如新加坡 ap-southeast-1）；不能使用 dashscope.aliyuncs.com。',
+        'permission_denied':'服务商拒绝访问，请检查模型、地域和账号权限。',
+        'rate_limited':'服务商限流（HTTP 429），本次未自动重试，请稍后手动发送。',
+        'server_error':'模型服务端错误（HTTP 500），本次未自动重试。',
+        'service_unavailable':'模型服务暂不可用（HTTP 503），本次未自动重试。',
+        'insufficient_balance':'模型账户余额或可用额度不足。',
+        'timeout':'模型请求超时，本次未自动重试。',
+        'network_connection':'模型网络连接失败，请检查本机网络或代理。',
+        'reply_data_indeterminate':'模型已返回，但回答与工具数据的自动核对未能确定通过；请在Trace查看证据。这不是联网失败。',
+        'reply_tool_mismatch':'模型回答与工具数据不一致，已拦截该回答；请在Trace查看具体字段。',
+        'token_usage_unknown':'模型未提供可核对的Token用量，原始旁证已保留。'}
+    return messages.get(category,'请求未完成，本次未自动重试；可在Trace中查看详细旁证。')
+
+
+def tool_failure_hint(session):
+    """Expose only known safe backend errors; never render arbitrary exception text."""
+    if not session.error or session.error.get('category') != 'tool_execution_failed' or not session.audits:
+        return None
+    events = (session.audits[-1].get('fault_report') or {}).get('executions') or []
+    safe = {
+        '当前消息未明确授权该操作，请明确说明订票、支付、退票或候补请求。',
+        '本轮没有该 lock_id 的成功锁座记录，请先锁座再创建订单。',
+        '无法确认该订单是用户指定或最近工具结果中的订单，请明确提供本人订单号。',
+        '本轮已成功锁座，不重复占用库存；请先检查已返回的锁座结果。',
+        '余票不足', '订单不存在', '锁座已过期，请重新 lock_seat',
+    }
+    for event in reversed(events):
+        result = event.get('result') if isinstance(event, dict) else None
+        reason = result.get('error') if isinstance(result, dict) else None
+        if reason in safe:
+            return '模拟操作未完成：' + reason + ' 请检查当前订单状态后再决定下一步。'
+    return None
+
+
+def operation_kind(message, history=None):
+    """UI confirmation aid only. Existing backend authorization remains authoritative."""
+    import re
+    if re.search(r"[?？]|多久|政策|规则|怎么|如何|是否|会不会", message):
+        return None
+    if re.fullmatch(
+        r"(?:(?:按|根据)(?:本)?项目示例条款[，,：:]\s*)?(?:请)?(?:查明|查询|说明)"
+        r"(?:距离发车|开车前)(?:超过|少于|不足)?\s*\d+\s*小时(?:的)?退票(?:的)?"
+        r"(?:手续费(?:比例)?|费率)(?:[，,]\s*(?:并)?(?:引用|注明)条款编号)?[。]?",
+        message.strip(),
+    ):
+        return None
+    if re.search(r"不要|别|不想|不能|不需要", message):
+        return None
+    from target.write_authorization import selection_details, multiturn_selection, pending_confirmation
+    if history and pending_confirmation(message, history[-1].get("reply", "")):
+        return "模拟业务操作"
+    human = [item.get("user_msg", "") for item in (history or [])]
+    if selection_details(message) or multiturn_selection(message, human):
+        return '模拟锁座'
+    if re.search(r"支付|付款|退票|退掉|取消订单|候补|抢票|监控|锁座|下单|订票|我要买|我想买|买票|帮我订|^(?:请)?订|购买",message):
+        return "模拟业务操作"
+    return None

@@ -77,10 +77,84 @@ def vector_search(query, top_k=None):
             for j, i in enumerate(idx[0]) if i >= 0]
 
 
+
+def _approved_policy_projection(question,hits):
+    """Project the approved D9 product rule onto stale RAG source clauses.
+
+    The immutable corpus is left untouched.  Only the runtime view used by the
+    current answer is corrected, and every changed hit records why.
+    """
+    import re
+    from target.railway_policy_evidence import active
+    from target.v39.policy import Policy
+    policy=Policy()
+    if not policy.approved or policy.profile!='CHANGED_REFUND_P01':return hits
+    railway_policy = active()
+    if not railway_policy and not (re.search(r'改签',question) and re.search(r'退票|退款',question)):
+        return hits
+    out=[]
+    for hit in hits:
+        row=dict(hit)
+        content=row.get('content','')
+        doc=row.get('doc_id')
+        if doc=='P01' and '已改签的车票不退' in content:
+            row['content']=content.replace('已取报销凭证或已改签的车票不退。',
+                '已取报销凭证需先交回；按已批准 D9 CHANGED_REFUND_P01，改签后的车票仍可申请退票；每乘客最多一次退款。')
+            if railway_policy:
+                row['content']=row['content'].replace('开车前 48 小时以上退票', '距发车超过 48 小时退票')
+            row['policy_projection']='D9_CHANGED_REFUND_P01'
+        elif doc=='P02' and '改签后不退' in content:
+            row['content']=content.replace('每张票仅可改签一次，改签后不退。',
+                '每张票仅可改签一次；按已批准 D9 CHANGED_REFUND_P01，改签后仍可申请退票；每乘客最多一次退款。')
+            row['policy_projection']='D9_CHANGED_REFUND_P01'
+        elif doc=='P03' and railway_policy:
+            row['content']='本地铁路模拟业务在原行程发车后不办理退票或改签。发车前的操作按本地模拟退改规则办理。'
+            row['policy_projection']='D9_CHANGED_REFUND_P01'
+            row['original_policy_content']=content
+            row['policy_scope']='railway_simulation'
+        elif doc=='P03' and '不退票' in content:
+            row['content']=content.replace('不退票。',
+                '按已批准 D9 CHANGED_REFUND_P01，改签后仍可申请退票，手续费按办理时距发车时间计算。')
+            row['policy_projection']='D9_CHANGED_REFUND_P01'
+        out.append(row)
+    return out
+
+
 def search_policy(question):
     """统一入口：返回带 doc_id 的政策片段，回答时必须引用 doc_id。"""
+    import os
+    from target.railway_policy_evidence import active
+    if os.getenv("AGENT_RAG_MODE"):
+        from target.rag_service import retrieve
+        return retrieve(question,allow_network=os.getenv("RAG_ALLOW_NETWORK")=="1")
+    if active():
+        from target.rag_service import retrieve
+        return retrieve(question,mode='vector' if config.USE_VECTOR_RAG else 'keyword',allow_network=False)
+    from target.run_events import emit
+    import uuid
+    retrieval_id=uuid.uuid4().hex
+    mode='vector' if config.USE_VECTOR_RAG else 'keyword'
+    import time,hashlib,json
+    started=time.perf_counter()
+    emit('rag_start','running',tool='search_policy',retrieval_id=retrieval_id,mode=mode,question=question)
     try:
-        hits = vector_search(question) if config.USE_VECTOR_RAG else keyword_search(question)
-    except Exception:
-        hits = keyword_search(question)  # 可选向量依赖不可用时保留离线能力
+        try:
+            hits = vector_search(question) if config.USE_VECTOR_RAG else keyword_search(question)
+        except Exception:
+            if config.PROVIDER in ("deepseek","bailian"):
+                raise  # A Live vector failure must never masquerade as successful keyword retrieval.
+            hits = keyword_search(question)  # 可选向量依赖不可用时保留离线能力
+            mode='keyword'
+        hits=_approved_policy_projection(question,hits)
+        corpus_version=hashlib.sha256(json.dumps(load_chunks(),sort_keys=True,ensure_ascii=False).encode('utf8')).hexdigest()
+        emit('rag_result','succeeded' if hits else 'insufficient_evidence',tool='search_policy',
+             retrieval_id=retrieval_id,question=question,mode=mode,documents=hits,
+             count=len(hits),corpus_version=corpus_version,index_version=None,
+             duration_ms=int((time.perf_counter()-started)*1000),retrieval_origin='current_execution',
+             document_store='in_process_document_cache',
+             sufficiency='unverified' if hits else 'insufficient_evidence',
+             policy_projection='D9_CHANGED_REFUND_P01' if any(h.get('policy_projection') for h in hits) else None)
+    except Exception as exc:
+        emit('rag_error','failed',tool='search_policy',retrieval_id=retrieval_id,mode=mode,error=type(exc).__name__)
+        raise
     return {"question": question, "hits": hits, "count": len(hits)}

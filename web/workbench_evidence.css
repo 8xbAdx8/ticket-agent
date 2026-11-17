@@ -1,0 +1,28 @@
+.ta-eval-metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 9rem), 1fr));
+  gap: .55rem;
+}
+.ta-eval-metric {
+  display: flex;
+  flex-direction: column;
+  gap: .2rem;
+  min-width: 0;
+  padding: .55rem .7rem;
+  border: 1px solid var(--ta-border);
+  border-radius: .6rem;
+  background: var(--ta-panel);
+  overflow-wrap: anywhere;
+}
+.ta-eval-metric span {
+  color: var(--ta-muted);
+  font-size: .82rem;
+}
+.ta-eval-metric strong {
+  color: var(--ta-text);
+  font-variant-numeric: tabular-nums;
+}
+[data-testid="stMain"]:has(.ta-workbench-marker) [data-testid="stText"] {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}

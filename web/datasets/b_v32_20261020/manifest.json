@@ -1,0 +1,40 @@
+{
+  "owner": "B",
+  "evidence_kind": "independent_mock_test",
+  "execution_date": "2026-10-20",
+  "execution_time": null,
+  "code_commit": "0af2712276258fee02573da33688a836738814c6",
+  "real_api_requests": 0,
+  "snapshot_note": "Read-only copies supplied by member B; source results were not rerun or modified. Date from B report; exact execution time not provided.",
+  "files": {
+    "execution.jsonl": {
+      "sha256": "0873a651be117a694ff60cb1d49ef058c4ce2824b2aaf495f712259ef908c40d",
+      "original_relative_path": "results/execution.jsonl"
+    },
+    "execution_langchain.jsonl": {
+      "sha256": "83c794af7c115593fce404843b255b4cbf24f070adce597355e535274e549988",
+      "original_relative_path": "results/execution_langchain.jsonl"
+    },
+    "mutation.json": {
+      "sha256": "96ea6f559fe93d97a7e2a17277862430b7a42615bc53391ca90352204fdaeaaf",
+      "original_relative_path": "results/mutation.json"
+    },
+    "newcode_check.json": {
+      "sha256": "d05492267448ce0f356e7467fafca158c1577a45698340d1bba84497c8c4524d",
+      "original_relative_path": "results/newcode_check.json"
+    },
+    "m8_idempotent.json": {
+      "sha256": "c818821d39c9dcef8cebc7966c9df9f53df93a0c3b0516845b101acd9330f26e",
+      "original_relative_path": "results/m8_idempotent.json"
+    },
+    "probe_m6_m8.json": {
+      "sha256": "008eb91e6edb4c7b8673a0ad9ad45f1928887a341fc676b7b839aa1bf0cf3e79",
+      "original_relative_path": "results/probe_m6_m8.json"
+    },
+    "case_catalog.json": {
+      "sha256": "8e8cb2807311c868afe99eb6fb658463b178e33455c791b8752aab50f0adbfdc",
+      "original_relative_path": "cases/cases_*.json",
+      "note": "Lossless combination of 103 original cases; original assertions preserved, not executed by frontend."
+    }
+  }
+}

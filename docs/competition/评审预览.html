@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ticket Agent · 评审预览（零依赖）</title><style>
+:root{--ink:#1a2130;--muted:#5f6b7f;--line:#e3e8f0;--bg:#f6f8fc;--card:#fff;
+--brand:#2f5bd7;--brand2:#6c4bd8;--ok:#0f8f6a;--warn:#b26a00;--danger:#c0392b}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);
+ font-family:"Microsoft YaHei","PingFang SC","Segoe UI",system-ui,sans-serif;line-height:1.7}
+.wrap{max-width:1080px;margin:0 auto;padding:0 24px 64px}
+.hero{background:linear-gradient(120deg,#223a7a,#3f5fd0 55%,#7447c4);color:#fff;padding:44px 0 38px;margin-bottom:28px}
+.hero .wrap{padding-bottom:0}
+.badge{display:inline-block;border:1px solid rgba(255,255,255,.45);border-radius:99px;
+ padding:3px 12px;font-size:12px;letter-spacing:.5px;margin-bottom:14px}
+h1{margin:0 0 8px;font-size:30px;letter-spacing:.5px}
+.sub{margin:0;opacity:.9;font-size:15px}
+h2{font-size:20px;margin:34px 0 14px;padding-left:11px;border-left:4px solid var(--brand)}
+h3{font-size:15px;margin:0 0 6px}
+p{margin:8px 0}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 20px;
+ box-shadow:0 2px 10px rgba(30,50,90,.04)}
+.grid{display:grid;gap:14px}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g2{grid-template-columns:repeat(2,1fr)}
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.kpi strong{display:block;font-size:27px;color:var(--brand);line-height:1.3}
+.kpi span{font-size:13px;color:var(--muted)}
+.kpi small{display:block;font-size:12px;color:var(--muted);margin-top:4px}
+.step{border-left:3px solid var(--brand);padding-left:14px}
+.step b{color:var(--brand)}
+table{width:100%;border-collapse:collapse;background:#fff;border-radius:12px;overflow:hidden;
+ border:1px solid var(--line);font-size:13px}
+th,td{padding:10px 12px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+th{background:#eef2fb;color:#33406a;font-weight:600;white-space:nowrap}
+tr:last-child td{border-bottom:none}
+.tag{display:inline-block;padding:1px 8px;border-radius:99px;font-size:12px;background:#e8f5f0;color:var(--ok)}
+.tag.warn{background:#fff2dc;color:var(--warn)}
+.tag.danger{background:#fdeae8;color:var(--danger)}
+.note{background:#fff8e8;border:1px solid #f2dda8;border-radius:12px;padding:14px 18px}
+.note.danger{background:#fff1ef;border-color:#f2c4bf}
+ul{margin:8px 0;padding-left:20px}
+code{background:#eef2fb;padding:1px 6px;border-radius:5px;font-size:12px}
+.foot{margin-top:36px;padding-top:16px;border-top:1px solid var(--line);font-size:12px;color:var(--muted)}
+@media(max-width:760px){.g3,.g2,.kpis{grid-template-columns:1fr}}
+</style></head><body>
+<div class="hero"><div class="wrap">
+<span class="badge">离线评审页 · 无需安装 / 无需联网 / 无需密钥</span>
+<h1>让 AI 智能体更可靠 · Ticket Agent 质量保障方案</h1>
+<p class="sub">被测对象：铁路出行智能体 ｜ 作品核心：七维度测试体系与可追溯证据 ｜ 本页所有数字均从包内原始证据读取</p>
+</div></div>
+<div class="wrap">
+
+<h2>30 秒开始</h2>
+<div class="grid g3">
+<div class="card step"><h3>① 双击一个文件</h3><p>根目录 <code>Ticket Agent.vbs</code>。在图形启动器中选择 Mock（本地），点击「启动」。内置 Python 与全部依赖，不需要安装 Python、不需要联网、不需要 API Key。</p></div>
+<div class="card step"><h3>② 浏览器自动打开</h3><p>首次约 10 秒内就绪。若端口被占用会自动顺延，窗口里会显示实际网址。</p></div>
+<div class="card step"><h3>③ 看评委主入口</h3><p>先在 <b>Agent 用户端</b>完成一轮对话，再到侧边栏 <b>测试工作台 → AI 场景总测试</b>：AI 依据对话生成测试用例、审核后执行并自主判定；五个板块共享同一份本轮结果。</p></div>
+</div>
+<p class="note">本页本身就是<b>兜底入口</b>：如果评委机器不允许运行本地服务，双击本 HTML 也能完成事实核对。完整交互演示仍以 <code>Ticket Agent.vbs</code> 为准。</p>
+
+<h2>关键数字</h2>
+<div class="kpis">
+<div class="card kpi"><strong>103</strong><span>独立测试用例定义数</span><small>七维度零遗漏，来自 case_catalog.json</small></div>
+<div class="card kpi"><strong>201</strong><span>双引擎实际执行记录</span><small>Legacy 101 + LangChain 100；Mock 引擎</small></div>
+<div class="card kpi"><strong>201</strong><span>实际通过记录</span><small>失败 0 条，单独列出</small></div>
+<div class="card kpi"><strong>69 / 69</strong><span>选定变异组合检出</span><small>额外探测 14 / 16，独立分母</small></div>
+<div class="card kpi"><strong>7</strong><span>比赛测试维度</span><small>与官方七类要求逐条对应</small></div>
+<div class="card kpi"><strong>3,169</strong><span>真实 GTFS 车站</span><small>车次 11,775 · 站时刻 109,729 · CC BY 4.0</small></div>
+</div>
+<p style="font-size:12px;color:#5f6b7f">证据批次：B 独立测试 · Mock 引擎 · 执行日期 2026-10-20 · 代码 SHA 0af271227625 · 真实模型请求 0 · 运行包 2026-11-11T16:54 / git 68f6a5c80ab6</p>
+
+<h2>七维度覆盖矩阵</h2>
+<table><thead><tr><th>维度 / 比赛要求</th><th>定义用例</th><th>Legacy 执行 / 通过</th><th>LangChain 执行 / 通过</th><th>状态</th></tr></thead>
+<tbody><tr><td><b>功能准确性</b><br><span style='color:#5f6b7f;font-size:12px'>典型场景下回答是否正确、有用</span></td><td>15</td><td>15 / 15</td><td>15 / 15</td><td><span class='tag'>覆盖</span></td></tr><tr><td><b>工具调用</b><br><span style='color:#5f6b7f;font-size:12px'>是否在正确时机调用正确工具</span></td><td>25</td><td>25 / 25</td><td>24 / 24</td><td><span class='tag'>覆盖</span></td></tr><tr><td><b>RAG</b><br><span style='color:#5f6b7f;font-size:12px'>知识库召回准确率与回答忠实度</span></td><td>15</td><td>15 / 15</td><td>15 / 15</td><td><span class='tag'>覆盖</span></td></tr><tr><td><b>多轮</b><br><span style='color:#5f6b7f;font-size:12px'>上下文记忆与逻辑连贯性</span></td><td>12</td><td>12 / 12</td><td>12 / 12</td><td><span class='tag'>覆盖</span></td></tr><tr><td><b>安全</b><br><span style='color:#5f6b7f;font-size:12px'>越狱与角色扮演下的安全护栏</span></td><td>18</td><td>16 / 16</td><td>16 / 16</td><td><span class='tag'>覆盖</span></td></tr><tr><td><b>边界</b><br><span style='color:#5f6b7f;font-size:12px'>不完整输入、超长上下文、工具异常</span></td><td>12</td><td>12 / 12</td><td>12 / 12</td><td><span class='tag'>覆盖</span></td></tr><tr><td><b>性能</b><br><span style='color:#5f6b7f;font-size:12px'>并发响应速度与资源消耗</span></td><td>6</td><td>6 / 6</td><td>6 / 6</td><td><span class='tag'>覆盖</span></td></tr></tbody></table>
+<p style="font-size:12px;color:#5f6b7f">口径：执行 = 通过 + 失败；不适用、未验证、无法判定、跳过、状态缺失分别列出，不计入通过率。多轮按用例计数，不按对话轮数或请求数计数。</p>
+
+<h2>本版新增能力（V3.11）</h2>
+<div class="grid g3">
+<div class="card"><h3>AI 测试场景生成</h3><p>测试工作台首板块，把 AI 生成测试场景做成可交互入口，配套 <code>target/scenario_*.py</code> 场景执行与场景质量模块。</p></div>
+<div class="card"><h3>场景化验收链路</h3><p>随包提供 <code>scripts/run_v311_*.py</code> 验收脚本、<code>tests/test_ai_scenario_*.py</code> 与 QA09 修复报告、乘客提案修复说明。</p></div>
+<div class="card"><h3>回执与提案诊断</h3><p>新增 receipt_verification / proposal_navigation / request_motion 模块及 <code>tests/v39/test_ui_receipt_diagnosis.py</code>，补齐订单支付回执的诊断证据。</p></div>
+</div>
+
+<h2>评审关注点（本版保留）</h2>
+<div class="grid g3">
+<div class="card"><h3>指标口径显式化</h3><p>七维度页顶部 6 格指标：用例定义 / 执行 / 通过 / <b>失败</b> / 不适用 / 未验证，并显式声明 Mock 与 Live 分开记账、正式 103 计分受阻。</p></div>
+<div class="card"><h3>缺陷注入统计补全</h3><p>缺陷注入页新增漏检数量、误报口径、M1–M8 类型检出率，支持一键下钻到未检出组合与原始回复片段，不再只报一个 69/69。</p></div>
+<div class="card"><h3>四层状态一致性审计</h3><p>质量分析新增标签：交叉比对 Agent 回答 / 业务库 / 运行时工具 / 页面展示；冲突判 CRITICAL，缺证据判「无法判定」，绝不补成通过。</p></div>
+</div>
+
+<h2>三板块与演示路线</h2>
+<div class="grid g3">
+<div class="card"><h3>Agent 用户端</h3><p>真实静态 GTFS 查车次与站点，政策问答、订单、行李、改签。库存、票价、订单、支付均为<b>本地模拟</b>。</p></div>
+<div class="card"><h3>Agent 开发者端</h3><p>7 个彩色模块纯原理介绍：思考分析、提示词设计、工具配置、Agent 知识库、记忆存储与多轮交互、工作流编排、边界与风险控制；提示词与代码直接取自当前源码。</p></div>
+<div class="card"><h3>测试控制台</h3><p>五个板块：<b>AI 场景总测试</b>、质量分析、RAG / 多轮 / 安全、边界与异常测试、性能测试。一次生成、一次执行、一次判定，共用同一份本轮 run 证据。</p></div>
+</div>
+
+<h2>已知边界（主动声明）</h2>
+<div class="note danger">
+<ul>
+<li><b>不要把 Mock 通过当作 Live 通过。</b>本页数字来自 B 独立保存的 Mock 测试快照，<b>不是当前版本重跑成绩</b>，也不含真实模型成绩；两者从不合并。</li>
+<li><b>正式 103 条赛事计分仍为 BLOCKED。</b>用例数据与执行快照齐全，但在当前代码上重跑并计分缺 42 条 <code>trains_from_tools</code> / C5 配套实现。</li>
+<li><b>额外探测有 2 条未检出</b>：T04 的假车次 G9999 已进入最终回复（真实漏检），R01 不适用。原始证据保留，未做修饰。</li>
+<li><b>外部独立审查未执行</b>（本版不含 verification.json，状态以根目录 <code>现阶段总结.md</code> 为准）；误报数量未单独统计，因为 B 压缩记录未提供误报标注。</li>
+<li>铁路时刻为静态 GTFS，不是实时余票；票务、库存、订单、支付、退款全部虚构，不连接任何真实购票或支付系统。</li>
+</ul>
+</div>
+
+<h2>证据索引（相对路径）</h2>
+<table><thead><tr><th>文件</th><th>内容</th></tr></thead><tbody>
+<tr><td><code>ticket-agent/web/datasets/b_v32_20261020/</code></td><td>103 条用例目录、双引擎执行记录、manifest 与 SHA、变异矩阵与额外探测</td></tr>
+<tr><td><code>ticket-agent/PORTABLE/manifest.json</code></td><td>运行包文件清单与 SHA256、生成时间、git 提交</td></tr>
+<tr><td><code>ticket-agent/docs/reviews/</code></td><td>QA09 修复报告、V3.10 乘客提案修复说明</td></tr>
+<tr><td><code>现阶段总结.md</code></td><td>当前版本状态说明：目录口径、本轮修复、验证结果与待办</td></tr>
+<tr><td><code>ticket-agent/DATA_SOURCES/</code></td><td>GTFS 数据来源、许可与上游权利边界说明</td></tr>
+<tr><td><code>ticket-agent/artifacts/runtime/evaluator-launch.log</code></td><td>一键启动的环境自检与启动日志</td></tr>
+</tbody></table>
+
+<div class="foot">生成时间：2026-11-15 01:29 ｜ 由 <code>scripts/build_evaluator_preview.py</code> 从包内证据实时生成 ｜ 本页为静态 HTML，无外部脚本、无网络请求、无密钥。</div>
+</div></body></html>

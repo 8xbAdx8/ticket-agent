@@ -1,5 +1,6 @@
 """成员 A 的入口冒烟与证据采集；不产生比赛评分或 B 的缺陷评估。"""
 import hashlib
+import argparse
 import importlib.metadata
 import json
 import os
@@ -13,7 +14,6 @@ from datetime import datetime, timezone, timedelta
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-OUT = ROOT / "docs" / "evidence"
 
 
 def digest(path):
@@ -27,10 +27,22 @@ def port():
 
 
 def main():
-    OUT.mkdir(parents=True, exist_ok=True)
+    parser = argparse.ArgumentParser(description="A 的 Mock 全入口回归，使用新证据目录")
+    parser.add_argument("--output-dir", type=Path)
+    args = parser.parse_args()
+    stamp = datetime.now(timezone(timedelta(hours=8))).strftime("%Y%m%d-%H%M%S")
+    OUT = args.output_dir or (ROOT/"docs/evidence/v2"/("smoke-"+stamp+"-"+uuid.uuid4().hex[:6]))
+    if not OUT.is_absolute():
+        OUT = ROOT/OUT
+    OUT.mkdir(parents=True, exist_ok=False)
+    def log_path(name):
+        try:
+            return (OUT/name).relative_to(ROOT).as_posix()
+        except ValueError:
+            return name  # 不将本机绝对路径写入报告
     runtime = ROOT / "artifacts" / "runtime" / ("verify-" + uuid.uuid4().hex[:8])
     runtime.mkdir(parents=True)
-    env = dict(os.environ, PYTHONIOENCODING="utf-8", AGENT_PROVIDER="mock", AGENT_USE_HTTP="0", AGENT_VECTOR_RAG="0",
+    env = dict(os.environ, PYTHONIOENCODING="utf-8", AGENT_ENGINE="legacy", AGENT_PROVIDER="mock", AGENT_USE_HTTP="0", AGENT_VECTOR_RAG="0",
                AGENT_DB_PATH=str(runtime / "tickets.db"), AGENT_TRACE_DIR=str(runtime / "traces"))
     def sanitize(text):
         for path in (str(ROOT), str(Path.home()), str(Path(sys.base_prefix))):
@@ -46,7 +58,7 @@ def main():
                                 text=True, encoding="utf-8", capture_output=True, timeout=90)
         (OUT / (label+".txt")).write_text(sanitize(result.stdout + result.stderr), encoding="utf-8")
         record = {"name":label, "command":"python " + " ".join(args), "exit_code":result.returncode,
-                  "log":"docs/evidence/"+label+".txt"}
+                  "log":log_path(label+".txt")}
         runs.append(record)
         if result.returncode:
             raise RuntimeError("命令失败，见 " + record["log"])
@@ -98,7 +110,7 @@ def main():
         env["AGENT_MOCK_URL"] = base
         run("http_agent", ["cli.py", "once", "订明天上海到杭州的高铁并支付"])
         env["AGENT_USE_HTTP"] = "0"
-        runs.append({"name":"http", "command":"python -m uvicorn target.mock_api:app --host 127.0.0.1 --port <free-port>; HTTP 8 tools", "exit_code":0, "log":"docs/evidence/http.json"})
+        runs.append({"name":"http", "command":"python -m uvicorn target.mock_api:app --host 127.0.0.1 --port <free-port>; HTTP 8 tools", "exit_code":0, "log":log_path("http.json")})
     finally:
         api.terminate()
         api.wait(timeout=10)
@@ -107,7 +119,7 @@ def main():
     try:
         status = ready(f"http://127.0.0.1:{web_port}/_stcore/health")
         (OUT / "web_health.txt").write_text(status, encoding="utf-8")
-        runs.append({"name":"web_health", "command":"python -m streamlit run web/app.py --server.headless=true --server.port=<free-port>", "exit_code":0, "log":"docs/evidence/web_health.txt"})
+        runs.append({"name":"web_health", "command":"python -m streamlit run web/app.py --server.headless=true --server.port=<free-port>", "exit_code":0, "log":log_path("web_health.txt")})
     finally:
         web.terminate()
         web.wait(timeout=10)
@@ -117,14 +129,14 @@ def main():
     current = {name:digest(ROOT / name) for name in baseline}
     if baseline != current:
         raise RuntimeError("原数据库/历史 Trace/契约保护检查失败")
-    summary = {"date":datetime.now(timezone(timedelta(hours=8))).isoformat(), "provider":"mock",
+    summary = {"date":datetime.now(timezone(timedelta(hours=8))).isoformat(), "provider":"mock", "version_scope":"V2 A self-validation",
                "real_model_tested":False, "vector_tested":False, "runs":runs,
                "trace_count":len(records), "protected_files_sha256":current,
                "python":sys.version.split()[0], "versions":{name:importlib.metadata.version(name) for name in ["openai","streamlit","fastapi","uvicorn","pandas","pytest"]},
                "source_files_sha256":{str(p.relative_to(ROOT)).replace('\\','/'):digest(p) for p in [*ROOT.glob("*.py"), *(p for folder in ["target","web","tests","scripts","data"] for p in (ROOT/folder).glob("*.py"))]},
                "mutation_labels":[x["label"] for x in example if x["label"].startswith("injected:")]}
     (OUT / "verification.json").write_text(json.dumps(summary,ensure_ascii=False,indent=2), encoding="utf-8")
-    print(json.dumps({"status":"passed", "commands":len(runs), "mock_trace_count":len(records), "protected_files_unchanged":True},ensure_ascii=False))
+    print(json.dumps({"status":"passed", "commands":len(runs), "mock_trace_count":len(records), "protected_files_unchanged":True,"evidence_dir":log_path("verification.json")},ensure_ascii=False))
 
 
 def get_request(req):

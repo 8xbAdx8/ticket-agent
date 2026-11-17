@@ -1,0 +1,506 @@
+[
+  {
+    "id": "V37-P01",
+    "question": "退票手续费阶梯",
+    "expected": [
+      "P01"
+    ],
+    "split": "development"
+  },
+  {
+    "id": "V37-P02",
+    "question": "改签规则",
+    "expected": [
+      "P02"
+    ],
+    "split": "development"
+  },
+  {
+    "id": "V37-P03",
+    "question": "开车后处理",
+    "expected": [
+      "P03"
+    ],
+    "split": "development"
+  },
+  {
+    "id": "V37-P04",
+    "question": "儿童票",
+    "expected": [
+      "P04"
+    ],
+    "split": "development"
+  },
+  {
+    "id": "V37-P05",
+    "question": "学生票",
+    "expected": [
+      "P05"
+    ],
+    "split": "development"
+  },
+  {
+    "id": "V37-P06",
+    "question": "行李规定",
+    "expected": [
+      "P06"
+    ],
+    "split": "development"
+  },
+  {
+    "id": "V37-P07",
+    "question": "报销凭证",
+    "expected": [
+      "P07"
+    ],
+    "split": "development"
+  },
+  {
+    "id": "V37-P08",
+    "question": "候补与余票释放",
+    "expected": [
+      "P08"
+    ],
+    "split": "development"
+  },
+  {
+    "id": "V37-P09",
+    "question": "机票退改规则",
+    "expected": [
+      "P09"
+    ],
+    "split": "development"
+  },
+  {
+    "id": "V37-P10",
+    "question": "实名与身份核验",
+    "expected": [
+      "P10"
+    ],
+    "split": "development"
+  },
+  {
+    "id": "V37-P11",
+    "question": "锁座与支付有效期",
+    "expected": [
+      "P11"
+    ],
+    "split": "development"
+  },
+  {
+    "id": "V37-P12",
+    "question": "未支付订单取消",
+    "expected": [
+      "P12"
+    ],
+    "split": "development"
+  },
+  {
+    "id": "V37-P13",
+    "question": "模拟隐私规则",
+    "expected": [
+      "P13"
+    ],
+    "split": "development"
+  },
+  {
+    "id": "V37-P14",
+    "question": "模拟候补边界",
+    "expected": [
+      "P14"
+    ],
+    "split": "development"
+  },
+  {
+    "id": "V37-P15",
+    "question": "数据预售范围",
+    "expected": [
+      "P15"
+    ],
+    "split": "development"
+  },
+  {
+    "id": "V37-P16",
+    "question": "高铁模拟订单身份",
+    "expected": [
+      "P16"
+    ],
+    "split": "development"
+  },
+  {
+    "id": "V37-P17",
+    "question": "机票模拟订单身份",
+    "expected": [
+      "P17"
+    ],
+    "split": "development"
+  },
+  {
+    "id": "V37-P18",
+    "question": "多人锁座名单",
+    "expected": [
+      "P18"
+    ],
+    "split": "development"
+  },
+  {
+    "id": "V37-P19",
+    "question": "下单名单一致性",
+    "expected": [
+      "P19"
+    ],
+    "split": "development"
+  },
+  {
+    "id": "V37-P20",
+    "question": "下单联系人校验",
+    "expected": [
+      "P20"
+    ],
+    "split": "development"
+  },
+  {
+    "id": "V37-P21",
+    "question": "锁座过期处理",
+    "expected": [
+      "P21"
+    ],
+    "split": "development"
+  },
+  {
+    "id": "V37-P22",
+    "question": "同锁重复下单",
+    "expected": [
+      "P22"
+    ],
+    "split": "development"
+  },
+  {
+    "id": "V37-P23",
+    "question": "不同锁座独立订单",
+    "expected": [
+      "P23"
+    ],
+    "split": "development"
+  },
+  {
+    "id": "V37-P24",
+    "question": "支付取消订单",
+    "expected": [
+      "P24"
+    ],
+    "split": "development"
+  },
+  {
+    "id": "V37-P25",
+    "question": "取消待支付订单",
+    "expected": [
+      "P25"
+    ],
+    "split": "development"
+  },
+  {
+    "id": "V37-P26",
+    "question": "支付重复请求",
+    "expected": [
+      "P26"
+    ],
+    "split": "development"
+  },
+  {
+    "id": "V37-P27",
+    "question": "模拟费用含义",
+    "expected": [
+      "P27"
+    ],
+    "split": "development"
+  },
+  {
+    "id": "V37-P28",
+    "question": "候补任务边界",
+    "expected": [
+      "P28"
+    ],
+    "split": "development"
+  },
+  {
+    "id": "V37-P29",
+    "question": "候补时长边界",
+    "expected": [
+      "P29"
+    ],
+    "split": "development"
+  },
+  {
+    "id": "V37-P30",
+    "question": "高铁席别范围",
+    "expected": [
+      "P30"
+    ],
+    "split": "development"
+  },
+  {
+    "id": "V37-P31",
+    "question": "机票舱位范围",
+    "expected": [
+      "P31"
+    ],
+    "split": "development"
+  },
+  {
+    "id": "V37-P32",
+    "question": "交通方式切换",
+    "expected": [
+      "P32"
+    ],
+    "split": "development"
+  },
+  {
+    "id": "V37-P33",
+    "question": "日期查询语义",
+    "expected": [
+      "P33"
+    ],
+    "split": "development"
+  },
+  {
+    "id": "V37-P34",
+    "question": "模拟售罄说明",
+    "expected": [
+      "P34"
+    ],
+    "split": "development"
+  },
+  {
+    "id": "V37-P35",
+    "question": "无匹配班次说明",
+    "expected": [
+      "P35"
+    ],
+    "split": "development"
+  },
+  {
+    "id": "V37-P36",
+    "question": "余票结果有效范围",
+    "expected": [
+      "P36"
+    ],
+    "split": "development"
+  },
+  {
+    "id": "V37-P37",
+    "question": "价格结果有效范围",
+    "expected": [
+      "P37"
+    ],
+    "split": "development"
+  },
+  {
+    "id": "V37-P38",
+    "question": "儿童优惠业务边界",
+    "expected": [
+      "P38"
+    ],
+    "split": "development"
+  },
+  {
+    "id": "V37-P39",
+    "question": "学生优惠业务边界",
+    "expected": [
+      "P39"
+    ],
+    "split": "development"
+  },
+  {
+    "id": "V37-P40",
+    "question": "报销凭证业务边界",
+    "expected": [
+      "P40"
+    ],
+    "split": "development"
+  },
+  {
+    "id": "V37-P41",
+    "question": "模拟行李单人计算",
+    "expected": [
+      "P41"
+    ],
+    "split": "development"
+  },
+  {
+    "id": "V37-P42",
+    "question": "模拟行李尺寸检查",
+    "expected": [
+      "P42"
+    ],
+    "split": "development"
+  },
+  {
+    "id": "V37-P43",
+    "question": "改签差价记账",
+    "expected": [
+      "P43"
+    ],
+    "split": "development"
+  },
+  {
+    "id": "V37-P44",
+    "question": "改签边界48小时",
+    "expected": [
+      "P44"
+    ],
+    "split": "development"
+  },
+  {
+    "id": "V37-P45",
+    "question": "改签次数校验",
+    "expected": [
+      "P45"
+    ],
+    "split": "development"
+  },
+  {
+    "id": "V37-P46",
+    "question": "已支付改签条件",
+    "expected": [
+      "P46"
+    ],
+    "split": "development"
+  },
+  {
+    "id": "V37-P47",
+    "question": "改签库存原子性",
+    "expected": [
+      "P47"
+    ],
+    "split": "development"
+  },
+  {
+    "id": "V37-P48",
+    "question": "退票手续费计算证据",
+    "expected": [
+      "P48"
+    ],
+    "split": "development"
+  },
+  {
+    "id": "V37-P49",
+    "question": "订单状态讨论",
+    "expected": [
+      "P49"
+    ],
+    "split": "development"
+  },
+  {
+    "id": "V37-P50",
+    "question": "操作确认绑定",
+    "expected": [
+      "P50"
+    ],
+    "split": "development"
+  },
+  {
+    "id": "V37-P51",
+    "question": "操作取消反馈",
+    "expected": [
+      "P51"
+    ],
+    "split": "development"
+  },
+  {
+    "id": "V37-P52",
+    "question": "工具异常回答",
+    "expected": [
+      "P52"
+    ],
+    "split": "development"
+  },
+  {
+    "id": "V37-P53",
+    "question": "政策引用来源",
+    "expected": [
+      "P53"
+    ],
+    "split": "development"
+  },
+  {
+    "id": "V37-P54",
+    "question": "知识库外问题拒答",
+    "expected": [
+      "P54"
+    ],
+    "split": "development"
+  },
+  {
+    "id": "V37-P55",
+    "question": "跨文档冲突处理",
+    "expected": [
+      "P55"
+    ],
+    "split": "development"
+  },
+  {
+    "id": "V37-P59",
+    "question": "现实平台边界",
+    "expected": [
+      "P59"
+    ],
+    "split": "development"
+  },
+  {
+    "id": "V37-P60",
+    "question": "检索证据不足恢复",
+    "expected": [
+      "P60"
+    ],
+    "split": "development"
+  },
+  {
+    "id": "NEG-0",
+    "question": "月球基地航班退款",
+    "expected": [],
+    "split": "holdout"
+  },
+  {
+    "id": "NEG-1",
+    "question": "宠物保险投保手续",
+    "expected": [],
+    "split": "holdout"
+  },
+  {
+    "id": "NEG-2",
+    "question": "高速公路货车通行费",
+    "expected": [],
+    "split": "holdout"
+  },
+  {
+    "id": "NEG-3",
+    "question": "酒店积分兑换比例",
+    "expected": [],
+    "split": "holdout"
+  },
+  {
+    "id": "NEG-4",
+    "question": "医院挂号退费",
+    "expected": [],
+    "split": "holdout"
+  },
+  {
+    "id": "NEG-5",
+    "question": "签证办理费用",
+    "expected": [],
+    "split": "holdout"
+  },
+  {
+    "id": "NEG-6",
+    "question": "国际海运清关",
+    "expected": [],
+    "split": "holdout"
+  },
+  {
+    "id": "NEG-7",
+    "question": "旅游意外保险理赔",
+    "expected": [],
+    "split": "holdout"
+  }
+]

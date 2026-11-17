@@ -17,6 +17,7 @@ class Trace:
     """
 
     def __init__(self, session_id=None, user_msg=""):
+        self.trace_id = uuid.uuid4().hex  # 仅旁证使用，不加入原公开十字段。
         self.session_id = session_id or ("S" + uuid.uuid4().hex[:8])
         self.user_msg = user_msg
         self.steps = []
@@ -57,7 +58,8 @@ class Trace:
         return [c["tool"] for s in self.steps for c in s["calls"]]
 
     def to_dict(self):
-        return {
+        from target.diagnostics import redact_credentials
+        return redact_credentials({
             "session_id": self.session_id,
             "provider": self.provider,
             "model": self.model,
@@ -68,13 +70,14 @@ class Trace:
             "finish_reason": self.finish_reason,
             "tokens": self.tokens,
             "total_latency_ms": self.total_latency_ms if self.total_latency_ms is not None else int((time.perf_counter() - self.started_at) * 1000),
-        }
+        })
 
     def save(self, path=None, record=None):
         path = Path(path or (config.TRACE_DIR / "traces.jsonl"))
         path.parent.mkdir(parents=True, exist_ok=True)
+        from target.diagnostics import redact_credentials
         with path.open("a", encoding="utf-8") as f:
-            f.write(json.dumps(record if record is not None else self.to_dict(), ensure_ascii=False) + "\n")
+            f.write(json.dumps(redact_credentials(record if record is not None else self.to_dict()), ensure_ascii=False) + "\n")
         return path
 
 

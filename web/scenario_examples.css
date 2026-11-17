@@ -1,0 +1,82 @@
+.ta-scenario-example {
+    max-width: 50rem;
+    overflow-wrap: anywhere;
+    font-size: 0.875rem;
+    line-height: 1.5;
+}
+
+.ta-scenario-example details {
+    background: color-mix(in srgb, var(--ta-panel, #fff) 94%, var(--ta-text, #162e49));
+    border: 1px solid var(--ta-border, #d6e0ec);
+    border-radius: 8px;
+    color: var(--ta-text, #162e49);
+}
+
+.ta-scenario-example summary {
+    padding: 9px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+[data-testid="stExpander"] .ta-scenario-example details > summary {
+    background: transparent !important;
+}
+
+[data-testid="stExpander"] .ta-scenario-example details > summary:hover {
+    background: color-mix(in srgb, var(--ta-panel, #fff) 90%, var(--ta-text, #162e49)) !important;
+}
+
+.ta-scenario-example-label {
+    display: inline-grid;
+    gap: 2px;
+    max-width: calc(100% - 1.5rem);
+    vertical-align: middle;
+}
+
+.ta-scenario-example-label > span {
+    color: var(--ta-muted, #607188);
+    font-size: 0.8125rem;
+}
+
+.ta-scenario-example-body {
+    margin: 0 12px;
+    padding: 8px 0 10px;
+    border-top: 1px solid var(--ta-border, #d6e0ec);
+}
+
+.ta-scenario-example-body p { margin: 0 0 6px; }
+.ta-scenario-example-body :is(ol, ul) { margin: 0; padding-inline-start: 1.35rem; }
+.ta-scenario-example-body li + li { margin-top: 3px; }
+
+.ta-scenario-example-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.ta-scenario-example-actions button {
+    min-height: 38px;
+    padding: 5px 12px;
+    border: 1px solid var(--ta-border, #d6e0ec);
+    border-radius: 8px;
+    background: var(--ta-panel, #fff);
+    color: var(--ta-text, #162e49);
+    font: inherit;
+    cursor: pointer;
+}
+
+.ta-scenario-example-actions button:hover {
+    border-color: var(--ta-accent, #1555c4);
+    color: var(--ta-accent, #1555c4);
+}
+
+.ta-scenario-example :is(summary, button):focus-visible,
+:is(.st-key-ai_scenario_objective, .st-key-ai_scenario_constraints) [data-testid="stTextAreaRootElement"]:focus-within {
+    outline: 2px solid var(--ta-accent, #1555c4);
+    outline-offset: 2px;
+}
+
+@media (max-width: 600px) {
+    .ta-scenario-example-actions button { min-height: 44px; }
+}
